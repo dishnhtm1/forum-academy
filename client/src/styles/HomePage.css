@@ -1,0 +1,552 @@
+/* Enhanced About Section Styling with Improved Spacing */
+
+.about-section {
+    position: relative;
+    padding: 8rem 0;  /* Increased vertical padding */
+    background: linear-gradient(to bottom, #f8fafc, #f1f5f9);
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.about-section.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Decorative background shapes - repositioned for better balance */
+.about-shapes {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.about-shape {
+    position: absolute;
+    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+    filter: blur(40px);
+    opacity: 0.12;  /* Reduced opacity for more subtle effect */
+}
+
+.shape-1 {
+    background: linear-gradient(35deg, #0ea5e9, #3b82f6);
+    width: 500px;
+    height: 500px;
+    top: -200px;
+    right: -100px;
+    animation: floatShape 25s infinite alternate ease-in-out;
+}
+
+.shape-2 {
+    background: linear-gradient(35deg, #f97316, #f59e0b);
+    width: 400px;
+    height: 400px;
+    bottom: -150px;
+    left: -150px;
+    animation: floatShape 20s infinite alternate-reverse ease-in-out;
+}
+
+.shape-3 {
+    background: linear-gradient(35deg, #8b5cf6, #ec4899);
+    width: 300px;
+    height: 300px;
+    top: 40%;
+    left: 60%;
+    animation: floatShape 15s infinite alternate ease-in-out;
+}
+
+@keyframes floatShape {
+    0% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+    100% {
+        transform: translate(30px, 30px) rotate(15deg);
+    }
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 10;
+}
+
+/* Section Header - enhanced spacing */
+.section-header {
+    text-align: center;
+    margin-bottom: 5rem;  /* Increased space after header */
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 1rem;  /* Added horizontal padding for mobile */
+}
+
+.section-badge {
+    display: inline-block;
+    background-color: rgba(14, 165, 233, 0.1);
+    color: #0ea5e9;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.6rem 1.2rem;  /* Slightly larger padding */
+    border-radius: 30px;
+    margin-bottom: 1.5rem;  /* Increased margin */
+    letter-spacing: 0.5px;  /* Added letter spacing */
+}
+
+.section-header h2 {
+    font-size: 3.25rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, #0f172a, #0ea5e9);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1.5rem;  
+    position: relative;
+    line-height: 1.2;  
+}
+
+/* Make the selector more specific to override HomePage.css
+.news-events .section-header h2 {
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 1rem;
+    position: relative;
+    display: inline-block;
+    -webkit-background-clip: initial;
+    -webkit-text-fill-color: #333;
+    background: none; /* Remove any gradient */
+
+
+.section-subtitle {
+    font-size: 1.25rem;  /* Slightly larger */
+    line-height: 1.7;
+    color: #64748b;
+    max-width: 720px;  /* Control the width for better readability */
+    margin: 0 auto;
+}
+
+/* Feature Cards - improved spacing and layout */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2.5rem;  /* Increased gap between cards */
+    margin-bottom: 6rem;  /* More space between grid and next section */
+}
+
+.feature-card {
+    background-color: white;
+    border-radius: 20px;  /* Slightly more rounded corners */
+    padding: 3rem;  /* More internal padding */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);  /* Lighter shadow */
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeIn 0.8s forwards ease;
+    animation-delay: var(--delay, 0s);
+    cursor: pointer;
+    border: 1px solid rgba(241, 245, 249, 0.8);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;  /* Slightly wider accent bar */
+    height: 0;
+    background: linear-gradient(to bottom, var(--feature-color, #0ea5e9), transparent);
+    transition: height 0.4s ease;
+    opacity: 0;
+}
+
+.feature-card:hover, .feature-card.active {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.feature-card:hover::before, .feature-card.active::before {
+    height: 100%;
+    opacity: 1;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.feature-icon {
+    width: 80px;  /* Larger icon area */
+    height: 80px;
+    border-radius: 18px;  /* More rounded corners */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;  /* More space after icon */
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover .feature-icon, .feature-card.active .feature-icon {
+    transform: scale(1.1);
+}
+
+.feature-icon .material-icons {
+    font-size: 36px;  /* Larger icon */
+}
+
+.feature-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.feature-content h3 {
+    font-size: 1.6rem;  /* Slightly larger heading */
+    font-weight: 700;
+    margin-bottom: 1.2rem;  /* More space after heading */
+    color: #0f172a;
+    line-height: 1.3;
+}
+
+.feature-content p {
+    font-size: 1.05rem;
+    line-height: 1.8;  /* Increased line height for readability */
+    color: #64748b;
+    margin-bottom: 2rem;  /* More space after paragraph */
+    flex: 1;
+}
+
+.feature-highlight {
+    align-self: flex-start;
+    padding: 0.6rem 1.2rem;  /* More padding */
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: transform 0.3s ease;
+    margin-top: 0.5rem;  /* Added space above highlight */
+}
+
+.feature-card:hover .feature-highlight, .feature-card.active .feature-highlight {
+    transform: translateY(-5px);
+}
+
+/* CTA Section - improved layout and spacing */
+.learn-more-cta {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 0;  /* Removed gap for a more unified look */
+    background: white;
+    border-radius: 20px;  /* More rounded corners */
+    overflow: hidden;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.07);
+    margin: 5rem 0 6rem;  /* Increased margins */
+    border: 1px solid rgba(241, 245, 249, 0.8);
+}
+
+.cta-image {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+}
+
+.cta-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.7s ease;
+}
+
+.learn-more-cta:hover .cta-image img {
+    transform: scale(1.05);
+}
+
+.cta-content {
+    padding: 4rem;  /* More padding */
+    display: flex;
+    flex-direction: column;
+}
+
+.cta-badge {
+    display: inline-block;
+    background-color: rgba(14, 165, 233, 0.1);
+    color: #0ea5e9;
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    margin-bottom: 1.5rem;  /* More space after badge */
+    align-self: flex-start;
+}
+
+.cta-content h3 {
+    font-size: 2.25rem;  /* Larger heading */
+    font-weight: 700;
+    margin-bottom: 1.5rem;  /* More space after heading */
+    color: #0f172a;
+    line-height: 1.2;
+}
+
+.cta-content p {
+    font-size: 1.15rem;
+    line-height: 1.8;  /* Improved line height */
+    color: #64748b;
+    margin-bottom: 2.5rem;  /* More space after paragraph */
+}
+
+.cta-stats {
+    display: flex;
+    gap: 4rem;  /* More space between stats */
+    margin-bottom: 3rem;  /* More space after stats */
+}
+
+.cta-stat {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-number {
+    font-size: 3rem;  /* Larger stats */
+    font-weight: 800;
+    background: linear-gradient(90deg, #0ea5e9, #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 1rem;
+    color: #64748b;
+    margin-top: 0.75rem;  /* More space between number and label */
+    font-weight: 500;
+}
+
+.btn-learn-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;  /* More space between text and icon */
+    background-color: #0ea5e9;
+    color: white;
+    padding: 1.25rem 2rem;  /* Larger button */
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 25px rgba(14, 165, 233, 0.25);
+    align-self: flex-start;
+}
+
+.btn-learn-more:hover {
+    transform: translateY(-4px);
+    background-color: #0284c7;
+    box-shadow: 0 15px 30px rgba(14, 165, 233, 0.35);
+}
+
+.btn-learn-more .material-icons {
+    font-size: 1.25rem;
+    transition: transform 0.3s ease;
+}
+
+.btn-learn-more:hover .material-icons {
+    transform: translateX(5px);
+}
+
+/* Testimonial Preview - improved layout and spacing */
+.testimonial-preview {
+    margin-top: 4rem;  /* More space above testimonials */
+}
+
+.testimonial-quote {
+    background: white;
+    border-radius: 20px;  /* More rounded corners */
+    padding: 4rem;  /* More padding */
+    position: relative;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(241, 245, 249, 0.8);
+}
+
+.quote-icon {
+    position: absolute;
+    top: 2.5rem;
+    left: 2.5rem;
+    font-size: 4.5rem;  /* Larger icon */
+    color: rgba(14, 165, 233, 0.1);
+}
+
+blockquote {
+    font-size: 1.4rem;  /* Larger quote text */
+    line-height: 1.8;  /* Improved line height */
+    color: #1e293b;
+    font-weight: 500;
+    font-style: italic;
+    margin-bottom: 3rem;  /* More space after quote */
+    padding-left: 3rem;  /* More indent */
+    position: relative;
+}
+
+.quote-author {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;  /* More space between image and text */
+}
+
+.author-image {
+    width: 70px;  /* Larger image */
+    height: 70px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #0ea5e9;
+    box-shadow: 0 5px 15px rgba(14, 165, 233, 0.2);
+}
+
+.author-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.author-name {
+    font-weight: 700;
+    font-size: 1.2rem;  /* Larger name */
+    color: #0f172a;
+    margin-bottom: 0.4rem;  /* Added space between name and title */
+}
+
+.author-title {
+    font-size: 0.95rem;
+    color: #64748b;
+    line-height: 1.5;
+}
+
+/* Air between sections */
+.about-section > .container > * + * {
+    margin-top: 6rem;  /* Add space between major content blocks */
+}
+
+/* Responsive adjustments with better spacing */
+@media (max-width: 992px) {
+    .about-section {
+        padding: 6rem 0;  /* Reduced padding on tablet */
+    }
+    
+    .section-header {
+        margin-bottom: 4rem;
+    }
+    
+    .learn-more-cta {
+        grid-template-columns: 1fr;
+        margin: 4rem 0 5rem;
+    }
+    
+    .cta-image {
+        height: 350px;  /* Fixed height on tablet */
+    }
+    
+    .cta-content {
+        padding: 3rem;
+    }
+    
+    .testimonial-quote {
+        padding: 3rem;
+    }
+    
+    .quote-icon {
+        font-size: 3.5rem;
+    }
+    
+    blockquote {
+        font-size: 1.3rem;
+        padding-left: 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .about-section {
+        padding: 5rem 0;  /* Further reduced padding on mobile */
+    }
+    
+    .section-header {
+        margin-bottom: 3rem;
+    }
+    
+    .section-header h2 {
+        font-size: 2.5rem;
+    }
+    
+    .section-subtitle {
+        font-size: 1.1rem;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        margin-bottom: 4rem;
+    }
+    
+    .feature-card {
+        padding: 2.5rem;
+    }
+    
+    .cta-stats {
+        flex-direction: column;
+        gap: 2rem;
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+    }
+    
+    .cta-content h3 {
+        font-size: 2rem;
+    }
+    
+    .blockquote {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .about-section {
+        padding: 4rem 0;
+    }
+    
+    .section-header h2 {
+        font-size: 2rem;
+    }
+    
+    .feature-icon {
+        width: 65px;
+        height: 65px;
+    }
+    
+    .feature-content h3 {
+        font-size: 1.4rem;
+    }
+    
+    .cta-content {
+        padding: 2rem;
+    }
+    
+    .cta-content h3 {
+        font-size: 1.8rem;
+    }
+    
+    .stat-number {
+        font-size: 2.25rem;
+    }
+    
+    .blockquote {
+        font-size: 1.1rem;
+        padding-left: 1.5rem;
+    }
+}

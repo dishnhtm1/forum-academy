@@ -1,0 +1,477 @@
+/* Enhanced About Section Styling */
+
+.about-section {
+    position: relative;
+    padding: 6rem 0;
+    background: linear-gradient(to bottom, #f8fafc, #f1f5f9);
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.about-section.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Decorative background shapes */
+.about-shapes {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.about-shape {
+    position: absolute;
+    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+    filter: blur(40px);
+    opacity: 0.15;
+}
+
+.shape-1 {
+    background: linear-gradient(35deg, #0ea5e9, #3b82f6);
+    width: 500px;
+    height: 500px;
+    top: -200px;
+    right: -100px;
+    animation: floatShape 25s infinite alternate ease-in-out;
+}
+
+.shape-2 {
+    background: linear-gradient(35deg, #f97316, #f59e0b);
+    width: 400px;
+    height: 400px;
+    bottom: -150px;
+    left: -150px;
+    animation: floatShape 20s infinite alternate-reverse ease-in-out;
+}
+
+.shape-3 {
+    background: linear-gradient(35deg, #8b5cf6, #ec4899);
+    width: 300px;
+    height: 300px;
+    top: 40%;
+    left: 60%;
+    animation: floatShape 15s infinite alternate ease-in-out;
+}
+
+@keyframes floatShape {
+    0% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+    100% {
+        transform: translate(30px, 30px) rotate(15deg);
+    }
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 10;
+}
+
+/* Section Header */
+.section-header {
+    text-align: center;
+    margin-bottom: 3.5rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.section-badge {
+    display: inline-block;
+    background-color: rgba(14, 165, 233, 0.1);
+    color: #0ea5e9;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 30px;
+    margin-bottom: 1.25rem;
+}
+
+.section-header h2 {
+    font-size: 3rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, #0f172a, #0ea5e9);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1.25rem;
+    position: relative;
+}
+
+.section-subtitle {
+    font-size: 1.2rem;
+    line-height: 1.7;
+    color: #64748b;
+}
+
+/* ... keep existing code ... */
+
+/* New Features Container for Better Spacing Control */
+.features-container {
+    margin-top: 4rem;      /* Adds space above the grid */
+    margin-bottom: 6rem;   /* Adds space below the grid */
+    padding: 1rem 0;       /* Additional vertical padding */
+    position: relative;    /* For potential decoration elements */
+}
+
+/* Add subtle dividers above and below the grid for visual separation */
+.features-container::before,
+.features-container::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    width: 100px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(14, 165, 233, 0.3), transparent);
+    transform: translateX(-50%);
+}
+
+.features-container::before {
+    top: 0;
+}
+
+.features-container::after {
+    bottom: 0;
+}
+
+/* Feature Cards Grid */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Smaller cards */
+    gap: 2.5rem;                                                /* More spacing between cards */
+    max-width: 1100px;                                         /* Limit grid width for better readability */
+    margin: 0 auto;                                             /* Center the grid */
+}
+
+.feature-card {
+    background-color: white;
+    border-radius: 14px;
+    padding: 2rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeIn 0.8s forwards ease;
+    animation-delay: var(--delay, 0s);
+    cursor: pointer;
+    border: 1px solid rgba(241, 245, 249, 0.8);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    /* Minimum and maximum height constraints for consistency */
+    min-height: 280px;
+    max-height: 380px;
+}
+
+/* ... keep rest of feature card styling ... */
+
+/* Add margin between features and CTA sections */
+.learn-more-cta {
+    margin-top: 2rem;      /* Space above the CTA when it follows the grid */
+    margin-bottom: 5rem;   /* Space below the CTA */
+}
+
+/* Responsive adjustments for spacing */
+@media (max-width: 992px) {
+    .features-container {
+        margin-top: 3rem;
+        margin-bottom: 5rem;
+    }
+    
+    .feature-card {
+        min-height: 260px;
+    }
+}
+
+@media (max-width: 768px) {
+    .features-container {
+        margin-top: 2.5rem;
+        margin-bottom: 4rem;
+    }
+    
+    .features-grid {
+        gap: 2rem;
+    }
+    
+    .feature-card {
+        min-height: 240px;
+    }
+}
+
+@media (max-width: 480px) {
+    .features-container {
+        margin-top: 2rem;
+        margin-bottom: 3rem;
+        padding: 0.5rem 0;
+    }
+    
+    .features-grid {
+        gap: 1.5rem;
+    }
+    
+    .feature-card {
+        min-height: 220px;
+    }
+}
+
+/* CTA Section */
+.learn-more-cta {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 3rem;
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    margin: 3rem 0 4rem;
+}
+
+.cta-image {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+}
+
+.cta-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.learn-more-cta:hover .cta-image img {
+    transform: scale(1.05);
+}
+
+.cta-content {
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.cta-badge {
+    display: inline-block;
+    background-color: rgba(14, 165, 233, 0.1);
+    color: #0ea5e9;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    margin-bottom: 1rem;
+    align-self: flex-start;
+}
+
+.cta-content h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #0f172a;
+}
+
+.cta-content p {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: #64748b;
+    margin-bottom: 2rem;
+}
+
+.cta-stats {
+    display: flex;
+    gap: 3rem;
+    margin-bottom: 2rem;
+}
+
+.cta-stat {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, #0ea5e9, #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 0.95rem;
+    color: #64748b;
+    margin-top: 0.5rem;
+    font-weight: 500;
+}
+
+.btn-learn-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #0ea5e9;
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 20px rgba(14, 165, 233, 0.3);
+    align-self: flex-start;
+}
+
+.btn-learn-more:hover {
+    transform: translateY(-3px);
+    background-color: #0284c7;
+    box-shadow: 0 12px 25px rgba(14, 165, 233, 0.4);
+}
+
+.btn-learn-more .material-icons {
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+}
+
+.btn-learn-more:hover .material-icons {
+    transform: translateX(5px);
+}
+
+/* Testimonial Preview */
+.testimonial-preview {
+    margin-top: 3rem;
+}
+
+.testimonial-quote {
+    background: white;
+    border-radius: 16px;
+    padding: 3rem;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(241, 245, 249, 0.8);
+}
+
+.quote-icon {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    font-size: 4rem;
+    color: rgba(14, 165, 233, 0.1);
+}
+
+blockquote {
+    font-size: 1.3rem;
+    line-height: 1.7;
+    color: #1e293b;
+    font-weight: 500;
+    font-style: italic;
+    margin-bottom: 2rem;
+    padding-left: 2rem;
+    position: relative;
+}
+
+.quote-author {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.author-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #0ea5e9;
+}
+
+.author-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.author-name {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #0f172a;
+}
+
+.author-title {
+    font-size: 0.9rem;
+    color: #64748b;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .learn-more-cta {
+        grid-template-columns: 1fr;
+    }
+    
+    .cta-image {
+        height: 300px;
+    }
+    
+    .testimonial-quote {
+        padding: 2rem;
+    }
+    
+    .quote-icon {
+        font-size: 3rem;
+    }
+    
+    blockquote {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .section-header h2 {
+        font-size: 2.5rem;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .feature-card {
+        padding: 2rem;
+    }
+    
+    .cta-stats {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .section-header h2 {
+        font-size: 2rem;
+    }
+    
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .feature-content h3 {
+        font-size: 1.3rem;
+    }
+    
+    .cta-content {
+        padding: 2rem;
+    }
+    
+    .cta-content h3 {
+        font-size: 1.8rem;
+    }
+    
+    blockquote {
+        font-size: 1.1rem;
+    }
+}
