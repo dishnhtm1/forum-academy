@@ -141,38 +141,6 @@ const ApplyPage = () => {
             }
         };
     }, []);
-    
-    // // Handle step navigation
-    // const handleNext = (stepData) => {
-    //     // Store the current step's data
-    //     const updatedFormData = { ...formData };
-        
-    //     switch (activeStep) {
-    //         case 0:
-    //             updatedFormData.personalInfo = stepData;
-    //             break;
-    //         case 1:
-    //             updatedFormData.educationInfo = stepData;
-    //             break;
-    //         case 2:
-    //             updatedFormData.courseSelection = stepData;
-    //             break;
-    //         case 3:
-    //             updatedFormData.additionalInfo = stepData;
-    //             break;
-    //         default:
-    //             break;
-    //     }
-        
-    //     setFormData(updatedFormData);
-    //     setActiveStep(activeStep + 1);
-        
-    //     // Scroll to top of form
-    //     const formElement = document.querySelector('.application-form');
-    //     if (formElement) {
-    //         formElement.scrollIntoView({ behavior: 'smooth' });
-    //     }
-    // };
 
     // Handle step navigation
     const handleNext = async (stepData) => {
