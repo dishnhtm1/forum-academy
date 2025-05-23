@@ -2,6 +2,14 @@ import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/CareerServicesPage.css';
 
+// Import partner logos
+import microsoftLogo from '../assets/partners/microsoft.png';
+// import googleLogo from '../assets/partners/google-small.png';
+import amazonLogo from '../assets/partners/amazon.png';
+// import rakutenLogo from '../assets/partners/rakuten-small.png';
+// import mercariLogo from '../assets/partners/mercari-small.png';
+
+
 function CareerServicesPage() {
     // Add animation when page loads
     useEffect(() => {
@@ -130,14 +138,26 @@ function CareerServicesPage() {
                             </Link>
                         </div>
                         
+                        {/* <div className="hero-companies animate-entry">
+                            <p>Our graduates work at:</p>
+                            <div className="company-logos">
+                                <img src={microsoftLogo} alt="google"/>
+                                <img src="/images/partners/google-small.png" alt="Google" />
+                                <img src="/images/partners/microsoft-small.png" alt="Microsoft" />
+                                <img src="{amazonLogo}" alt="Amazon" />
+                                <img src="/images/partners/rakuten-small.png" alt="Rakuten" />
+                                <img src="/images/partners/mercari-small.png" alt="Mercari" />
+                            </div>
+                        </div> */}
+
                         <div className="hero-companies animate-entry">
                             <p>Our graduates work at:</p>
                             <div className="company-logos">
-                                <img src="/images/partners/google-small.png" alt="Google" />
-                                <img src="/images/partners/microsoft-small.png" alt="Microsoft" />
-                                <img src="/images/partners/amazon-small.png" alt="Amazon" />
-                                <img src="/images/partners/rakuten-small.png" alt="Rakuten" />
-                                <img src="/images/partners/mercari-small.png" alt="Mercari" />
+                                <img src={microsoftLogo} alt="Microsoft" />
+                                {/* <img src={googleLogo} alt="Google" /> */}
+                                <img src={amazonLogo} alt="Amazon" />
+                                {/* <img src={rakutenLogo} alt="Rakuten" /> */}
+                                {/* <img src={mercariLogo} alt="Mercari" /> */}
                             </div>
                         </div>
                     </div>
@@ -301,7 +321,7 @@ function CareerServicesPage() {
                     <div className="partners-grid">
                         {/* Replace with actual partner logos */}
                         <div className="partner-logo animate-entry">
-                            <img src="/images/partners/microsoft.png" alt="Microsoft" />
+                            <img src="{microsoftLogo}" alt="Microsoft" />
                         </div>
                         <div className="partner-logo animate-entry">
                             <img src="/images/partners/google.png" alt="Google" />
