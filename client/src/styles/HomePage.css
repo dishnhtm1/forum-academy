@@ -100,19 +100,22 @@
     letter-spacing: 0.5px;  /* Added letter spacing */
 }
 
-.section-header h2 {
+/* Common styles for all section h2 headings */
+section h2 {
     font-size: 3.25rem;
     font-weight: 800;
     background: linear-gradient(90deg, #0f172a, #0ea5e9);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
-    margin-bottom: 1.5rem;  
+    text-fill-color: transparent;
+    margin-bottom: 1.5rem;
     position: relative;
-    line-height: 1.2;  
+    line-height: 1.2;
 }
 
 /* Make the selector more specific to override HomePage.css*/
-.news-events .section-header h2 {
+/* .news-events .section-header h2 {
     font-size: 2.5rem;
     color: #333;
     margin-bottom: 1rem;
@@ -121,7 +124,7 @@
     -webkit-background-clip: initial;
     -webkit-text-fill-color: #333;
     background: none;
-}
+} */
 
 
 .section-subtitle {
