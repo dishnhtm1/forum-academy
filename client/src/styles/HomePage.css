@@ -111,7 +111,7 @@
     line-height: 1.2;  
 }
 
-/* Make the selector more specific to override HomePage.css
+/* Make the selector more specific to override HomePage.css*/
 .news-events .section-header h2 {
     font-size: 2.5rem;
     color: #333;
@@ -120,7 +120,8 @@
     display: inline-block;
     -webkit-background-clip: initial;
     -webkit-text-fill-color: #333;
-    background: none; /* Remove any gradient */
+    background: none;
+}
 
 
 .section-subtitle {
