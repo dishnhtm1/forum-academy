@@ -13,16 +13,6 @@ import yahooLogo from '../assets/partners/yahoo.png';
 import suzukiLogo from '../assets/partners/suzuki.png';
 import hondaLogo from '../assets/partners/honda.png';
 
-// Import partner logos
-// import microsoftLogo from '../assets/partners/microsoft.png';
-// import googleLogo from '../assets/partners/gmail.png';
-// import amazonLogo from '../assets/partners/amazon.png';
-// import rakutenLogo from '../assets/partners/rakuten.png';
-// import softbankLogo from '../assets/partners/softbank.png';
-// import mercariLogo from '../assets/partners/mercari.png';
-// import nttLogo from '../assets/partners/ntt.png';
-// import hitachiLogo from '../assets/partners/hitachi.png';
-
 
 function CareerServicesPage() {
     // Add animation when page loads
