@@ -1,0 +1,509 @@
+/* Header Styles */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+:root {
+    --header-font: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.site-header {
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    padding: 1.25rem 0;
+    transition: all 0.3s ease;
+    background-color: transparent;
+}
+
+.site-header.scrolled {
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 0.75rem 0;
+}
+
+.site-header.scrolled .header-logo {
+    transform: scale(0.9);
+}
+
+.container {
+    width: 92%;
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+.header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+}
+
+.header-logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.logo-image-white {
+    height: 500px;
+    /* Increased from default size */
+    width: auto;
+    transition: all 0.3s ease;
+}
+
+/* Make the logo even larger on larger screens */
+@media (min-width: 768px) {
+    .logo-image-white {
+        height: 80px;
+        /* Bigger on desktop */
+    }
+}
+
+/* If you have a scrolling header that becomes smaller, adjust accordingly */
+.site-header.scrolled .logo-image-white {
+    height: 50px;
+    /* Still reasonably sized when scrolled */
+}
+
+/* Menu Toggle */
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30px;
+    height: 24px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 10;
+}
+
+/* Update menu toggle bars color for visibility */
+.menu-toggle-bar {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background-color: #2563eb; /* Changed from white to blue */
+    border-radius: 2px;
+    transition: all 0.3s ease-in-out;
+}
+
+.site-header.scrolled .menu-toggle-bar {
+    background-color: #1e293b;
+}
+
+.menu-toggle.active .menu-toggle-bar:nth-child(1) {
+    transform: translateY(11px) rotate(45deg);
+}
+
+.menu-toggle.active .menu-toggle-bar:nth-child(2) {
+    opacity: 0;
+}
+
+.menu-toggle.active .menu-toggle-bar:nth-child(3) {
+    transform: translateY(-11px) rotate(-45deg);
+}
+
+/* Navigation Wrapper */
+.header-nav-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+/* Main Navigation */
+.header-nav {
+    margin-right: 2rem;
+}
+
+.nav-list {
+    display: flex;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-item {
+    position: relative;
+}
+
+
+/* Change the nav-link styling with larger, bolder text */
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    color: #2563eb; /* Blue color */
+    text-decoration: none;
+    font-weight: 600; /* Increased from 500 to 600 for bolder text */
+    font-size: 1.125rem; /* Increased from 1rem to 1.125rem (18px) */
+    transition: color 0.2s ease;
+    white-space: nowrap;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-family: var(--header-font); /* Apply the Poppins font */
+    letter-spacing: 0.01em; /* Slightly improved letter spacing */
+}
+
+.site-header.scrolled .nav-link {
+    color: #1e293b;
+}
+
+/* Update hover state as well */
+.nav-link:hover {
+    color: #1d4ed8; /* Darker blue on hover */
+    text-shadow: 0 0 1px rgba(29, 78, 216, 0.3); /* Subtle text shadow on hover */
+}
+
+.site-header.scrolled .nav-link:hover {
+    color: #2563eb;
+}
+
+/* Update icon size to match larger text */
+.nav-link .material-icons {
+    font-size: 1.25rem; /* Increased from 1.1rem */
+    margin-left: 0.25rem;
+    transition: transform 0.3s ease;
+    color: #2563eb;
+}
+
+.dropdown-trigger[aria-expanded="true"] .material-icons {
+    transform: rotate(180deg);
+}
+
+/* Dropdown Menus */
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    width: max-content;
+    min-width: 220px;
+    visibility: hidden;
+    opacity: 0;
+    transition: all 0.3s ease;
+    display: flex;
+    padding: 1rem;
+    z-index: 100;
+}
+
+.dropdown-menu.open {
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.dropdown-column {
+    padding: 0 1rem;
+    min-width: 250px;
+}
+
+.dropdown-column:not(:last-child) {
+    border-right: 1px solid #f1f5f9;
+}
+
+/* Update dropdown heading styling */
+.dropdown-column h4 {
+    color: #64748b;
+    font-size: 0.9rem;
+    font-weight: 700; /* Bolder headings */
+    margin: 0 0 0.75rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em; /* Wider letter spacing for headings */
+    font-family: var(--header-font);
+}
+
+.dropdown-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Update dropdown link styling */
+.dropdown-link {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    color: #1e293b;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    gap: 0.75rem;
+    font-family: var(--header-font);
+    font-weight: 500; /* Medium weight for dropdown items */
+    font-size: 1.05rem; /* Slightly larger than default */
+}
+
+.dropdown-link:hover {
+    background-color: #f8fafc;
+    color: #2563eb;
+}
+
+.dropdown-link .material-icons {
+    color: #2563eb;
+    font-size: 1.25rem;
+}
+
+.dropdown-link div {
+    display: flex;
+    flex-direction: column;
+}
+
+.dropdown-link small {
+    color: #64748b;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+.view-all {
+    margin-top: 0.5rem;
+    background-color: #f1f5f9;
+    border-radius: 6px;
+}
+
+/* Header Actions */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Update language selector to match nav link styling */
+.language-selector {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: #2563eb;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    font-family: var(--header-font);
+    font-weight: 600; /* Bolder text to match nav links */
+    font-size: 1.125rem; /* Match nav link size */
+}
+
+
+.site-header.scrolled .language-selector {
+    color: #1e293b;
+}
+
+.language-selector:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.site-header.scrolled .language-selector:hover {
+    background-color: #f1f5f9;
+}
+
+.language-selector .material-icons {
+    font-size: 1.25rem;
+}
+
+/* Update login button styling */
+.btn-login {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.35rem; /* Slightly increased padding */
+    background-color: rgba(37, 99, 235, 0.1);
+    border: 1px solid rgba(37, 99, 235, 0.3);
+    color: #2563eb;
+    border-radius: 50px;
+    font-weight: 600; /* Bolder text */
+    font-size: 1.05rem; /* Larger text */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: var(--header-font);
+}
+
+.site-header.scrolled .btn-login {
+    background-color: white;
+    color: #1e293b;
+    border: 1px solid #e2e8f0;
+}
+
+
+.btn-login:hover {
+    background-color: rgba(37, 99, 235, 0.2); /* Slightly darker on hover */
+}
+
+.site-header.scrolled .btn-login:hover {
+    background-color: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+.btn-login .material-icons {
+    font-size: 1.1rem;
+}
+
+/* Apply now button styling update */
+.btn-apply {
+    display: inline-block;
+    padding: 0.65rem 1.6rem; /* Slightly increased padding */
+    background-color: #2563eb;
+    color: white;
+    border-radius: 50px;
+    font-weight: 700; /* Even bolder for CTA */
+    font-size: 1.05rem; /* Larger text */
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 2px solid #2563eb;
+    text-align: center;
+    font-family: var(--header-font);
+    letter-spacing: 0.01em; /* Slight letter spacing for emphasis */
+}
+
+.btn-apply:hover {
+    background-color: #1d4ed8;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.1);
+}
+
+@media (max-width: 1100px) {
+    .nav-link {
+        padding: 0.75rem 0.65rem; /* Slightly reduced horizontal padding */
+        font-size: 1.05rem; /* Slightly smaller on medium screens */
+    }
+}
+
+
+@media (max-width: 992px) {
+    .site-header {
+        padding: 1rem 0;
+        background-color: white;
+    }
+
+    .site-header.scrolled {
+        padding: 0.75rem 0;
+    }
+
+    .menu-toggle {
+        display: flex;
+    }
+
+    .menu-toggle-bar {
+        background-color: #1e293b;
+    }
+
+    .header-nav-wrapper {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 80%;
+        max-width: 400px;
+        height: 100vh;
+        background-color: white;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 5rem 2rem 2rem;
+        box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+        transition: right 0.3s ease;
+        overflow-y: auto;
+    }
+
+    .header-nav-wrapper.open {
+        right: 0;
+    }
+
+    .header-nav {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 2rem;
+    }
+
+    .nav-list {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .nav-link {
+        color: #1e293b;
+        padding: 1rem 0;
+        justify-content: space-between;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .dropdown-menu {
+        position: static;
+        transform: none;
+        box-shadow: none;
+        width: 100%;
+        max-height: 0;
+        overflow: hidden;
+        padding: 0 1rem;
+        border-radius: 0;
+        flex-direction: column;
+    }
+
+    .dropdown-menu.open {
+        max-height: 1000px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        transform: none;
+    }
+
+    .dropdown-column {
+        padding: 0;
+        width: 100%;
+    }
+
+    .dropdown-column:not(:last-child) {
+        border-right: none;
+        border-bottom: 1px solid #f1f5f9;
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .header-actions {
+        flex-direction: column;
+        width: 100%;
+        gap: 1rem;
+    }
+
+    .language-selector {
+        color: #1e293b;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .btn-login,
+    .btn-apply {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .btn-login {
+        background-color: white;
+        color: #1e293b;
+        border: 1px solid #e2e8f0;
+    }
+
+    /* Logo adjustments for mobile */
+    .logo-image {
+        opacity: 1;
+        position: relative;
+    }
+
+    .logo-image-white {
+        opacity: 0;
+        position: absolute;
+    }
+}
+
+@media (max-width: 576px) {
+    .header-nav-wrapper {
+        width: 100%;
+        max-width: none;
+    }
+
+    .logo-text {
+        display: none;
+    }
+}
