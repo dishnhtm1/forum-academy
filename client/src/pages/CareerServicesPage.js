@@ -354,9 +354,9 @@ function CareerServicesPage() {
                     <div className="stories-grid">
                         <div className="story-card animate-entry">
                             <div className="story-image">
-                                <img src="/images/graduates/graduate1.jpg" alt="Taro Yamada" />
+                                {/* <img src={graduate1Image} alt="Taro Yamada" /> */}
                                 <div className="company-badge">
-                                    <img src="/images/partners/google-small.png" alt="Google" />
+                                    <img src={googleLogo} alt="Google" />
                                 </div>
                             </div>
                             <div className="story-content">
@@ -370,7 +370,7 @@ function CareerServicesPage() {
                             <div className="story-image">
                                 <img src="/images/graduates/graduate2.jpg" alt="Hanako Sato" />
                                 <div className="company-badge">
-                                    <img src="/images/partners/mercari-small.png" alt="Mercari" />
+                                    <img src={yahooLogo} alt="Yahoo" />
                                 </div>
                             </div>
                             <div className="story-content">
@@ -382,9 +382,9 @@ function CareerServicesPage() {
 
                         <div className="story-card animate-entry">
                             <div className="story-image">
-                                <img src="/images/graduates/graduate3.jpg" alt="Michael Chen" />
+                                <img src="" alt="Michael Chen" />
                                 <div className="company-badge">
-                                    <img src="/images/partners/amazon-small.png" alt="Amazon" />
+                                    <img src={amazonLogo} alt="Amazon" />
                                 </div>
                             </div>
                             <div className="story-content">
