@@ -4,10 +4,24 @@ import '../styles/CareerServicesPage.css';
 
 // Import partner logos
 import microsoftLogo from '../assets/partners/microsoft.png';
-// import googleLogo from '../assets/partners/google-small.png';
+import googleLogo from '../assets/partners/gmail.png';
 import amazonLogo from '../assets/partners/amazon.png';
-// import rakutenLogo from '../assets/partners/rakuten-small.png';
-// import mercariLogo from '../assets/partners/mercari-small.png';
+import nttLogo from '../assets/partners/ntt.png';
+import mercariLogo from '../assets/partners/mercari.png';
+import doccomoLogo from '../assets/partners/doccomo.png';
+import yahooLogo from '../assets/partners/yahoo.png';
+import suzukiLogo from '../assets/partners/suzuki.png';
+import hondaLogo from '../assets/partners/honda.png';
+
+// Import partner logos
+// import microsoftLogo from '../assets/partners/microsoft.png';
+// import googleLogo from '../assets/partners/gmail.png';
+// import amazonLogo from '../assets/partners/amazon.png';
+// import rakutenLogo from '../assets/partners/rakuten.png';
+// import softbankLogo from '../assets/partners/softbank.png';
+// import mercariLogo from '../assets/partners/mercari.png';
+// import nttLogo from '../assets/partners/ntt.png';
+// import hitachiLogo from '../assets/partners/hitachi.png';
 
 
 function CareerServicesPage() {
@@ -137,27 +151,15 @@ function CareerServicesPage() {
                                 Talk to an Advisor
                             </Link>
                         </div>
-                        
-                        {/* <div className="hero-companies animate-entry">
-                            <p>Our graduates work at:</p>
-                            <div className="company-logos">
-                                <img src={microsoftLogo} alt="google"/>
-                                <img src="/images/partners/google-small.png" alt="Google" />
-                                <img src="/images/partners/microsoft-small.png" alt="Microsoft" />
-                                <img src="{amazonLogo}" alt="Amazon" />
-                                <img src="/images/partners/rakuten-small.png" alt="Rakuten" />
-                                <img src="/images/partners/mercari-small.png" alt="Mercari" />
-                            </div>
-                        </div> */}
 
                         <div className="hero-companies animate-entry">
                             <p>Our graduates work at:</p>
                             <div className="company-logos">
                                 <img src={microsoftLogo} alt="Microsoft" />
-                                {/* <img src={googleLogo} alt="Google" /> */}
+                                <img src={googleLogo} alt="Google" />
                                 <img src={amazonLogo} alt="Amazon" />
-                                {/* <img src={rakutenLogo} alt="Rakuten" /> */}
-                                {/* <img src={mercariLogo} alt="Mercari" /> */}
+                                <img src={nttLogo} alt="NTT" />
+                                <img src={mercariLogo} alt="Mercari" />
                             </div>
                         </div>
                     </div>
@@ -319,30 +321,29 @@ function CareerServicesPage() {
                     </div>
 
                     <div className="partners-grid">
-                        {/* Replace with actual partner logos */}
                         <div className="partner-logo animate-entry">
-                            <img src="{microsoftLogo}" alt="Microsoft" />
+                            <img src={microsoftLogo} alt="Microsoft" />
                         </div>
                         <div className="partner-logo animate-entry">
-                            <img src="/images/partners/google.png" alt="Google" />
+                            <img src={googleLogo} alt="Google" />
                         </div>
                         <div className="partner-logo animate-entry">
-                            <img src="/images/partners/amazon.png" alt="Amazon" />
+                            <img src={amazonLogo} alt="Amazon" />
                         </div>
                         <div className="partner-logo animate-entry">
-                            <img src="/images/partners/rakuten.png" alt="Rakuten" />
+                            <img src={suzukiLogo} alt="Suzuki" />
                         </div>
                         <div className="partner-logo animate-entry">
-                            <img src="/images/partners/softbank.png" alt="SoftBank" />
+                            <img src={yahooLogo} alt="Yahoo" />
                         </div>
                         <div className="partner-logo animate-entry">
-                            <img src="/images/partners/mercari.png" alt="Mercari" />
+                            <img src={mercariLogo} alt="Mercari" />
                         </div>
                         <div className="partner-logo animate-entry">
-                            <img src="/images/partners/ntt.png" alt="NTT" />
+                            <img src={nttLogo} alt="NTT" />
                         </div>
                         <div className="partner-logo animate-entry">
-                            <img src="/images/partners/hitachi.png" alt="Hitachi" />
+                            <img src={hondaLogo} alt="Honda" />
                         </div>
                     </div>
 
