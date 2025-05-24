@@ -194,7 +194,7 @@
     color: var(--gray-600, #4b5563);
 }
 
-.form-message {
+/* .form-message {
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -218,6 +218,97 @@
 
 .form-message .material-icons {
     font-size: 1.5rem;
+}
+
+.form-message.loading {
+    background-color: #e2e3e5;
+    color: #383d41;
+    border: 1px solid #d6d8db;
+}
+
+.form-message.loading .material-icons {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+} */
+
+/* Replace the commented out form-message styles with these: */
+
+.form-message {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    animation: fadeIn 0.5s ease;
+}
+
+.form-message.success {
+    background-color: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #065f46;
+}
+
+.form-message.error {
+    background-color: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #b91c1c;
+}
+
+.form-message.loading {
+    background-color: rgba(79, 70, 229, 0.1);
+    border: 1px solid rgba(79, 70, 229, 0.3);
+    color: #383d41;
+}
+
+.form-message .material-icons {
+    font-size: 1.5rem;
+}
+
+.form-message.loading .material-icons {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Disable form during submission */
+.contact-form-container:has(.form-message.loading) form {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+/* Style form inputs when loading */
+.contact-form-container:has(.form-message.loading) input,
+.contact-form-container:has(.form-message.loading) textarea,
+.contact-form-container:has(.form-message.loading) select,
+.contact-form-container:has(.form-message.loading) button {
+    cursor: not-allowed;
 }
 
 .contact-form {
