@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-// import { useState } from 'react';
 import '../styles/ContactPage.css';
 
 const ContactPage = () => {
@@ -11,10 +10,18 @@ const ContactPage = () => {
         message: ''
     });
 
+    // const [formStatus, setFormStatus] = useState({
+    //     submitted: false,
+    //     error: false,
+    //     message: ''
+    // });
+
+    // Update the formStatus state to include more detailed status
     const [formStatus, setFormStatus] = useState({
         submitted: false,
         error: false,
-        message: ''
+        message: '',
+        loading: false
     });
 
     const [isVisible, setIsVisible] = useState(false);
@@ -124,15 +131,82 @@ const ContactPage = () => {
         setFormData({ ...formData, [id]: value });
     };
 
-        // Replace your current handleSubmit function with this one
+    //     // Replace the existing handleSubmit function with this updated version
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
+        
+    //     // Show loading state
+    //     setFormStatus({
+    //         submitted: true,
+    //         error: false,
+    //         message: 'Sending your message...',
+    //         loading: true
+    //     });
+
+    //     try {
+    //         const response = await fetch('http://localhost:5000/api/contact', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json'
+    //             },
+    //             body: JSON.stringify(formData)
+    //         });
+            
+    //         const data = await response.json();
+            
+    //         if (response.ok) {
+    //             // Success case
+    //             setFormStatus({
+    //                 submitted: true,
+    //                 error: false,
+    //                 message: 'Thank you! Your message has been sent successfully.',
+    //                 loading: false
+    //             });
+                
+    //             // Reset form
+    //             setFormData({
+    //                 name: '',
+    //                 email: '',
+    //                 phone: '',
+    //                 subject: '',
+    //                 message: ''
+    //             });
+
+    //             // Clear success message after 5 seconds
+    //             setTimeout(() => {
+    //                 setFormStatus({
+    //                     submitted: false,
+    //                     error: false,
+    //                     message: '',
+    //                     loading: false
+    //                 });
+    //             }, 5000);
+    //         } else {
+    //             // Server returned an error
+    //             throw new Error(data.message || 'Failed to send message');
+    //         }
+    //     } catch (error) {
+    //         console.error('Contact form error:', error);
+    //         setFormStatus({
+    //             submitted: true,
+    //             error: true,
+    //             message: error.message || 'Failed to send message. Please try again.',
+    //             loading: false
+    //         });
+    //     }
+    // };
+
+        // Replace or update your handleSubmit function:
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
         
-        // Update UI to show submission is in process
+        // Set loading state
         setFormStatus({
             submitted: true,
             error: false,
-            message: 'Sending your message...'
+            message: 'Sending your message...',
+            loading: true
         });
     
         try {
@@ -143,18 +217,18 @@ const ContactPage = () => {
                 },
                 body: JSON.stringify(formData)
             });
-            
+    
             const data = await response.json();
-            
-            if (data.success) {
-                // Success message
+    
+            if (response.ok) {
                 setFormStatus({
                     submitted: true,
                     error: false,
-                    message: 'Thank you for your message! We will get back to you shortly.'
+                    message: 'Thank you! Your message has been sent successfully.',
+                    loading: false
                 });
                 
-                // Reset form after successful submission
+                // Clear form
                 setFormData({
                     name: '',
                     email: '',
@@ -162,30 +236,15 @@ const ContactPage = () => {
                     subject: '',
                     message: ''
                 });
-                
-                // Reset form after showing success message for a few seconds
-                setTimeout(() => {
-                    setFormStatus({
-                        submitted: false,
-                        error: false,
-                        message: ''
-                    });
-                }, 5000);
             } else {
-                // Error message from server
-                setFormStatus({
-                    submitted: true,
-                    error: true,
-                    message: data.message || 'Something went wrong. Please try again.'
-                });
+                throw new Error(data.message || 'Failed to send message');
             }
         } catch (error) {
-            console.error('Error submitting contact form:', error);
-            // Client-side error message
             setFormStatus({
                 submitted: true,
                 error: true,
-                message: 'Failed to send message. Please try again later.'
+                message: error.message || 'Failed to send message. Please try again.',
+                loading: false
             });
         }
     };
@@ -321,9 +380,9 @@ const ContactPage = () => {
                             </div>
 
                             {formStatus.submitted && (
-                                <div className={`form-message ${formStatus.error ? 'error' : 'success'}`}>
+                                <div className={`form-message ${formStatus.error ? 'error' : formStatus.loading ? 'loading' : 'success'}`}>
                                     <span className="material-icons">
-                                        {formStatus.error ? 'error' : 'check_circle'}
+                                        {formStatus.loading ? 'hourglass_empty' : formStatus.error ? 'error' : 'check_circle'}
                                     </span>
                                     <p>{formStatus.message}</p>
                                 </div>
