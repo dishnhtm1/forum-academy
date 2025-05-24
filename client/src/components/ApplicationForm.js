@@ -25,18 +25,23 @@ const ApplicationForm = ({ step, onNext, onBack, formData }) => {
         }
     }, [step, formData]);
 
+    
     const handleChange = (e) => {
-        const { id, value, type, checked } = e.target;
+        const { id, name, value, type, checked } = e.target;
+        
+        // Use name if provided (for checkboxes), otherwise use id
+        const fieldName = name || id;
+        
         setCurrentFormData({
             ...currentFormData,
-            [id]: type === 'checkbox' ? checked : value
+            [fieldName]: type === 'checkbox' ? checked : value
         });
         
         // Clear error when user fixes a field
-        if (errors[id]) {
+        if (errors[fieldName]) {
             setErrors({
                 ...errors,
-                [id]: null
+                [fieldName]: null
             });
         }
     };
@@ -123,7 +128,7 @@ const ApplicationForm = ({ step, onNext, onBack, formData }) => {
                         <div className="form-group">
                             <input
                                 type="email"
-                                id="email"
+                                id="email"  // This should be unique across all forms
                                 value={currentFormData.email || ''}
                                 onChange={handleChange}
                                 className={errors.email ? 'error' : ''}
@@ -376,17 +381,32 @@ const ApplicationForm = ({ step, onNext, onBack, formData }) => {
                             <label>Questions or Comments</label>
                         </div>
                         
-                        <div className="form-checkbox">
+                        {/* <div className="form-checkbox">
                             <input
                                 type="checkbox"
-                                id="agreeToTerms"
+                                id="application-terms"  // Changed from agreeToTerms to be unique
+                                name="agreeToTerms"    // Keep the name the same for handleChange
                                 checked={currentFormData.agreeToTerms || false}
                                 onChange={handleChange}
                                 required
                             />
-                            <label htmlFor="agreeToTerms">
+                            <label htmlFor="application-terms">
                                 I agree to the <a href="/terms" target="_blank" rel="noopener noreferrer">Terms & Conditions</a> and consent to Forum Information Academy processing my data.
                             </label>
+                        </div> */}
+                        <div className="form-checkbox">
+                            <input
+                                type="checkbox"
+                                id="application-terms"  // Unique ID for the element
+                                name="agreeToTerms"     // Name for the state property
+                                checked={currentFormData.agreeToTerms || false}
+                                onChange={handleChange}
+                                required
+                            />
+                            <label htmlFor="application-terms">
+                                I agree to the <a href="/terms" target="_blank" rel="noopener noreferrer">Terms & Conditions</a> and consent to Forum Information Academy processing my data.
+                            </label>
+                            {errors.agreeToTerms && <div className="error-message">{errors.agreeToTerms}</div>}
                         </div>
                     </>
                 );
