@@ -131,73 +131,6 @@ const ContactPage = () => {
         setFormData({ ...formData, [id]: value });
     };
 
-    //     // Replace the existing handleSubmit function with this updated version
-    // const handleSubmit = async (e) => {
-    //     e.preventDefault();
-        
-    //     // Show loading state
-    //     setFormStatus({
-    //         submitted: true,
-    //         error: false,
-    //         message: 'Sending your message...',
-    //         loading: true
-    //     });
-
-    //     try {
-    //         const response = await fetch('http://localhost:5000/api/contact', {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json'
-    //             },
-    //             body: JSON.stringify(formData)
-    //         });
-            
-    //         const data = await response.json();
-            
-    //         if (response.ok) {
-    //             // Success case
-    //             setFormStatus({
-    //                 submitted: true,
-    //                 error: false,
-    //                 message: 'Thank you! Your message has been sent successfully.',
-    //                 loading: false
-    //             });
-                
-    //             // Reset form
-    //             setFormData({
-    //                 name: '',
-    //                 email: '',
-    //                 phone: '',
-    //                 subject: '',
-    //                 message: ''
-    //             });
-
-    //             // Clear success message after 5 seconds
-    //             setTimeout(() => {
-    //                 setFormStatus({
-    //                     submitted: false,
-    //                     error: false,
-    //                     message: '',
-    //                     loading: false
-    //                 });
-    //             }, 5000);
-    //         } else {
-    //             // Server returned an error
-    //             throw new Error(data.message || 'Failed to send message');
-    //         }
-    //     } catch (error) {
-    //         console.error('Contact form error:', error);
-    //         setFormStatus({
-    //             submitted: true,
-    //             error: true,
-    //             message: error.message || 'Failed to send message. Please try again.',
-    //             loading: false
-    //         });
-    //     }
-    // };
-
-        // Replace or update your handleSubmit function:
-    
     const handleSubmit = async (e) => {
         e.preventDefault();
         
@@ -236,6 +169,16 @@ const ContactPage = () => {
                     subject: '',
                     message: ''
                 });
+    
+                // Reset form status after 3 seconds
+                setTimeout(() => {
+                    setFormStatus({
+                        submitted: false,
+                        error: false,
+                        message: '',
+                        loading: false
+                    });
+                }, 3000);
             } else {
                 throw new Error(data.message || 'Failed to send message');
             }
@@ -246,6 +189,16 @@ const ContactPage = () => {
                 message: error.message || 'Failed to send message. Please try again.',
                 loading: false
             });
+    
+            // Clear error message after 3 seconds
+            setTimeout(() => {
+                setFormStatus({
+                    submitted: false,
+                    error: false,
+                    message: '',
+                    loading: false
+                });
+            }, 3000);
         }
     };
 
