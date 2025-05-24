@@ -4,6 +4,7 @@ import { createApplication } from '../utils/api'; // Optional: If you prefer usi
 import '../styles/ApplyPage.css';
 
 const ApplyPage = () => {
+    // const [activeStep, setActiveStep] = useState(0);
     const [activeStep, setActiveStep] = useState(0);
     const [formData, setFormData] = useState({
         personalInfo: {},
@@ -142,7 +143,7 @@ const ApplyPage = () => {
         };
     }, []);
 
-    // Handle step navigation
+    
     const handleNext = async (stepData) => {
         // Store the current step's data
         const updatedFormData = { ...formData };
@@ -161,15 +162,12 @@ const ApplyPage = () => {
                 updatedFormData.additionalInfo = stepData;
                 // This is the final step - submit the form
                 try {
-                    await submitForm(updatedFormData);
+                    await handleSubmit(updatedFormData);
+                    return; // Don't proceed to next step if submission failed
                 } catch (error) {
                     console.error('Error submitting application:', error);
-                    alert('There was an error submitting your application. Please try again.');
-                    return; // Don't proceed to next step if submission failed
+                    return;
                 }
-                break;
-            default:
-                break;
         }
         
         setFormData(updatedFormData);
@@ -181,63 +179,95 @@ const ApplyPage = () => {
             formElement.scrollIntoView({ behavior: 'smooth' });
         }
     };
-
-        // Add the submitForm function
-    const submitForm = async (formData) => {
+    
+        // Replace the handleSubmit function with this updated version
+    
+    const handleSubmit = async (formData) => {
         try {
-            const response = await fetch('http://localhost:5000/api/applications', {
+            setFormStatus({
+                submitted: true,
+                error: false,
+                message: 'Submitting your application...',
+                loading: true
+            });
+    
+            // Map form field names to server expected format
+            const applicationData = {
+                // Personal Info
+                firstName: formData.personalInfo.fullName?.split(' ')[0] || '',
+                lastName: formData.personalInfo.fullName?.split(' ').slice(1).join(' ') || '',
+                email: formData.personalInfo.email,
+                phone: formData.personalInfo.phone,
+                dateOfBirth: formData.personalInfo.dateOfBirth,
+                address: formData.personalInfo.address || '',
+                
+                // Education Info
+                highestEducation: formData.educationInfo.highestEducation,
+                schoolName: formData.educationInfo.schoolName || '',
+                graduationYear: formData.educationInfo.graduationYear || '',
+                fieldOfStudy: formData.educationInfo.fieldOfStudy || '',
+                currentEmployment: formData.educationInfo.currentEmployment || '',
+                techExperience: formData.educationInfo.relevantExperience || '',
+                
+                // Course Selection
+                program: formData.courseSelection.course,
+                startDate: formData.courseSelection.startDate,
+                format: formData.courseSelection.studyFormat || '',
+                heardAboutUs: formData.additionalInfo.howDidYouHear || '',
+                
+                // Additional Info
+                goals: formData.additionalInfo.careerGoals || '',
+                whyThisProgram: formData.courseSelection.programInterest || '',
+                challenges: '',
+                extraInfo: formData.additionalInfo.questions || '',
+                agreeToTerms: formData.additionalInfo.agreeToTerms || false
+            };
+    
+            console.log('Submitting application:', applicationData);
+    
+            const response = await fetch('http://localhost:5000/api/application', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    // Format the data to match your API expectations
-                    firstName: formData.personalInfo.fullName?.split(' ')[0] || '',
-                    lastName: formData.personalInfo.fullName?.split(' ').slice(1).join(' ') || '',
-                    email: formData.personalInfo.email,
-                    phone: formData.personalInfo.phone,
-                    dateOfBirth: formData.personalInfo.dateOfBirth,
-                    address: formData.personalInfo.address,
-                    
-                    // Education info
-                    highestEducation: formData.educationInfo.highestEducation,
-                    schoolName: formData.educationInfo.schoolName,
-                    graduationYear: formData.educationInfo.graduationYear,
-                    fieldOfStudy: formData.educationInfo.fieldOfStudy,
-                    techExperience: formData.educationInfo.relevantExperience,
-                    
-                    // Course selection
-                    program: formData.courseSelection.course,
-                    startDate: formData.courseSelection.startDate,
-                    format: formData.courseSelection.studyFormat,
-                    heardAboutUs: formData.additionalInfo.howDidYouHear,
-                    
-                    // Additional info
-                    goals: formData.additionalInfo.careerGoals,
-                    whyThisProgram: formData.courseSelection.programInterest,
-                    extraInfo: formData.additionalInfo.questions,
-                    agreeToTerms: formData.additionalInfo.agreeToTerms
-                })
+                body: JSON.stringify(applicationData)
             });
-            
+    
             const data = await response.json();
-            
-            if (data.success) {
-                // Show success message or redirect
-                console.log('Application submitted successfully!');
-                // We don't need to redirect since handleNext will increment activeStep to 4
-                // which will display the success message in the ApplyPage component
-            } else {
-                // Show error message
-                console.error('Error submitting application:', data.message);
+    
+            if (!response.ok) {
                 throw new Error(data.message || 'Failed to submit application');
             }
+    
+            // Success case
+            setFormStatus({
+                submitted: true,
+                error: false,
+                message: 'Application submitted successfully!',
+                loading: false
+            });
+    
+            // Move to success step
+            setActiveStep(4);
+    
         } catch (error) {
-            console.error('Error submitting application:', error);
-            throw error; // Re-throw the error to be handled by the caller
+            console.error('Application submission error:', error);
+            setFormStatus({
+                submitted: true,
+                error: true,
+                message: error.message || 'There was an error submitting your application. Please try again.',
+                loading: false
+            });
         }
     };
-    
+
+    const [formStatus, setFormStatus] = useState({
+        submitted: false,
+        error: false,
+        message: '',
+        loading: false
+    });
+    // Handle back navigation    
     const handleBack = () => {
         setActiveStep(activeStep - 1);
     };
@@ -333,47 +363,37 @@ const ApplyPage = () => {
                 </div>
             </section>
             
-            {/* Application Process */}
-            <section id="application-process" className="application-process">
-                <div className="container">
-                    <h2 className="section-title">Application Process</h2>
-                    <p className="section-subtitle">Our simple four-step process to joining Forum Information Academy</p>
-                    
-                    <div className="process-steps">
-                        <div className={`process-step ${activeStep === 0 ? 'active' : ''} ${activeStep > 0 ? 'completed' : ''}`}>
-                            <div className="step-number">1</div>
-                            <div className="step-content">
-                                <h3>Personal Information</h3>
-                                <p>Basic contact details and background</p>
-                            </div>
+            // Then make sure your process steps section looks like this:
+            <div className="process-steps">
+                {[0, 1, 2, 3].map((stepIndex) => (
+                    <div 
+                        key={stepIndex}
+                        className={`process-step ${activeStep === stepIndex ? 'active' : ''} ${activeStep > stepIndex ? 'completed' : ''}`}
+                    >
+                        <div className="step-number">
+                            {activeStep > stepIndex ? (
+                                <span className="material-icons check-icon">check</span>
+                            ) : (
+                                stepIndex + 1
+                            )}
                         </div>
-                        
-                        <div className={`process-step ${activeStep === 1 ? 'active' : ''} ${activeStep > 1 ? 'completed' : ''}`}>
-                            <div className="step-number">2</div>
-                            <div className="step-content">
-                                <h3>Educational Background</h3>
-                                <p>Your academic and professional experience</p>
-                            </div>
-                        </div>
-                        
-                        <div className={`process-step ${activeStep === 2 ? 'active' : ''} ${activeStep > 2 ? 'completed' : ''}`}>
-                            <div className="step-number">3</div>
-                            <div className="step-content">
-                                <h3>Program Selection</h3>
-                                <p>Choose your preferred course and schedule</p>
-                            </div>
-                        </div>
-                        
-                        <div className={`process-step ${activeStep === 3 ? 'active' : ''} ${activeStep > 3 ? 'completed' : ''}`}>
-                            <div className="step-number">4</div>
-                            <div className="step-content">
-                                <h3>Additional Information</h3>
-                                <p>Tell us about your goals and motivations</p>
-                            </div>
+                        <div className="step-content">
+                            <h3>
+                                {stepIndex === 0 && "Personal Information"}
+                                {stepIndex === 1 && "Educational Background"}
+                                {stepIndex === 2 && "Program Selection"}
+                                {stepIndex === 3 && "Additional Information"}
+                            </h3>
+                            <p>
+                                {stepIndex === 0 && "Basic contact details and background"}
+                                {stepIndex === 1 && "Your academic and professional experience"}
+                                {stepIndex === 2 && "Choose your preferred course and schedule"}
+                                {stepIndex === 3 && "Tell us about your goals and motivations"}
+                            </p>
                         </div>
                     </div>
-                </div>
-            </section>
+                ))}
+            </div>
             
             {/* Application Form */}
             <section className="application-form-section">
