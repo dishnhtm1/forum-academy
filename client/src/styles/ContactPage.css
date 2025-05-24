@@ -194,53 +194,6 @@
     color: var(--gray-600, #4b5563);
 }
 
-/* .form-message {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 1rem;
-    border-radius: 8px;
-    margin-bottom: 1.5rem;
-    animation: fadeIn 0.5s ease;
-}
-
-.form-message.success {
-    background-color: rgba(16, 185, 129, 0.1);
-    border: 1px solid rgba(16, 185, 129, 0.3);
-    color: #065f46;
-}
-
-.form-message.error {
-    background-color: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.3);
-    color: #b91c1c;
-}
-
-.form-message .material-icons {
-    font-size: 1.5rem;
-}
-
-.form-message.loading {
-    background-color: #e2e3e5;
-    color: #383d41;
-    border: 1px solid #d6d8db;
-}
-
-.form-message.loading .material-icons {
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
-} */
-
-/* Replace the commented out form-message styles with these: */
-
 .form-message {
     display: flex;
     align-items: center;
