@@ -1,10 +1,8 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorMiddleware');
-const applicationRoutes = require('./routes/applicationRoutes');
 
 dotenv.config();
 connectDB();
@@ -16,6 +14,11 @@ app.use(express.json());
 app.use('/api/contact', require('./routes/contactRoutes'));
 app.use('/api/application', require('./routes/applicationRoutes'));
 app.use('/api/auth', require('./routes/authRoutes'));
+
+// Basic health check route
+app.get('/api/health', (req, res) => {
+  res.json({ message: 'Server is running', status: 'OK' });
+});
 
 app.use(errorHandler);
 
