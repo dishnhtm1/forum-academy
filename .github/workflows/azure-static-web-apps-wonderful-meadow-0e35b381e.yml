@@ -19,18 +19,17 @@ jobs:
         with:
           submodules: true
           lfs: false
-      - name: Build And Deploy
+      - name: Upload Prebuilt React App
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_WONDERFUL_MEADOW_0E35B381E }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
-          app_location: "/client"
-          api_location: ""
+          app_location: "client"
           output_location: "build"
-          app_build_command: |
-            npm install --legacy-peer-deps && npm run build
+          skip_app_build: true
+          app_artifact_location: "client/build"
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
