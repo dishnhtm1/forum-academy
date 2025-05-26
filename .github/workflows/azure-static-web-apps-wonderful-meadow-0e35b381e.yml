@@ -27,10 +27,11 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           app_location: "/client"
-          api_location: "" 
+          api_location: ""
           output_location: "build"
-          **app_build_command: "npm install --legacy-peer-deps && npm run build"**  # ← This line is critical!
-          
+          app_build_command: |
+            npm install --legacy-peer-deps && npm run build
+
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
