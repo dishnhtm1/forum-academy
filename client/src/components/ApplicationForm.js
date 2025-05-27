@@ -63,23 +63,8 @@ const ApplicationForm = ({ step, onNext, onBack, formData }) => {
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
-
-    // const getRequiredFields = () => {
-    //     switch (step) {
-    //         case 0: // Personal Information
-    //             return ['fullName', 'email', 'phone', 'dateOfBirth'];
-    //         case 1: // Education Background
-    //             return ['highestEducation'];
-    //         case 2: // Course Selection
-    //             return ['course', 'startDate'];
-    //         case 3: // Additional Information
-    //             return ['howDidYouHear'];
-    //         default:
-    //             return [];
-    //     }
-    // };
-
-        const getRequiredFields = () => {
+    
+    const getRequiredFields = () => {
         switch (step) {
             case 0: // Personal Information
                 return ['fullName', 'email', 'phone', 'dateOfBirth'];
