@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import LoginModal from './LoginModal';
 import '../styles/Header.css';
 import logoWhiteImage from '../assets/images/logo1.png';
+// import { useLanguage } from '../context/LanguageContext'; // Add this import
 
 const Header = ({ onLoginClick }) => {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -75,7 +76,7 @@ const Header = ({ onLoginClick }) => {
     const isActiveLink = (path) => {
         return location.pathname === path || location.pathname.startsWith(path + '/');
     };
-
+    
     return (
         <>
             <header className={`site-header ${scrolled ? 'scrolled' : ''}`}>
@@ -258,6 +259,10 @@ const Header = ({ onLoginClick }) => {
                         </nav>
                         
                         <div className="header-actions">
+                            {/* <div className="language-selector" onClick={toggleLanguage}>
+                                <span className="material-icons">language</span>
+                                <span className="lang-text">{language}</span>
+                            </div> */}
                             <div className="language-selector" onClick={toggleLanguage}>
                                 <span className="material-icons">language</span>
                                 <span className="lang-text">{language}</span>

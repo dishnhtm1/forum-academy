@@ -13,6 +13,7 @@ import ContactPage from './pages/ContactPage';
 import CareerServicesPage from './pages/CareerServicesPage';
 import RegisterPage from './components/RegisterPage';
 import Dashboard from './components/Dashboard';
+import { LanguageProvider } from './context/LanguageContext';
 import 'material-icons/iconfont/material-icons.css';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
@@ -55,6 +56,7 @@ function App() {
     }
 
     return (
+        <LanguageProvider>
         <Router>
             <Switch>
                 {/* Dashboard Route - No Header/Footer */}
@@ -96,6 +98,7 @@ function App() {
                 </Route>
             </Switch>
         </Router>
+        </LanguageProvider>
     );
 }
 
