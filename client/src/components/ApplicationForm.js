@@ -64,7 +64,22 @@ const ApplicationForm = ({ step, onNext, onBack, formData }) => {
         return Object.keys(newErrors).length === 0;
     };
 
-    const getRequiredFields = () => {
+    // const getRequiredFields = () => {
+    //     switch (step) {
+    //         case 0: // Personal Information
+    //             return ['fullName', 'email', 'phone', 'dateOfBirth'];
+    //         case 1: // Education Background
+    //             return ['highestEducation'];
+    //         case 2: // Course Selection
+    //             return ['course', 'startDate'];
+    //         case 3: // Additional Information
+    //             return ['howDidYouHear'];
+    //         default:
+    //             return [];
+    //     }
+    // };
+
+        const getRequiredFields = () => {
         switch (step) {
             case 0: // Personal Information
                 return ['fullName', 'email', 'phone', 'dateOfBirth'];
@@ -73,7 +88,7 @@ const ApplicationForm = ({ step, onNext, onBack, formData }) => {
             case 2: // Course Selection
                 return ['course', 'startDate'];
             case 3: // Additional Information
-                return ['howDidYouHear'];
+                return ['howDidYouHear', 'agreeToTerms']; // Add agreeToTerms here
             default:
                 return [];
         }
@@ -380,20 +395,6 @@ const ApplicationForm = ({ step, onNext, onBack, formData }) => {
                             <span className="bar"></span>
                             <label>Questions or Comments</label>
                         </div>
-                        
-                        {/* <div className="form-checkbox">
-                            <input
-                                type="checkbox"
-                                id="application-terms"  // Changed from agreeToTerms to be unique
-                                name="agreeToTerms"    // Keep the name the same for handleChange
-                                checked={currentFormData.agreeToTerms || false}
-                                onChange={handleChange}
-                                required
-                            />
-                            <label htmlFor="application-terms">
-                                I agree to the <a href="/terms" target="_blank" rel="noopener noreferrer">Terms & Conditions</a> and consent to Forum Information Academy processing my data.
-                            </label>
-                        </div> */}
                         <div className="form-checkbox">
                             <input
                                 type="checkbox"

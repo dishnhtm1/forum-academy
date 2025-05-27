@@ -363,7 +363,6 @@ const ApplyPage = () => {
                 </div>
             </section>
             
-            // Then make sure your process steps section looks like this:
             <div className="process-steps">
                 {[0, 1, 2, 3].map((stepIndex) => (
                     <div 
