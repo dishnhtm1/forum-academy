@@ -4,14 +4,9 @@ on:
   push:
     branches:
       - master
-  pull_request:
-    types: [opened, synchronize, reopened, closed]
-    branches:
-      - master
 
 jobs:
   build_and_deploy_job:
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
     name: Build and Deploy Job
 
@@ -24,9 +19,17 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install dependencies (ignore peer deps)
+      - name: Clean & install dependencies (ignore peer deps)
         working-directory: client
-        run: npm install --legacy-peer-deps
+        run: |
+          rm -rf node_modules package-lock.json
+          npm cache clean --force
+          npm install --legacy-peer-deps
+          ls -l node_modules/.bin/react-scripts
+
+      - name: Make react-scripts executable
+        working-directory: client
+        run: chmod +x node_modules/.bin/react-scripts
 
       - name: Build React app
         working-directory: client
