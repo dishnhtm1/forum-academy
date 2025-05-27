@@ -1,0 +1,43 @@
+{
+  "files": {
+    "main.css": "/static/css/main.d95708a4.css",
+    "main.js": "/static/js/main.69e4e2e7.js",
+    "static/media/AI1.png": "/static/media/AI1.241159c7cd61906bbd13.png",
+    "static/media/honda.png": "/static/media/honda.55cadca24baf0deeddd1.png",
+    "static/media/web3.png": "/static/media/web3.d725648ec8c5f645e82b.png",
+    "static/media/suzuki.png": "/static/media/suzuki.083db1137be4ee6a02b4.png",
+    "static/media/fa-solid-900.ttf": "/static/media/fa-solid-900.2582b0e4bcf85eceead0.ttf",
+    "static/media/material-icons-two-tone.woff": "/static/media/material-icons-two-tone.3baa5b8f3469222b822d.woff",
+    "static/media/material-icons-two-tone.woff2": "/static/media/material-icons-two-tone.4ef4218c522f1eb6b5b1.woff2",
+    "static/media/fa-brands-400.ttf": "/static/media/fa-brands-400.1815e00441357e01619e.ttf",
+    "static/media/material-icons-round.woff": "/static/media/material-icons-round.5d681e2edae8c60630db.woff",
+    "static/media/material-icons-outlined.woff": "/static/media/material-icons-outlined.f882956fd323fd322f31.woff",
+    "static/media/material-icons-round.woff2": "/static/media/material-icons-round.c380809fd3677d7d6903.woff2",
+    "static/media/material-icons.woff": "/static/media/material-icons.4d73cb90e394b34b7670.woff",
+    "static/media/fa-solid-900.woff2": "/static/media/fa-solid-900.2463b90d9a316e4e5294.woff2",
+    "static/media/material-icons-sharp.woff": "/static/media/material-icons-sharp.3a4004a46a653d4b2166.woff",
+    "static/media/material-icons-outlined.woff2": "/static/media/material-icons-outlined.6f420cf17cc0d7676fad.woff2",
+    "static/media/material-icons-sharp.woff2": "/static/media/material-icons-sharp.219aa9140e099e6c72ed.woff2",
+    "static/media/material-icons.woff2": "/static/media/material-icons.0c35d18bf06992036b69.woff2",
+    "static/media/fa-brands-400.woff2": "/static/media/fa-brands-400.c210719e60948b211a12.woff2",
+    "static/media/microsoft.png": "/static/media/microsoft.c35bc80a1f5a7f9895d5.png",
+    "static/media/fa-regular-400.ttf": "/static/media/fa-regular-400.914997e1bdfc990d0897.ttf",
+    "static/media/yahoo.png": "/static/media/yahoo.3fcb8304e6db643e036e.png",
+    "static/media/gmail.png": "/static/media/gmail.1dc59e4611d885713000.png",
+    "static/media/mercari.png": "/static/media/mercari.1ee5f368e3745948ac61.png",
+    "static/media/logo1.png": "/static/media/logo1.7fbbc1f4541275d2cac8.png",
+    "static/media/fa-regular-400.woff2": "/static/media/fa-regular-400.89999bdf5d835c012025.woff2",
+    "static/media/doccomo.png": "/static/media/doccomo.304a85c83ccdb723f544.png",
+    "static/media/ntt.png": "/static/media/ntt.304a85c83ccdb723f544.png",
+    "static/media/amazon.png": "/static/media/amazon.2edd0e725804f78399ac.png",
+    "static/media/fa-v4compatibility.ttf": "/static/media/fa-v4compatibility.da94ef451f4969af06e6.ttf",
+    "static/media/fa-v4compatibility.woff2": "/static/media/fa-v4compatibility.ea8f94e1d22e0d35ccd4.woff2",
+    "index.html": "/index.html",
+    "main.d95708a4.css.map": "/static/css/main.d95708a4.css.map",
+    "main.69e4e2e7.js.map": "/static/js/main.69e4e2e7.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.d95708a4.css",
+    "static/js/main.69e4e2e7.js"
+  ]
+}
