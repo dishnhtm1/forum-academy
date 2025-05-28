@@ -132,8 +132,8 @@
 // };
 
 // utils/api.js
-//const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-const API_BASE_URL = process.env.REACT_APP_API_URL + '/api'; 
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+//const API_BASE_URL = process.env.REACT_APP_API_URL + '/api'; 
 //axios.post(`${BASE_URL}/api/auth/login`, {...})
 //axios.post(`${API_BASE_URL}/auth/login`, {
 //  email: 'test@example.com',
