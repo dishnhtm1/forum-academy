@@ -134,14 +134,11 @@
 // utils/api.js
 //const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 const API_BASE_URL = process.env.REACT_APP_API_URL + '/api'; 
-axios.post(`${API_BASE_URL}/auth/login`, {
-  email: 'test@example.com',
-  password: 'test123'
-});
-
-
-
-
+//axios.post(`${BASE_URL}/api/auth/login`, {...})
+//axios.post(`${API_BASE_URL}/auth/login`, {
+//  email: 'test@example.com',
+//  password: 'test123'
+//});
 
 // Helper function to get auth headers
 const getAuthHeaders = () => {
