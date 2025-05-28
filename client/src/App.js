@@ -4,6 +4,7 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import Preloader from './components/Preloader';
 import LoginModal from './components/LoginModal';
+import RegisterPage from './components/RegisterPage'; // Now used as a modal
 import HomePage from './pages/HomePage';
 import CoursesPage from './pages/CoursesPage';
 import AboutPage from './pages/AboutPage';
@@ -11,7 +12,6 @@ import NewsPage from './pages/NewsPage';
 import ApplyPage from './pages/ApplyPage';
 import ContactPage from './pages/ContactPage';
 import CareerServicesPage from './pages/CareerServicesPage';
-import RegisterPage from './components/RegisterPage';
 import Dashboard from './components/Dashboard';
 import { LanguageProvider } from './context/LanguageContext';
 import 'material-icons/iconfont/material-icons.css';
@@ -22,6 +22,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 function App() {
     const [loading, setLoading] = useState(true);
     const [loginModalOpen, setLoginModalOpen] = useState(false);
+    const [registerModalOpen, setRegisterModalOpen] = useState(false); // Add register modal state
     const mainRef = useRef(null);
 
     useEffect(() => {
@@ -48,8 +49,25 @@ function App() {
         }
     }, [loading]);
 
+    // Login Modal Functions
     const openLoginModal = () => setLoginModalOpen(true);
     const closeLoginModal = () => setLoginModalOpen(false);
+
+    // Register Modal Functions
+    const openRegisterModal = () => {
+        closeLoginModal(); // Close login modal if open
+        setRegisterModalOpen(true);
+    };
+
+    const closeRegisterModal = () => setRegisterModalOpen(false);
+
+    const handleRegisterSuccess = () => {
+        closeRegisterModal();
+        // Optionally show a success message or open login modal
+        setTimeout(() => {
+            openLoginModal();
+        }, 500);
+    };
 
     if (loading) {
         return <Preloader />;
@@ -76,24 +94,39 @@ function App() {
                             <Route path="/career-services" component={CareerServicesPage} />
                             <Route path="/apply" component={ApplyPage} />
                             <Route path="/contact" component={ContactPage} />
-                            <Route path="/register" render={(props) => 
-                                <RegisterPage {...props} onRegisterSuccess={openLoginModal} />} 
-                            />
+                            
+                            {/* Register route - now opens modal instead of page */}
+                            <Route path="/register" render={(props) => {
+                                // Open register modal and redirect to home
+                                if (!registerModalOpen) {
+                                    openRegisterModal();
+                                }
+                                return <HomePage {...props} />;
+                            }} />
+                            
                             <Route path="/login" render={(props) => {
                                 // Open modal and redirect to home
-                                openLoginModal();
+                                if (!loginModalOpen) {
+                                    openLoginModal();
+                                }
                                 return <HomePage {...props} />;
                             }} />
                         </Switch>
                     </main>
                     <Footer />
+                    
+                    {/* Login Modal */}
                     <LoginModal 
                         isOpen={loginModalOpen} 
                         onClose={closeLoginModal} 
-                        onRegisterClick={() => {
-                            closeLoginModal();
-                            window.location.href = '/register';
-                        }}
+                        onRegisterClick={openRegisterModal} // Now opens register modal
+                    />
+                    
+                    {/* Register Modal */}
+                    <RegisterPage 
+                        isOpen={registerModalOpen}
+                        onClose={closeRegisterModal}
+                        onRegisterSuccess={handleRegisterSuccess}
                     />
                 </Route>
             </Switch>
