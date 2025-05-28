@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Briefcase, Users, Award, GraduationCap } from "lucide-react";
+import { useTranslation } from 'react-i18next'; // Add this import only
 import "../styles/StatsSection.css"; // Assuming you have a CSS file for styling
 
 function StatsSection() {
+    const { t } = useTranslation(); // Add this line only
     const [isVisible, setIsVisible] = useState(false);
     const sectionRef = useRef(null);
     const canvasRef = useRef(null);
     const animationRef = useRef(null);
 
-    // Animated counter hook
+    // Keep ALL your existing animated counter hook exactly as is
     const useCounter = (end, duration = 2000, start = 0) => {
         const [count, setCount] = useState(start);
         const countRef = useRef(start);
@@ -44,43 +46,44 @@ function StatsSection() {
         return count;
     };
 
-    // Easing function for smoother animation
+    // Keep your easing function exactly as is
     const easeOutCubic = (x) => {
         return 1 - Math.pow(1 - x, 3);
     };
 
+    // Keep ALL your stats data structure - only replace text values
     const statsData = [
         {
             value: 95,
             suffix: "%",
-            label: "Job Placement Rate",
+            label: t('statsSection.stats.jobPlacement.label'),
             icon: <Briefcase size={32} />,
             color: "#3b82f6",
         },
         {
             value: 50,
             suffix: "+",
-            label: "Industry Partners",
+            label: t('statsSection.stats.industryPartners.label'),
             icon: <Users size={32} />,
             color: "#10b981",
         },
         {
             value: 15,
             suffix: "+",
-            label: "Specialized Programs",
+            label: t('statsSection.stats.programs.label'),
             icon: <Award size={32} />,
             color: "#8b5cf6",
         },
         {
             value: 2000,
             suffix: "+",
-            label: "Graduates",
+            label: t('statsSection.stats.graduates.label'),
             icon: <GraduationCap size={32} />,
             color: "#f59e0b",
         },
     ];
 
-    // Particle animation for the background
+    // Keep ALL your particle animation code exactly as is
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -168,7 +171,7 @@ function StatsSection() {
         };
     }, []);
 
-    // Intersection Observer to trigger animations when section is visible
+    // Keep ALL your intersection observer code exactly as is
     useEffect(() => {
         const observer = new IntersectionObserver(
             (entries) => {
@@ -197,18 +200,18 @@ function StatsSection() {
         <section ref={sectionRef} className="stats-section">
             <canvas ref={canvasRef} className="stats-canvas" />
 
-            {/* Decorative elements */}
+            {/* Keep ALL decorative elements exactly as is */}
             <div className="stats-decoration stats-decoration-top-left"></div>
             <div className="stats-decoration stats-decoration-bottom-right"></div>
 
             <div className="stats-container">
                 <div className="stats-header">
                     <h2 className="stats-title">
-                        Our Impact in Numbers
+                        {t('statsSection.header.title')}
                         <span className="stats-title-underline"></span>
                     </h2>
                     <p className="stats-subtitle">
-                        Driving education excellence through measurable outcomes
+                        {t('statsSection.header.subtitle')}
                     </p>
                 </div>
 
@@ -229,7 +232,7 @@ function StatsSection() {
                                     "--stat-color": stat.color,
                                 }}
                             >
-                                {/* Background gradient accent */}
+                                {/* Keep ALL background gradient accent exactly as is */}
                                 <div className="stats-card-accent"></div>
 
                                 <div className="stats-card-content">
@@ -245,7 +248,7 @@ function StatsSection() {
                                     <p className="stats-label">{stat.label}</p>
                                 </div>
 
-                                {/* Decorative corner accent */}
+                                {/* Keep ALL decorative corner accent exactly as is */}
                                 <div className="stats-card-corner"></div>
                             </div>
                         );

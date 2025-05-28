@@ -1,13 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next'; // Add this import only
 import '../styles/AboutSection.css';
+import studentsImage from '../assets/images/png7.jpg'; 
+import studentProfileImage from '../assets/images/png1.jpg'; // Placeholder for student profile image
 
 const AboutSection = ({ showAllFeatures = false }) => {
+    const { t } = useTranslation(); // Add this line only
     // Reference for section animation
     const sectionRef = useRef(null);
     const [activeFeature, setActiveFeature] = useState(null);
     
-    // Add scroll animation effect
+    // Keep ALL your existing animation code exactly as is
     useEffect(() => {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -29,63 +33,64 @@ const AboutSection = ({ showAllFeatures = false }) => {
         };
     }, []);
     
-    // Core features to always show with improved content
+    // Core features to always show with improved content - only replace text
     const coreFeatures = [
         {
             icon: "handshake",
-            title: "Industry Partnerships",
-            description: "Access exclusive opportunities through our network of tech leaders. Our curriculum is co-developed with industry experts, ensuring you learn the skills employers are actively seeking.",
-            highlight: "200+ global partners",
+            title: t('aboutSection.features.partnerships.title'),
+            description: t('aboutSection.features.partnerships.description'),
+            highlight: t('aboutSection.features.partnerships.highlight'),
             color: "#3b82f6"
         },
         {
             icon: "psychology",
-            title: "Expert Instructors",
-            description: "Learn from tech veterans who've built successful products and led engineering teams at top companies. Our instructors bring real-world challenges and solutions directly to the classroom.",
-            highlight: "15+ years avg. experience",
+            title: t('aboutSection.features.instructors.title'),
+            description: t('aboutSection.features.instructors.description'),
+            highlight: t('aboutSection.features.instructors.highlight'),
             color: "#10b981"
         },
         {
             icon: "dashboard",
-            title: "Cutting-Edge Facilities",
-            description: "Immerse yourself in professional-grade environments with industry-standard tools and technologies. Our recently renovated campus features specialized labs for every technology track.",
-            highlight: "¥200M facility investment",
+            title: t('aboutSection.features.facilities.title'),
+            description: t('aboutSection.features.facilities.description'),
+            highlight: t('aboutSection.features.facilities.highlight'),
             color: "#f59e0b"
         },
         {
             icon: "rocket_launch",
-            title: "Career Acceleration",
-            description: "Our dedicated career team works with you from day one to define your goals and open doors to opportunities. Benefit from exclusive hiring events, interview coaching, and portfolio development.",
-            highlight: "93% employment success",
+            title: t('aboutSection.features.career.title'),
+            description: t('aboutSection.features.career.description'),
+            highlight: t('aboutSection.features.career.highlight'),
             color: "#8b5cf6"
         }
     ];
     
-    // Additional features with improved content
+    // Additional features with improved content - only replace text
     const additionalFeatures = [
         {
             icon: "verified",
-            title: "Industry-Recognized Certifications",
-            description: "Graduate with more than just a diploma. Our programs include preparation for top certifications that employers value, giving you multiple credentials to showcase your expertise.",
-            highlight: "8 certification pathways",
+            title: t('aboutSection.features.certifications.title'),
+            description: t('aboutSection.features.certifications.description'),
+            highlight: t('aboutSection.features.certifications.highlight'),
             color: "#ec4899"
         },
         {
             icon: "support_agent",
-            title: "Personalized Learning Support",
-            description: "Never feel lost in your learning journey. Our mentors provide 1:1 guidance, while our comprehensive digital platform offers 24/7 access to resources, practice exercises, and community support.",
-            highlight: "Unlimited mentor sessions",
+            title: t('aboutSection.features.support.title'),
+            description: t('aboutSection.features.support.description'),
+            highlight: t('aboutSection.features.support.highlight'),
             color: "#14b8a6"
         }
     ];
     
-    // Determine which features to display
+    // Determine which features to display - keep logic exactly as is
     const displayFeatures = showAllFeatures ? 
         [...coreFeatures, ...additionalFeatures] : 
         coreFeatures;
         
     return (
         <section className="about-section" id="about" ref={sectionRef}>
+            {/* Keep ALL shape animations exactly as is */}
             <div className="about-shapes">
                 <div className="about-shape shape-1"></div>
                 <div className="about-shape shape-2"></div>
@@ -93,12 +98,12 @@ const AboutSection = ({ showAllFeatures = false }) => {
             </div>
             <div className="container">
                 <div className="section-header">
-                    <span className="section-badge">Your Path to Success</span>
-                    <h2>The FIA Advantage</h2>
-                    <p className="section-subtitle">Discover why top employers seek out our graduates and what sets our education approach apart in the tech industry.</p>
+                    <span className="section-badge">{t('aboutSection.header.badge')}</span>
+                    <h2>{t('aboutSection.header.title')}</h2>
+                    <p className="section-subtitle">{t('aboutSection.header.subtitle')}</p>
                 </div>
                 
-                {/* Added features-container div for better spacing control */}
+                {/* Keep ALL structure and animations exactly as is */}
                 <div className="features-container">
                     <div className="features-grid">
                         {displayFeatures.map((feature, index) => (
@@ -127,24 +132,24 @@ const AboutSection = ({ showAllFeatures = false }) => {
                 {!showAllFeatures && (
                     <div className="learn-more-cta">
                         <div className="cta-image">
-                            <img src="/images/campus-learning.jpg" alt="Students at Forum Information Academy" />
+                            <img src={studentsImage} alt={t('aboutSection.cta.imageAlt')} />
                         </div>
                         <div className="cta-content">
-                            <span className="cta-badge">Discover More</span>
-                            <h3>Beyond the Classroom</h3>
-                            <p>Explore our unique learning philosophy, state-of-the-art facilities, and hear from students who transformed their careers with FIA. We're more than just courses—we're a community dedicated to your success in tech.</p>
+                            <span className="cta-badge">{t('aboutSection.cta.badge')}</span>
+                            <h3>{t('aboutSection.cta.title')}</h3>
+                            <p>{t('aboutSection.cta.description')}</p>
                             <div className="cta-stats">
                                 <div className="cta-stat">
                                     <span className="stat-number">15+</span>
-                                    <span className="stat-label">Years of Excellence</span>
+                                    <span className="stat-label">{t('aboutSection.cta.stats.years')}</span>
                                 </div>
                                 <div className="cta-stat">
                                     <span className="stat-number">5,000+</span>
-                                    <span className="stat-label">Successful Graduates</span>
+                                    <span className="stat-label">{t('aboutSection.cta.stats.graduates')}</span>
                                 </div>
                             </div>
                             <Link to="/about" className="btn-learn-more">
-                                Explore Our Story
+                                {t('aboutSection.cta.button')}
                                 <span className="material-icons">arrow_forward</span>
                             </Link>
                         </div>
@@ -155,13 +160,13 @@ const AboutSection = ({ showAllFeatures = false }) => {
                     <div className="testimonial-quote">
                         <span className="quote-icon material-icons">format_quote</span>
                         <blockquote>
-                            The practical focus and industry connections at FIA completely changed my career trajectory. Within two months of graduating, I had multiple job offers from top tech companies.
+                            {t('aboutSection.testimonial.quote')}
                         </blockquote>
                         <div className="quote-author">
-                            <img src="/images/student-profile.jpg" alt="Yuki Tanaka" className="author-image" />
+                            <img src={studentProfileImage} alt={t('aboutSection.testimonial.author.name')} className="author-image" />
                             <div className="author-info">
-                                <span className="author-name">Yuki Tanaka</span>
-                                <span className="author-title">Software Engineer at TechVision Inc., Class of 2024</span>
+                                <span className="author-name">{t('aboutSection.testimonial.author.name')}</span>
+                                <span className="author-title">{t('aboutSection.testimonial.author.title')}</span>
                             </div>
                         </div>
                     </div>

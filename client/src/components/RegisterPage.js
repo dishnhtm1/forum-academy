@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useTranslation } from 'react-i18next'; // Add this import only
 import '../styles/RegisterPage.css';
 
 const RegisterPage = ({ isOpen, onClose, onRegisterSuccess }) => {
+  const { t } = useTranslation(); // Add this line only
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -21,7 +23,7 @@ const RegisterPage = ({ isOpen, onClose, onRegisterSuccess }) => {
   // API base URL
   const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
-  // Handle animation timing for modal appearance
+  // Keep ALL your existing useEffect code exactly as is
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -50,7 +52,7 @@ const RegisterPage = ({ isOpen, onClose, onRegisterSuccess }) => {
     };
   }, [onClose]);
 
-  // Initialize animated background elements
+  // Keep ALL your existing animated background elements code exactly as is
   useEffect(() => {
     if (isVisible) {
       const createAnimatedElements = () => {
@@ -112,6 +114,7 @@ const RegisterPage = ({ isOpen, onClose, onRegisterSuccess }) => {
     }
   }, [isOpen]);
 
+  // Keep ALL your existing form handling exactly as is
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -122,12 +125,12 @@ const RegisterPage = ({ isOpen, onClose, onRegisterSuccess }) => {
   const nextStep = () => {
     if (currentStep === 1) {
       if (!formData.firstName || !formData.lastName) {
-        setError('Please fill in all fields to continue.');
+        setError(t('register.errors.fillAllFields'));
         return;
       }
     } else if (currentStep === 2) {
       if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-        setError('Please enter a valid email address to continue.');
+        setError(t('register.errors.validEmail'));
         return;
       }
     }
@@ -145,12 +148,12 @@ const RegisterPage = ({ isOpen, onClose, onRegisterSuccess }) => {
     
     // Validation
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('register.errors.passwordsNoMatch'));
       return;
     }
     
     if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long');
+      setError(t('register.errors.passwordLength'));
       return;
     }
     
@@ -175,7 +178,7 @@ const RegisterPage = ({ isOpen, onClose, onRegisterSuccess }) => {
       const data = await response.json();
       
       if (!response.ok) {
-        throw new Error(data.message || 'Registration failed');
+        throw new Error(data.message || t('register.errors.registrationFailed'));
       }
       
       setSuccess(true);
@@ -197,12 +200,13 @@ const RegisterPage = ({ isOpen, onClose, onRegisterSuccess }) => {
       
     } catch (error) {
       console.error('Registration error:', error);
-      setError(error.message || 'Registration failed. Please try again.');
+      setError(error.message || t('register.errors.registrationFailed'));
     } finally {
       setLoading(false);
     }
   };
 
+  // Keep ALL your existing renderStep logic - only replace text
   const renderStep = () => {
     switch(currentStep) {
       case 1:
@@ -219,7 +223,7 @@ const RegisterPage = ({ isOpen, onClose, onRegisterSuccess }) => {
                   onChange={handleChange}
                   required
                   className="form-input modern"
-                  placeholder="First Name"
+                  placeholder={t('register.form.firstName')}
                 />
               </div>
             </div>
@@ -235,7 +239,7 @@ const RegisterPage = ({ isOpen, onClose, onRegisterSuccess }) => {
                   onChange={handleChange}
                   required
                   className="form-input modern"
-                  placeholder="Last Name"
+                  placeholder={t('register.form.lastName')}
                 />
               </div>
             </div>
@@ -255,7 +259,7 @@ const RegisterPage = ({ isOpen, onClose, onRegisterSuccess }) => {
                   onChange={handleChange}
                   required
                   className="form-input modern"
-                  placeholder="Email Address"
+                  placeholder={t('register.form.email')}
                 />
               </div>
             </div>
@@ -265,8 +269,8 @@ const RegisterPage = ({ isOpen, onClose, onRegisterSuccess }) => {
                 <span className="material-icons">school</span>
               </div>
               <div className="info-content">
-                <h4>Student Registration</h4>
-                <p>You are registering as a <strong>Student</strong>. Teacher and Admin accounts must be created by system administrators.</p>
+                <h4>{t('register.studentInfo.title')}</h4>
+                <p>{t('register.studentInfo.description')}</p>
               </div>
             </div>
           </>
@@ -285,7 +289,7 @@ const RegisterPage = ({ isOpen, onClose, onRegisterSuccess }) => {
                   onChange={handleChange}
                   required
                   className="form-input modern"
-                  placeholder="Password (min 6 characters)"
+                  placeholder={t('register.form.password')}
                   minLength="6"
                 />
               </div>
@@ -302,7 +306,7 @@ const RegisterPage = ({ isOpen, onClose, onRegisterSuccess }) => {
                   onChange={handleChange}
                   required
                   className="form-input modern"
-                  placeholder="Confirm Password"
+                  placeholder={t('register.form.confirmPassword')}
                 />
               </div>
             </div>
@@ -320,7 +324,7 @@ const RegisterPage = ({ isOpen, onClose, onRegisterSuccess }) => {
       <div className="register-modal" onClick={e => e.stopPropagation()}>
         <div className="modal-glass-effect"></div>
         
-        <button className="modal-close-btn" onClick={onClose} aria-label="Close registration modal">
+        <button className="modal-close-btn" onClick={onClose} aria-label={t('register.closeModal')}>
           <span className="material-icons">close</span>
         </button>
         
@@ -330,6 +334,7 @@ const RegisterPage = ({ isOpen, onClose, onRegisterSuccess }) => {
               <>
                 <div className="register-header">
                   <div className="register-logo">
+                    {/* Keep ALL your animated rings design exactly as is */}
                     <div className="ring-container">
                       <div className="ring"></div>
                       <div className="ring"></div>
@@ -338,28 +343,29 @@ const RegisterPage = ({ isOpen, onClose, onRegisterSuccess }) => {
                       <div className="logo-text">FORUM ACADEMY</div>
                     </div>
                   </div>
-                  <h2>Create Student Account</h2>
-                  <p>Join our learning community today</p>
+                  <h2>{t('register.header.title')}</h2>
+                  <p>{t('register.header.subtitle')}</p>
                 </div>
 
+                {/* Keep ALL your stepper design exactly as is - only replace text */}
                 <div className="stepper">
                   <div className={`step ${currentStep >= 1 ? 'active' : ''} ${currentStep > 1 ? 'completed' : ''}`}>
                     <div className="step-number">
                       {currentStep > 1 ? <span className="material-icons">check</span> : '1'}
                     </div>
-                    <div className="step-label">Personal</div>
+                    <div className="step-label">{t('register.steps.personal')}</div>
                   </div>
                   <div className="step-line"></div>
                   <div className={`step ${currentStep >= 2 ? 'active' : ''} ${currentStep > 2 ? 'completed' : ''}`}>
                     <div className="step-number">
                       {currentStep > 2 ? <span className="material-icons">check</span> : '2'}
                     </div>
-                    <div className="step-label">Account</div>
+                    <div className="step-label">{t('register.steps.account')}</div>
                   </div>
                   <div className="step-line"></div>
                   <div className={`step ${currentStep >= 3 ? 'active' : ''}`}>
                     <div className="step-number">3</div>
-                    <div className="step-label">Security</div>
+                    <div className="step-label">{t('register.steps.security')}</div>
                   </div>
                 </div>
 
@@ -383,7 +389,7 @@ const RegisterPage = ({ isOpen, onClose, onRegisterSuccess }) => {
                         onClick={prevStep}
                       >
                         <span className="material-icons">arrow_back</span>
-                        Back
+                        {t('register.navigation.back')}
                       </button>
                     )}
                     
@@ -393,7 +399,7 @@ const RegisterPage = ({ isOpen, onClose, onRegisterSuccess }) => {
                         className="btn-next modern"
                         onClick={nextStep}
                       >
-                        Next
+                        {t('register.navigation.next')}
                         <span className="material-icons">arrow_forward</span>
                       </button>
                     ) : (
@@ -405,11 +411,11 @@ const RegisterPage = ({ isOpen, onClose, onRegisterSuccess }) => {
                         {loading ? (
                           <>
                             <span className="button-loader"></span>
-                            Creating Account...
+                            {t('register.form.creatingAccount')}
                           </>
                         ) : (
                           <>
-                            Create Account
+                            {t('register.form.createAccount')}
                             <span className="material-icons">person_add</span>
                           </>
                         )}
@@ -423,8 +429,8 @@ const RegisterPage = ({ isOpen, onClose, onRegisterSuccess }) => {
                 <div className="success-icon">
                   <span className="material-icons">check_circle</span>
                 </div>
-                <h3>Registration Successful!</h3>
-                <p>Your student account has been created successfully. Welcome to Forum Academy!</p>
+                <h3>{t('register.success.title')}</h3>
+                <p>{t('register.success.message')}</p>
                 <div className="success-loader"></div>
               </div>
             )}

@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next'; // Add this import only
 import '../styles/ContactPage.css';
 
 const ContactPage = () => {
+    const { t } = useTranslation(); // Add this line only
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -10,13 +12,7 @@ const ContactPage = () => {
         message: ''
     });
 
-    // const [formStatus, setFormStatus] = useState({
-    //     submitted: false,
-    //     error: false,
-    //     message: ''
-    // });
-
-    // Update the formStatus state to include more detailed status
+    // Keep ALL your existing state and form logic exactly as is
     const [formStatus, setFormStatus] = useState({
         submitted: false,
         error: false,
@@ -27,7 +23,7 @@ const ContactPage = () => {
     const [isVisible, setIsVisible] = useState(false);
     const sectionRef = useRef(null);
 
-    // Effect for animation visibility and 3D elements
+    // Keep ALL your existing useEffect and 3D animation code exactly as is
     useEffect(() => {
         setIsVisible(true);
 
@@ -126,6 +122,7 @@ const ContactPage = () => {
         };
     }, []);
 
+    // Keep ALL your existing form handling exactly as is
     const handleChange = (e) => {
         const { id, value } = e.target;
         setFormData({ ...formData, [id]: value });
@@ -138,7 +135,7 @@ const ContactPage = () => {
         setFormStatus({
             submitted: true,
             error: false,
-            message: 'Sending your message...',
+            message: t('contact.form.messages.sending'),
             loading: true
         });
     
@@ -157,7 +154,7 @@ const ContactPage = () => {
                 setFormStatus({
                     submitted: true,
                     error: false,
-                    message: 'Thank you! Your message has been sent successfully.',
+                    message: t('contact.form.messages.success'),
                     loading: false
                 });
                 
@@ -180,13 +177,13 @@ const ContactPage = () => {
                     });
                 }, 3000);
             } else {
-                throw new Error(data.message || 'Failed to send message');
+                throw new Error(data.message || t('contact.form.messages.error'));
             }
         } catch (error) {
             setFormStatus({
                 submitted: true,
                 error: true,
-                message: error.message || 'Failed to send message. Please try again.',
+                message: error.message || t('contact.form.messages.error'),
                 loading: false
             });
     
@@ -204,9 +201,9 @@ const ContactPage = () => {
 
     return (
         <div className="contact-page">
-            {/* Enhanced 3D Hero Section */}
+            {/* Keep ALL your 3D hero structure - only replace text */}
             <section ref={sectionRef} className={`contact-hero ${isVisible ? 'visible' : ''}`}>
-                {/* 3D Scene */}
+                {/* Keep ALL 3D Scene code exactly as is */}
                 <div className="contact-scene">
                     <div className="contact-world">
                         <div className="contact-floor"></div>
@@ -225,21 +222,20 @@ const ContactPage = () => {
                     <div className="contact-hero-content">
                         <div className="contact-hero-badge">
                             <span className="contact-badge-icon material-icons">contact_mail</span>
-                            Connect with our team
+                            {t('contact.hero.badge')}
                         </div>
-                        <h1 className="contact-hero-title">Get In <span className="contact-highlight-text">Touch</span></h1>
+                        <h1 className="contact-hero-title">{t('contact.hero.title')} <span className="contact-highlight-text">{t('contact.hero.highlight')}</span></h1>
                         <p className="contact-hero-description">
-                            We're here to answer any questions about our programs, campus, or admissions process.
-                            Reach out and let us help you start your journey in IT.
+                            {t('contact.hero.description')}
                         </p>
                         <div className="contact-quick-links">
                             <a href="#form" className="contact-btn contact-btn-primary">
                                 <span className="material-icons">edit</span>
-                                Send a Message
+                                {t('contact.hero.sendMessage')}
                             </a>
                             <a href="tel:0120-406-194" className="contact-btn contact-btn-outline">
                                 <span className="material-icons">call</span>
-                                Call Us
+                                {t('contact.hero.callUs')}
                             </a>
                         </div>
                     </div>
@@ -248,7 +244,7 @@ const ContactPage = () => {
                 {/* Scroll indicator */}
                 <div className="contact-scroll-indicator">
                     <a href="#contact-main">
-                        <span>Scroll to contact us</span>
+                        <span>{t('contact.hero.scrollToContact')}</span>
                         <span className="material-icons">keyboard_arrow_down</span>
                     </a>
                 </div>
@@ -258,11 +254,10 @@ const ContactPage = () => {
             <section id="contact-main" className="contact-main">
                 <div className="container">
                     <div className="contact-grid">
-                        {/* Rest of your existing code... */}
                         {/* Contact Info */}
                         <div className="contact-info">
-                            <h2>Contact Information</h2>
-                            <p>Reach out to us using any of the methods below or fill out the form. Our team is ready to assist you.</p>
+                            <h2>{t('contact.info.title')}</h2>
+                            <p>{t('contact.info.description')}</p>
 
                             <div className="contact-info-items">
                                 <div className="contact-info-item">
@@ -270,8 +265,8 @@ const ContactPage = () => {
                                         <span className="material-icons">location_on</span>
                                     </div>
                                     <div className="contact-details">
-                                        <h3>Campus Address</h3>
-                                        <p>3-1-19 Benten, Chuo-ku, Niigata City<br />Niigata Prefecture, Japan 950-0901</p>
+                                        <h3>{t('contact.info.address.title')}</h3>
+                                        <p>{t('contact.info.address.value')}</p>
                                     </div>
                                 </div>
 
@@ -280,8 +275,8 @@ const ContactPage = () => {
                                         <span className="material-icons">phone</span>
                                     </div>
                                     <div className="contact-details">
-                                        <h3>Phone Numbers</h3>
-                                        <p>General Inquiries: 0120-406-194<br />Admissions: TEL: 025-247-6300 / FAX: 025-247-6305</p>
+                                        <h3>{t('contact.info.phone.title')}</h3>
+                                        <p>{t('contact.info.phone.general')}<br />{t('contact.info.phone.admissions')}</p>
                                     </div>
                                 </div>
 
@@ -290,8 +285,8 @@ const ContactPage = () => {
                                         <span className="material-icons">email</span>
                                     </div>
                                     <div className="contact-details">
-                                        <h3>Email Addresses</h3>
-                                        <p>General: shushoku@forum.ac.jp<br />Admissions: shushoku@forum.ac.jp</p>
+                                        <h3>{t('contact.info.email.title')}</h3>
+                                        <p>{t('contact.info.email.general')}<br />{t('contact.info.email.admissions')}</p>
                                     </div>
                                 </div>
 
@@ -300,14 +295,14 @@ const ContactPage = () => {
                                         <span className="material-icons">schedule</span>
                                     </div>
                                     <div className="contact-details">
-                                        <h3>Office Hours</h3>
-                                        <p>Monday - Friday: 9:00 AM - 6:00 PM<br />Saturday: 10:00 AM - 3:00 PM</p>
+                                        <h3>{t('contact.info.hours.title')}</h3>
+                                        <p>{t('contact.info.hours.weekdays')}<br />{t('contact.info.hours.saturday')}</p>
                                     </div>
                                 </div>
                             </div>
 
                             <div className="social-links">
-                                <h3>Connect With Us</h3>
+                                <h3>{t('contact.social.title')}</h3>
                                 <div className="social-icons">
                                     <a href="https://twitter.com/forumacademy" className="social-icon" aria-label="Twitter">
                                         <span className="material-icons">alternate_email</span>
@@ -328,8 +323,8 @@ const ContactPage = () => {
                         {/* Contact Form */}
                         <div className="contact-form-container" id="form">
                             <div className="form-header">
-                                <h2>Send Us a Message</h2>
-                                <p>Fill out the form below and we'll get back to you as soon as possible.</p>
+                                <h2>{t('contact.form.title')}</h2>
+                                <p>{t('contact.form.description')}</p>
                             </div>
 
                             {formStatus.submitted && (
@@ -353,7 +348,7 @@ const ContactPage = () => {
                                             placeholder=" "
                                             style={{"--i": 1}}
                                         />
-                                        <label htmlFor="name">Full Name *</label>
+                                        <label htmlFor="name">{t('contact.form.fields.name')}</label>
                                     </div>
                                     <div className="form-group">
                                         <input
@@ -365,7 +360,7 @@ const ContactPage = () => {
                                             placeholder=" "
                                             style={{"--i": 2}}
                                         />
-                                        <label htmlFor="email">Email Address *</label>
+                                        <label htmlFor="email">{t('contact.form.fields.email')}</label>
                                     </div>
                                 </div>
 
@@ -379,7 +374,7 @@ const ContactPage = () => {
                                             placeholder=" "
                                             style={{"--i": 3}}
                                         />
-                                        <label htmlFor="phone">Phone Number</label>
+                                        <label htmlFor="phone">{t('contact.form.fields.phone')}</label>
                                     </div>
                                     <div className="form-group">
                                         <select
@@ -390,13 +385,13 @@ const ContactPage = () => {
                                             style={{"--i": 4}}
                                         >
                                             <option value=""></option>
-                                            <option value="general">General Inquiry</option>
-                                            <option value="admissions">Admissions Question</option>
-                                            <option value="courses">Course Information</option>
-                                            <option value="careers">Career Services</option>
-                                            <option value="other">Other</option>
+                                            <option value="general">{t('contact.form.subjects.general')}</option>
+                                            <option value="admissions">{t('contact.form.subjects.admissions')}</option>
+                                            <option value="courses">{t('contact.form.subjects.courses')}</option>
+                                            <option value="careers">{t('contact.form.subjects.careers')}</option>
+                                            <option value="other">{t('contact.form.subjects.other')}</option>
                                         </select>
-                                        <label htmlFor="subject">Subject *</label>
+                                        <label htmlFor="subject">{t('contact.form.fields.subject')}</label>
                                     </div>
                                 </div>
 
@@ -410,18 +405,18 @@ const ContactPage = () => {
                                         placeholder=" "
                                         style={{"--i": 5}}
                                     ></textarea>
-                                    <label htmlFor="message">Message *</label>
+                                    <label htmlFor="message">{t('contact.form.fields.message')}</label>
                                 </div>
 
                                 <div className="form-group form-privacy">
                                     <input type="checkbox" id="privacy" required style={{"--i": 6}} />
                                     <label htmlFor="privacy">
-                                        I agree to the <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a> and consent to Forum Information Academy processing my data.
+                                        {t('contact.form.privacy.text')} <a href="/privacy" target="_blank" rel="noopener noreferrer">{t('contact.form.privacy.link')}</a> {t('contact.form.privacy.consent')}
                                     </label>
                                 </div>
 
                                 <button type="submit" className="btn btn-primary" style={{"--i": 7}}>
-                                    Send Message
+                                    {t('contact.form.submit')}
                                     <span className="material-icons">send</span>
                                 </button>
                             </form>
@@ -432,10 +427,10 @@ const ContactPage = () => {
 
             <section className="map-section">
                 <div className="container">
-                    <h2>Visit Our Campus</h2>
+                    <h2>{t('contact.map.title')}</h2>
                     <div className="map-container">
                         <iframe
-                            title="Forum Information Academy Campus Location"
+                            title={t('contact.map.title')}
                             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d5984.041958729306!2d139.05593607569955!3d37.912437971951!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x5ff4c9908234a571%3A0xc204d9ebdf574ad4!2z44OV44Kq44O844Op44Og5oOF5aCx44Ki44Kr44OH44Of44O85bCC6ZaA5a2m5qCh!5e1!3m2!1sen!2sjp!4v1747801373059!5m2!1sen!2sjp"
                             width="100%"
                             height="450"
@@ -451,23 +446,23 @@ const ContactPage = () => {
             {/* FAQ Section */}
             <section className="faq-section">
                 <div className="container">
-                    <h2>Frequently Asked Questions</h2>
+                    <h2>{t('contact.faq.title')}</h2>
                     <div className="faq-grid">
                         <div className="faq-item">
-                            <h3>How quickly will I receive a response?</h3>
-                            <p>We strive to respond to all inquiries within 24-48 business hours. For urgent matters, please call our office directly.</p>
+                            <h3>{t('contact.faq.items.response.question')}</h3>
+                            <p>{t('contact.faq.items.response.answer')}</p>
                         </div>
                         <div className="faq-item">
-                            <h3>Can I schedule a campus tour?</h3>
-                            <p>Yes! We offer campus tours Monday through Friday. Please contact our admissions office to schedule a visit.</p>
+                            <h3>{t('contact.faq.items.tour.question')}</h3>
+                            <p>{t('contact.faq.items.tour.answer')}</p>
                         </div>
                         <div className="faq-item">
-                            <h3>Do you have a virtual meeting option?</h3>
-                            <p>Yes, we can arrange video calls for international students or those unable to visit in person.</p>
+                            <h3>{t('contact.faq.items.virtual.question')}</h3>
+                            <p>{t('contact.faq.items.virtual.answer')}</p>
                         </div>
                         <div className="faq-item">
-                            <h3>How do I apply for financial assistance?</h3>
-                            <p>Please contact our admissions team directly for information about scholarships, payment plans, and other financial options.</p>
+                            <h3>{t('contact.faq.items.financial.question')}</h3>
+                            <p>{t('contact.faq.items.financial.answer')}</p>
                         </div>
                     </div>
                 </div>

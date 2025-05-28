@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next'; // Add this import only
 import CourseSection from '../components/CourseSection';
 import StatsSection from '../components/StatsSection';
 import NewsSection from '../components/NewsSection';
 import '../styles/CoursesPage.css';
 
 const CoursesPage = () => {
+    const { t } = useTranslation(); // Add this line only
     const [isVisible, setIsVisible] = useState(false);
     const sectionRef = useRef(null);
 
-    // Effect for animation visibility
+    // Keep ALL your existing useEffect code exactly as is
     useEffect(() => {
         setIsVisible(true);
         
@@ -59,9 +61,9 @@ const CoursesPage = () => {
 
     return (
         <div className="courses-page">
-            {/* Enhanced 3D hero section for courses page */}
+            {/* Keep ALL your existing 3D hero structure - only replace text */}
             <section ref={sectionRef} className={`courses-hero ${isVisible ? 'visible' : ''}`}>
-                {/* 3D Scene */}
+                {/* Keep ALL your 3D Scene code exactly as is */}
                 <div className="scene">
                     <div className="world">
                         <div className="floor"></div>
@@ -78,34 +80,34 @@ const CoursesPage = () => {
                         <div className="hero-text">
                             <div className="hero-badge">
                                 <span className="badge-icon material-icons">school</span>
-                                Future-ready education
+                                {t('courses.hero.badge')}
                             </div>
-                            <h1 className="hero-title">Explore Our <span className="highlight-text">IT Courses</span></h1>
-                            <p className="hero-description">Discover industry-leading curriculum designed to prepare you for a successful career in technology. Learn from experts and gain practical skills that employers value.</p>
+                            <h1 className="hero-title">{t('courses.hero.title')} <span className="highlight-text">{t('courses.hero.highlight')}</span></h1>
+                            <p className="hero-description">{t('courses.hero.description')}</p>
                             
                             <div className="hero-cta-group">
                                 <button className="btn btn-primary">
                                     <span className="material-icons">search</span>
-                                    Find Your Course
+                                    {t('courses.hero.findCourse')}
                                 </button>
                                 <button className="btn btn-outline">
                                     <span className="material-icons">info</span>
-                                    Program Guide
+                                    {t('courses.hero.programGuide')}
                                 </button>
                             </div>
                             
                             <div className="hero-stats">
                                 <div className="stat-item">
                                     <div className="stat-number">30+</div>
-                                    <div className="stat-label">Courses</div>
+                                    <div className="stat-label">{t('courses.stats.courses')}</div>
                                 </div>
                                 <div className="stat-item">
                                     <div className="stat-number">95%</div>
-                                    <div className="stat-label">Job Placement</div>
+                                    <div className="stat-label">{t('courses.stats.jobPlacement')}</div>
                                 </div>
                                 <div className="stat-item">
                                     <div className="stat-number">4.9</div>
-                                    <div className="stat-label">Student Rating</div>
+                                    <div className="stat-label">{t('courses.stats.studentRating')}</div>
                                 </div>
                             </div>
                         </div>
@@ -113,16 +115,16 @@ const CoursesPage = () => {
                         <div className="hero-image-wrapper">
                             <div className="image-card">
                                 <img 
-                                    src={require('../assets/images/AI1.png')} 
-                                    alt="AI technology visualization" 
+                                    src={require('../assets/images/png5.jpg')} 
+                                    alt={t('courses.hero.imageAlt')} 
                                     className="hero-image" 
                                 />
                                 <div className="image-overlay"></div>
                                 <div className="tech-tag-group">
-                                    <div className="tech-tag">Web Development</div>
-                                    <div className="tech-tag">Data Science</div>
-                                    <div className="tech-tag">Cybersecurity</div>
-                                    <div className="tech-tag">Cloud Computing</div>
+                                    <div className="tech-tag">{t('courses.webDevelopment')}</div>
+                                    <div className="tech-tag">{t('courses.dataScience')}</div>
+                                    <div className="tech-tag">{t('courses.cybersecurity')}</div>
+                                    <div className="tech-tag">{t('courses.cloudComputing')}</div>
                                 </div>
                             </div>
                         </div>
@@ -130,44 +132,44 @@ const CoursesPage = () => {
                 </div>
             </section>
             
-            {/* Course filters */}
+            {/* Keep ALL your filter structure - only replace text */}
             <div id="courses" className="course-filters-container">
                 <div className="container">
                     <div className="course-filters">
                         <button className="filter-btn active">
                             <span className="material-icons">school</span>
-                            All Courses
+                            {t('courses.allCategories')}
                         </button>
                         <button className="filter-btn">
                             <span className="material-icons">code</span>
-                            Web Development
+                            {t('courses.webDevelopment')}
                         </button>
                         <button className="filter-btn">
                             <span className="material-icons">analytics</span>
-                            Data Science
+                            {t('courses.dataScience')}
                         </button>
                         <button className="filter-btn">
                             <span className="material-icons">security</span>
-                            Cybersecurity
+                            {t('courses.cybersecurity')}
                         </button>
                         <button className="filter-btn">
                             <span className="material-icons">cloud</span>
-                            Cloud Computing
+                            {t('courses.cloudComputing')}
                         </button>
                         <button className="filter-btn">
                             <span className="material-icons">smart_toy</span>
-                            Artificial Intelligence
+                            {t('courses.aiMl')}
                         </button>
                     </div>
                 </div>
             </div>
             
-            {/* Courses section */}
+            {/* Keep ALL your existing sections exactly as they are */}
             <section className="courses-section">
                 <div className="container">
                     <CourseSection />
                     
-                    {/* Pagination */}
+                    {/* Pagination - keep exactly as is */}
                     <div className="pagination">
                         <button className="pagination-btn">
                             <span className="material-icons">chevron_left</span>
@@ -191,8 +193,8 @@ const CoursesPage = () => {
             <section className="news-section">
                 <div className="container">
                     <div className="section-header">
-                        <h2>Latest News</h2>
-                        <p>Stay updated with the latest developments in our academy and the IT industry.</p>
+                        <h2>{t('courses.news.title')}</h2>
+                        <p>{t('courses.news.description')}</p>
                     </div>
                     <NewsSection />
                 </div>

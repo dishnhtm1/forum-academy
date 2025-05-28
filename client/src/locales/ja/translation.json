@@ -1,0 +1,1274 @@
+{
+    "welcome": "ようこそ",
+    "language": "言語",
+    "navigation": {
+        "home": "ホーム",
+        "programs": "プログラム",
+        "featuredPrograms": "注目のプログラム",
+        "morePrograms": "その他のプログラム",
+        "about": "について",
+        "aboutUs": "私たちについて",
+        "ourTeam": "私たちのチーム",
+        "industryPartners": "業界パートナー",
+        "studentSuccess": "学生の成功",
+        "newsEvents": "ニュース・イベント",
+        "careerServices": "キャリアサービス",
+        "contact": "お問い合わせ",
+        "viewAllPrograms": "すべてのプログラムを見る",
+        "browseCatalog": "完全なカタログを閲覧",
+        "startJourney": "あなたの旅を始めよう",
+        "joinStudents": "すでに私たちと学んでいる何千人もの学生に参加しよう"
+    },
+    "home": {
+        "courses": {
+            "title": "私たちのコース",
+            "description": "今日と明日のキャリアに備える幅広いITコースを探索してください。",
+            "allCourses": "すべてのコース"
+        },
+        "stats": {
+            "title": "私たちの影響",
+            "description": "次世代の技術専門家の準備における私たちの成功を定義する数字。"
+        },
+        "news": {
+            "title": "最新ニュース・イベント",
+            "subtitle": "最新のお知らせ、イベント、技術業界の洞察で最新情報を入手してください。"
+        },
+        "contact": {
+            "title": "お気軽にご連絡ください",
+            "subtitle": "ご質問がありますか？技術教育の旅を始めるお手伝いをいたします。"
+        }
+    },
+    "courses": {
+        "pageTitle": "私たちのプログラム",
+        "pageDescription": "未来に備えて設計された包括的な技術プログラムの範囲を探索する",
+        "allCategories": "すべてのコース",
+        "webDevelopment": "ウェブ開発",
+        "webDevelopmentDesc": "モダンなフレームワークと技術でフルスタック開発をマスター",
+        "dataScience": "データサイエンス",
+        "dataScienceDesc": "分析、機械学習、データ可視化技術を学ぶ",
+        "cybersecurity": "サイバーセキュリティ",
+        "cybersecurityDesc": "デジタル脅威と攻撃からネットワークとシステムを保護",
+        "cloudComputing": "クラウドコンピューティング",
+        "cloudComputingDesc": "AWS、Azure、Google Cloudを含むクラウドプラットフォームをマスター",
+        "aiMl": "人工知能",
+        "aiMlDesc": "人工知能と機械学習アルゴリズムを深く学ぶ",
+        "hero": {
+            "badge": "未来対応教育",
+            "title": "私たちの",
+            "highlight": "ITコース",
+            "description": "技術分野で成功するキャリアに備える業界をリードするカリキュラムを発見してください。専門家から学び、雇用主が評価する実用的なスキルを身につけましょう。",
+            "findCourse": "コースを見つける",
+            "programGuide": "プログラムガイド",
+            "imageAlt": "AI技術の可視化"
+        },
+        "stats": {
+            "courses": "コース",
+            "jobPlacement": "就職率",
+            "studentRating": "学生評価"
+        },
+        "news": {
+            "title": "最新ニュース",
+            "description": "私たちのアカデミーとIT業界の最新の発展について最新情報を入手してください。"
+        }
+    },
+    "footer": {
+        "aboutAcademy": "フォーラム情報アカデミー",
+        "aboutDescription": "デジタル経済で成功するキャリアのために学生を準備することに専念する主要な技術教育機関。",
+        "quickLinks": "クイックリンク",
+        "contactUs": "お問い合わせ",
+        "address": "〒950-0901 新潟県新潟市中央区弁天3-1-19",
+        "phone": "TEL: 025-247-6300 | FAX: 025-247-6305",
+        "hours": "月-金: 9:00 AM - 6:00 PM",
+        "subscribe": "購読",
+        "subscribeDescription": "最新のコースと特別オファーの更新を受け取るために、ニュースレターを購読してください。",
+        "emailPlaceholder": "メールアドレスを入力",
+        "subscribeButton": "購読",
+        "allRightsReserved": "全著作権所有。",
+        "privacyPolicy": "プライバシーポリシー",
+        "termsOfService": "利用規約"
+    },
+    "buttons": {
+        "login": "ログイン",
+        "applyNow": "今すぐ申し込む",
+        "getStarted": "始める",
+        "learnMore": "詳細を見る",
+        "submit": "送信",
+        "cancel": "キャンセル",
+        "save": "保存"
+    },
+    "about": {
+        "hero": {
+            "badge": "2010年設立",
+            "title": "IT教育の",
+            "highlight": "未来を形作る",
+            "description": "私たちは、従来の教育と急速に進化する技術業界のニーズとの橋渡しに取り組み、次世代のテクノロジーリーダーの成功への道筋を作っています。",
+            "ourJourney": "私たちの歩み",
+            "getInTouch": "お気軽にご連絡ください",
+            "discoverStory": "私たちの物語を発見"
+        },
+        "stats": {
+            "yearsExcellence": "年の実績",
+            "graduates": "成功した卒業生",
+            "partners": "業界パートナー",
+            "employmentRate": "就職率"
+        },
+        "story": {
+            "title": "私たちの物語",
+            "subtitle": "日本有数のIT教育プロバイダーになるまで",
+            "imageAlt": "フォーラム情報アカデミーキャンパス",
+            "paragraph1": "フォーラム情報アカデミーは、従来の教育と急速に進化する技術業界のニーズとの間の橋渡しという使命を持って2010年に設立されました。",
+            "paragraph2": "渋谷の小さなオフィスで15人の学生と3人の講師から始まり、5,000人以上の卒業生を輩出し、テクノロジー分野で成功したキャリアを歩んでいる日本で最も尊敬されるIT教育機関の一つに成長しました。",
+            "paragraph3": "私たちの歩みは、卓越性、革新、そして学生の成功への取り組みによって定義されてきました。技術が進化するにつれて、私たちも進化し、学生が明日の課題に備えられるよう継続的にカリキュラムを更新しています。"
+        },
+        "timeline": {
+            "founded": "東京・渋谷に設立",
+            "dataScience": "データサイエンスを含むカリキュラムの拡張",
+            "osaka": "大阪に新キャンパス開設",
+            "celebration": "5,000人以上の卒業生と10周年を祝う"
+        },
+        "whyChoose": {
+            "title": "フォーラム情報アカデミーを選ぶ理由",
+            "subtitle": "学生を現実世界に備える最先端のIT教育の提供に専念しています。"
+        },
+        "features": {
+            "partnerships": {
+                "title": "業界パートナーシップ",
+                "description": "主要なテクノロジー企業と協力して、カリキュラムが業界標準を満たし、実世界の経験を提供することを保証します。"
+            },
+            "instructors": {
+                "title": "専門講師陣",
+                "description": "実用的な知識と洞察を教室にもたらす長年の業界経験を持つプロフェッショナルから学びます。"
+            },
+            "facilities": {
+                "title": "最新の施設",
+                "description": "私たちのキャンパスには、最先端のコンピューターラボ、協力的なワークスペース、最新の技術ツールが備わっています。"
+            },
+            "careerServices": {
+                "title": "キャリアサービス",
+                "description": "包括的な就職支援、履歴書ワークショップ、面接準備、ネットワーキングの機会を提供します。"
+            },
+            "certifications": {
+                "title": "業界認定資格",
+                "description": "私たちのコースは、雇用可能性とキャリアアップを高める業界トップの認定資格に向けて学生を準備します。"
+            },
+            "support": {
+                "title": "学生サポート",
+                "description": "専任のサポートチームが、学習の旅を通じて学生が必要なガイダンスとリソースを確実に受けられるようにします。"
+            }
+        },
+        "mission": {
+            "title": "私たちの使命",
+            "description": "デジタル経済で繁栄し、技術の未来を形作るために必要なスキル、知識、サポートで個人を力づけること。"
+        },
+        "vision": {
+            "title": "私たちのビジョン",
+            "description": "革新的な教授法で知られ、世界的に技術革新をリードする卒業生を輩出するアジア有数の技術教育機関になること。"
+        },
+        "team": {
+            "title": "私たちのリーダーシップチームに会う",
+            "subtitle": "私たちのアカデミーを導く経験豊富な専門家たち",
+            "members": {
+                "shashini": {
+                    "name": "シャシニ・カビンディヤ",
+                    "role": "バックエンド開発者インターン",
+                    "bio": "データベース管理とAPI開発の専門知識を持つバックエンドシステムに焦点を当てた才能ある開発者。"
+                },
+                "thilini": {
+                    "name": "ティリニ・ラジャグル",
+                    "role": "フロントエンド開発者",
+                    "bio": "レスポンシブでユーザーフレンドリーなウェブアプリケーションの構築に情熱を持つクリエイティブなUI/UXスペシャリスト。"
+                },
+                "diushan": {
+                    "name": "ディウシャン・メシャカ",
+                    "role": "DevOpsエンジニア",
+                    "bio": "アカデミーのすべてのプロジェクトのデプロイメントパイプラインとバージョン管理を管理する優れたGit専門知識を持つクラウドスペシャリスト。"
+                },
+                "john": {
+                    "name": "ジョン・ガブリエル・バガシナ",
+                    "role": "フルスタック開発者",
+                    "bio": "フロントエンドとバックエンドの両方の技術に精通し、データベースからユーザーインターフェースまでの完全なウェブソリューションを作成する多才なエンジニア。"
+                }
+            }
+        }
+    },
+        "contact": {
+        "hero": {
+            "badge": "私たちのチームとつながる",
+            "title": "お気軽に",
+            "highlight": "ご連絡ください",
+            "description": "プログラム、キャンパス、入学プロセスについてのご質問にお答えします。お気軽にご連絡いただき、ITの旅を始めるお手伝いをさせてください。",
+            "sendMessage": "メッセージを送る",
+            "callUs": "お電話ください",
+            "scrollToContact": "お問い合わせまでスクロール"
+        },
+        "info": {
+            "title": "お問い合わせ情報",
+            "description": "以下の方法でお気軽にお問い合わせいただくか、フォームにご記入ください。私たちのチームがサポートいたします。",
+            "address": {
+                "title": "キャンパス住所",
+                "value": "〒950-0901 新潟県新潟市中央区弁天3-1-19"
+            },
+            "phone": {
+                "title": "電話番号",
+                "general": "一般お問い合わせ: 0120-406-194",
+                "admissions": "入学案内: TEL: 025-247-6300 / FAX: 025-247-6305"
+            },
+            "email": {
+                "title": "メールアドレス",
+                "general": "一般: shushoku@forum.ac.jp",
+                "admissions": "入学案内: shushoku@forum.ac.jp"
+            },
+            "hours": {
+                "title": "営業時間",
+                "weekdays": "月曜日 - 金曜日: 午前9:00 - 午後6:00",
+                "saturday": "土曜日: 午前10:00 - 午後3:00"
+            }
+        },
+        "social": {
+            "title": "私たちとつながる"
+        },
+        "form": {
+            "title": "メッセージをお送りください",
+            "description": "以下のフォームにご記入いただければ、できるだけ早くご返信いたします。",
+            "fields": {
+                "name": "お名前 *",
+                "email": "メールアドレス *",
+                "phone": "電話番号",
+                "subject": "件名 *",
+                "message": "メッセージ *"
+            },
+            "subjects": {
+                "general": "一般的なお問い合わせ",
+                "admissions": "入学に関する質問",
+                "courses": "コース情報",
+                "careers": "キャリアサービス",
+                "other": "その他"
+            },
+            "privacy": {
+                "text": "私は",
+                "link": "プライバシーポリシー",
+                "consent": "に同意し、フォーラム情報アカデミーが私のデータを処理することに同意します。"
+            },
+            "submit": "メッセージを送信",
+            "messages": {
+                "sending": "メッセージを送信中...",
+                "success": "ありがとうございます！メッセージが正常に送信されました。",
+                "error": "メッセージの送信に失敗しました。もう一度お試しください。"
+            }
+        },
+        "map": {
+            "title": "キャンパスにお越しください"
+        },
+        "faq": {
+            "title": "よくある質問",
+            "items": {
+                "response": {
+                    "question": "どのくらい早く返信がもらえますか？",
+                    "answer": "すべてのお問い合わせに24〜48営業時間以内に返信するよう努めています。緊急の場合は、直接お電話ください。"
+                },
+                "tour": {
+                    "question": "キャンパス見学の予約はできますか？",
+                    "answer": "はい！月曜日から金曜日までキャンパス見学を行っています。見学の予約は入学案内室までご連絡ください。"
+                },
+                "virtual": {
+                    "question": "バーチャル会議のオプションはありますか？",
+                    "answer": "はい、海外の学生や直接訪問できない方のためにビデオ通話を手配できます。"
+                },
+                "financial": {
+                    "question": "経済的支援を申請するにはどうすればよいですか？",
+                    "answer": "奨学金、支払計画、その他の経済的オプションについては、入学案内チームに直接お問い合わせください。"
+                }
+            }
+        }
+    },
+    "login": {
+        "closeModal": "ログインモーダルを閉じる",
+        "header": {
+            "title": "おかえりなさい",
+            "subtitle": "アカウントにアクセスするためにサインインしてください"
+        },
+        "form": {
+            "emailPlaceholder": "メールアドレス",
+            "passwordPlaceholder": "パスワード",
+            "showPassword": "パスワードを表示",
+            "hidePassword": "パスワードを非表示",
+            "rememberMe": "ログイン状態を保持",
+            "forgotPassword": "パスワードをお忘れですか？",
+            "signIn": "サインイン",
+            "signingIn": "サインイン中..."
+        },
+        "register": {
+            "newToPlatform": "私たちのプラットフォームは初めてですか？",
+            "createAccount": "学生アカウントを作成"
+        },
+        "errors": {
+            "loginFailed": "ログインに失敗しました",
+            "invalidCredentials": "認証情報が無効です。もう一度お試しください。"
+        }
+    },
+        "register": {
+        "closeModal": "登録モーダルを閉じる",
+        "header": {
+            "title": "学生アカウントを作成",
+            "subtitle": "今日から私たちの学習コミュニティに参加しましょう"
+        },
+        "steps": {
+            "personal": "個人情報",
+            "account": "アカウント",
+            "security": "セキュリティ"
+        },
+        "form": {
+            "firstName": "名",
+            "lastName": "姓",
+            "email": "メールアドレス",
+            "password": "パスワード（6文字以上）",
+            "confirmPassword": "パスワード確認",
+            "createAccount": "アカウントを作成",
+            "creatingAccount": "アカウント作成中..."
+        },
+        "studentInfo": {
+            "title": "学生登録",
+            "description": "学生として登録しています。教師および管理者アカウントは、システム管理者が作成する必要があります。"
+        },
+        "navigation": {
+            "back": "戻る",
+            "next": "次へ"
+        },
+        "success": {
+            "title": "登録が成功しました！",
+            "message": "学生アカウントが正常に作成されました。フォーラムアカデミーへようこそ！"
+        },
+        "errors": {
+            "fillAllFields": "続行するには、すべてのフィールドを入力してください。",
+            "validEmail": "続行するには、有効なメールアドレスを入力してください。",
+            "passwordsNoMatch": "パスワードが一致しません",
+            "passwordLength": "パスワードは6文字以上である必要があります",
+            "registrationFailed": "登録に失敗しました。もう一度お試しください。"
+        }
+    },
+        "aboutSection": {
+        "header": {
+            "badge": "成功への道筋",
+            "title": "FIAの優位性",
+            "subtitle": "なぜトップ企業が私たちの卒業生を求めるのか、そして技術業界において私たちの教育アプローチが何を際立たせているのかを発見してください。"
+        },
+        "features": {
+            "partnerships": {
+                "title": "業界パートナーシップ",
+                "description": "技術リーダーたちのネットワークを通じて独占的な機会にアクセスできます。私たちのカリキュラムは業界専門家と共同開発され、雇用主が積極的に求めているスキルを確実に学習できます。",
+                "highlight": "200以上のグローバルパートナー"
+            },
+            "instructors": {
+                "title": "専門講師陣",
+                "description": "成功した製品を構築し、トップ企業でエンジニアリングチームを率いてきた技術ベテランから学びます。私たちの講師は、実世界の課題と解決策を直接教室に持ち込みます。",
+                "highlight": "平均15年以上の経験"
+            },
+            "facilities": {
+                "title": "最先端の施設",
+                "description": "業界標準のツールと技術を備えたプロフェッショナルグレードの環境に没頭してください。最近改装されたキャンパスには、すべての技術トラック専用のラボが備わっています。",
+                "highlight": "2億円の施設投資"
+            },
+            "career": {
+                "title": "キャリア加速",
+                "description": "専任のキャリアチームが初日からあなたと協力して目標を定義し、機会への扉を開きます。独占的な採用イベント、面接コーチング、ポートフォリオ開発の恩恵を受けてください。",
+                "highlight": "93%の就職成功率"
+            },
+            "certifications": {
+                "title": "業界認定資格",
+                "description": "単なる卒業証書以上のものを持って卒業してください。私たちのプログラムには、雇用主が評価するトップ認定資格の準備が含まれており、専門知識を示す複数の資格を提供します。",
+                "highlight": "8つの認定パスウェイ"
+            },
+            "support": {
+                "title": "個別学習サポート",
+                "description": "学習の旅で迷うことはありません。私たちのメンターは1対1のガイダンスを提供し、包括的なデジタルプラットフォームはリソース、練習問題、コミュニティサポートへの24時間アクセスを提供します。",
+                "highlight": "無制限のメンターセッション"
+            }
+        },
+        "cta": {
+            "badge": "もっと発見する",
+            "title": "教室を超えて",
+            "description": "私たちのユニークな学習哲学、最先端の施設を探索し、FIAでキャリアを変革した学生たちの声を聞いてください。私たちは単なるコース以上の存在です—技術分野でのあなたの成功に捧げられたコミュニティです。",
+            "stats": {
+                "years": "年の実績",
+                "graduates": "成功した卒業生"
+            },
+            "button": "私たちの物語を探る",
+            "imageAlt": "フォーラム情報アカデミーの学生たち"
+        },
+        "testimonial": {
+            "quote": "FIAの実践的な焦点と業界とのつながりは、私のキャリアの軌道を完全に変えました。卒業から2か月以内に、トップ技術企業から複数の求人オファーを受けました。",
+            "author": {
+                "name": "田中由紀",
+                "title": "TechVision Inc. ソフトウェアエンジニア、2024年卒業"
+            }
+        }
+    },
+        "applicationForm": {
+        "stepIndicator": "ステップ {{current}} / {{total}}",
+        "unknownStep": "不明なステップ",
+        "termsLink": "利用規約",
+        "dataConsent": "及びフォーラム情報アカデミーが私のデータを処理することに同意します。",
+        "steps": {
+            "default": "申請",
+            "personalInfo": {
+                "title": "個人情報",
+                "description": "あなたについて教えてください。"
+            },
+            "education": {
+                "title": "学歴",
+                "description": "あなたの教育経験と資格について教えてください。"
+            },
+            "programSelection": {
+                "title": "プログラム選択",
+                "description": "あなたのニーズに最適なプログラムとスケジュールを選択してください。"
+            },
+            "additionalInfo": {
+                "title": "追加情報",
+                "description": "あなたの目標と私たちがどのようにサポートできるかを理解するのに役立ちます。"
+            }
+        },
+        "fields": {
+            "fullName": "氏名 *",
+            "email": "メールアドレス *",
+            "phone": "電話番号 *",
+            "dateOfBirth": "生年月日 *",
+            "address": "住所",
+            "highestEducation": "最終学歴 *",
+            "schoolName": "学校名",
+            "fieldOfStudy": "専攻分野",
+            "graduationYear": "卒業年",
+            "relevantExperience": "関連経験",
+            "course": "希望プログラム *",
+            "studyFormat": "受講形式",
+            "startDate": "希望開始日 *",
+            "programInterest": "このプログラムに興味を持った理由は？",
+            "howDidYouHear": "私たちのことをどこで知りましたか？ *",
+            "careerGoals": "あなたのキャリア目標は何ですか？",
+            "questions": "質問またはコメント",
+            "agreeToTerms": "私は"
+        },
+        "options": {
+            "education": {
+                "highSchool": "高等学校",
+                "associates": "短期大学",
+                "bachelors": "学士号",
+                "masters": "修士号",
+                "doctorate": "博士号",
+                "other": "その他"
+            },
+            "courses": {
+                "webDevelopment": "ウェブ開発",
+                "dataScience": "データサイエンス・分析",
+                "cybersecurity": "サイバーセキュリティ",
+                "cloudComputing": "クラウドコンピューティング",
+                "aiMachineLearning": "AI・機械学習"
+            },
+            "studyFormat": {
+                "fullTime": "フルタイム",
+                "partTime": "パートタイム",
+                "weekend": "週末"
+            },
+            "startDate": {
+                "summer2025": "2025年夏（6月）",
+                "fall2025": "2025年秋（9月）",
+                "winter2026": "2026年冬（1月）"
+            },
+            "howDidYouHear": {
+                "searchEngine": "検索エンジン",
+                "socialMedia": "ソーシャルメディア",
+                "friend": "友人・家族",
+                "advertisement": "広告",
+                "event": "イベント・キャリアフェア",
+                "other": "その他"
+            }
+        },
+        "buttons": {
+            "back": "戻る",
+            "continue": "続行",
+            "submit": "申請を送信"
+        },
+        "validation": {
+            "required": "このフィールドは必須です",
+            "emailInvalid": "有効なメールアドレスを入力してください"
+        }
+    },
+        "contactSection": {
+        "header": {
+            "badge": "お気軽にご連絡ください",
+            "title": "お問い合わせ情報",
+            "subtitle": "ご質問がありますか、または技術の旅を始める準備はできていますか？私たちのチームがお手伝いします。"
+        },
+        "info": {
+            "title": "お問い合わせ",
+            "subtitle": "私たちのチームがお手伝いいたします"
+        },
+        "contact": {
+            "location": {
+                "title": "所在地",
+                "address": "〒950-0901 新潟県新潟市中央区弁天3-1-19"
+            },
+            "phone": {
+                "title": "電話番号",
+                "tel": "TEL",
+                "fax": "FAX"
+            },
+            "website": {
+                "title": "ウェブサイト"
+            },
+            "hours": {
+                "title": "営業時間",
+                "time": "月-金: 午前9時-午後5時"
+            }
+        },
+        "social": {
+            "connect": "つながる"
+        },
+        "buttons": {
+            "contactUs": "お問い合わせ",
+            "getDirections": "道順を取得",
+            "viewAllFAQs": "すべてのFAQを見る"
+        },
+        "map": {
+            "title": "フォーラム情報アカデミーの場所"
+        },
+        "faq": {
+            "title": "よくある質問",
+            "items": {
+                "campusTour": {
+                    "question": "キャンパス見学をスケジュールするにはどうすればよいですか？",
+                    "answer": "キャンパス見学は月曜日から金曜日まで利用できます。入学事務所にお問い合わせいただくか、オンライン予約システムをご利用ください。"
+                },
+                "deadlines": {
+                    "question": "申請期限はいつですか？",
+                    "answer": "申請は随時受け付けていますが、処理時間を確保するため、希望する開始日の少なくとも2か月前に申請することをお勧めします。"
+                }
+            }
+        }
+    },
+        "courseSection": {
+        "header": {
+            "badge": "教育プログラム",
+            "title": "おすすめコース",
+            "subtitle": "業界重視の実践的なプログラムで技術キャリアを加速させましょう"
+        },
+        "filters": {
+            "all": "すべてのコース",
+            "webDevelopment": "ウェブ開発",
+            "dataScience": "データサイエンス",
+            "cybersecurity": "サイバーセキュリティ",
+            "cloudComputing": "クラウドコンピューティング"
+        },
+        "meta": {
+            "starts": "開始"
+        },
+        "buttons": {
+            "viewDetails": "詳細を見る",
+            "learnMore": "詳しく学ぶ",
+            "viewAllCourses": "すべてのコースを見る",
+            "browseAllPrograms": "すべてのプログラムを閲覧"
+        },
+        "courses": {
+            "webDev": {
+                "title": "フルスタックウェブ開発",
+                "description": "完全なウェブアプリケーションを構築するためにフロントエンドとバックエンドの両方の技術をマスターします。HTML、CSS、JavaScript、React、Node.js、データベース統合を学習します。",
+                "duration": "12週間",
+                "startDate": "6月1日",
+                "category": "ウェブ開発",
+                "level": "初級-中級",
+                "features": ["24のプロジェクト", "キャリアサポート", "業界メンター"]
+            },
+            "dataScience": {
+                "title": "データサイエンス・分析",
+                "description": "Python、R、SQL、可視化ツールを使用して複雑なデータセットを分析・解釈することを学びます。機械学習の基礎と実世界のプロジェクトが含まれます。",
+                "duration": "16週間",
+                "startDate": "5月15日",
+                "category": "データサイエンス",
+                "level": "中級",
+                "features": ["実世界のデータセット", "ポートフォリオ構築", "業界パートナーシップ"]
+            },
+            "cybersecurity": {
+                "title": "サイバーセキュリティ専門家",
+                "description": "デジタル攻撃からシステムとネットワークを保護するスキルを開発します。脅威検出、エシカルハッキング、セキュリティプロトコル、インシデント対応を学習します。",
+                "duration": "14週間",
+                "startDate": "6月15日",
+                "category": "サイバーセキュリティ",
+                "level": "中級-上級",
+                "features": ["セキュリティラボ", "認定準備", "ライブシミュレーション"]
+            },
+            "cloudComputing": {
+                "title": "クラウドコンピューティング・DevOps",
+                "description": "AWS、Azure、Google Cloudなどのクラウドプラットフォームをマスターします。Infrastructure as Code、コンテナ化、CI/CDパイプライン、マイクロサービスアーキテクチャを学習します。",
+                "duration": "10週間",
+                "startDate": "7月5日",
+                "category": "クラウドコンピューティング",
+                "level": "中級",
+                "features": ["AWS/Azureクレジット", "業界プロジェクト", "認定準備"]
+            },
+            "aiMl": {
+                "title": "人工知能・機械学習",
+                "description": "AIアルゴリズム、ニューラルネットワーク、深層学習、自然言語処理を深く学びます。学習し適応するインテリジェントシステムを構築します。",
+                "duration": "18週間",
+                "startDate": "6月10日",
+                "category": "AI/ML",
+                "level": "上級",
+                "features": ["GPUラボアクセス", "研究プロジェクト", "業界メンター"]
+            },
+            "mobileDev": {
+                "title": "モバイルアプリ開発",
+                "description": "ネイティブおよびクロスプラットフォームのモバイルアプリケーションを作成します。React Native、Flutter、iOSおよびAndroid開発、アプリデプロイ戦略をマスターします。",
+                "duration": "12週間",
+                "startDate": "7月15日",
+                "category": "モバイル開発",
+                "level": "中級",
+                "features": ["アプリストア公開", "ポートフォリオ構築", "1対1メンターシップ"]
+            }
+        }
+    },
+        "hero": {
+        "title": {
+            "line1": "効果的な",
+            "highlight": "技術教育",
+            "line2": "で未来を向上させよう"
+        },
+        "description": "フォーラム情報アカデミーで、初心者を今日のデジタル経済に対応したプロフェッショナルに変える業界主導の技術トレーニングに参加してください。",
+        "buttons": {
+            "explorePrograms": "プログラムを探索",
+            "applyNow": "今すぐ申請"
+        },
+        "stats": {
+            "jobPlacement": "就職率",
+            "industryPartners": "業界パートナー",
+            "yearsExcellence": "年の実績"
+        },
+        "imageAlt": "フォーラム情報アカデミーの学生",
+        "techTags": {
+            "webDevelopment": "ウェブ開発",
+            "cybersecurity": "サイバーセキュリティ",
+            "dataScience": "データサイエンス",
+            "cloudComputing": "クラウドコンピューティング"
+        }
+    },
+        "newsSection": {
+        "header": {
+            "title": "ニュース・イベント",
+            "subtitle": "フォーラム情報アカデミーの最新情報をお届けします。"
+        },
+        "filters": {
+            "all": "すべて",
+            "news": "ニュース",
+            "events": "イベント"
+        },
+        "loading": "読み込み中...",
+        "videoNotSupported": "お使いのブラウザは動画タグをサポートしていません。",
+        "categoryLabels": {
+            "event": "イベント",
+            "news": "ニュース"
+        },
+        "buttons": {
+            "readMore": "続きを読む",
+            "viewAllNews": "すべてのニュースを見る"
+        },
+        "items": {
+            "techSymposium": {
+                "date": "2025年5月10日",
+                "title": "年次技術シンポジウム",
+                "excerpt": "業界のスピーカー、ワークショップセッション、ネットワーキングの機会を特色とする年次技術シンポジウムにご参加ください。"
+            },
+            "industryPartnership": {
+                "date": "2025年4月28日",
+                "title": "新しい業界パートナーシップ",
+                "excerpt": "学生に独占的なインターンシップの機会を提供するため、Adam-i.との新しいパートナーシップの発表をうれしく思います。"
+            },
+            "springOpenHouse": {
+                "date": "2025年5月22日",
+                "title": "春のオープンハウス",
+                "excerpt": "春のオープンハウスイベント中に、キャンパスを訪問してプログラムについて学び、講師と会い、施設を探索してください。"
+            },
+            "studentAwards": {
+                "date": "2025年5月5日",
+                "title": "学生功績賞",
+                "excerpt": "一年を通じて学業、リーダーシップ、地域奉仕で優秀な成績を収めた優秀な学生を表彰します。"
+            },
+            "careerFair": {
+                "date": "2025年5月30日",
+                "title": "キャリアフェア2025",
+                "excerpt": "50社以上の企業が参加する年次キャリアフェアで、トップ企業とつながり、キャリアの機会を探索してください。"
+            },
+            "aiLab": {
+                "date": "2025年4月15日",
+                "title": "新AI研究室開設",
+                "excerpt": "学生と研究者のための最先端の設備とリソースを備えた最新のAI研究室が開設されました。"
+            }
+        }
+    },
+        "preloader": {
+        "messages": {
+            "initializing": "教育リソースを初期化中...",
+            "preparing": "学習の旅の準備中...",
+            "loading": "インタラクティブコンテンツを読み込み中...",
+            "almostReady": "もうすぐ準備完了！"
+        },
+        "techIcons": {
+            "development": "開発",
+            "cloud": "クラウド",
+            "security": "セキュリティ",
+            "data": "データ"
+        }
+    },
+        "statsSection": {
+        "header": {
+            "title": "数字で見る私たちの成果",
+            "subtitle": "測定可能な成果を通じて教育の卓越性を推進"
+        },
+        "stats": {
+            "jobPlacement": {
+                "label": "就職率"
+            },
+            "industryPartners": {
+                "label": "業界パートナー"
+            },
+            "programs": {
+                "label": "専門プログラム"
+            },
+            "graduates": {
+                "label": "卒業生"
+            }
+        }
+    },
+        "applyPage": {
+        "submitting": "申請を送信中...",
+        "submitError": "申請の送信に失敗しました",
+        "submitSuccess": "申請が正常に送信されました！",
+        "submitErrorMessage": "申請の送信中にエラーが発生しました。もう一度お試しください。",
+        "hero": {
+            "badge": "現在申請受付中",
+            "title": {
+                "part1": "あなたの",
+                "highlight": "技術の旅"
+            },
+            "description": "情報技術における充実したキャリアへの第一歩を踏み出しましょう。私たちの申請プロセスは、分かりやすくサポート体制が整っています。",
+            "badges": {
+                "duration": "10-15分の申請",
+                "experience": "事前経験不要",
+                "guidance": "ガイダンス利用可能"
+            },
+            "startButton": "申請を開始",
+            "scrollIndicator": "仕組みについて"
+        },
+        "processSteps": {
+            "0": {
+                "title": "個人情報",
+                "description": "基本的な連絡先詳細と背景"
+            },
+            "1": {
+                "title": "学歴",
+                "description": "あなたの学術的および職業的経験"
+            },
+            "2": {
+                "title": "プログラム選択",
+                "description": "希望するコースとスケジュールを選択"
+            },
+            "3": {
+                "title": "追加情報",
+                "description": "あなたの目標と動機について教えてください"
+            }
+        },
+        "confirmation": {
+            "title": "申請が送信されました！",
+            "message": "フォーラム情報アカデミーへの申請ありがとうございます。申請を受け取りましたので、まもなく審査いたします。",
+            "emailSent": "確認メールが",
+            "emailDetails": "に追加詳細とともに送信されました。",
+            "nextSteps": {
+                "title": "次のステップは？",
+                "step1": "入学チームが申請を審査します（1-2営業日）",
+                "step2": "プログラムカウンセラーとの簡単な面接の招待を受けます",
+                "step3": "合格後、入学手続きの指示を受けます"
+            },
+            "buttons": {
+                "exploreCourses": "コースを探索",
+                "contactAdmissions": "入学事務局に連絡"
+            }
+        },
+        "sidebar": {
+            "needHelp": {
+                "title": "サポートが必要ですか？",
+                "description": "入学チームが申請をサポートします。",
+                "faq": "よくある質問"
+            },
+            "deadlines": {
+                "title": "申請締切日",
+                "summer": {
+                    "date": "2025年6月15日",
+                    "label": "夏期コホート"
+                },
+                "fall": {
+                    "date": "2025年9月10日",
+                    "label": "秋期コホート"
+                },
+                "winter": {
+                    "date": "2026年1月5日",
+                    "label": "冬期コホート"
+                }
+            }
+        },
+        "testimonials": {
+            "0": {
+                "name": "田中由紀",
+                "program": "ウェブ開発",
+                "quote": "申請プロセスは分かりやすく、入学チームは非常に親切でした。現在はトップ技術企業でフロントエンド開発者として働いています。"
+            },
+            "1": {
+                "name": "渡辺健",
+                "program": "データサイエンス",
+                "quote": "申請から卒業まで、フォーラムアカデミーはすべてのステップでサポートを提供してくれました。キャリア転換は思っていたよりもスムーズでした。"
+            },
+            "2": {
+                "name": "鈴木美香",
+                "program": "サイバーセキュリティ",
+                "quote": "キャリアチェンジに不安がありましたが、申請プロセスがこれが正しい道だと確信させてくれました。コース前のガイダンスは素晴らしかったです。"
+            }
+        },
+        "testimonialsSection": {
+            "title": "申請者から卒業生へ",
+            "subtitle": "かつてあなたと同じ立場にいた学生たちの声を聞いてください",
+            "graduateLabel": "卒業生"
+        },
+        "faqSection": {
+            "title": "よくある質問",
+            "items": {
+                "requirements": {
+                    "question": "入学要件は何ですか？",
+                    "answer": "私たちのプログラムは、あらゆる背景の学生向けに設計されています。事前の経験は必要ありませんが、問題解決スキルと学習への取り組みを実証できる意欲的な個人を求めています。"
+                },
+                "duration": {
+                    "question": "申請プロセスにはどのくらい時間がかかりますか？",
+                    "answer": "オンライン申請は完了するのに約10-15分かかります。提出後、通常1-2営業日以内に面接のスケジュールのためにご連絡いたします。"
+                },
+                "payment": {
+                    "question": "支払いプランは利用できますか？",
+                    "answer": "はい、適格な申請者には分割払いプランや所得シェア契約などの柔軟な支払いオプションを提供しています。財務詳細は合格後に話し合われます。"
+                },
+                "defer": {
+                    "question": "入学を延期する必要がある場合はどうなりますか？",
+                    "answer": "状況が変わることは理解しています。合格した場合、次のコホートへの入学を延期できます。できるだけ早く入学チームにご連絡ください。"
+                }
+            }
+        }
+    },
+        "careerServicesPage": {
+        "hero": {
+            "badge": "93% 就職成功率",
+            "title": {
+                "part1": "あなたの",
+                "highlight": "技術キャリア"
+            },
+            "subtitle": "専任のキャリアサービスチームが、学生から業界プロフェッショナルへの転身を個別サポートでお手伝いします。",
+            "buttons": {
+                "applyNow": "今すぐ申請",
+                "talkToAdvisor": "アドバイザーに相談"
+            },
+            "graduatesWorkAt": "卒業生の就職先"
+        },
+        "stats": {
+            "employmentRate": "就職率",
+            "averageSalary": "平均初任給",
+            "hiringPartners": "採用パートナー",
+            "careerEvents": "年間キャリアイベント"
+        },
+        "careerSupport": {
+            "title": "包括的キャリアサポート",
+            "subtitle": "技術業界への成功転身を確実にするため、エンドツーエンドのキャリアサポートを提供します。",
+            "services": {
+                "resumeBuilding": {
+                    "title": "履歴書作成",
+                    "description": "あなたのスキルとプロジェクトを強調して採用担当者の注意を引く技術重視の履歴書を作成します。"
+                },
+                "interviewPrep": {
+                    "title": "面接準備",
+                    "description": "業界エキスパートと技術面接、ホワイトボードチャレンジ、行動面接の練習を行います。"
+                },
+                "networkingEvents": {
+                    "title": "ネットワーキングイベント",
+                    "description": "独占的なネットワーキングイベントや就職説明会で採用パートナーや業界プロフェッショナルとつながります。"
+                },
+                "jobPlacement": {
+                    "title": "就職斡旋",
+                    "description": "採用パートナーネットワークにアクセスし、個別の求人マッチングサービスを受けます。"
+                },
+                "globalOpportunities": {
+                    "title": "グローバル機会",
+                    "description": "技術企業とスタートアップのグローバルネットワークで国際的なキャリアパスを探索します。"
+                },
+                "careerAdvancement": {
+                    "title": "キャリア向上",
+                    "description": "就職後も継続的な専門的成長のためのサポートとリソースを受けます。"
+                }
+            }
+        },
+        "careerJourney": {
+            "title": "あなたのキャリアジャーニー",
+            "subtitle": "構造化されたアプローチで、技術就職市場への十分な準備を確実にします。",
+            "steps": {
+                "assessment": {
+                    "title": "キャリア評価",
+                    "description": "あなたのキャリア目標、強み、好みを理解して個人化されたキャリアプランを作成することから始めます。"
+                },
+                "skillsDevelopment": {
+                    "title": "スキル開発",
+                    "description": "技術トレーニングと並行して、雇用主に重視される重要なソフトスキルの開発をサポートします。"
+                },
+                "portfolioReview": {
+                    "title": "ポートフォリオレビュー",
+                    "description": "業界エキスパートがあなたのプロジェクトポートフォリオをレビューし、最高の作品を紹介できるよう磨きをかけます。"
+                },
+                "interviewTraining": {
+                    "title": "面接トレーニング",
+                    "description": "個人化されたフィードバックと改善戦略で技術面接と行動面接の練習を行います。"
+                },
+                "jobMatching": {
+                    "title": "求人マッチング",
+                    "description": "パートナーネットワークからあなたのスキルとキャリア志望に合致する機会にお繋ぎします。"
+                },
+                "ongoingSupport": {
+                    "title": "継続サポート",
+                    "description": "サポートは就職で終わりません。技術キャリアで成長する際の継続的ガイダンスを提供します。"
+                }
+            }
+        },
+        "hiringPartners": {
+            "title": "採用パートナー",
+            "subtitle": "定期的に卒業生を採用する主要技術企業との強固な関係を築いています。",
+            "viewAllButton": "すべてのパートナーを見る"
+        },
+        "successStories": {
+            "title": "卒業生成功ストーリー",
+            "subtitle": "卒業生たちは世界で最も革新的な企業でポジションを確保しています。",
+            "stories": {
+                "taroYamada": {
+                    "name": "山田太郎",
+                    "role": "Google ソフトウェアエンジニア",
+                    "quote": "FIAのキャリアサポートは、Googleでの夢の仕事を手に入れるのに決定的でした。面接準備は的確でした。"
+                },
+                "hanakoSato": {
+                    "name": "佐藤花子",
+                    "role": "メルカリ フルスタック開発者",
+                    "quote": "FIAのネットワーキングイベントで直接メルカリの採用チームとつながりました。卒業3週間後には複数のオファーがありました。"
+                },
+                "michaelChen": {
+                    "name": "マイケル・チェン",
+                    "role": "Amazon データサイエンティスト",
+                    "quote": "個人化されたキャリアコーチングで、以前の経験を技術職向けに再構成できました。FIAのサポートに永遠に感謝しています。"
+                }
+            },
+            "moreStoriesButton": "他の成功ストーリー"
+        },
+        "faq": {
+            "title": "キャリアサービス FAQ",
+            "subtitle": "キャリアサポートプログラムについてよくある質問への回答。",
+            "items": {
+                "whenBegins": {
+                    "question": "キャリアサポートはいつから始まりますか？",
+                    "answer": "キャリアサポートはプログラム初日から始まります。カリキュラム全体にキャリア準備を統合し、トレーニングの後期段階では専門のキャリアサービス集中講座を行います。"
+                },
+                "accessDuration": {
+                    "question": "キャリアサービスにはどのくらいアクセスできますか？",
+                    "answer": "卒業生は卒業後12か月間無制限のキャリアサポートを受けられます。その後は卒業生ネットワークに参加し、独占的イベントや機会にアクセスできます。"
+                },
+                "jobGuarantee": {
+                    "question": "就職を保証していますか？",
+                    "answer": "就職を保証はしませんが、卒業後6か月以内の93%就職率がキャリアサービスの効果を物語っています。チームはあなたのスキルに合致する機会につなげるため懸命に働きます。"
+                },
+                "visaSponsorship": {
+                    "question": "国際的な役職でのビザスポンサーシップのサポートは受けられますか？",
+                    "answer": "はい、ビザスポンサーシップでの役職確保をサポートした経験があります。有資格な国際候補者のスポンサーに前向きな企業との関係を維持しています。"
+                },
+                "freelancing": {
+                    "question": "フリーランスや起業に興味がある場合はどうですか？",
+                    "answer": "キャリアサービスチームはフリーランスやスタートアップ立ち上げに興味のある卒業生もサポートします。顧客基盤構築、料金設定、事業設立について専門的ガイダンスを提供します。"
+                }
+            }
+        }
+    },
+        "newsPage": {
+        "hero": {
+            "badge": "最新情報",
+            "title": {
+                "part1": "ニュース・",
+                "highlight": "イベント"
+            },
+            "description": "フォーラム情報アカデミーの最新情報、イベント、お知らせ、学生の功績、技術ニュースなど、最新の出来事をお知らせします。",
+            "searchPlaceholder": "ニュースやイベントを検索...",
+            "trending": {
+                "label": "トレンド",
+                "tags": {
+                    "techSymposium": "技術シンポジウム",
+                    "hackathon": "ハッカソン",
+                    "newCourses": "新コース"
+                }
+            },
+            "stats": {
+                "upcomingEvents": "今後のイベント",
+                "recentAnnouncements": "最近の発表",
+                "studentAchievements": "学生の成果"
+            },
+            "scrollIndicator": "ニュースを見る"
+        },
+        "filters": {
+            "all": "すべてのニュース",
+            "events": "イベント",
+            "announcements": "お知らせ",
+            "achievements": "成果"
+        },
+        "featured": {
+            "tag": "注目",
+            "title": "年次技術シンポジウム2025",
+            "excerpt": "業界のスピーカー、ワークショップセッション、ネットワーキング機会を特色とする年次技術シンポジウムにご参加ください。このイベントでは、AI、クラウドコンピューティング、サイバーセキュリティの最新進歩を紹介し、ハンズオンデモンストレーションとパートナー企業からのキャリア機会を提供します。"
+        },
+        "sectionTitles": {
+            "all": "最新ニュース・更新情報",
+            "events": "今後のイベント",
+            "announcements": "最近の発表",
+            "achievements": "学生の成果"
+        },
+        "categoryLabels": {
+            "event": "イベント",
+            "announcement": "お知らせ",
+            "achievement": "成果"
+        },
+        "itemCount": {
+            "singular": "件見つかりました",
+            "plural": "件見つかりました"
+        },
+        "buttons": {
+            "learnMore": "詳細を見る",
+            "registerNow": "今すぐ登録",
+            "readMore": "続きを読む"
+        },
+        "loading": "読み込み中...",
+        "videoNotSupported": "お使いのブラウザは動画タグをサポートしていません。",
+        "noResults": {
+            "title": "",
+            "items": "項目が見つかりませんでした",
+            "description": "別のカテゴリを選択するか、後でもう一度確認してください。"
+        },
+        "items": {
+            "techSymposium": {
+                "date": "2025年5月10日",
+                "title": "年次技術シンポジウム",
+                "excerpt": "業界のスピーカー、ワークショップセッション、ネットワーキング機会を特色とする年次技術シンポジウムにご参加ください。"
+            },
+            "industryPartnership": {
+                "date": "2025年4月28日",
+                "title": "新しい業界パートナーシップ",
+                "excerpt": "学生に独占的なインターンシップ機会を提供するため、SoftTech Inc.との新しいパートナーシップの発表をうれしく思います。"
+            },
+            "springOpenHouse": {
+                "date": "2025年5月22日",
+                "title": "春のオープンハウス",
+                "excerpt": "春のオープンハウスイベント期間中に、キャンパスを訪問してプログラムについて学び、講師に会い、施設を探索してください。"
+            },
+            "hackathonWinners": {
+                "date": "2025年4月15日",
+                "title": "学生が全国ハッカソンで優勝",
+                "excerpt": "学生チームが革新的なヘルスケアアプリケーションで全国コーディングチャレンジで1位を獲得しました。"
+            },
+            "quantumCourse": {
+                "date": "2025年3月30日",
+                "title": "新コース：量子コンピューティング基礎",
+                "excerpt": "来学期から量子コンピューティングの基礎と応用に関する新しい専門コースを開始します。"
+            },
+            "aiEthicsLecture": {
+                "date": "2025年6月5日",
+                "title": "特別講演：現代社会のAI倫理",
+                "excerpt": "田中美香博士によるヘルスケアと金融におけるAIの倫理的影響に関する特別講演にご参加ください。"
+            }
+        }
+    },
+        "dashboard": {
+        "loading": "ダッシュボード読み込み中...",
+        "roles": {
+            "student": "学生",
+            "teacher": "教師",
+            "administrator": "管理者",
+            "user": "ユーザー"
+        },
+        "sidebar": {
+            "title": "ダッシュボード",
+            "portal": "ポータル",
+            "nav": {
+                "overview": "概要",
+                "courses": "コース",
+                "system": "システム",
+                "calendar": "カレンダー",
+                "messages": "メッセージ",
+                "settings": "設定"
+            },
+            "logout": "ログアウト"
+        },
+        "header": {
+            "welcome": "お帰りなさい",
+            "description1": "今日のあなたの",
+            "description2": "アカウントの状況です。"
+        },
+        "student": {
+            "stats": {
+                "enrolledCourses": {
+                    "title": "履修コース"
+                },
+                "assignmentsDue": {
+                    "title": "提出期限の課題"
+                },
+                "studyHours": {
+                    "title": "学習時間"
+                },
+                "averageGrade": {
+                    "title": "平均成績"
+                }
+            },
+            "recentCourses": {
+                "title": "最近のコース",
+                "courses": {
+                    "dataScience": {
+                        "title": "データサイエンス基礎",
+                        "progress": "進捗"
+                    },
+                    "webDevelopment": {
+                        "title": "ウェブ開発",
+                        "progress": "進捗"
+                    },
+                    "machineLearning": {
+                        "title": "機械学習",
+                        "progress": "進捗"
+                    }
+                }
+            },
+            "upcomingTasks": {
+                "title": "今後のタスク",
+                "tasks": {
+                    "dataAnalysis": {
+                        "month": "5月",
+                        "title": "データ分析プロジェクト",
+                        "due": "2日後締切"
+                    },
+                    "javascriptQuiz": {
+                        "month": "5月",
+                        "title": "JavaScriptクイズ",
+                        "due": "5日後締切"
+                    }
+                }
+            },
+            "buttons": {
+                "continue": "続行"
+            }
+        },
+        "teacher": {
+            "stats": {
+                "activeCourses": {
+                    "title": "アクティブコース"
+                },
+                "totalStudents": {
+                    "title": "総学生数"
+                },
+                "pendingGrading": {
+                    "title": "採点待ち"
+                },
+                "classesToday": {
+                    "title": "今日の授業"
+                }
+            },
+            "myCourses": {
+                "title": "担当コース",
+                "courses": {
+                    "dataScience101": {
+                        "title": "データサイエンス101",
+                        "students": "学生"
+                    },
+                    "advancedAnalytics": {
+                        "title": "上級アナリティクス",
+                        "students": "学生"
+                    },
+                    "businessIntelligence": {
+                        "title": "ビジネスインテリジェンス",
+                        "students": "学生",
+                        "online": "オンライン"
+                    }
+                }
+            },
+            "todaySchedule": {
+                "title": "今日のスケジュール",
+                "schedule": {
+                    "dataScience101": {
+                        "title": "データサイエンス101",
+                        "location": "203号室 • 講義ホール"
+                    },
+                    "officeHours": {
+                        "title": "オフィスアワー",
+                        "location": "A棟 • 415号室"
+                    }
+                }
+            },
+            "buttons": {
+                "manage": "管理"
+            }
+        },
+        "admin": {
+            "stats": {
+                "totalUsers": {
+                    "title": "総ユーザー数"
+                },
+                "activeCourses": {
+                    "title": "アクティブコース"
+                },
+                "pendingApprovals": {
+                    "title": "承認待ち"
+                },
+                "systemHealth": {
+                    "title": "システム状態"
+                }
+            },
+            "userManagement": {
+                "title": "ユーザー管理",
+                "pendingApprovals": "承認待ち",
+                "registered": "登録日"
+            },
+            "systemOverview": {
+                "title": "システム概要",
+                "modules": {
+                    "userManagement": {
+                        "title": "ユーザー管理",
+                        "description": "ユーザーと権限の管理"
+                    },
+                    "courseManagement": {
+                        "title": "コース管理",
+                        "description": "すべてのコースを監督"
+                    },
+                    "systemSettings": {
+                        "title": "システム設定",
+                        "description": "システムパラメータの設定"
+                    }
+                }
+            },
+            "recentActivity": {
+                "title": "最近のアクティビティ",
+                "activities": {
+                    "userRegistrations": {
+                        "label": "新規",
+                        "title": "ユーザー登録",
+                        "description": "承認待ち"
+                    },
+                    "courseRequests": {
+                        "label": "新規",
+                        "title": "コースリクエスト",
+                        "description": "教員からの申請"
+                    }
+                }
+            },
+            "buttons": {
+                "approve": "承認",
+                "reject": "拒否",
+                "manage": "管理",
+                "configure": "設定"
+            }
+        }
+    }
+}

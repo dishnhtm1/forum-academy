@@ -1,4 +1,6 @@
-import React, { createContext, useState, useContext } from 'react';
+// src/LanguageContext.js
+import React, { createContext, useState, useContext, useEffect } from 'react';
+import i18n from '../i18n'; // <-- import your i18n configuration
 
 const LanguageContext = createContext();
 
@@ -6,8 +8,15 @@ export const LanguageProvider = ({ children }) => {
     const [language, setLanguage] = useState('EN');
 
     const toggleLanguage = () => {
-        setLanguage((prevLang) => (prevLang === 'EN' ? 'JP' : 'EN'));
+        const newLang = language === 'EN' ? 'JP' : 'EN';
+        setLanguage(newLang);
+        i18n.changeLanguage(newLang === 'EN' ? 'en' : 'ja'); // <-- change i18n language too
     };
+
+    // Optional: update i18n on initial load
+    useEffect(() => {
+        i18n.changeLanguage(language === 'EN' ? 'en' : 'ja');
+    }, [language]);
 
     return (
         <LanguageContext.Provider value={{ language, toggleLanguage }}>
@@ -16,6 +25,4 @@ export const LanguageProvider = ({ children }) => {
     );
 };
 
-export const useLanguage = () => {
-    return useContext(LanguageContext);
-};
+export const useLanguage = () => useContext(LanguageContext);

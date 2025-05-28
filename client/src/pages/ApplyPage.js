@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next'; // Add this import only
 import ApplicationForm from '../components/ApplicationForm';
 import { createApplication } from '../utils/api'; // Optional: If you prefer using your API utility
 import '../styles/ApplyPage.css';
 
 const ApplyPage = () => {
-    // const [activeStep, setActiveStep] = useState(0);
+    const { t } = useTranslation(); // Add this line only
     const [activeStep, setActiveStep] = useState(0);
     const [formData, setFormData] = useState({
         personalInfo: {},
@@ -15,7 +16,7 @@ const ApplyPage = () => {
     const [isVisible, setIsVisible] = useState(false);
     const sectionRef = useRef(null);
     
-    // Animate elements when the page loads
+    // Keep ALL your existing 3D animation code exactly as is
     useEffect(() => {
         setIsVisible(true);
         
@@ -143,7 +144,7 @@ const ApplyPage = () => {
         };
     }, []);
 
-    
+    // Keep ALL your existing form handling code exactly as is
     const handleNext = async (stepData) => {
         // Store the current step's data
         const updatedFormData = { ...formData };
@@ -180,17 +181,15 @@ const ApplyPage = () => {
         }
     };
     
-        // Replace the handleSubmit function with this updated version
-    
     const handleSubmit = async (formData) => {
         try {
             setFormStatus({
                 submitted: true,
                 error: false,
-                message: 'Submitting your application...',
+                message: t('applyPage.submitting'),
                 loading: true
             });
-    
+
             // Map form field names to server expected format
             const applicationData = {
                 // Personal Info
@@ -222,9 +221,9 @@ const ApplyPage = () => {
                 extraInfo: formData.additionalInfo.questions || '',
                 agreeToTerms: formData.additionalInfo.agreeToTerms || false
             };
-    
+
             console.log('Submitting application:', applicationData);
-    
+
             const response = await fetch('http://localhost:5000/api/application', {
                 method: 'POST',
                 headers: {
@@ -232,30 +231,30 @@ const ApplyPage = () => {
                 },
                 body: JSON.stringify(applicationData)
             });
-    
+
             const data = await response.json();
-    
+
             if (!response.ok) {
-                throw new Error(data.message || 'Failed to submit application');
+                throw new Error(data.message || t('applyPage.submitError'));
             }
-    
+
             // Success case
             setFormStatus({
                 submitted: true,
                 error: false,
-                message: 'Application submitted successfully!',
+                message: t('applyPage.submitSuccess'),
                 loading: false
             });
-    
+
             // Move to success step
             setActiveStep(4);
-    
+
         } catch (error) {
             console.error('Application submission error:', error);
             setFormStatus({
                 submitted: true,
                 error: true,
-                message: error.message || 'There was an error submitting your application. Please try again.',
+                message: error.message || t('applyPage.submitErrorMessage'),
                 loading: false
             });
         }
@@ -267,29 +266,30 @@ const ApplyPage = () => {
         message: '',
         loading: false
     });
+
     // Handle back navigation    
     const handleBack = () => {
         setActiveStep(activeStep - 1);
     };
     
-    // Testimonials from successful applicants
+    // Keep testimonials data structure - only replace text values
     const testimonials = [
         {
-            name: "Yuki Tanaka",
-            program: "Web Development",
-            quote: "The application process was straightforward, and the admissions team was incredibly helpful. Now I'm working as a front-end developer at a top tech company.",
+            name: t('applyPage.testimonials.0.name'),
+            program: t('applyPage.testimonials.0.program'),
+            quote: t('applyPage.testimonials.0.quote'),
             avatar: "/images/testimonial1.jpg"
         },
         {
-            name: "Ken Watanabe",
-            program: "Data Science",
-            quote: "From application to graduation, Forum Academy provided support every step of the way. The career transition was smoother than I expected.",
+            name: t('applyPage.testimonials.1.name'),
+            program: t('applyPage.testimonials.1.program'),
+            quote: t('applyPage.testimonials.1.quote'),
             avatar: "/images/testimonial2.jpg"
         },
         {
-            name: "Mika Suzuki",
-            program: "Cybersecurity",
-            quote: "I was nervous about changing careers, but the application process helped me confirm this was the right path. The pre-course guidance was exceptional.",
+            name: t('applyPage.testimonials.2.name'),
+            program: t('applyPage.testimonials.2.program'),
+            quote: t('applyPage.testimonials.2.quote'),
             avatar: "/images/testimonial3.jpg"
         }
     ];
@@ -298,7 +298,7 @@ const ApplyPage = () => {
         <div className="apply-page">
             {/* Enhanced 3D Hero Section */}
             <section ref={sectionRef} className={`apply-hero ${isVisible ? 'visible' : ''}`}>
-                {/* 3D Scene */}
+                {/* Keep ALL 3D Scene exactly as is */}
                 <div className="apply-scene">
                     <div className="apply-world">
                         <div className="apply-floor"></div>
@@ -318,26 +318,25 @@ const ApplyPage = () => {
                     <div className="apply-hero-content">
                         <div className="apply-hero-badge">
                             <span className="apply-badge-icon material-icons">school</span>
-                            Application now open
+                            {t('applyPage.hero.badge')}
                         </div>
-                        <h1 className="apply-hero-title">Begin Your <span className="apply-highlight-text">Tech Journey</span></h1>
+                        <h1 className="apply-hero-title">{t('applyPage.hero.title.part1')} <span className="apply-highlight-text">{t('applyPage.hero.title.highlight')}</span></h1>
                         <p className="apply-hero-description">
-                            Take the first step toward a rewarding career in information technology.
-                            Our application process is designed to be straightforward and supportive.
+                            {t('applyPage.hero.description')}
                         </p>
                         
                         <div className="apply-badges">
                             <div className="badge">
                                 <span className="material-icons">schedule</span>
-                                <span>10-15 minute application</span>
+                                <span>{t('applyPage.hero.badges.duration')}</span>
                             </div>
                             <div className="badge">
                                 <span className="material-icons">verified</span>
-                                <span>No prior experience required</span>
+                                <span>{t('applyPage.hero.badges.experience')}</span>
                             </div>
                             <div className="badge">
                                 <span className="material-icons">support_agent</span>
-                                <span>Guidance available</span>
+                                <span>{t('applyPage.hero.badges.guidance')}</span>
                             </div>
                         </div>
                         
@@ -349,7 +348,7 @@ const ApplyPage = () => {
                             }}
                         >
                             <span className="material-icons">edit_note</span>
-                            Start Application
+                            {t('applyPage.hero.startButton')}
                         </button>
                     </div>
                 </div>
@@ -357,7 +356,7 @@ const ApplyPage = () => {
                 {/* Scroll indicator */}
                 <div className="apply-scroll-indicator">
                     <a href="#application-process">
-                        <span>How it works</span>
+                        <span>{t('applyPage.hero.scrollIndicator')}</span>
                         <span className="material-icons">keyboard_arrow_down</span>
                     </a>
                 </div>
@@ -378,16 +377,16 @@ const ApplyPage = () => {
                         </div>
                         <div className="step-content">
                             <h3>
-                                {stepIndex === 0 && "Personal Information"}
-                                {stepIndex === 1 && "Educational Background"}
-                                {stepIndex === 2 && "Program Selection"}
-                                {stepIndex === 3 && "Additional Information"}
+                                {stepIndex === 0 && t('applyPage.processSteps.0.title')}
+                                {stepIndex === 1 && t('applyPage.processSteps.1.title')}
+                                {stepIndex === 2 && t('applyPage.processSteps.2.title')}
+                                {stepIndex === 3 && t('applyPage.processSteps.3.title')}
                             </h3>
                             <p>
-                                {stepIndex === 0 && "Basic contact details and background"}
-                                {stepIndex === 1 && "Your academic and professional experience"}
-                                {stepIndex === 2 && "Choose your preferred course and schedule"}
-                                {stepIndex === 3 && "Tell us about your goals and motivations"}
+                                {stepIndex === 0 && t('applyPage.processSteps.0.description')}
+                                {stepIndex === 1 && t('applyPage.processSteps.1.description')}
+                                {stepIndex === 2 && t('applyPage.processSteps.2.description')}
+                                {stepIndex === 3 && t('applyPage.processSteps.3.description')}
                             </p>
                         </div>
                     </div>
@@ -405,22 +404,22 @@ const ApplyPage = () => {
                                     <div className="confirmation-icon">
                                         <span className="material-icons">check_circle</span>
                                     </div>
-                                    <h2>Application Submitted!</h2>
-                                    <p>Thank you for applying to Forum Information Academy. We've received your application and will review it shortly.</p>
-                                    <p className="confirmation-info">A confirmation email has been sent to <strong>{formData.personalInfo.email}</strong> with additional details.</p>
+                                    <h2>{t('applyPage.confirmation.title')}</h2>
+                                    <p>{t('applyPage.confirmation.message')}</p>
+                                    <p className="confirmation-info">{t('applyPage.confirmation.emailSent')} <strong>{formData.personalInfo.email}</strong> {t('applyPage.confirmation.emailDetails')}</p>
                                     
                                     <div className="next-steps">
-                                        <h3>What's Next?</h3>
+                                        <h3>{t('applyPage.confirmation.nextSteps.title')}</h3>
                                         <ol>
-                                            <li>Our admissions team will review your application (1-2 business days)</li>
-                                            <li>You'll receive an invitation for a brief interview with our program counselor</li>
-                                            <li>Upon acceptance, you'll receive enrollment instructions</li>
+                                            <li>{t('applyPage.confirmation.nextSteps.step1')}</li>
+                                            <li>{t('applyPage.confirmation.nextSteps.step2')}</li>
+                                            <li>{t('applyPage.confirmation.nextSteps.step3')}</li>
                                         </ol>
                                     </div>
                                     
                                     <div className="confirmation-actions">
-                                        <a href="/courses" className="btn btn-outline">Explore Courses</a>
-                                        <a href="/contact" className="btn btn-primary">Contact Admissions</a>
+                                        <a href="/courses" className="btn btn-outline">{t('applyPage.confirmation.buttons.exploreCourses')}</a>
+                                        <a href="/contact" className="btn btn-primary">{t('applyPage.confirmation.buttons.contactAdmissions')}</a>
                                     </div>
                                 </div>
                             ) : (
@@ -436,8 +435,8 @@ const ApplyPage = () => {
                         {/* Side panel with information */}
                         <div className="form-sidebar">
                             <div className="sidebar-widget need-help">
-                                <h3>Need Help?</h3>
-                                <p>Our admissions team is available to assist you with your application.</p>
+                                <h3>{t('applyPage.sidebar.needHelp.title')}</h3>
+                                <p>{t('applyPage.sidebar.needHelp.description')}</p>
                                 <div className="contact-options">
                                     <a href="tel:+81123456789" className="contact-option">
                                         <span className="material-icons">phone</span>
@@ -449,25 +448,25 @@ const ApplyPage = () => {
                                     </a>
                                     <a href="/faq" className="contact-option">
                                         <span className="material-icons">help_outline</span>
-                                        <span>FAQ</span>
+                                        <span>{t('applyPage.sidebar.needHelp.faq')}</span>
                                     </a>
                                 </div>
                             </div>
                             
                             <div className="sidebar-widget">
-                                <h3>Application Deadlines</h3>
+                                <h3>{t('applyPage.sidebar.deadlines.title')}</h3>
                                 <div className="deadlines">
                                     <div className="deadline-item">
-                                        <span className="deadline-date">June 15, 2025</span>
-                                        <span className="deadline-label">Summer Cohort</span>
+                                        <span className="deadline-date">{t('applyPage.sidebar.deadlines.summer.date')}</span>
+                                        <span className="deadline-label">{t('applyPage.sidebar.deadlines.summer.label')}</span>
                                     </div>
                                     <div className="deadline-item">
-                                        <span className="deadline-date">September 10, 2025</span>
-                                        <span className="deadline-label">Fall Cohort</span>
+                                        <span className="deadline-date">{t('applyPage.sidebar.deadlines.fall.date')}</span>
+                                        <span className="deadline-label">{t('applyPage.sidebar.deadlines.fall.label')}</span>
                                     </div>
                                     <div className="deadline-item">
-                                        <span className="deadline-date">January 5, 2026</span>
-                                        <span className="deadline-label">Winter Cohort</span>
+                                        <span className="deadline-date">{t('applyPage.sidebar.deadlines.winter.date')}</span>
+                                        <span className="deadline-label">{t('applyPage.sidebar.deadlines.winter.label')}</span>
                                     </div>
                                 </div>
                             </div>
@@ -479,8 +478,8 @@ const ApplyPage = () => {
             {/* Testimonials Section */}
             <section className="testimonials-section">
                 <div className="container">
-                    <h2 className="section-title">From Applicants to Graduates</h2>
-                    <p className="section-subtitle">Hear from students who were once in your position</p>
+                    <h2 className="section-title">{t('applyPage.testimonialsSection.title')}</h2>
+                    <p className="section-subtitle">{t('applyPage.testimonialsSection.subtitle')}</p>
                     
                     <div className="testimonials-grid">
                         {testimonials.map((testimonial, index) => (
@@ -492,7 +491,7 @@ const ApplyPage = () => {
                                     <p className="testimonial-quote">"{testimonial.quote}"</p>
                                     <div className="testimonial-author">
                                         <h4>{testimonial.name}</h4>
-                                        <p>{testimonial.program} Graduate</p>
+                                        <p>{testimonial.program} {t('applyPage.testimonialsSection.graduateLabel')}</p>
                                     </div>
                                 </div>
                             </div>
@@ -504,23 +503,23 @@ const ApplyPage = () => {
             {/* FAQs Section */}
             <section className="faq-section">
                 <div className="container">
-                    <h2 className="section-title">Frequently Asked Questions</h2>
+                    <h2 className="section-title">{t('applyPage.faqSection.title')}</h2>
                     <div className="faq-grid">
                         <div className="faq-item">
-                            <h3>What are the admission requirements?</h3>
-                            <p>Our programs are designed for students from all backgrounds. While no prior experience is required, we look for motivated individuals who can demonstrate problem-solving skills and a commitment to learning.</p>
+                            <h3>{t('applyPage.faqSection.items.requirements.question')}</h3>
+                            <p>{t('applyPage.faqSection.items.requirements.answer')}</p>
                         </div>
                         <div className="faq-item">
-                            <h3>How long does the application process take?</h3>
-                            <p>The online application takes approximately 10-15 minutes to complete. After submission, you'll typically hear back from us within 1-2 business days to schedule your interview.</p>
+                            <h3>{t('applyPage.faqSection.items.duration.question')}</h3>
+                            <p>{t('applyPage.faqSection.items.duration.answer')}</p>
                         </div>
                         <div className="faq-item">
-                            <h3>Are there payment plans available?</h3>
-                            <p>Yes, we offer flexible payment options including installment plans and income share agreements for qualified applicants. Financial details will be discussed after acceptance.</p>
+                            <h3>{t('applyPage.faqSection.items.payment.question')}</h3>
+                            <p>{t('applyPage.faqSection.items.payment.answer')}</p>
                         </div>
                         <div className="faq-item">
-                            <h3>What if I need to defer my enrollment?</h3>
-                            <p>We understand circumstances change. If you're accepted, you can defer your enrollment to the next cohort. Please contact the admissions team as early as possible.</p>
+                            <h3>{t('applyPage.faqSection.items.defer.question')}</h3>
+                            <p>{t('applyPage.faqSection.items.defer.answer')}</p>
                         </div>
                     </div>
                 </div>
