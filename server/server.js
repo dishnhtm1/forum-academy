@@ -11,16 +11,23 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Routes
 app.use('/api/contact', require('./routes/contactRoutes'));
 app.use('/api/application', require('./routes/applicationRoutes'));
 app.use('/api/auth', require('./routes/authRoutes'));
 
-// Basic health check route
+// Health check route
 app.get('/api/health', (req, res) => {
   res.json({ message: 'Server is running', status: 'OK' });
 });
 
+// Root route
+app.get('/', (req, res) => {
+  res.send('✅ Backend is running.');
+});
+
 app.use(errorHandler);
 
+// Port
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
