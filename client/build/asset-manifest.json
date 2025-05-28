@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.ea4ab32b.css",
-    "main.js": "/static/js/main.098faab8.js",
+    "main.js": "/static/js/main.c358f307.js",
     "static/media/AI1.png": "/static/media/AI1.241159c7cd61906bbd13.png",
     "static/media/honda.png": "/static/media/honda.55cadca24baf0deeddd1.png",
     "static/media/web3.png": "/static/media/web3.d725648ec8c5f645e82b.png",
@@ -34,10 +34,10 @@
     "static/media/fa-v4compatibility.woff2": "/static/media/fa-v4compatibility.ea8f94e1d22e0d35ccd4.woff2",
     "index.html": "/index.html",
     "main.ea4ab32b.css.map": "/static/css/main.ea4ab32b.css.map",
-    "main.098faab8.js.map": "/static/js/main.098faab8.js.map"
+    "main.c358f307.js.map": "/static/js/main.c358f307.js.map"
   },
   "entrypoints": [
     "static/css/main.ea4ab32b.css",
-    "static/js/main.098faab8.js"
+    "static/js/main.c358f307.js"
   ]
 }

@@ -133,18 +133,12 @@
 
 // utils/api.js
 //const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-const cors = require('cors');
+const API_BASE_URL = process.env.REACT_APP_API_URL + '/api'; 
+axios.post(`${API_BASE_URL}/auth/login`, {
+  email: 'test@example.com',
+  password: 'test123'
+});
 
-app.use(cors({
-  origin: 'https://forum-frontend-app.azurestaticapps.net', // exact frontend domain
-  credentials: true
-}));
-
-//axios.post(`${BASE_URL}/api/auth/login`, {...})
-//axios.post(`${API_BASE_URL}/auth/login`, {
-//  email: 'test@example.com',
-//  password: 'test123'
-//});
 
 
 
