@@ -1,11 +1,13 @@
 import React, { useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next'; // Add this import only
 import '../styles/ContactSection.css';
 
 const ContactSection = () => {
+    const { t } = useTranslation(); // Add this line only
     const sectionRef = useRef(null);
 
-    // Animation on scroll
+    // Keep ALL your existing animation code exactly as is
     useEffect(() => {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -28,6 +30,7 @@ const ContactSection = () => {
 
     return (
         <section className="contact-section" id="contact" ref={sectionRef}>
+            {/* Keep ALL shape animations exactly as is */}
             <div className="contact-shapes">
                 <div className="contact-shape shape-1"></div>
                 <div className="contact-shape shape-2"></div>
@@ -35,11 +38,12 @@ const ContactSection = () => {
             
             <div className="container">
                 <div className="section-header">
-                    <span className="section-badge">Get in Touch</span>
-                    <h2>Contact Information</h2>
-                    <p className="section-subtitle">Have questions or ready to start your tech journey? Our team is here to help.</p>
+                    <span className="section-badge">{t('contactSection.header.badge')}</span>
+                    <h2>{t('contactSection.header.title')}</h2>
+                    <p className="section-subtitle">{t('contactSection.header.subtitle')}</p>
                 </div>
                 
+                {/* Keep ALL structure and animations exactly as is */}
                 <div className="contact-info-compact">
                     <div className="compact-card">
                         <div className="compact-info">
@@ -48,8 +52,8 @@ const ContactSection = () => {
                                     <span className="material-icons">support_agent</span>
                                 </div>
                                 <div className="info-title">
-                                    <h3>Contact Us</h3>
-                                    <p>Our team is ready to assist you</p>
+                                    <h3>{t('contactSection.info.title')}</h3>
+                                    <p>{t('contactSection.info.subtitle')}</p>
                                 </div>
                             </div>
                             
@@ -57,18 +61,18 @@ const ContactSection = () => {
                                 <div className="info-contact-item" data-type="location">
                                     <span className="material-icons">location_on</span>
                                     <div>
-                                        <h4>Our Location</h4>
-                                        <p>3-1-19 Benten, Chuo-ku, Niigata City<br />Niigata Prefecture, Japan 950-0901</p>
+                                        <h4>{t('contactSection.contact.location.title')}</h4>
+                                        <p>{t('contactSection.contact.location.address')}</p>
                                     </div>
                                 </div>
                                 
                                 <div className="info-contact-item" data-type="phone">
                                     <span className="material-icons">phone</span>
                                     <div>
-                                        <h4>Phone</h4>
+                                        <h4>{t('contactSection.contact.phone.title')}</h4>
                                         <p>
-                                            <a href="tel:025-247-6300">025-247-6300</a> (TEL)<br />
-                                            <a href="tel:025-247-6305">025-247-6305</a> (FAX)
+                                            <a href="tel:025-247-6300">025-247-6300</a> ({t('contactSection.contact.phone.tel')})<br />
+                                            <a href="tel:025-247-6305">025-247-6305</a> ({t('contactSection.contact.phone.fax')})
                                         </p>
                                     </div>
                                 </div>
@@ -76,7 +80,7 @@ const ContactSection = () => {
                                 <div className="info-contact-item" data-type="email">
                                     <span className="material-icons">email</span>
                                     <div>
-                                        <h4>Email</h4>
+                                        <h4>{t('contactSection.contact.website.title')}</h4>
                                         <p>
                                             <a href="https://www.forum.ac.jp/">https://www.forum.ac.jp/</a>
                                         </p>
@@ -86,15 +90,15 @@ const ContactSection = () => {
                                 <div className="info-contact-item" data-type="hours">
                                     <span className="material-icons">schedule</span>
                                     <div>
-                                        <h4>Hours</h4>
-                                        <p>Mon-Fri: 9AM-5PM</p>
+                                        <h4>{t('contactSection.contact.hours.title')}</h4>
+                                        <p>{t('contactSection.contact.hours.time')}</p>
                                     </div>
                                 </div>
                             </div>
                             
                             <div className="contact-social-row">
                                 <div className="social-connect">
-                                    <span>Connect:</span>
+                                    <span>{t('contactSection.social.connect')}:</span>
                                     <div className="social-icons-compact">
                                         <a href="https://twitter.com/forumacademy" aria-label="Twitter">
                                             <span className="material-icons">alternate_email</span>
@@ -111,7 +115,7 @@ const ContactSection = () => {
                                     </div>
                                 </div>
                                 <Link to="/contact" className="btn-contact-us">
-                                    Contact Us
+                                    {t('contactSection.buttons.contactUs')}
                                     <span className="material-icons">arrow_forward</span>
                                 </Link>
                             </div>
@@ -120,37 +124,37 @@ const ContactSection = () => {
                         <div className="compact-map">
                             <div className="map-iframe-container">
                                 <iframe 
-                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2992.020979364653!2d139.05593607569955!3d37.912437971951!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x5ff4c9908234a571%3A0xc204d9ebdf574ad4!2z44OV44Kp44O844Op44Og5oOF5aCx44Ki44Kr44OH44Of44O85bCC6ZaA5a2m5qCh!5e1!3m2!1sen!2sjp!4v1747807045557!5m2!1sen!2sjp" 
+                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2992.020979364653!2d139.05593607569955!3d37.912437971951!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x5ff4c9908234a571%3A0xc204d9ebdf574ad4!2z44OV44Kq44O844Op44Og5oOF5aCx44Ki44Kr44OH44Of44O85bCC6ZaA5a2m5qCh!5e1!3m2!1sen!2sjp!4v1747807045557!5m2!1sen!2sjp" 
                                     width="100%" 
                                     height="100%" 
                                     style={{ border: 0 }} 
                                     allowFullScreen="" 
                                     loading="lazy" 
                                     referrerPolicy="no-referrer-when-downgrade"
-                                    title="Forum Information Academy Location"
+                                    title={t('contactSection.map.title')}
                                 />
                             </div>
                             <a href="https://goo.gl/maps/8F5HVCFgEZj4TPUR7" className="btn-map-directions" target="_blank" rel="noopener noreferrer">
                                 <span className="material-icons">directions</span>
-                                <span>Get Directions</span>
+                                <span>{t('contactSection.buttons.getDirections')}</span>
                             </a>
                         </div>
                     </div>
                 </div>
                 
                 <div className="faq-preview">
-                    <h3>Frequently Asked Questions</h3>
+                    <h3>{t('contactSection.faq.title')}</h3>
                     <div className="faq-items">
                         <div className="faq-item">
-                            <h4>How can I schedule a campus tour?</h4>
-                            <p>Campus tours are available Monday through Friday. You can schedule one by contacting our admissions office or using our online booking system.</p>
+                            <h4>{t('contactSection.faq.items.campusTour.question')}</h4>
+                            <p>{t('contactSection.faq.items.campusTour.answer')}</p>
                         </div>
                         <div className="faq-item">
-                            <h4>What are the application deadlines?</h4>
-                            <p>Applications are accepted on a rolling basis, but we recommend applying at least 2 months before your desired start date to ensure processing time.</p>
+                            <h4>{t('contactSection.faq.items.deadlines.question')}</h4>
+                            <p>{t('contactSection.faq.items.deadlines.answer')}</p>
                         </div>
                     </div>
-                    <a href="/faq" className="btn-more-faq">View All FAQs</a>
+                    <a href="/faq" className="btn-more-faq">{t('contactSection.buttons.viewAllFAQs')}</a>
                 </div>
             </div>
         </section>

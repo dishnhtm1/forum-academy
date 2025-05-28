@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next'; // Add this import only
 import '../styles/Hero.css';
-import heroImage from '../assets/images/web3.png';
+import heroImage from '../assets/images/png13.jpg';
 
 const Hero = () => {
+    const { t } = useTranslation(); // Add this line only
     const [isVisible, setIsVisible] = useState(false);
     
+    // Keep ALL your existing 3D animation code exactly as is
     useEffect(() => {
         const timer = setTimeout(() => {
             setIsVisible(true);
@@ -243,41 +246,39 @@ const Hero = () => {
                 <div className="hero-content">
                     <div className="hero-text">                        
                         <h1 className="hero-title">
-                            Elevate Your Future with <br/>
-                            <span className="highlight-text">Tech Education</span> That Works
+                            {t('hero.title.line1')} <br/>
+                            <span className="highlight-text">{t('hero.title.highlight')}</span> {t('hero.title.line2')}
                         </h1>
                         
                         <p className="hero-description">
-                            Join Forum Information Academy for industry-driven tech training
-                            that transforms beginners into professionals ready for today's
-                            digital economy.
+                            {t('hero.description')}
                         </p>
                         
                         <div className="hero-cta-group">
                             <Link to="/courses" className="btn btn-primary">
-                                <span>Explore Programs</span>
+                                <span>{t('hero.buttons.explorePrograms')}</span>
                                 <span className="material-icons">arrow_forward</span>
                             </Link>
                             
                             <Link to="/apply" className="btn btn-outline">
-                                <span>Apply Now</span>
+                                <span>{t('hero.buttons.applyNow')}</span>
                             </Link>
                         </div>
                         
                         <div className="hero-stats">
                             <div className="stat-item">
                                 <div className="stat-number">93%</div>
-                                <div className="stat-label">Job Placement</div>
+                                <div className="stat-label">{t('hero.stats.jobPlacement')}</div>
                             </div>
                             
                             <div className="stat-item">
                                 <div className="stat-number">50+</div>
-                                <div className="stat-label">Industry Partners</div>
+                                <div className="stat-label">{t('hero.stats.industryPartners')}</div>
                             </div>
                             
                             <div className="stat-item">
                                 <div className="stat-number">15+</div>
-                                <div className="stat-label">Years of Excellence</div>
+                                <div className="stat-label">{t('hero.stats.yearsExcellence')}</div>
                             </div>
                         </div>
                     </div>
@@ -286,7 +287,7 @@ const Hero = () => {
                         <div className="image-card">
                             <img 
                                 src={heroImage} 
-                                alt="Student at Forum Information Academy"
+                                alt={t('hero.imageAlt')}
                                 className="hero-image"
                             />
                             
@@ -295,19 +296,19 @@ const Hero = () => {
                             <div className="tech-tag-group">
                                 <div className="tech-tag">
                                     <span className="material-icons">code</span>
-                                    <span>Web Development</span>
+                                    <span>{t('hero.techTags.webDevelopment')}</span>
                                 </div>
                                 <div className="tech-tag">
                                     <span className="material-icons">security</span>
-                                    <span>Cybersecurity</span>
+                                    <span>{t('hero.techTags.cybersecurity')}</span>
                                 </div>
                                 <div className="tech-tag">
                                     <span className="material-icons">analytics</span>
-                                    <span>Data Science</span>
+                                    <span>{t('hero.techTags.dataScience')}</span>
                                 </div>
                                 <div className="tech-tag">
                                     <span className="material-icons">cloud</span>
-                                    <span>Cloud Computing</span>
+                                    <span>{t('hero.techTags.cloudComputing')}</span>
                                 </div>
                             </div>
                         </div>

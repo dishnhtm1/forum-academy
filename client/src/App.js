@@ -1,5 +1,7 @@
+import './i18n'; // ✅ correct file name
 import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { useTranslation } from 'react-i18next'; // Add this import
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Preloader from './components/Preloader';
@@ -20,6 +22,7 @@ import 'aos/dist/aos.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 function App() {
+    const { t, i18n } = useTranslation(); // Add this line
     const [loading, setLoading] = useState(true);
     const [loginModalOpen, setLoginModalOpen] = useState(false);
     const [registerModalOpen, setRegisterModalOpen] = useState(false); // Add register modal state
@@ -48,6 +51,15 @@ function App() {
             });
         }
     }, [loading]);
+
+    // Debug i18n - check console
+    useEffect(() => {
+        console.log('i18n ready:', i18n.isInitialized);
+        console.log('Current language:', i18n.language);
+        console.log('Available languages:', i18n.languages);
+        console.log('Test translation (welcome):', t('welcome'));
+        console.log('Test translation (language):', t('language'));
+    }, [i18n, t]);
 
     // Login Modal Functions
     const openLoginModal = () => setLoginModalOpen(true);

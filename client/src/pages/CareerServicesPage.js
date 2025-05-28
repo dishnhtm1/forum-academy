@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next'; // Add this import only
 import '../styles/CareerServicesPage.css';
 
 // Import partner logos
@@ -13,9 +14,15 @@ import yahooLogo from '../assets/partners/yahoo.png';
 import suzukiLogo from '../assets/partners/suzuki.png';
 import hondaLogo from '../assets/partners/honda.png';
 
+import png1Image from '../assets/images/png9.jpg';
+import png2Image from '../assets/images/png20.jpg';
+import png3Image from '../assets/images/png1.jpg';
+// ...existing imports...
 
 function CareerServicesPage() {
-    // Add animation when page loads
+    const { t } = useTranslation(); // Add this line only
+    
+    // Keep ALL your existing animation code exactly as is
     useEffect(() => {
         // Handle FAQ toggles
         const faqItems = document.querySelectorAll('.faq-item');
@@ -121,29 +128,30 @@ function CareerServicesPage() {
                     <div className="career-hero-content">
                         <div className="hero-badge animate-entry">
                             <span className="material-icons">rocket_launch</span>
-                            <span>93% Employment Success Rate</span>
+                            <span>{t('careerServicesPage.hero.badge')}</span>
                         </div>
                         
-                        <h1 className="animate-entry">Launch Your <span className="highlight-text">Tech Career</span></h1>
+                        <h1 className="animate-entry">
+                            {t('careerServicesPage.hero.title.part1')} <span className="highlight-text">{t('careerServicesPage.hero.title.highlight')}</span>
+                        </h1>
                         
                         <p className="subtitle animate-entry">
-                            Our dedicated career services team helps you transition 
-                            from student to industry professional with personalized support.
+                            {t('careerServicesPage.hero.subtitle')}
                         </p>
                         
                         <div className="hero-actions animate-entry">
                             <Link to="/apply" className="btn btn-primary">
-                                Apply Now
+                                {t('careerServicesPage.hero.buttons.applyNow')}
                                 <span className="material-icons">arrow_forward</span>
                             </Link>
                             
                             <Link to="/contact" className="btn btn-outline">
-                                Talk to an Advisor
+                                {t('careerServicesPage.hero.buttons.talkToAdvisor')}
                             </Link>
                         </div>
 
                         <div className="hero-companies animate-entry">
-                            <p>Our graduates work at:</p>
+                            <p>{t('careerServicesPage.hero.graduatesWorkAt')}:</p>
                             <div className="company-logos">
                                 <img src={microsoftLogo} alt="Microsoft" />
                                 <img src={googleLogo} alt="Google" />
@@ -160,22 +168,22 @@ function CareerServicesPage() {
                         <div className="stats-grid">
                             <div className="stat-card animate-entry" data-delay="0">
                                 <div className="stat-number"><span className="counter" data-target="93">0</span>%</div>
-                                <div className="stat-label">Employment Rate</div>
+                                <div className="stat-label">{t('careerServicesPage.stats.employmentRate')}</div>
                             </div>
                             
                             <div className="stat-card animate-entry" data-delay="100">
                                 <div className="stat-number">¥<span className="counter" data-target="4.2">0</span>M</div>
-                                <div className="stat-label">Average Starting Salary</div>
+                                <div className="stat-label">{t('careerServicesPage.stats.averageSalary')}</div>
                             </div>
                             
                             <div className="stat-card animate-entry" data-delay="200">
                                 <div className="stat-number"><span className="counter" data-target="200">0</span>+</div>
-                                <div className="stat-label">Hiring Partners</div>
+                                <div className="stat-label">{t('careerServicesPage.stats.hiringPartners')}</div>
                             </div>
                             
                             <div className="stat-card animate-entry" data-delay="300">
                                 <div className="stat-number"><span className="counter" data-target="14">0</span>+</div>
-                                <div className="stat-label">Career Events Annually</div>
+                                <div className="stat-label">{t('careerServicesPage.stats.careerEvents')}</div>
                             </div>
                         </div>
                     </div>
@@ -186,8 +194,8 @@ function CareerServicesPage() {
             <section className="career-support-section">
                 <div className="container">
                     <div className="section-header animate-entry">
-                        <h2>Comprehensive Career Support</h2>
-                        <p>We provide end-to-end career support to ensure your successful transition into the tech industry.</p>
+                        <h2>{t('careerServicesPage.careerSupport.title')}</h2>
+                        <p>{t('careerServicesPage.careerSupport.subtitle')}</p>
                     </div>
 
                     <div className="support-grid">
@@ -195,48 +203,48 @@ function CareerServicesPage() {
                             <div className="card-icon">
                                 <span className="material-icons">assignment_ind</span>
                             </div>
-                            <h3>Resume Building</h3>
-                            <p>Craft a tech-focused resume that highlights your skills and projects to catch recruiters' attention.</p>
+                            <h3>{t('careerServicesPage.careerSupport.services.resumeBuilding.title')}</h3>
+                            <p>{t('careerServicesPage.careerSupport.services.resumeBuilding.description')}</p>
                         </div>
 
                         <div className="support-card animate-entry">
                             <div className="card-icon">
                                 <span className="material-icons">record_voice_over</span>
                             </div>
-                            <h3>Interview Preparation</h3>
-                            <p>Practice technical interviews, whiteboard challenges, and behavioral questions with industry experts.</p>
+                            <h3>{t('careerServicesPage.careerSupport.services.interviewPrep.title')}</h3>
+                            <p>{t('careerServicesPage.careerSupport.services.interviewPrep.description')}</p>
                         </div>
 
                         <div className="support-card animate-entry">
                             <div className="card-icon">
                                 <span className="material-icons">handshake</span>
                             </div>
-                            <h3>Networking Events</h3>
-                            <p>Connect with hiring partners and industry professionals at exclusive networking events and job fairs.</p>
+                            <h3>{t('careerServicesPage.careerSupport.services.networkingEvents.title')}</h3>
+                            <p>{t('careerServicesPage.careerSupport.services.networkingEvents.description')}</p>
                         </div>
 
                         <div className="support-card animate-entry">
                             <div className="card-icon">
                                 <span className="material-icons">work</span>
                             </div>
-                            <h3>Job Placement</h3>
-                            <p>Access our network of hiring partners and receive personalized job matching services.</p>
+                            <h3>{t('careerServicesPage.careerSupport.services.jobPlacement.title')}</h3>
+                            <p>{t('careerServicesPage.careerSupport.services.jobPlacement.description')}</p>
                         </div>
 
                         <div className="support-card animate-entry">
                             <div className="card-icon">
                                 <span className="material-icons">public</span>
                             </div>
-                            <h3>Global Opportunities</h3>
-                            <p>Explore international career paths with our global network of tech companies and startups.</p>
+                            <h3>{t('careerServicesPage.careerSupport.services.globalOpportunities.title')}</h3>
+                            <p>{t('careerServicesPage.careerSupport.services.globalOpportunities.description')}</p>
                         </div>
 
                         <div className="support-card animate-entry">
                             <div className="card-icon">
                                 <span className="material-icons">trending_up</span>
                             </div>
-                            <h3>Career Advancement</h3>
-                            <p>Receive ongoing support and resources for continued professional growth after placement.</p>
+                            <h3>{t('careerServicesPage.careerSupport.services.careerAdvancement.title')}</h3>
+                            <p>{t('careerServicesPage.careerSupport.services.careerAdvancement.description')}</p>
                         </div>
                     </div>
                 </div>
@@ -246,56 +254,56 @@ function CareerServicesPage() {
             <section className="career-journey-section">
                 <div className="container">
                     <div className="section-header animate-entry">
-                        <h2>Your Career Journey</h2>
-                        <p>Our structured approach ensures you're fully prepared for the tech job market.</p>
+                        <h2>{t('careerServicesPage.careerJourney.title')}</h2>
+                        <p>{t('careerServicesPage.careerJourney.subtitle')}</p>
                     </div>
 
                     <div className="journey-timeline">
                         <div className="timeline-item animate-entry">
                             <div className="timeline-marker">1</div>
                             <div className="timeline-content">
-                                <h3>Career Assessment</h3>
-                                <p>We start by understanding your career goals, strengths, and preferences to create a personalized career plan.</p>
+                                <h3>{t('careerServicesPage.careerJourney.steps.assessment.title')}</h3>
+                                <p>{t('careerServicesPage.careerJourney.steps.assessment.description')}</p>
                             </div>
                         </div>
 
                         <div className="timeline-item animate-entry">
                             <div className="timeline-marker">2</div>
                             <div className="timeline-content">
-                                <h3>Skills Development</h3>
-                                <p>Alongside your technical training, we help develop essential soft skills valued by employers.</p>
+                                <h3>{t('careerServicesPage.careerJourney.steps.skillsDevelopment.title')}</h3>
+                                <p>{t('careerServicesPage.careerJourney.steps.skillsDevelopment.description')}</p>
                             </div>
                         </div>
 
                         <div className="timeline-item animate-entry">
                             <div className="timeline-marker">3</div>
                             <div className="timeline-content">
-                                <h3>Portfolio Review</h3>
-                                <p>Our industry experts review and help polish your project portfolio to showcase your best work.</p>
+                                <h3>{t('careerServicesPage.careerJourney.steps.portfolioReview.title')}</h3>
+                                <p>{t('careerServicesPage.careerJourney.steps.portfolioReview.description')}</p>
                             </div>
                         </div>
 
                         <div className="timeline-item animate-entry">
                             <div className="timeline-marker">4</div>
                             <div className="timeline-content">
-                                <h3>Interview Training</h3>
-                                <p>Practice technical and behavioral interviews with personalized feedback and improvement strategies.</p>
+                                <h3>{t('careerServicesPage.careerJourney.steps.interviewTraining.title')}</h3>
+                                <p>{t('careerServicesPage.careerJourney.steps.interviewTraining.description')}</p>
                             </div>
                         </div>
 
                         <div className="timeline-item animate-entry">
                             <div className="timeline-marker">5</div>
                             <div className="timeline-content">
-                                <h3>Job Matching</h3>
-                                <p>We connect you with opportunities that match your skills and career aspirations from our partner network.</p>
+                                <h3>{t('careerServicesPage.careerJourney.steps.jobMatching.title')}</h3>
+                                <p>{t('careerServicesPage.careerJourney.steps.jobMatching.description')}</p>
                             </div>
                         </div>
 
                         <div className="timeline-item animate-entry">
                             <div className="timeline-marker">6</div>
                             <div className="timeline-content">
-                                <h3>Ongoing Support</h3>
-                                <p>Our support doesn't end at placement—we provide continued guidance as you grow in your tech career.</p>
+                                <h3>{t('careerServicesPage.careerJourney.steps.ongoingSupport.title')}</h3>
+                                <p>{t('careerServicesPage.careerJourney.steps.ongoingSupport.description')}</p>
                             </div>
                         </div>
                     </div>
@@ -306,8 +314,8 @@ function CareerServicesPage() {
             <section className="hiring-partners-section">
                 <div className="container">
                     <div className="section-header animate-entry">
-                        <h2>Our Hiring Partners</h2>
-                        <p>We've built strong relationships with leading tech companies who regularly hire our graduates.</p>
+                        <h2>{t('careerServicesPage.hiringPartners.title')}</h2>
+                        <p>{t('careerServicesPage.hiringPartners.subtitle')}</p>
                     </div>
 
                     <div className="partners-grid">
@@ -338,7 +346,7 @@ function CareerServicesPage() {
                     </div>
 
                     <div className="partners-cta animate-entry">
-                        <Link to="/partners" className="btn btn-secondary">View All Partners</Link>
+                        <Link to="/partners" className="btn btn-secondary">{t('careerServicesPage.hiringPartners.viewAllButton')}</Link>
                     </div>
                 </div>
             </section>
@@ -347,56 +355,56 @@ function CareerServicesPage() {
             <section className="success-stories-section">
                 <div className="container">
                     <div className="section-header animate-entry">
-                        <h2>Graduate Success Stories</h2>
-                        <p>Our alumni have secured positions at some of the world's most innovative companies.</p>
+                        <h2>{t('careerServicesPage.successStories.title')}</h2>
+                        <p>{t('careerServicesPage.successStories.subtitle')}</p>
                     </div>
 
                     <div className="stories-grid">
                         <div className="story-card animate-entry">
                             <div className="story-image">
-                                {/* <img src={graduate1Image} alt="Taro Yamada" /> */}
+                                <img src={png1Image} alt="Taro Yamada" />
                                 <div className="company-badge">
                                     <img src={googleLogo} alt="Google" />
                                 </div>
                             </div>
                             <div className="story-content">
-                                <h3>Taro Yamada</h3>
-                                <p className="story-role">Software Engineer at Google</p>
-                                <p className="story-quote">"The career support at FIA was instrumental in helping me land my dream job at Google. Their interview preparation was spot-on."</p>
+                                <h3>{t('careerServicesPage.successStories.stories.taroYamada.name')}</h3>
+                                <p className="story-role">{t('careerServicesPage.successStories.stories.taroYamada.role')}</p>
+                                <p className="story-quote">"{t('careerServicesPage.successStories.stories.taroYamada.quote')}"</p>
                             </div>
                         </div>
 
                         <div className="story-card animate-entry">
                             <div className="story-image">
-                                <img src="/images/graduates/graduate2.jpg" alt="Hanako Sato" />
+                                <img src={png2Image} alt="Hanako Sato" />
                                 <div className="company-badge">
                                     <img src={yahooLogo} alt="Yahoo" />
                                 </div>
                             </div>
                             <div className="story-content">
-                                <h3>Hanako Sato</h3>
-                                <p className="story-role">Full-Stack Developer at Mercari</p>
-                                <p className="story-quote">"FIA's networking events connected me directly with Mercari's recruiting team. Three weeks after graduation, I had multiple offers."</p>
+                                <h3>{t('careerServicesPage.successStories.stories.hanakoSato.name')}</h3>
+                                <p className="story-role">{t('careerServicesPage.successStories.stories.hanakoSato.role')}</p>
+                                <p className="story-quote">"{t('careerServicesPage.successStories.stories.hanakoSato.quote')}"</p>
                             </div>
                         </div>
 
                         <div className="story-card animate-entry">
                             <div className="story-image">
-                                <img src="" alt="Michael Chen" />
+                                <img src={png3Image} alt="Michael Chen" />
                                 <div className="company-badge">
                                     <img src={amazonLogo} alt="Amazon" />
                                 </div>
                             </div>
                             <div className="story-content">
-                                <h3>Michael Chen</h3>
-                                <p className="story-role">Data Scientist at Amazon</p>
-                                <p className="story-quote">"The personalized career coaching helped me reframe my previous experience for tech roles. Forever grateful for FIA's support."</p>
+                                <h3>{t('careerServicesPage.successStories.stories.michaelChen.name')}</h3>
+                                <p className="story-role">{t('careerServicesPage.successStories.stories.michaelChen.role')}</p>
+                                <p className="story-quote">"{t('careerServicesPage.successStories.stories.michaelChen.quote')}"</p>
                             </div>
                         </div>
                     </div>
 
                     <div className="stories-cta animate-entry">
-                        <Link to="/testimonials" className="btn btn-secondary">More Success Stories</Link>
+                        <Link to="/testimonials" className="btn btn-secondary">{t('careerServicesPage.successStories.moreStoriesButton')}</Link>
                     </div>
                 </div>
             </section>
@@ -405,58 +413,58 @@ function CareerServicesPage() {
             <section className="career-faq-section">
                 <div className="container">
                     <div className="section-header animate-entry">
-                        <h2>Career Services FAQ</h2>
-                        <p>Answers to commonly asked questions about our career support programs.</p>
+                        <h2>{t('careerServicesPage.faq.title')}</h2>
+                        <p>{t('careerServicesPage.faq.subtitle')}</p>
                     </div>
 
                     <div className="faq-container">
                         <div className="faq-item animate-entry">
                             <div className="faq-question">
-                                <h3>When does career support begin?</h3>
+                                <h3>{t('careerServicesPage.faq.items.whenBegins.question')}</h3>
                                 <span className="material-icons toggle-icon">add</span>
                             </div>
                             <div className="faq-answer">
-                                <p>Career support begins from day one of your program. We integrate career readiness throughout the curriculum, with dedicated career service intensives in the later stages of your training.</p>
+                                <p>{t('careerServicesPage.faq.items.whenBegins.answer')}</p>
                             </div>
                         </div>
 
                         <div className="faq-item animate-entry">
                             <div className="faq-question">
-                                <h3>How long do I have access to career services?</h3>
+                                <h3>{t('careerServicesPage.faq.items.accessDuration.question')}</h3>
                                 <span className="material-icons toggle-icon">add</span>
                             </div>
                             <div className="faq-answer">
-                                <p>Graduates receive unlimited career support for 12 months after graduation. After that, you'll join our alumni network with access to exclusive events and opportunities.</p>
+                                <p>{t('careerServicesPage.faq.items.accessDuration.answer')}</p>
                             </div>
                         </div>
 
                         <div className="faq-item animate-entry">
                             <div className="faq-question">
-                                <h3>Do you guarantee job placement?</h3>
+                                <h3>{t('careerServicesPage.faq.items.jobGuarantee.question')}</h3>
                                 <span className="material-icons toggle-icon">add</span>
                             </div>
                             <div className="faq-answer">
-                                <p>While we don't guarantee placement, our 93% employment rate within 6 months of graduation speaks to the effectiveness of our career services. Our team works tirelessly to connect you with opportunities that match your skills.</p>
+                                <p>{t('careerServicesPage.faq.items.jobGuarantee.answer')}</p>
                             </div>
                         </div>
 
                         <div className="faq-item animate-entry">
                             <div className="faq-question">
-                                <h3>Can I get help with visa sponsorship for international roles?</h3>
+                                <h3>{t('careerServicesPage.faq.items.visaSponsorship.question')}</h3>
                                 <span className="material-icons toggle-icon">add</span>
                             </div>
                             <div className="faq-answer">
-                                <p>Yes, we have experience helping graduates secure roles with visa sponsorship. We maintain relationships with companies that are open to sponsoring qualified international candidates.</p>
+                                <p>{t('careerServicesPage.faq.items.visaSponsorship.answer')}</p>
                             </div>
                         </div>
 
                         <div className="faq-item animate-entry">
                             <div className="faq-question">
-                                <h3>What if I'm interested in freelancing or entrepreneurship?</h3>
+                                <h3>{t('careerServicesPage.faq.items.freelancing.question')}</h3>
                                 <span className="material-icons toggle-icon">add</span>
                             </div>
                             <div className="faq-answer">
-                                <p>Our career services team also supports graduates interested in freelancing or launching startups. We offer specialized guidance on building a client base, setting rates, and establishing your business.</p>
+                                <p>{t('careerServicesPage.faq.items.freelancing.answer')}</p>
                             </div>
                         </div>
                     </div>

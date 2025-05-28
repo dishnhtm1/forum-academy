@@ -1,13 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next'; // Add this import only
 import '../styles/NewsSection.css'; 
+import data1Video from '../assets/videos/vid1.mp4';
+import data2Video from '../assets/videos/vid2.mp4';
+import data3Video from '../assets/videos/vid3.mp4';
+import data4Video from '../assets/videos/vid4.mp4';
+import data5Video from '../assets/videos/vid5.mp4';
+import data6Video from '../assets/videos/vid6.mp4';
 
 const NewsSection = () => {
+    const { t } = useTranslation(); // Add this line only
     const [filter, setFilter] = useState('all');
     const [loadedVideos, setLoadedVideos] = useState({});
     const [isVisible, setIsVisible] = useState(false);
     const sectionRef = useRef(null);
 
-    // Intersection Observer for animations
+    // Keep ALL your existing intersection observer animation code exactly as is
     useEffect(() => {
         const observer = new IntersectionObserver(
             ([entry]) => {
@@ -33,68 +41,70 @@ const NewsSection = () => {
         setLoadedVideos(prev => ({...prev, [id]: true}));
     };
 
+    // Keep ALL your existing data structure - only replace text values
     const newsItems = [
         {
             id: 1,
-            date: "May 10, 2025",
-            title: "Annual Tech Symposium",
-            excerpt: "Join us for our annual technology symposium featuring industry speakers, workshop sessions, and networking opportunities.",
-            videoSrc: "videos/data2.mp4",
+            date: t('newsSection.items.techSymposium.date'),
+            title: t('newsSection.items.techSymposium.title'),
+            excerpt: t('newsSection.items.techSymposium.excerpt'),
+            videoSrc: data1Video,
             fullContent: "/news/tech-symposium",
             category: "event"
         },
         {
             id: 2,
-            date: "April 28, 2025",
-            title: "New Industry Partnership",
-            excerpt: "We're excited to announce our new partnership with SoftTech Inc. to provide exclusive internship opportunities for our students.",
-            videoSrc: "videos/data1.mp4",
+            date: t('newsSection.items.industryPartnership.date'),
+            title: t('newsSection.items.industryPartnership.title'),
+            excerpt: t('newsSection.items.industryPartnership.excerpt'),
+            videoSrc: data2Video,
             fullContent: "/news/industry-partnership",
             category: "news"
         },
         {
             id: 3,
-            date: "May 22, 2025",
-            title: "Spring Open House",
-            excerpt: "Visit our campus to learn about our programs, meet instructors, and explore our facilities during our Spring Open House event.",
-            videoSrc: "videos/web1.mp4",
+            date: t('newsSection.items.springOpenHouse.date'),
+            title: t('newsSection.items.springOpenHouse.title'),
+            excerpt: t('newsSection.items.springOpenHouse.excerpt'),
+            videoSrc: data3Video,
             fullContent: "/news/spring-open-house",
             category: "event"
         },
         {
             id: 4,
-            date: "May 5, 2025",
-            title: "Student Achievement Awards",
-            excerpt: "Celebrating our outstanding students who have excelled in academics, leadership, and community service throughout the year.",
-            videoSrc: "videos/award1.mp4",
+            date: t('newsSection.items.studentAwards.date'),
+            title: t('newsSection.items.studentAwards.title'),
+            excerpt: t('newsSection.items.studentAwards.excerpt'),
+            videoSrc: data4Video,
             fullContent: "/news/student-awards",
             category: "news"
         },
         {
             id: 5,
-            date: "May 30, 2025",
-            title: "Career Fair 2025",
-            excerpt: "Connect with top employers and explore career opportunities at our annual career fair featuring over 50 companies.",
-            videoSrc: "videos/career1.mp4",
+            date: t('newsSection.items.careerFair.date'),
+            title: t('newsSection.items.careerFair.title'),
+            excerpt: t('newsSection.items.careerFair.excerpt'),
+            videoSrc: data5Video,
             fullContent: "/news/career-fair",
             category: "event"
         },
         {
             id: 6,
-            date: "April 15, 2025",
-            title: "New AI Lab Opening",
-            excerpt: "State-of-the-art AI research lab opens with cutting-edge equipment and resources for students and researchers.",
-            videoSrc: "videos/ai-lab.mp4",
+            date: t('newsSection.items.aiLab.date'),
+            title: t('newsSection.items.aiLab.title'),
+            excerpt: t('newsSection.items.aiLab.excerpt'),
+            videoSrc: data6Video,
             fullContent: "/news/ai-lab",
             category: "news"
         }
     ];
 
+    // Keep ALL your existing filtering logic exactly as is
     const filteredNews = filter === 'all' 
         ? newsItems 
         : newsItems.filter(item => item.category === filter);
 
-    // Stagger animation delay for items
+    // Keep ALL your existing animation delay function exactly as is
     const getAnimationDelay = (index) => {
         return `${index * 0.1}s`;
     };
@@ -103,8 +113,8 @@ const NewsSection = () => {
         <section className="news-events" id="news" ref={sectionRef}>
             <div className="container">
                 <div className="section-header"> 
-                    <h2>News & Events</h2>
-                    <p>Stay updated with the latest happenings at Forum Information Academy.</p>
+                    <h2>{t('newsSection.header.title')}</h2>
+                    <p>{t('newsSection.header.subtitle')}</p>
                 </div>
                 
                 <div className="filter-buttons">
@@ -112,19 +122,19 @@ const NewsSection = () => {
                         className={`filter-btn ${filter === 'all' ? 'active' : ''}`} 
                         onClick={() => setFilter('all')}
                     >
-                        All
+                        {t('newsSection.filters.all')}
                     </button>
                     <button 
                         className={`filter-btn ${filter === 'news' ? 'active' : ''}`} 
                         onClick={() => setFilter('news')}
                     >
-                        News
+                        {t('newsSection.filters.news')}
                     </button>
                     <button 
                         className={`filter-btn ${filter === 'event' ? 'active' : ''}`} 
                         onClick={() => setFilter('event')}
                     >
-                        Events
+                        {t('newsSection.filters.events')}
                     </button>
                 </div>
                 
@@ -143,7 +153,7 @@ const NewsSection = () => {
                                 {!loadedVideos[item.id] && (
                                     <div className="video-placeholder">
                                         <div className="loading-spinner"></div>
-                                        Loading...
+                                        {t('newsSection.loading')}
                                     </div>
                                 )}
                                 <video 
@@ -156,18 +166,20 @@ const NewsSection = () => {
                                     style={{opacity: loadedVideos[item.id] ? 1 : 0}}
                                 >
                                     <source src={item.videoSrc} type="video/mp4" />
-                                    Your browser does not support the video tag.
+                                    {t('newsSection.videoNotSupported')}
                                 </video>
                             </div>
                             <div className="news-content">
                                 <div className="news-meta">
                                     <span className="news-date">{item.date}</span>
-                                    <span className="news-category">{item.category}</span>
+                                    <span className="news-category">
+                                        {item.category === 'event' ? t('newsSection.categoryLabels.event') : t('newsSection.categoryLabels.news')}
+                                    </span>
                                 </div>
                                 <h3 className="news-title">{item.title}</h3>
                                 <p className="news-excerpt">{item.excerpt}</p>
                                 <a href={item.fullContent} className="btn btn-outline">
-                                    Read More
+                                    {t('newsSection.buttons.readMore')}
                                 </a>
                             </div>
                         </div>
@@ -175,7 +187,7 @@ const NewsSection = () => {
                 </div>
                 
                 <div className="text-center mt-4">
-                    <a href="/news" className="btn btn-primary">View All News</a>
+                    <a href="/news" className="btn btn-primary">{t('newsSection.buttons.viewAllNews')}</a>
                 </div>
             </div>
         </section>

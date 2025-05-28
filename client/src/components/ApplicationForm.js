@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next'; // Add this import only
 import '../styles/ApplicationForm.css';
 
 const ApplicationForm = ({ step, onNext, onBack, formData }) => {
+    const { t } = useTranslation(); // Add this line only
     const [currentFormData, setCurrentFormData] = useState({});
     const [errors, setErrors] = useState({});
 
-    // Load existing data when step changes
+    // Keep ALL your existing useEffect and logic exactly as is
     useEffect(() => {
         switch (step) {
             case 0:
@@ -25,11 +27,10 @@ const ApplicationForm = ({ step, onNext, onBack, formData }) => {
         }
     }, [step, formData]);
 
-    
+    // Keep ALL your existing form handling exactly as is
     const handleChange = (e) => {
         const { id, name, value, type, checked } = e.target;
         
-        // Use name if provided (for checkboxes), otherwise use id
         const fieldName = name || id;
         
         setCurrentFormData({
@@ -37,7 +38,6 @@ const ApplicationForm = ({ step, onNext, onBack, formData }) => {
             [fieldName]: type === 'checkbox' ? checked : value
         });
         
-        // Clear error when user fixes a field
         if (errors[fieldName]) {
             setErrors({
                 ...errors,
@@ -52,12 +52,12 @@ const ApplicationForm = ({ step, onNext, onBack, formData }) => {
         
         requiredFields.forEach(field => {
             if (!currentFormData[field]) {
-                newErrors[field] = 'This field is required';
+                newErrors[field] = t('applicationForm.validation.required');
             }
         });
         
         if (step === 0 && currentFormData.email && !/\S+@\S+\.\S+/.test(currentFormData.email)) {
-            newErrors.email = 'Please enter a valid email address';
+            newErrors.email = t('applicationForm.validation.emailInvalid');
         }
         
         setErrors(newErrors);
@@ -66,14 +66,14 @@ const ApplicationForm = ({ step, onNext, onBack, formData }) => {
     
     const getRequiredFields = () => {
         switch (step) {
-            case 0: // Personal Information
+            case 0:
                 return ['fullName', 'email', 'phone', 'dateOfBirth'];
-            case 1: // Education Background
+            case 1:
                 return ['highestEducation'];
-            case 2: // Course Selection
+            case 2:
                 return ['course', 'startDate'];
-            case 3: // Additional Information
-                return ['howDidYouHear', 'agreeToTerms']; // Add agreeToTerms here
+            case 3:
+                return ['howDidYouHear', 'agreeToTerms'];
             default:
                 return [];
         }
@@ -87,24 +87,24 @@ const ApplicationForm = ({ step, onNext, onBack, formData }) => {
         }
     };
 
-    // Get step title and progress percentage
+    // Get step title and progress percentage - only replace text
     const getStepInfo = () => {
         const titles = [
-            "Personal Information",
-            "Educational Background",
-            "Program Selection",
-            "Additional Information"
+            t('applicationForm.steps.personalInfo.title'),
+            t('applicationForm.steps.education.title'),
+            t('applicationForm.steps.programSelection.title'),
+            t('applicationForm.steps.additionalInfo.title')
         ];
         
         return {
-            title: titles[step] || "Application",
+            title: titles[step] || t('applicationForm.steps.default'),
             progress: ((step + 1) / 4) * 100
         };
     };
     
     const stepInfo = getStepInfo();
 
-    // Render different form fields based on the current step
+    // Keep ALL your form structure exactly as is - only replace text
     const renderFormFields = () => {
         switch (step) {
             case 0:
@@ -121,14 +121,14 @@ const ApplicationForm = ({ step, onNext, onBack, formData }) => {
                             />
                             <span className="highlight"></span>
                             <span className="bar"></span>
-                            <label>Full Name *</label>
+                            <label>{t('applicationForm.fields.fullName')}</label>
                             {errors.fullName && <div className="error-message">{errors.fullName}</div>}
                         </div>
                         
                         <div className="form-group">
                             <input
                                 type="email"
-                                id="email"  // This should be unique across all forms
+                                id="email"
                                 value={currentFormData.email || ''}
                                 onChange={handleChange}
                                 className={errors.email ? 'error' : ''}
@@ -136,7 +136,7 @@ const ApplicationForm = ({ step, onNext, onBack, formData }) => {
                             />
                             <span className="highlight"></span>
                             <span className="bar"></span>
-                            <label>Email Address *</label>
+                            <label>{t('applicationForm.fields.email')}</label>
                             {errors.email && <div className="error-message">{errors.email}</div>}
                         </div>
                         
@@ -151,7 +151,7 @@ const ApplicationForm = ({ step, onNext, onBack, formData }) => {
                             />
                             <span className="highlight"></span>
                             <span className="bar"></span>
-                            <label>Phone Number *</label>
+                            <label>{t('applicationForm.fields.phone')}</label>
                             {errors.phone && <div className="error-message">{errors.phone}</div>}
                         </div>
                         
@@ -166,7 +166,7 @@ const ApplicationForm = ({ step, onNext, onBack, formData }) => {
                             />
                             <span className="highlight"></span>
                             <span className="bar"></span>
-                            <label className="date-label">Date of Birth *</label>
+                            <label className="date-label">{t('applicationForm.fields.dateOfBirth')}</label>
                             {errors.dateOfBirth && <div className="error-message">{errors.dateOfBirth}</div>}
                         </div>
                         
@@ -179,7 +179,7 @@ const ApplicationForm = ({ step, onNext, onBack, formData }) => {
                             />
                             <span className="highlight"></span>
                             <span className="bar"></span>
-                            <label>Address</label>
+                            <label>{t('applicationForm.fields.address')}</label>
                         </div>
                     </>
                 );
@@ -196,16 +196,16 @@ const ApplicationForm = ({ step, onNext, onBack, formData }) => {
                                 required
                             >
                                 <option value=""></option>
-                                <option value="highSchool">High School</option>
-                                <option value="associates">Associate's Degree</option>
-                                <option value="bachelors">Bachelor's Degree</option>
-                                <option value="masters">Master's Degree</option>
-                                <option value="doctorate">Doctorate</option>
-                                <option value="other">Other</option>
+                                <option value="highSchool">{t('applicationForm.options.education.highSchool')}</option>
+                                <option value="associates">{t('applicationForm.options.education.associates')}</option>
+                                <option value="bachelors">{t('applicationForm.options.education.bachelors')}</option>
+                                <option value="masters">{t('applicationForm.options.education.masters')}</option>
+                                <option value="doctorate">{t('applicationForm.options.education.doctorate')}</option>
+                                <option value="other">{t('applicationForm.options.education.other')}</option>
                             </select>
                             <span className="highlight"></span>
                             <span className="bar"></span>
-                            <label>Highest Level of Education *</label>
+                            <label>{t('applicationForm.fields.highestEducation')}</label>
                             {errors.highestEducation && <div className="error-message">{errors.highestEducation}</div>}
                         </div>
                         
@@ -218,7 +218,7 @@ const ApplicationForm = ({ step, onNext, onBack, formData }) => {
                             />
                             <span className="highlight"></span>
                             <span className="bar"></span>
-                            <label>Institution Name</label>
+                            <label>{t('applicationForm.fields.schoolName')}</label>
                         </div>
                         
                         <div className="form-group">
@@ -230,7 +230,7 @@ const ApplicationForm = ({ step, onNext, onBack, formData }) => {
                             />
                             <span className="highlight"></span>
                             <span className="bar"></span>
-                            <label>Field of Study</label>
+                            <label>{t('applicationForm.fields.fieldOfStudy')}</label>
                         </div>
                         
                         <div className="form-group">
@@ -242,7 +242,7 @@ const ApplicationForm = ({ step, onNext, onBack, formData }) => {
                             />
                             <span className="highlight"></span>
                             <span className="bar"></span>
-                            <label>Graduation Year</label>
+                            <label>{t('applicationForm.fields.graduationYear')}</label>
                         </div>
                         
                         <div className="form-group">
@@ -254,7 +254,7 @@ const ApplicationForm = ({ step, onNext, onBack, formData }) => {
                             ></textarea>
                             <span className="highlight"></span>
                             <span className="bar"></span>
-                            <label>Relevant Experience</label>
+                            <label>{t('applicationForm.fields.relevantExperience')}</label>
                         </div>
                     </>
                 );
@@ -271,15 +271,15 @@ const ApplicationForm = ({ step, onNext, onBack, formData }) => {
                                 required
                             >
                                 <option value=""></option>
-                                <option value="webDevelopment">Web Development</option>
-                                <option value="dataScience">Data Science & Analytics</option>
-                                <option value="cybersecurity">Cybersecurity</option>
-                                <option value="cloudComputing">Cloud Computing</option>
-                                <option value="aiMachineLearning">AI & Machine Learning</option>
+                                <option value="webDevelopment">{t('applicationForm.options.courses.webDevelopment')}</option>
+                                <option value="dataScience">{t('applicationForm.options.courses.dataScience')}</option>
+                                <option value="cybersecurity">{t('applicationForm.options.courses.cybersecurity')}</option>
+                                <option value="cloudComputing">{t('applicationForm.options.courses.cloudComputing')}</option>
+                                <option value="aiMachineLearning">{t('applicationForm.options.courses.aiMachineLearning')}</option>
                             </select>
                             <span className="highlight"></span>
                             <span className="bar"></span>
-                            <label>Desired Program *</label>
+                            <label>{t('applicationForm.fields.course')}</label>
                             {errors.course && <div className="error-message">{errors.course}</div>}
                         </div>
                         
@@ -290,13 +290,13 @@ const ApplicationForm = ({ step, onNext, onBack, formData }) => {
                                 onChange={handleChange}
                             >
                                 <option value=""></option>
-                                <option value="fullTime">Full-Time</option>
-                                <option value="partTime">Part-Time</option>
-                                <option value="weekend">Weekend</option>
+                                <option value="fullTime">{t('applicationForm.options.studyFormat.fullTime')}</option>
+                                <option value="partTime">{t('applicationForm.options.studyFormat.partTime')}</option>
+                                <option value="weekend">{t('applicationForm.options.studyFormat.weekend')}</option>
                             </select>
                             <span className="highlight"></span>
                             <span className="bar"></span>
-                            <label>Study Format</label>
+                            <label>{t('applicationForm.fields.studyFormat')}</label>
                         </div>
                         
                         <div className="form-group select-group">
@@ -308,13 +308,13 @@ const ApplicationForm = ({ step, onNext, onBack, formData }) => {
                                 required
                             >
                                 <option value=""></option>
-                                <option value="summer2025">Summer 2025 (June)</option>
-                                <option value="fall2025">Fall 2025 (September)</option>
-                                <option value="winter2026">Winter 2026 (January)</option>
+                                <option value="summer2025">{t('applicationForm.options.startDate.summer2025')}</option>
+                                <option value="fall2025">{t('applicationForm.options.startDate.fall2025')}</option>
+                                <option value="winter2026">{t('applicationForm.options.startDate.winter2026')}</option>
                             </select>
                             <span className="highlight"></span>
                             <span className="bar"></span>
-                            <label>Desired Start Date *</label>
+                            <label>{t('applicationForm.fields.startDate')}</label>
                             {errors.startDate && <div className="error-message">{errors.startDate}</div>}
                         </div>
                         
@@ -327,7 +327,7 @@ const ApplicationForm = ({ step, onNext, onBack, formData }) => {
                             ></textarea>
                             <span className="highlight"></span>
                             <span className="bar"></span>
-                            <label>Why are you interested in this program?</label>
+                            <label>{t('applicationForm.fields.programInterest')}</label>
                         </div>
                     </>
                 );
@@ -344,16 +344,16 @@ const ApplicationForm = ({ step, onNext, onBack, formData }) => {
                                 required
                             >
                                 <option value=""></option>
-                                <option value="searchEngine">Search Engine</option>
-                                <option value="socialMedia">Social Media</option>
-                                <option value="friend">Friend or Family</option>
-                                <option value="advertisement">Advertisement</option>
-                                <option value="event">Event or Career Fair</option>
-                                <option value="other">Other</option>
+                                <option value="searchEngine">{t('applicationForm.options.howDidYouHear.searchEngine')}</option>
+                                <option value="socialMedia">{t('applicationForm.options.howDidYouHear.socialMedia')}</option>
+                                <option value="friend">{t('applicationForm.options.howDidYouHear.friend')}</option>
+                                <option value="advertisement">{t('applicationForm.options.howDidYouHear.advertisement')}</option>
+                                <option value="event">{t('applicationForm.options.howDidYouHear.event')}</option>
+                                <option value="other">{t('applicationForm.options.howDidYouHear.other')}</option>
                             </select>
                             <span className="highlight"></span>
                             <span className="bar"></span>
-                            <label>How did you hear about us? *</label>
+                            <label>{t('applicationForm.fields.howDidYouHear')}</label>
                             {errors.howDidYouHear && <div className="error-message">{errors.howDidYouHear}</div>}
                         </div>
                         
@@ -366,7 +366,7 @@ const ApplicationForm = ({ step, onNext, onBack, formData }) => {
                             ></textarea>
                             <span className="highlight"></span>
                             <span className="bar"></span>
-                            <label>What are your career goals?</label>
+                            <label>{t('applicationForm.fields.careerGoals')}</label>
                         </div>
                         
                         <div className="form-group">
@@ -378,19 +378,19 @@ const ApplicationForm = ({ step, onNext, onBack, formData }) => {
                             ></textarea>
                             <span className="highlight"></span>
                             <span className="bar"></span>
-                            <label>Questions or Comments</label>
+                            <label>{t('applicationForm.fields.questions')}</label>
                         </div>
                         <div className="form-checkbox">
                             <input
                                 type="checkbox"
-                                id="application-terms"  // Unique ID for the element
-                                name="agreeToTerms"     // Name for the state property
+                                id="application-terms"
+                                name="agreeToTerms"
                                 checked={currentFormData.agreeToTerms || false}
                                 onChange={handleChange}
                                 required
                             />
                             <label htmlFor="application-terms">
-                                I agree to the <a href="/terms" target="_blank" rel="noopener noreferrer">Terms & Conditions</a> and consent to Forum Information Academy processing my data.
+                                {t('applicationForm.fields.agreeToTerms')} <a href="/terms" target="_blank" rel="noopener noreferrer">{t('applicationForm.termsLink')}</a> {t('applicationForm.dataConsent')}
                             </label>
                             {errors.agreeToTerms && <div className="error-message">{errors.agreeToTerms}</div>}
                         </div>
@@ -398,7 +398,7 @@ const ApplicationForm = ({ step, onNext, onBack, formData }) => {
                 );
                 
             default:
-                return <div>Unknown step</div>;
+                return <div>{t('applicationForm.unknownStep')}</div>;
         }
     };
 
@@ -409,13 +409,13 @@ const ApplicationForm = ({ step, onNext, onBack, formData }) => {
                     <h2>{stepInfo.title}</h2>
                     <div className="progress-container">
                         <div className="progress-bar" style={{ width: `${stepInfo.progress}%` }}></div>
-                        <div className="step-indicator">Step {step + 1} of 4</div>
+                        <div className="step-indicator">{t('applicationForm.stepIndicator', { current: step + 1, total: 4 })}</div>
                     </div>
                     <p className="form-description">
-                        {step === 0 && "Tell us about yourself so we can get to know you better."}
-                        {step === 1 && "Tell us about your educational experience and qualifications."}
-                        {step === 2 && "Select the program and schedule that best fits your needs."}
-                        {step === 3 && "Help us understand your goals and how we can better assist you."}
+                        {step === 0 && t('applicationForm.steps.personalInfo.description')}
+                        {step === 1 && t('applicationForm.steps.education.description')}
+                        {step === 2 && t('applicationForm.steps.programSelection.description')}
+                        {step === 3 && t('applicationForm.steps.additionalInfo.description')}
                     </p>
                 </div>
                 
@@ -430,14 +430,14 @@ const ApplicationForm = ({ step, onNext, onBack, formData }) => {
                                 onClick={onBack}
                             >
                                 <span className="material-icons">arrow_back</span>
-                                Back
+                                {t('applicationForm.buttons.back')}
                             </button>
                         )}
                         <button 
                             type="submit" 
                             className="btn btn-primary"
                         >
-                            {step === 3 ? 'Submit Application' : 'Continue'}
+                            {step === 3 ? t('applicationForm.buttons.submit') : t('applicationForm.buttons.continue')}
                             <span className="material-icons">
                                 {step === 3 ? 'send' : 'arrow_forward'}
                             </span>

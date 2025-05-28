@@ -1,12 +1,14 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next'; // Add this import
 import '../styles/Footer.css';
 
 const Footer = () => {
+    const { t } = useTranslation(); // Add this line
     const currentYear = new Date().getFullYear();
     
     useEffect(() => {
-        // Create floating bubbles
+        // Keep your original bubble animation code
         const createBubbles = () => {
             const bubblesContainer = document.getElementById('bubbles-container');
             if (!bubblesContainer) return;
@@ -42,20 +44,23 @@ const Footer = () => {
 
     return (
         <footer className="site-footer">
+            {/* Keep your original wave animations */}
             <div className="waves">
                 <div className="wave wave-1"></div>
                 <div className="wave wave-2"></div>
                 <div className="wave wave-3"></div>
             </div>
             
+            {/* Keep your original floating bubbles */}
             <div className="floating-bubbles" id="bubbles-container">
                 {/* Bubbles will be added by JavaScript */}
             </div>
             
             <div className="footer-content">
                 <div className="footer-section about">
-                    <h2 className="footer-heading">About Us</h2>
-                    <p>Empowering careers through cutting-edge IT education with innovative solutions at Forum Information Academy.</p>
+                    <h2 className="footer-heading">{t('footer.aboutAcademy')}</h2>
+                    <p>{t('footer.aboutDescription')}</p>
+                    {/* Keep your original social icons structure */}
                     <div className="social-icons">
                         <a href="https://facebook.com/" target="_blank" rel="noopener noreferrer" className="social-icon" data-platform="facebook">
                             <i className="fab fa-facebook-f"></i>
@@ -76,39 +81,39 @@ const Footer = () => {
                 </div>
                 
                 <div className="footer-section footer-links">
-                    <h2 className="footer-heading">Quick Links</h2>
+                    <h2 className="footer-heading">{t('footer.quickLinks')}</h2>
                     <ul>
-                        <li><Link to="/" data-nav="home">Home</Link></li>
-                        <li><Link to="/courses" data-nav="courses">Courses</Link></li>
-                        <li><Link to="/about" data-nav="about">About Us</Link></li>
-                        <li><Link to="/news" data-nav="news">News & Events</Link></li>
-                        <li><Link to="/apply" data-nav="apply">Apply Now</Link></li>
+                        <li><Link to="/" data-nav="home">{t('navigation.home')}</Link></li>
+                        <li><Link to="/courses" data-nav="courses">{t('navigation.programs')}</Link></li>
+                        <li><Link to="/about" data-nav="about">{t('navigation.aboutUs')}</Link></li>
+                        <li><Link to="/news" data-nav="news">{t('navigation.newsEvents')}</Link></li>
+                        <li><Link to="/apply" data-nav="apply">{t('buttons.applyNow')}</Link></li>
                     </ul>
                 </div>
                 
                 <div className="footer-section contact">
-                    <h2 className="footer-heading">Contact Us</h2>
-                    <p><i className="fas fa-map-marker-alt"></i> 3-1-19 Benten, Chuo-ku, Niigata City <br/>Niigata Prefecture, Japan 950-0901</p>
-                    <p><i className="fas fa-phone"></i> TEL: 025-247-6300 <br /> FAX: 025-247-6305</p>
+                    <h2 className="footer-heading">{t('footer.contactUs')}</h2>
+                    <p><i className="fas fa-map-marker-alt"></i> {t('footer.address')}</p>
+                    <p><i className="fas fa-phone"></i> {t('footer.phone')}</p>
                     <p><i className="fas fa-envelope"></i> <a href="https://www.forum.ac.jp/">https://www.forum.ac.jp/</a></p>
-                    <p><i className="fas fa-clock"></i> Mon-Fri: 9:00 AM - 6:00 PM</p>
+                    <p><i className="fas fa-clock"></i> {t('footer.hours')}</p>
                 </div>
                 
                 <div className="footer-section newsletter">
-                    <h2 className="footer-heading">Subscribe</h2>
-                    <p>Subscribe to our newsletter to receive updates on our latest courses and special offers.</p>
+                    <h2 className="footer-heading">{t('footer.subscribe')}</h2>
+                    <p>{t('footer.subscribeDescription')}</p>
                     <form className="newsletter-form">
-                        <input type="email" placeholder="Enter your email" required />
-                        <button type="submit">Subscribe</button>
+                        <input type="email" placeholder={t('footer.emailPlaceholder')} required />
+                        <button type="submit">{t('footer.subscribeButton')}</button>
                     </form>
                 </div>
             </div>
             
             <div className="copyright">
-                <p>&copy; {currentYear} Forum Information Academy. All rights reserved.</p>
+                <p>&copy; {currentYear} Forum Information Academy. {t('footer.allRightsReserved')}</p>
                 <div className="footer-legal-links">
-                    <a href="/privacy-policy">Privacy Policy</a>
-                    <a href="/terms">Terms of Service</a>
+                    <a href="/privacy-policy">{t('footer.privacyPolicy')}</a>
+                    <a href="/terms">{t('footer.termsOfService')}</a>
                 </div>
             </div>
         </footer>

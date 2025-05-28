@@ -1,94 +1,127 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next'; // Add this import only
 import '../styles/CourseSection.css';
+import webImage from '../assets/images/web.jpg';
+import dataImage from '../assets/images/data.jpg';
+import cyberImage from '../assets/images/cyber.jpg';
+import cloudImage from '../assets/images/cloud.jpg';
+import aiImage from '../assets/images/Ai.jpg';
+import mobileImage from '../assets/images/mobile.png';
 
 const CourseSection = ({ limit, showFilters = false, title = "Our Featured Courses" }) => {
+    const { t } = useTranslation(); // Add this line only
     const [activeFilter, setActiveFilter] = useState('all');
     const [visibleCourses, setVisibleCourses] = useState(3);
     const sectionRef = useRef(null);
     
+    // Keep ALL your existing courses data structure - only replace text values
     const courses = [
         {
             id: 'web-dev',
-            title: 'Full-Stack Web Development',
-            description: 'Master both front-end and back-end technologies to build complete web applications. Learn HTML, CSS, JavaScript, React, Node.js, and database integration.',
-            image: '/images/web3.png',
-            duration: '12 Weeks',
-            startDate: 'Jun 1',
+            title: t('courseSection.courses.webDev.title'),
+            description: t('courseSection.courses.webDev.description'),
+            image: webImage,
+            duration: t('courseSection.courses.webDev.duration'),
+            startDate: t('courseSection.courses.webDev.startDate'),
             price: '¥350,000',
-            category: 'Web Development',
+            category: t('courseSection.courses.webDev.category'),
             badgeColor: 'primary',
-            level: 'Beginner-Intermediate',
-            features: ['24 Projects', 'Career Support', 'Industry Mentors']
+            level: t('courseSection.courses.webDev.level'),
+            features: [
+                t('courseSection.courses.webDev.features.0'),
+                t('courseSection.courses.webDev.features.1'),
+                t('courseSection.courses.webDev.features.2')
+            ]
         },
         {
             id: 'data-science',
-            title: 'Data Science & Analytics',
-            description: 'Learn to analyze and interpret complex data sets using Python, R, SQL, and visualization tools. Includes machine learning fundamentals and real-world projects.',
-            image: '/images/data3.png',
-            duration: '16 Weeks',
-            startDate: 'May 15',
+            title: t('courseSection.courses.dataScience.title'),
+            description: t('courseSection.courses.dataScience.description'),
+            image: dataImage,
+            duration: t('courseSection.courses.dataScience.duration'),
+            startDate: t('courseSection.courses.dataScience.startDate'),
             price: '¥420,000',
-            category: 'Data Science',
+            category: t('courseSection.courses.dataScience.category'),
             badgeColor: 'success',
-            level: 'Intermediate',
-            features: ['Real-world Datasets', 'Portfolio Building', 'Industry Partnerships']
+            level: t('courseSection.courses.dataScience.level'),
+            features: [
+                t('courseSection.courses.dataScience.features.0'),
+                t('courseSection.courses.dataScience.features.1'),
+                t('courseSection.courses.dataScience.features.2')
+            ]
         },
         {
             id: 'cybersecurity',
-            title: 'Cybersecurity Specialist',
-            description: 'Develop skills to protect systems and networks from digital attacks. Learn threat detection, ethical hacking, security protocols, and incident response.',
-            image: '/images/cyber1.png',
-            duration: '14 Weeks',
-            startDate: 'Jun 15',
+            title: t('courseSection.courses.cybersecurity.title'),
+            description: t('courseSection.courses.cybersecurity.description'),
+            image: cyberImage,
+            duration: t('courseSection.courses.cybersecurity.duration'),
+            startDate: t('courseSection.courses.cybersecurity.startDate'),
             price: '¥400,000',
-            category: 'Cybersecurity',
+            category: t('courseSection.courses.cybersecurity.category'),
             badgeColor: 'danger',
-            level: 'Intermediate-Advanced',
-            features: ['Security Lab', 'Certification Prep', 'Live Simulations']
+            level: t('courseSection.courses.cybersecurity.level'),
+            features: [
+                t('courseSection.courses.cybersecurity.features.0'),
+                t('courseSection.courses.cybersecurity.features.1'),
+                t('courseSection.courses.cybersecurity.features.2')
+            ]
         },
         {
             id: 'cloud-computing',
-            title: 'Cloud Computing & DevOps',
-            description: 'Master cloud platforms like AWS, Azure, and Google Cloud. Learn infrastructure as code, containerization, CI/CD pipelines, and microservices architecture.',
-            image: '/images/cloud1.png',
-            duration: '10 Weeks',
-            startDate: 'Jul 5',
+            title: t('courseSection.courses.cloudComputing.title'),
+            description: t('courseSection.courses.cloudComputing.description'),
+            image: cloudImage,
+            duration: t('courseSection.courses.cloudComputing.duration'),
+            startDate: t('courseSection.courses.cloudComputing.startDate'),
             price: '¥380,000',
-            category: 'Cloud Computing',
+            category: t('courseSection.courses.cloudComputing.category'),
             badgeColor: 'info',
-            level: 'Intermediate',
-            features: ['AWS/Azure Credits', 'Industry Projects', 'Certification Prep']
+            level: t('courseSection.courses.cloudComputing.level'),
+            features: [
+                t('courseSection.courses.cloudComputing.features.0'),
+                t('courseSection.courses.cloudComputing.features.1'),
+                t('courseSection.courses.cloudComputing.features.2')
+            ]
         },
         {
             id: 'ai-ml',
-            title: 'Artificial Intelligence & Machine Learning',
-            description: 'Dive deep into AI algorithms, neural networks, deep learning, and natural language processing. Build intelligent systems that learn and adapt.',
-            image: '/images/AI2.png',
-            duration: '18 Weeks',
-            startDate: 'Jun 10',
+            title: t('courseSection.courses.aiMl.title'),
+            description: t('courseSection.courses.aiMl.description'),
+            image: aiImage,
+            duration: t('courseSection.courses.aiMl.duration'),
+            startDate: t('courseSection.courses.aiMl.startDate'),
             price: '¥450,000',
-            category: 'AI/ML',
+            category: t('courseSection.courses.aiMl.category'),
             badgeColor: 'secondary',
-            level: 'Advanced',
-            features: ['GPU Lab Access', 'Research Projects', 'Industry Mentors']
+            level: t('courseSection.courses.aiMl.level'),
+            features: [
+                t('courseSection.courses.aiMl.features.0'),
+                t('courseSection.courses.aiMl.features.1'),
+                t('courseSection.courses.aiMl.features.2')
+            ]
         },
         {
             id: 'mobile-dev',
-            title: 'Mobile App Development',
-            description: 'Create native and cross-platform mobile applications. Master React Native, Flutter, iOS and Android development, and app deployment strategies.',
-            image: '/images/mob1.png',
-            duration: '12 Weeks',
-            startDate: 'Jul 15',
+            title: t('courseSection.courses.mobileDev.title'),
+            description: t('courseSection.courses.mobileDev.description'),
+            image: mobileImage,
+            duration: t('courseSection.courses.mobileDev.duration'),
+            startDate: t('courseSection.courses.mobileDev.startDate'),
             price: '¥370,000',
-            category: 'Mobile Dev',
+            category: t('courseSection.courses.mobileDev.category'),
             badgeColor: 'warning',
-            level: 'Intermediate',
-            features: ['App Store Publishing', 'Portfolio Building', '1-on-1 Mentorship']
+            level: t('courseSection.courses.mobileDev.level'),
+            features: [
+                t('courseSection.courses.mobileDev.features.0'),
+                t('courseSection.courses.mobileDev.features.1'),
+                t('courseSection.courses.mobileDev.features.2')
+            ]
         }
     ];
     
-    // Animation on scroll
+    // Keep ALL your existing animation and logic code exactly as is
     useEffect(() => {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -102,7 +135,6 @@ const CourseSection = ({ limit, showFilters = false, title = "Our Featured Cours
             observer.observe(sectionRef.current);
         }
         
-        // Cleanup observer
         return () => {
             if (sectionRef.current) {
                 observer.unobserve(sectionRef.current);
@@ -110,7 +142,6 @@ const CourseSection = ({ limit, showFilters = false, title = "Our Featured Cours
         };
     }, []);
     
-    // Set initial visible courses based on the page
     useEffect(() => {
         if (limit) {
             setVisibleCourses(limit);
@@ -141,9 +172,9 @@ const CourseSection = ({ limit, showFilters = false, title = "Our Featured Cours
         <section className="course-section" id="courses" ref={sectionRef}>
             <div className="container">
                 <div className="section-header">
-                    <span className="section-badge">Educational Programs</span>
-                    <h2>{title}</h2>
-                    <p>Accelerate your tech career with our industry-focused, practical programs</p>
+                    <span className="section-badge">{t('courseSection.header.badge')}</span>
+                    <h2>{title === "Our Featured Courses" ? t('courseSection.header.title') : title}</h2>
+                    <p>{t('courseSection.header.subtitle')}</p>
                 </div>
                 
                 {showFilters && (
@@ -152,31 +183,31 @@ const CourseSection = ({ limit, showFilters = false, title = "Our Featured Cours
                             className={`filter-btn ${activeFilter === 'all' ? 'active' : ''}`}
                             onClick={() => filterCourses('all')}
                         >
-                            All Courses
+                            {t('courseSection.filters.all')}
                         </button>
                         <button 
                             className={`filter-btn ${activeFilter === 'web development' ? 'active' : ''}`}
                             onClick={() => filterCourses('web development')}
                         >
-                            Web Development
+                            {t('courseSection.filters.webDevelopment')}
                         </button>
                         <button 
                             className={`filter-btn ${activeFilter === 'data science' ? 'active' : ''}`}
                             onClick={() => filterCourses('data science')}
                         >
-                            Data Science
+                            {t('courseSection.filters.dataScience')}
                         </button>
                         <button 
                             className={`filter-btn ${activeFilter === 'cybersecurity' ? 'active' : ''}`}
                             onClick={() => filterCourses('cybersecurity')}
                         >
-                            Cybersecurity
+                            {t('courseSection.filters.cybersecurity')}
                         </button>
                         <button 
                             className={`filter-btn ${activeFilter === 'cloud computing' ? 'active' : ''}`}
                             onClick={() => filterCourses('cloud computing')}
                         >
-                            Cloud Computing
+                            {t('courseSection.filters.cloudComputing')}
                         </button>
                     </div>
                 )}
@@ -191,7 +222,7 @@ const CourseSection = ({ limit, showFilters = false, title = "Our Featured Cours
                                     <div className="course-hover">
                                         <Link to={`/courses/${course.id}`} className="view-details">
                                             <span className="material-icons">visibility</span>
-                                            View Details
+                                            {t('courseSection.buttons.viewDetails')}
                                         </Link>
                                     </div>
                                 </div>
@@ -203,7 +234,7 @@ const CourseSection = ({ limit, showFilters = false, title = "Our Featured Cours
                                         </div>
                                         <div className="meta-item">
                                             <span className="material-icons">event</span>
-                                            Starts {course.startDate}
+                                            {t('courseSection.meta.starts')} {course.startDate}
                                         </div>
                                         <div className="meta-item">
                                             <span className="material-icons">signal_cellular_alt</span>
@@ -226,7 +257,7 @@ const CourseSection = ({ limit, showFilters = false, title = "Our Featured Cours
                                         <span className="price">{course.price}</span>
                                     </div>
                                     <Link to={`/courses/${course.id}`} className="btn-details">
-                                        Learn More
+                                        {t('courseSection.buttons.learnMore')}
                                         <span className="material-icons">arrow_forward</span>
                                     </Link>
                                 </div>
@@ -238,7 +269,7 @@ const CourseSection = ({ limit, showFilters = false, title = "Our Featured Cours
                 {visibleCourses < courses.length && (
                     <div className="view-more-container">
                         <button className="btn-view-more" onClick={showMoreCourses}>
-                            View All Courses
+                            {t('courseSection.buttons.viewAllCourses')}
                             <span className="material-icons">expand_more</span>
                         </button>
                     </div>
@@ -247,7 +278,7 @@ const CourseSection = ({ limit, showFilters = false, title = "Our Featured Cours
                 {window.location.pathname !== '/courses' && (
                     <div className="courses-cta">
                         <Link to="/courses" className="btn-all-courses">
-                            Browse All Programs
+                            {t('courseSection.buttons.browseAllPrograms')}
                             <span className="material-icons">arrow_forward</span>
                         </Link>
                     </div>

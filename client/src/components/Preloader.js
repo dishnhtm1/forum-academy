@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next'; // Add this import only
 import '../styles/PreLoader.css';
 
 const Preloader = () => {
+    const { t } = useTranslation(); // Add this line only
     const [progress, setProgress] = useState(0);
     
-    // Simulate loading progress
+    // Keep ALL your existing loading progress logic exactly as is
     useEffect(() => {
         const timer = setInterval(() => {
             setProgress(prevProgress => {
@@ -16,7 +18,7 @@ const Preloader = () => {
         return () => clearInterval(timer);
     }, []);
     
-    // Add a script to load the dotlottie player if needed
+    // Keep ALL your existing dotlottie script loading exactly as is
     useEffect(() => {
         if (!document.querySelector('script[src*="dotlottie-player"]')) {
             const script = document.createElement('script');
@@ -26,11 +28,20 @@ const Preloader = () => {
         }
     }, []);
 
+    // Get loading message based on progress - only replace text
+    const getLoadingMessage = () => {
+        if (progress < 30) return t('preloader.messages.initializing');
+        if (progress >= 30 && progress < 60) return t('preloader.messages.preparing');
+        if (progress >= 60 && progress < 90) return t('preloader.messages.loading');
+        if (progress >= 90) return t('preloader.messages.almostReady');
+        return '';
+    };
+
     return (
         <div id="loader-wrapper">
             <div className="loader-content">
                 <div className="loader-logo">
-                    {/* Replacing the circle with animated rings design */}
+                    {/* Keep ALL your animated rings design exactly as is */}
                     <div className="ring-container">
                         <div className="ring"></div>
                         <div className="ring"></div>
@@ -45,28 +56,25 @@ const Preloader = () => {
                 </div>
                 
                 <div className="loader-message">
-                    {progress < 30 && "Initializing educational resources..."}
-                    {progress >= 30 && progress < 60 && "Preparing your learning journey..."}
-                    {progress >= 60 && progress < 90 && "Loading interactive content..."}
-                    {progress >= 90 && "Almost ready!"}
+                    {getLoadingMessage()}
                 </div>
                 
                 <div className="tech-icons-container">
                     <div className={`tech-icon ${progress > 20 ? 'active' : ''}`}>
                         <span className="material-icons">code</span>
-                        <span className="icon-label">Development</span>
+                        <span className="icon-label">{t('preloader.techIcons.development')}</span>
                     </div>
                     <div className={`tech-icon ${progress > 40 ? 'active' : ''}`}>
                         <span className="material-icons">cloud</span>
-                        <span className="icon-label">Cloud</span>
+                        <span className="icon-label">{t('preloader.techIcons.cloud')}</span>
                     </div>
                     <div className={`tech-icon ${progress > 60 ? 'active' : ''}`}>
                         <span className="material-icons">security</span>
-                        <span className="icon-label">Security</span>
+                        <span className="icon-label">{t('preloader.techIcons.security')}</span>
                     </div>
                     <div className={`tech-icon ${progress > 80 ? 'active' : ''}`}>
                         <span className="material-icons">analytics</span>
-                        <span className="icon-label">Data</span>
+                        <span className="icon-label">{t('preloader.techIcons.data')}</span>
                     </div>
                 </div>
             </div>

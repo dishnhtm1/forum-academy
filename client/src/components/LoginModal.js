@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useTranslation } from 'react-i18next'; // Add this import only
 import '../styles/LoginModal.css';
 
 const LoginModal = ({ isOpen, onClose, onRegisterClick }) => {
+    const { t } = useTranslation(); // Add this line only
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [rememberMe, setRememberMe] = useState(false);
@@ -15,7 +17,7 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick }) => {
     // API base URL
     const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
-    // Handle animation timing for modal appearance
+    // Keep ALL your existing useEffect code exactly as is
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = 'hidden';
@@ -89,6 +91,7 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick }) => {
         }
     }, [isVisible]);
 
+    // Keep ALL your existing handleLogin function exactly as is
     const handleLogin = async (e) => {
         e.preventDefault();
         setFormError('');
@@ -111,7 +114,7 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick }) => {
             const data = await response.json();
             
             if (!response.ok) {
-                throw new Error(data.message || 'Login failed');
+                throw new Error(data.message || t('login.errors.loginFailed'));
             }
             
             // Store authentication data
@@ -129,7 +132,7 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick }) => {
             
         } catch (error) {
             console.error('Login error:', error);
-            setFormError(error.message || 'Invalid credentials. Please try again.');
+            setFormError(error.message || t('login.errors.invalidCredentials'));
         } finally {
             setIsLoading(false);
         }
@@ -149,7 +152,7 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick }) => {
             <div className="login-modal" onClick={e => e.stopPropagation()}>
                 <div className="modal-glass-effect"></div>
                 
-                <button className="modal-close-btn" onClick={onClose} aria-label="Close login modal">
+                <button className="modal-close-btn" onClick={onClose} aria-label={t('login.closeModal')}>
                     <span className="material-icons">close</span>
                 </button>
                 
@@ -157,7 +160,7 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick }) => {
                     <div className="login-form-container">
                         <div className="login-header">
                             <div className="login-logo">
-                                {/* Replacing the login icon with animated rings design */}
+                                {/* Keep ALL your animated rings design exactly as is */}
                                 <div className="ring-container">
                                     <div className="ring"></div>
                                     <div className="ring"></div>
@@ -166,8 +169,8 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick }) => {
                                     <div className="logo-text">FORUM ACADEMY</div>
                                 </div>
                             </div>
-                            <h2>Welcome Back</h2>
-                            <p>Sign in to access your account</p>
+                            <h2>{t('login.header.title')}</h2>
+                            <p>{t('login.header.subtitle')}</p>
                         </div>
                         
                         {formError && (
@@ -184,7 +187,7 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick }) => {
                                     <input
                                         type="email"
                                         id="email"
-                                        placeholder="Email Address"
+                                        placeholder={t('login.form.emailPlaceholder')}
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         required
@@ -199,7 +202,7 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick }) => {
                                     <input
                                         type={showPassword ? "text" : "password"}
                                         id="password"
-                                        placeholder="Password"
+                                        placeholder={t('login.form.passwordPlaceholder')}
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
@@ -210,6 +213,7 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick }) => {
                                         className="toggle-password"
                                         onClick={() => setShowPassword(!showPassword)}
                                         tabIndex="-1"
+                                        aria-label={showPassword ? t('login.form.hidePassword') : t('login.form.showPassword')}
                                     >
                                         <span className="material-icons">
                                             {showPassword ? 'visibility_off' : 'visibility'}
@@ -226,9 +230,9 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick }) => {
                                         onChange={() => setRememberMe(!rememberMe)}
                                     />
                                     <span className="checkbox-mark"></span>
-                                    <span className="checkbox-label">Remember me</span>
+                                    <span className="checkbox-label">{t('login.form.rememberMe')}</span>
                                 </label>
-                                <a href="#" className="forgot-link">Forgot password?</a>
+                                <a href="#" className="forgot-link">{t('login.form.forgotPassword')}</a>
                             </div>
                             
                             <button 
@@ -239,11 +243,11 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick }) => {
                                 {isLoading ? (
                                     <>
                                         <span className="button-loader"></span>
-                                        <span>Signing in...</span>
+                                        <span>{t('login.form.signingIn')}</span>
                                     </>
                                 ) : (
                                     <>
-                                        <span>Sign In</span>
+                                        <span>{t('login.form.signIn')}</span>
                                         <span className="material-icons button-icon">arrow_forward</span>
                                     </>
                                 )}
@@ -252,7 +256,7 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick }) => {
                             {/* Register section */}
                             <div className="register-section">
                                 <div className="divider">
-                                    <span>New to our platform?</span>
+                                    <span>{t('login.register.newToPlatform')}</span>
                                 </div>
                                 <button
                                     type="button"
@@ -263,7 +267,7 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick }) => {
                                     }}
                                 >
                                     <span className="material-icons">person_add</span>
-                                    <span>Create Student Account</span>
+                                    <span>{t('login.register.createAccount')}</span>
                                 </button>
                             </div>
                         </form>
