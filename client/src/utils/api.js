@@ -132,9 +132,17 @@
 // };
 
 // utils/api.js
-//const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-const API_BASE_URL = 'https://forum-backend-api-a7hgg9g7hmgegrh3.eastasia-01.azurewebsites.net/api'; 
-axios.post(`${BASE_URL}/api/auth/login`, {...})
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+//const API_BASE_URL = 'https://forum-backend-api-a7hgg9g7hmgegrh3.eastasia-01.azurewebsites.net/api'; 
+//axios.post(`${BASE_URL}/api/auth/login`, {...})
+//axios.post(`${API_BASE_URL}/auth/login`, {
+//  email: 'test@example.com',
+//  password: 'test123'
+//});
+
+
+
+
 // Helper function to get auth headers
 const getAuthHeaders = () => {
   const token = localStorage.getItem('authToken');
