@@ -140,7 +140,7 @@ const ContactPage = () => {
         });
     
         try {
-            const response = await fetch('mongodb+srv://Meshaka77:Forumteam2@forumacademy-db.global.mongocluster.cosmos.azure.com/?tls=true&authMechanism=SCRAM-SHA-256&retrywrites=false&maxIdleTimeMS=120000', {
+            const response = await fetch('forum-backend-api-a7hgg9g7hmgegrh3.eastasia-01.azurewebsites.net/api/contact', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
