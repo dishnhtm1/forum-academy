@@ -11,9 +11,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Routes
+// // Routes
+// app.use('/api/contact', require('./routes/contactRoutes'));
+// app.use('/api/application', require('./routes/applicationRoutes'));
+// app.use('/api/auth', require('./routes/authRoutes'));
+
+// CHANGE these lines (around line 13-15):
 app.use('/api/contact', require('./routes/contactRoutes'));
-app.use('/api/application', require('./routes/applicationRoutes'));
+app.use('/api/applications', require('./routes/applicationRoutes')); // CHANGE from '/api/application' to '/api/applications'
 app.use('/api/auth', require('./routes/authRoutes'));
 
 // Health check route

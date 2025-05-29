@@ -224,7 +224,8 @@ const ApplyPage = () => {
 
             console.log('Submitting application:', applicationData);
 
-            const response = await fetch('http://localhost:5000/api/application', {
+            // const response = await fetch('http://localhost:5000/api/application', {
+            const response = await fetch('http://localhost:5000/api/applications', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

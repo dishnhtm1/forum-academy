@@ -166,7 +166,56 @@ router.put('/change-password', authenticate, async (req, res) => {
   }
 });
 
-// Admin route to create teacher/admin accounts (pre-approved)
+// // Admin route to create teacher/admin accounts (pre-approved)
+// router.post('/create-user', authenticate, authorizeRoles('admin'), async (req, res) => {
+//   try {
+//     const { firstName, lastName, email, password, role } = req.body;
+    
+//     // Validate input
+//     if (!firstName || !lastName || !email || !password || !role) {
+//       return res.status(400).json({ message: 'All fields are required' });
+//     }
+    
+//     if (!['teacher', 'admin'].includes(role)) {
+//       return res.status(400).json({ message: 'Only teacher and admin roles can be created through this endpoint' });
+//     }
+    
+//     // Check if user already exists
+//     const existingUser = await User.findOne({ email: email.toLowerCase() });
+//     if (existingUser) {
+//       return res.status(400).json({ message: 'User already exists with this email' });
+//     }
+    
+//     const user = new User({
+//       firstName,
+//       lastName,
+//       email: email.toLowerCase(),
+//       password,
+//       role,
+//       isApproved: true // Admin-created users are pre-approved
+//     });
+    
+//     await user.save();
+    
+//     res.status(201).json({
+//       message: `${role} account created successfully`,
+//       user: {
+//         id: user._id,
+//         email: user.email,
+//         firstName: user.firstName,
+//         lastName: user.lastName,
+//         role: user.role,
+//         isApproved: user.isApproved
+//       }
+//     });
+//   } catch (err) {
+//     console.error('Create user error:', err);
+//     res.status(500).json({ message: 'Failed to create user' });
+//   }
+// });
+
+// REPLACE the existing create-user route (around line 165) with this:
+
 router.post('/create-user', authenticate, authorizeRoles('admin'), async (req, res) => {
   try {
     const { firstName, lastName, email, password, role } = req.body;
@@ -176,8 +225,8 @@ router.post('/create-user', authenticate, authorizeRoles('admin'), async (req, r
       return res.status(400).json({ message: 'All fields are required' });
     }
     
-    if (!['teacher', 'admin'].includes(role)) {
-      return res.status(400).json({ message: 'Only teacher and admin roles can be created through this endpoint' });
+    if (!['student', 'teacher', 'admin'].includes(role)) {
+      return res.status(400).json({ message: 'Invalid role specified' });
     }
     
     // Check if user already exists
