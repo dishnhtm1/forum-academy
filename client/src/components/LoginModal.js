@@ -184,9 +184,18 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick }) => {
                             <div className="form-group">
                                 <div className="input-wrapper">
                                     <span className="material-icons input-icon">email</span>
-                                    <input
+                                    {/* <input
                                         type="email"
                                         id="email"
+                                        placeholder={t('login.form.emailPlaceholder')}
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        required
+                                        className="form-input modern"
+                                    /> */}
+                                    <input
+                                        type="email"
+                                        id="login-email"  // CHANGE from "email" to "login-email"
                                         placeholder={t('login.form.emailPlaceholder')}
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}

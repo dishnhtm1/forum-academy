@@ -29,6 +29,12 @@ const applicationSchema = new mongoose.Schema({
   challenges: String,
   extraInfo: String,
   agreeToTerms: Boolean,
+
+  status: {
+    type: String,
+    enum: ['pending', 'approved', 'rejected', 'under_review'],
+    default: 'pending'
+  }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Application', applicationSchema);
