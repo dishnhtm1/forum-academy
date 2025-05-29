@@ -816,6 +816,16 @@ const Dashboard = () => {
     const [pendingUsers, setPendingUsers] = useState([]);
     const [applicationSubmissions, setApplicationSubmissions] = useState([]);
     const [contactSubmissions, setContactSubmissions] = useState([]);
+    const [allUsers, setAllUsers] = useState([]);
+    const [showCreateUserForm, setShowCreateUserForm] = useState(false);
+    const [newUserData, setNewUserData] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: '',
+        role: 'student'
+    });
+    
     const [dashboardData, setDashboardData] = useState({
         student: {
             journeyProgress: 68,
@@ -860,77 +870,15 @@ const Dashboard = () => {
             ],
             userGrowth: { thisWeek: 23, lastWeek: 18 },
             contentApprovals: 5,
-            pendingContacts: 0
+            pendingContacts: 0,
+            pendingApplications: 0
         }
     });
 
     const history = useHistory();
     const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
-    useEffect(() => {
-        const checkAuth = async () => {
-            const token = localStorage.getItem('authToken');
-            
-            // if (!token) {
-            //     history.push('/');
-            //     return;
-            // }
-            if (userData.role === 'admin') {
-                await Promise.all([
-                    fetchPendingUsers(token),
-                    fetchContactSubmissions(token),
-                    fetchApplicationSubmissions(token)  // ADD this line
-                ]);
-            }
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/auth/me`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Token invalid');
-                }
-
-                const data = await response.json();
-                const userData = data.user;
-
-                setUser({
-                    id: userData.id,
-                    email: userData.email,
-                    firstName: userData.firstName,
-                    lastName: userData.lastName,
-                    role: userData.role,
-                    name: `${userData.firstName} ${userData.lastName}`.trim() || userData.email?.split('@')[0] || 'User',
-                    isApproved: userData.isApproved
-                });
-
-                localStorage.setItem('userRole', userData.role);
-                localStorage.setItem('userEmail', userData.email);
-                localStorage.setItem('userName', `${userData.firstName} ${userData.lastName}`.trim());
-
-                if (userData.role === 'admin') {
-                    await Promise.all([
-                        fetchPendingUsers(token),
-                        fetchContactSubmissions(token)
-                    ]);
-                }
-
-            } catch (error) {
-                console.error('Auth check failed:', error);
-                localStorage.clear();
-                history.push('/');
-                return;
-            }
-
-            setIsLoading(false);
-        };
-
-        checkAuth();
-    }, [history, API_BASE_URL]);
-
+    // Fetch functions
     const fetchPendingUsers = async (token) => {
         try {
             const response = await fetch(`${API_BASE_URL}/auth/pending`, {
@@ -948,8 +896,6 @@ const Dashboard = () => {
         }
     };
 
-        // ADD this function after fetchContactSubmissions:
-    
     const fetchApplicationSubmissions = async (token) => {
         try {
             const response = await fetch(`${API_BASE_URL}/applications/all`, {
@@ -957,7 +903,7 @@ const Dashboard = () => {
                     'Authorization': `Bearer ${token}`
                 }
             });
-    
+
             if (response.ok) {
                 const data = await response.json();
                 setApplicationSubmissions(data.applications || []);
@@ -1000,6 +946,24 @@ const Dashboard = () => {
         }
     };
 
+    const fetchAllUsers = async (token) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/auth/users`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setAllUsers(data.users || []);
+            }
+        } catch (error) {
+            console.error('Failed to fetch all users:', error);
+        }
+    };
+
+    // Handler functions
     const handleUserApproval = async (userId, approve) => {
         const token = localStorage.getItem('authToken');
         try {
@@ -1014,7 +978,8 @@ const Dashboard = () => {
             });
 
             if (response.ok) {
-                fetchPendingUsers(token);
+                await fetchPendingUsers(token);
+                await fetchAllUsers(token);
             }
         } catch (error) {
             console.error(`Failed to ${approve ? 'approve' : 'reject'} user:`, error);
@@ -1041,10 +1006,125 @@ const Dashboard = () => {
         }
     };
 
+    const handleApplicationAction = async (applicationId, action) => {
+        const token = localStorage.getItem('authToken');
+        try {
+            const response = await fetch(`${API_BASE_URL}/applications/${applicationId}/status`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status: action })
+            });
+
+            if (response.ok) {
+                await fetchApplicationSubmissions(token);
+            }
+        } catch (error) {
+            console.error(`Failed to ${action} application:`, error);
+        }
+    };
+
+    const handleCreateUser = async (e) => {
+        e.preventDefault();
+        const token = localStorage.getItem('authToken');
+        
+        try {
+            const response = await fetch(`${API_BASE_URL}/auth/create-user`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newUserData)
+            });
+
+            if (response.ok) {
+                alert('User created successfully!');
+                setShowCreateUserForm(false);
+                setNewUserData({
+                    firstName: '',
+                    lastName: '',
+                    email: '',
+                    password: '',
+                    role: 'student'
+                });
+                await fetchAllUsers(token);
+            } else {
+                const errorData = await response.json();
+                alert(`Error: ${errorData.message}`);
+            }
+        } catch (error) {
+            console.error('Failed to create user:', error);
+            alert('Failed to create user. Please try again.');
+        }
+    };
+
     const handleLogout = () => {
         localStorage.clear();
         history.push('/');
     };
+
+    // Main useEffect for authentication
+    useEffect(() => {
+        const checkAuth = async () => {
+            const token = localStorage.getItem('authToken');
+            
+            if (!token) {
+                history.push('/');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/me`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Token invalid');
+                }
+
+                const data = await response.json();
+                const userData = data.user; // FIX: Define userData here
+
+                setUser({
+                    id: userData.id,
+                    email: userData.email,
+                    firstName: userData.firstName,
+                    lastName: userData.lastName,
+                    role: userData.role,
+                    name: `${userData.firstName} ${userData.lastName}`.trim() || userData.email?.split('@')[0] || 'User',
+                    isApproved: userData.isApproved
+                });
+
+                localStorage.setItem('userRole', userData.role);
+                localStorage.setItem('userEmail', userData.email);
+                localStorage.setItem('userName', `${userData.firstName} ${userData.lastName}`.trim());
+
+                if (userData.role === 'admin') {
+                    await Promise.all([
+                        fetchPendingUsers(token),
+                        fetchContactSubmissions(token),
+                        fetchApplicationSubmissions(token),
+                        fetchAllUsers(token)
+                    ]);
+                }
+
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                localStorage.clear();
+                history.push('/');
+                return;
+            }
+
+            setIsLoading(false);
+        };
+
+        checkAuth();
+    }, [history, API_BASE_URL]);
 
     if (isLoading) {
         return (
@@ -1055,7 +1135,7 @@ const Dashboard = () => {
         );
     }
 
-    // Student Dashboard - Learning Journey Tracker
+    // Render functions for different dashboard types
     const renderStudentDashboard = () => (
         <>
             <div className="journey-header">
@@ -1216,7 +1296,6 @@ const Dashboard = () => {
         </>
     );
 
-    // Teacher Dashboard - Classroom Pulse
     const renderTeacherDashboard = () => (
         <>
             <div className="pulse-header">
@@ -1357,8 +1436,7 @@ const Dashboard = () => {
         </>
     );
 
-    // Admin Dashboard - System Health Monitor
-    const renderAdminDashboard = () => (
+    const renderAdminOverview = () => (
         <>
             <div className="system-health-header">
                 <div className="health-indicator">
@@ -1410,43 +1488,63 @@ const Dashboard = () => {
                 <div className="stat-card gradient-blue">
                     <div className="stat-icon">👥</div>
                     <div className="stat-content">
-                        <h3>Active Users</h3>
-                        <p className="stat-number">{dashboardData.admin.activeUsers.toLocaleString()}</p>
-                        <span className="stat-trend">+{dashboardData.admin.userGrowth.thisWeek} this week</span>
+                        <h3>Total Users</h3>
+                        <p className="stat-number">{allUsers.length}</p>
+                        <span className="stat-trend">{pendingUsers.length} pending approval</span>
                     </div>
                 </div>
                 <div className="stat-card gradient-green">
-                    <div className="stat-icon">📚</div>
+                    <div className="stat-icon">📋</div>
                     <div className="stat-content">
-                        <h3>Active Courses</h3>
-                        <p className="stat-number">18</p>
-                        <span className="stat-trend">2 pending approval</span>
+                        <h3>Applications</h3>
+                        <p className="stat-number">{applicationSubmissions.length}</p>
+                        <span className="stat-trend">{dashboardData.admin.pendingApplications || 0} pending</span>
                     </div>
                 </div>
                 <div className="stat-card gradient-orange">
-                    <div className="stat-icon">⏳</div>
+                    <div className="stat-icon">📧</div>
                     <div className="stat-content">
-                        <h3>Pending Approvals</h3>
-                        <p className="stat-number">{pendingUsers.length + dashboardData.admin.contentApprovals}</p>
-                        <span className="stat-trend">Users & Content</span>
+                        <h3>Contact Messages</h3>
+                        <p className="stat-number">{contactSubmissions.length}</p>
+                        <span className="stat-trend">{dashboardData.admin.pendingContacts || 0} pending</span>
                     </div>
                 </div>
                 <div className="stat-card gradient-purple">
-                    <div className="stat-icon">📧</div>
+                    <div className="stat-icon">🖥️</div>
                     <div className="stat-content">
-                        <h3>Contact Inquiries</h3>
-                        <p className="stat-number">{dashboardData.admin.pendingContacts}</p>
-                        <span className="stat-trend">Pending review</span>
+                        <h3>System Uptime</h3>
+                        <p className="stat-number">99.8%</p>
+                        <span className="stat-trend">Last 30 days</span>
                     </div>
                 </div>
             </div>
 
             <div className="dashboard-content">
-                <div className="contact-submissions">
-                    <h3>📧 Contact Form Submissions</h3>
-                    {contactSubmissions.length > 0 ? (
+                <div className="admin-quick-overview">
+                    <div className="overview-section">
+                        <h3>📊 Quick Stats</h3>
+                        <div className="quick-stats-grid">
+                            <div className="quick-stat">
+                                <span className="stat-label">Students</span>
+                                <span className="stat-value">{allUsers.filter(u => u.role === 'student').length}</span>
+                            </div>
+                            <div className="quick-stat">
+                                <span className="stat-label">Teachers</span>
+                                <span className="stat-value">{allUsers.filter(u => u.role === 'teacher').length}</span>
+                            </div>
+                            <div className="quick-stat">
+                                <span className="stat-label">Admins</span>
+                                <span className="stat-value">{allUsers.filter(u => u.role === 'admin').length}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {contactSubmissions.length > 0 && (
+                    <div className="contact-submissions">
+                        <h3>📧 Recent Contact Submissions</h3>
                         <div className="submissions-list">
-                            {contactSubmissions.slice(0, 5).map(contact => (
+                            {contactSubmissions.slice(0, 3).map(contact => (
                                 <div key={contact._id} className={`submission-card ${contact.status}`}>
                                     <div className="submission-header">
                                         <div className="contact-info">
@@ -1460,21 +1558,17 @@ const Dashboard = () => {
                                         </div>
                                         <div className="submission-date">
                                             <small>{new Date(contact.createdAt).toLocaleDateString()}</small>
-                                            <small>{new Date(contact.createdAt).toLocaleTimeString()}</small>
                                         </div>
                                     </div>
                                     <div className="submission-content">
                                         <p><strong>Subject:</strong> {contact.subject}</p>
                                         <p><strong>Message:</strong></p>
                                         <div className="message-content">
-                                            {contact.message.length > 150 ? 
-                                                `${contact.message.substring(0, 150)}...` : 
+                                            {contact.message.length > 100 ? 
+                                                `${contact.message.substring(0, 100)}...` : 
                                                 contact.message
                                             }
                                         </div>
-                                        {contact.phone && (
-                                            <p><strong>Phone:</strong> {contact.phone}</p>
-                                        )}
                                     </div>
                                     {contact.status === 'pending' && (
                                         <div className="submission-actions">
@@ -1482,13 +1576,13 @@ const Dashboard = () => {
                                                 className="action-btn approve"
                                                 onClick={() => handleContactAction(contact._id, 'resolved')}
                                             >
-                                                ✅ Mark as Resolved
+                                                ✅ Resolve
                                             </button>
                                             <button 
                                                 className="action-btn priority"
                                                 onClick={() => handleContactAction(contact._id, 'approved')}
                                             >
-                                                🔥 Mark as Priority
+                                                🔥 Priority
                                             </button>
                                             <button 
                                                 className="action-btn ignore"
@@ -1500,18 +1594,9 @@ const Dashboard = () => {
                                     )}
                                 </div>
                             ))}
-                            {contactSubmissions.length > 5 && (
-                                <button className="view-all-btn">
-                                    View All {contactSubmissions.length} Submissions
-                                </button>
-                            )}
                         </div>
-                    ) : (
-                        <div className="no-submissions">
-                            <p>📭 No contact submissions yet</p>
-                        </div>
-                    )}
-                </div>
+                    </div>
+                )}
 
                 {pendingUsers.length > 0 && (
                     <div className="user-management">
@@ -1546,79 +1631,325 @@ const Dashboard = () => {
                         </div>
                     </div>
                 )}
-
-                <div className="system-alerts">
-                    <h3>🚨 System Alerts</h3>
-                    <div className="alert-list">
-                        {dashboardData.admin.recentAlerts.map((alert, index) => (
-                            <div key={index} className={`alert-item ${alert.type}`}>
-                                <div className="alert-icon">
-                                    {alert.type === 'info' ? 'ℹ️' : alert.type === 'warning' ? '⚠️' : '🚨'}
-                                </div>
-                                <div className="alert-content">
-                                    <p>{alert.message}</p>
-                                    <small>{alert.time}</small>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="platform-analytics">
-                    <h3>📊 Platform Analytics</h3>
-                    <div className="analytics-grid">
-                        <div className="analytics-card">
-                            <h4>User Growth</h4>
-                            <div className="growth-comparison">
-                                <div className="growth-item">
-                                    <span className="growth-period">This Week</span>
-                                    <span className="growth-number">+{dashboardData.admin.userGrowth.thisWeek}</span>
-                                </div>
-                                <div className="growth-item">
-                                    <span className="growth-period">Last Week</span>
-                                    <span className="growth-number">+{dashboardData.admin.userGrowth.lastWeek}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="analytics-card">
-                            <h4>Course Engagement</h4>
-                            <div className="engagement-stats">
-                                <div className="stat-row">
-                                    <span>Average Session Time</span>
-                                    <span>47 minutes</span>
-                                </div>
-                                <div className="stat-row">
-                                    <span>Completion Rate</span>
-                                    <span>73%</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="admin-actions">
-                    <h3>⚡ Quick Actions</h3>
-                    <div className="admin-tools-grid">
-                        <button className="admin-tool-btn">
-                            <span className="tool-icon">👥</span>
-                            <span>Manage Users</span>
-                        </button>
-                        <button className="admin-tool-btn">
-                            <span className="tool-icon">📚</span>
-                            <span>Course Approval</span>
-                        </button>
-                        <button className="admin-tool-btn">
-                            <span className="tool-icon">📧</span>
-                            <span>View All Contacts</span>
-                        </button>
-                        <button className="admin-tool-btn">
-                            <span className="tool-icon">⚙️</span>
-                            <span>System Settings</span>
-                        </button>
-                    </div>
-                </div>
             </div>
         </>
+    );
+
+    const renderUserManagement = () => (
+        <div className="user-management-section">
+            <div className="section-header">
+                <h2>👥 User Management</h2>
+                <button 
+                    className="create-user-btn"
+                    onClick={() => setShowCreateUserForm(true)}
+                >
+                    ➕ Create New User
+                </button>
+            </div>
+
+            {showCreateUserForm && (
+                <div className="create-user-modal">
+                    <div className="modal-content">
+                        <h3>Create New User</h3>
+                        <form onSubmit={handleCreateUser}>
+                            <div className="form-row">
+                                <input
+                                    type="text"
+                                    placeholder="First Name"
+                                    value={newUserData.firstName}
+                                    onChange={(e) => setNewUserData({...newUserData, firstName: e.target.value})}
+                                    required
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Last Name"
+                                    value={newUserData.lastName}
+                                    onChange={(e) => setNewUserData({...newUserData, lastName: e.target.value})}
+                                    required
+                                />
+                            </div>
+                            <input
+                                type="email"
+                                placeholder="Email"
+                                value={newUserData.email}
+                                onChange={(e) => setNewUserData({...newUserData, email: e.target.value})}
+                                required
+                            />
+                            <input
+                                type="password"
+                                placeholder="Password"
+                                value={newUserData.password}
+                                onChange={(e) => setNewUserData({...newUserData, password: e.target.value})}
+                                required
+                            />
+                            <select
+                                value={newUserData.role}
+                                onChange={(e) => setNewUserData({...newUserData, role: e.target.value})}
+                            >
+                                <option value="student">Student</option>
+                                <option value="teacher">Teacher</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                            <div className="form-actions">
+                                <button type="submit">Create User</button>
+                                <button type="button" onClick={() => setShowCreateUserForm(false)}>Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            <div className="users-grid">
+                {allUsers.map(user => (
+                    <div key={user._id} className="user-card">
+                        <div className="user-avatar">
+                            {user.firstName?.charAt(0)}{user.lastName?.charAt(0)}
+                        </div>
+                        <div className="user-info">
+                            <h4>{user.firstName} {user.lastName}</h4>
+                            <p>{user.email}</p>
+                            <span className={`role-badge ${user.role}`}>{user.role}</span>
+                            <span className={`status-badge ${user.isApproved ? 'approved' : 'pending'}`}>
+                                {user.isApproved ? '✅ Approved' : '⏳ Pending'}
+                            </span>
+                        </div>
+                        {!user.isApproved && (
+                            <div className="user-actions">
+                                <button 
+                                    className="approve-btn"
+                                    onClick={() => handleUserApproval(user._id, true)}
+                                >
+                                    Approve
+                                </button>
+                                <button 
+                                    className="reject-btn"
+                                    onClick={() => handleUserApproval(user._id, false)}
+                                >
+                                    Reject
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+
+    const renderApplicationManagement = () => (
+        <div className="applications-section">
+            <h2>📋 Application Management</h2>
+            <div className="applications-grid">
+                {applicationSubmissions.map(application => (
+                    <div key={application._id} className="application-card">
+                        <div className="application-header">
+                            <h4>{application.firstName} {application.lastName}</h4>
+                            <span className={`status-badge ${application.status}`}>
+                                {application.status.replace('_', ' ').toUpperCase()}
+                            </span>
+                        </div>
+                        <div className="application-details">
+                            <p><strong>Email:</strong> {application.email}</p>
+                            <p><strong>Phone:</strong> {application.phone}</p>
+                            <p><strong>Program:</strong> {application.program}</p>
+                            <p><strong>Start Date:</strong> {application.startDate}</p>
+                            <p><strong>Education:</strong> {application.highestEducation}</p>
+                            <p><strong>School:</strong> {application.schoolName}</p>
+                            {application.goals && (
+                                <div className="application-goals">
+                                    <strong>Goals:</strong>
+                                    <p>{application.goals.substring(0, 100)}...</p>
+                                </div>
+                            )}
+                        </div>
+                        {application.status === 'pending' && (
+                            <div className="application-actions">
+                                <button 
+                                    className="approve-btn"
+                                    onClick={() => handleApplicationAction(application._id, 'approved')}
+                                >
+                                    ✅ Approve
+                                </button>
+                                <button 
+                                    className="review-btn"
+                                    onClick={() => handleApplicationAction(application._id, 'under_review')}
+                                >
+                                    👀 Under Review
+                                </button>
+                                <button 
+                                    className="reject-btn"
+                                    onClick={() => handleApplicationAction(application._id, 'rejected')}
+                                >
+                                    ❌ Reject
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+
+    const renderContactManagement = () => (
+        <div className="contacts-section">
+            <h2>📧 Contact Management</h2>
+            <div className="contacts-grid">
+                {contactSubmissions.map(contact => (
+                    <div key={contact._id} className="contact-card">
+                        <div className="contact-header">
+                            <h4>{contact.name}</h4>
+                            <span className={`status-badge ${contact.status}`}>
+                                {contact.status.toUpperCase()}
+                            </span>
+                        </div>
+                        <div className="contact-details">
+                            <p><strong>Email:</strong> {contact.email}</p>
+                            {contact.phone && <p><strong>Phone:</strong> {contact.phone}</p>}
+                            <p><strong>Subject:</strong> {contact.subject}</p>
+                            <div className="contact-message">
+                                <strong>Message:</strong>
+                                <p>{contact.message}</p>
+                            </div>
+                            <small>Received: {new Date(contact.createdAt).toLocaleString()}</small>
+                        </div>
+                        {contact.status === 'pending' && (
+                            <div className="contact-actions">
+                                <button 
+                                    className="resolve-btn"
+                                    onClick={() => handleContactAction(contact._id, 'resolved')}
+                                >
+                                    ✅ Resolve
+                                </button>
+                                <button 
+                                    className="priority-btn"
+                                    onClick={() => handleContactAction(contact._id, 'approved')}
+                                >
+                                    🔥 Priority
+                                </button>
+                                <button 
+                                    className="ignore-btn"
+                                    onClick={() => handleContactAction(contact._id, 'ignored')}
+                                >
+                                    ❌ Ignore
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+
+    const renderAdminDashboard = () => {
+        if (activeTab === 'overview') {
+            return renderAdminOverview();
+        } else if (activeTab === 'users') {
+            return renderUserManagement();
+        } else if (activeTab === 'applications') {
+            return renderApplicationManagement();
+        } else if (activeTab === 'contacts') {
+            return renderContactManagement();
+        }
+        return renderAdminOverview();
+    };
+
+    const renderAdminSidebar = () => (
+        <nav className="sidebar-nav">
+            <button 
+                className={`nav-item ${activeTab === 'overview' ? 'active' : ''}`}
+                onClick={() => setActiveTab('overview')}
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+                </svg>
+                Overview
+            </button>
+            <button 
+                className={`nav-item ${activeTab === 'users' ? 'active' : ''}`}
+                onClick={() => setActiveTab('users')}
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A2.96 2.96 0 0 0 17 6.5c-.86 0-1.76.34-2.42 1.01L12 10l2.58 2.58c.76.76 2 .76 2.76 0l.66-.66V22h2zM12.5 11.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5S11 9.17 11 10s.67 1.5 1.5 1.5zM5.5 6c1.11 0 2-.89 2-2s-.89-2-2-2-2 .89-2 2 .89 2 2 2zm1.5 16v-6H9l-2.54-7.63A2.96 2.96 0 0 0 3.5 6.5c-.86 0-1.76.34-2.42 1.01L0 10l2.58 2.58c.76.76 2 .76 2.76 0L6 12v10h1z"/>
+                </svg>
+                Users
+            </button>
+            <button 
+                className={`nav-item ${activeTab === 'applications' ? 'active' : ''}`}
+                onClick={() => setActiveTab('applications')}
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h8c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                </svg>
+                Applications
+            </button>
+            <button 
+                className={`nav-item ${activeTab === 'contacts' ? 'active' : ''}`}
+                onClick={() => setActiveTab('contacts')}
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+                </svg>
+                Contacts
+            </button>
+            <button 
+                className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`}
+                onClick={() => setActiveTab('settings')}
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+                </svg>
+                Settings
+            </button>
+        </nav>
+    );
+
+    const renderDefaultSidebar = () => (
+        <nav className="sidebar-nav">
+            <button 
+                className={`nav-item ${activeTab === 'overview' ? 'active' : ''}`}
+                onClick={() => setActiveTab('overview')}
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+                </svg>
+                Overview
+            </button>
+            <button 
+                className={`nav-item ${activeTab === 'courses' ? 'active' : ''}`}
+                onClick={() => setActiveTab('courses')}
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3z"/>
+                </svg>
+                Courses
+            </button>
+            <button 
+                className={`nav-item ${activeTab === 'analytics' ? 'active' : ''}`}
+                onClick={() => setActiveTab('analytics')}
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                </svg>
+                Analytics
+            </button>
+            <button 
+                className={`nav-item ${activeTab === 'messages' ? 'active' : ''}`}
+                onClick={() => setActiveTab('messages')}
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+                </svg>
+                Messages
+            </button>
+            <button 
+                className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`}
+                onClick={() => setActiveTab('settings')}
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+                </svg>
+                Settings
+            </button>
+        </nav>
     );
 
     const renderDashboardContent = () => {
@@ -1660,53 +1991,7 @@ const Dashboard = () => {
                     <p className="user-type">{getRoleDisplayName(user?.role)} Portal</p>
                 </div>
                 
-                <nav className="sidebar-nav">
-                    <button 
-                        className={`nav-item ${activeTab === 'overview' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('overview')}
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
-                        </svg>
-                        Overview
-                    </button>
-                    <button 
-                        className={`nav-item ${activeTab === 'courses' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('courses')}
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3z"/>
-                        </svg>
-                        {user?.role === 'admin' ? 'System' : 'Courses'}
-                    </button>
-                    <button 
-                        className={`nav-item ${activeTab === 'analytics' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('analytics')}
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
-                        </svg>
-                        Analytics
-                    </button>
-                    <button 
-                        className={`nav-item ${activeTab === 'messages' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('messages')}
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
-                        </svg>
-                        Messages
-                    </button>
-                    <button 
-                        className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('settings')}
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
-                        </svg>
-                        Settings
-                    </button>
-                </nav>
+                {user?.role === 'admin' ? renderAdminSidebar() : renderDefaultSidebar()}
 
                 <div className="sidebar-footer">
                     <div className="user-info">
