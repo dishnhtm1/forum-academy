@@ -4,6 +4,10 @@ import ApplicationForm from '../components/ApplicationForm';
 import { createApplication } from '../utils/api'; // Optional: If you prefer using your API utility
 import '../styles/ApplyPage.css';
 
+import testimonialImage from '../assets/images/png4.jpg';
+import testimonial1Image from '../assets/images/png18.jpg';
+import testimonial2Image from '../assets/images/png16.jpg';
+
 const ApplyPage = () => {
     const { t } = useTranslation(); // Add this line only
     const [activeStep, setActiveStep] = useState(0);
@@ -279,19 +283,19 @@ const ApplyPage = () => {
             name: t('applyPage.testimonials.0.name'),
             program: t('applyPage.testimonials.0.program'),
             quote: t('applyPage.testimonials.0.quote'),
-            avatar: "/images/testimonial1.jpg"
+            avatar: testimonialImage
         },
         {
             name: t('applyPage.testimonials.1.name'),
             program: t('applyPage.testimonials.1.program'),
             quote: t('applyPage.testimonials.1.quote'),
-            avatar: "/images/testimonial2.jpg"
+            avatar: testimonial1Image
         },
         {
             name: t('applyPage.testimonials.2.name'),
             program: t('applyPage.testimonials.2.program'),
             quote: t('applyPage.testimonials.2.quote'),
-            avatar: "/images/testimonial3.jpg"
+            avatar: testimonial2Image
         }
     ];
 
