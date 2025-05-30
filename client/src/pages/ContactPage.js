@@ -139,14 +139,22 @@ const ContactPage = () => {
             loading: true
         });
     
+//        try {
+//            const response = await fetch('http://localhost:5000/api/contact', {            
+//                method: 'POST',
+//                headers: {
+//                    'Content-Type': 'application/json'
+//                },
+//                body: JSON.stringify(formData)
+//            });
         try {
-            const response = await fetch('http://localhost:5000/api/contact', {            
+            const response = await fetch('https://forum-backend-api-a7hgg9g7hmgegrh3.eastasia-01.azurewebsites.net/api/contact', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(formData)
-            });
+         });
     
             const data = await response.json();
     
