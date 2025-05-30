@@ -147,6 +147,8 @@ const ContactPage = () => {
 //                },
 //                body: JSON.stringify(formData)
 //            });
+
+    const API_URL = process.env.REACT_APP_API_URL; // ✅ REQUIRED line
         try {
             const response = await fetch(`${API_URL}/api/contact`, {
                 method: 'POST',
