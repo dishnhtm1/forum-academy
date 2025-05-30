@@ -229,13 +229,25 @@ const ApplyPage = () => {
             console.log('Submitting application:', applicationData);
 
             // const response = await fetch('http://localhost:5000/api/application', {
-            const response = await fetch('http://localhost:5000/api/applications', {
+//            const response = await fetch('http://localhost:5000/api/applications', {
+//                method: 'POST',
+//                headers: {
+//                    'Content-Type': 'application/json',
+//                },
+ //               body: JSON.stringify(applicationData)
+ //           });
+
+            const API_URL = process.env.REACT_APP_API_URL;
+
+            const response = await fetch(`${API_URL}/api/application`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(applicationData)
-            });
+                body: JSON.stringify(formData)
+                });
+
+
 
             const data = await response.json();
 
