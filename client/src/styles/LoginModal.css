@@ -475,19 +475,6 @@
     opacity: 0.8;
 }
 
-.button-loader {
-    width: 20px;
-    height: 20px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-    border-top-color: white;
-    animation: spin 0.8s infinite linear;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
 .button-icon {
     font-size: 20px;
     transition: transform 0.3s ease;
@@ -495,6 +482,92 @@
 
 .login-button.modern:hover .button-icon {
     transform: translateX(4px);
+}
+
+/* New login loading animation - ONLY THIS ONE */
+.login-loading-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.login-loading-rings {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 24px;
+    height: 24px;
+}
+
+.login-ring {
+    width: 24px;
+    height: 24px;
+    border: 1px solid transparent;
+    border-radius: 50%;
+    position: absolute;
+}
+
+.login-ring:nth-child(1) {
+    border-bottom: 2px solid rgb(255, 141, 249);
+    animation: loginRotate1 1.2s linear infinite;
+}
+
+@keyframes loginRotate1 {
+    from {
+        transform: rotateX(50deg) rotateZ(110deg);
+    }
+    to {
+        transform: rotateX(50deg) rotateZ(470deg);
+    }
+}
+
+.login-ring:nth-child(2) {
+    border-bottom: 2px solid rgb(255, 65, 106);
+    animation: loginRotate2 1.2s linear infinite;
+}
+
+@keyframes loginRotate2 {
+    from {
+        transform: rotateX(20deg) rotateY(50deg) rotateZ(20deg);
+    }
+    to {
+        transform: rotateX(20deg) rotateY(50deg) rotateZ(380deg);
+    }
+}
+
+.login-ring:nth-child(3) {
+    border-bottom: 2px solid rgb(0, 255, 255);
+    animation: loginRotate3 1.2s linear infinite;
+}
+
+@keyframes loginRotate3 {
+    from {
+        transform: rotateX(40deg) rotateY(130deg) rotateZ(450deg);
+    }
+    to {
+        transform: rotateX(40deg) rotateY(130deg) rotateZ(90deg);
+    }
+}
+
+.login-ring:nth-child(4) {
+    border-bottom: 2px solid rgb(252, 183, 55);
+    animation: loginRotate4 1.2s linear infinite;
+}
+
+@keyframes loginRotate4 {
+    from {
+        transform: rotateX(70deg) rotateZ(270deg);
+    }
+    to {
+        transform: rotateX(70deg) rotateZ(630deg);
+    }
+}
+
+.login-loading-text {
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
 }
 
 /* Form Error */
@@ -592,41 +665,6 @@
 
 .register-button .material-icons {
     font-size: 20px;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .login-form-container {
-        padding: 50px 30px 30px;
-    }
-    
-    .login-modal {
-        max-width: 400px;
-        margin: 20px;
-    }
-    
-    .login-header h2 {
-        font-size: 24px;
-    }
-    
-    .form-input.modern {
-        padding: 14px 14px 14px 44px;
-    }
-    
-    .input-icon {
-        left: 14px;
-        font-size: 18px;
-    }
-    
-    .floating-label {
-        left: 44px;
-    }
-    
-    .form-options.modern {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-    }
 }
 
 /* Login logo section with animated rings */
@@ -735,8 +773,40 @@
     }
 }
 
-/* Responsive adjustments for login */
+/* Responsive Design */
 @media (max-width: 768px) {
+    .login-form-container {
+        padding: 50px 30px 30px;
+    }
+    
+    .login-modal {
+        max-width: 400px;
+        margin: 20px;
+    }
+    
+    .login-header h2 {
+        font-size: 24px;
+    }
+    
+    .form-input.modern {
+        padding: 14px 14px 14px 44px;
+    }
+    
+    .input-icon {
+        left: 14px;
+        font-size: 18px;
+    }
+    
+    .floating-label {
+        left: 44px;
+    }
+    
+    .form-options.modern {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
     .login-header .ring-container {
         width: 150px;
         height: 150px;
@@ -750,5 +820,19 @@
     
     .login-header .logo-text {
         font-size: 1.5rem;
+    }
+    
+    .login-loading-rings {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .login-ring {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .login-loading-text {
+        font-size: 14px;
     }
 }
