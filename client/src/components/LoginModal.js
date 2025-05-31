@@ -543,7 +543,7 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick }) => {
                             
                             <button 
                                 type="submit" 
-                                className={`login-button modern ${isLoading ? 'loading' : ''}`}
+                                className={`login-button modern ${isLoading ? '' : ''}`}
                                 disabled={isLoading}
                             >
                                 {isLoading ? (
