@@ -21,7 +21,7 @@ const RegisterPage = ({ isOpen, onClose, onRegisterSuccess }) => {
   const history = useHistory();
 
   // API base URL
-  const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+  const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
   // Keep ALL your existing useEffect code exactly as is
   useEffect(() => {
@@ -161,7 +161,8 @@ const RegisterPage = ({ isOpen, onClose, onRegisterSuccess }) => {
     setError('');
     
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/register`, {
+
+      const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
