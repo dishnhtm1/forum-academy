@@ -1791,106 +1791,426 @@ const Dashboard = () => {
         </>
     );
     
-    const renderUserManagement = () => (
+    // const renderUserManagement = () => (
+    //     <div className="user-management-section">
+    //         <div className="section-header">
+    //             <h2>👥 User Management</h2>
+    //             <button 
+    //                 className="create-user-btn"
+    //                 onClick={() => setShowCreateUserForm(true)}
+    //             >
+    //                 ➕ Create New User
+    //             </button>
+    //         </div>
+    
+    //         {showCreateUserForm && (
+    //             <div className="create-user-modal">
+    //                 <div className="modal-content">
+    //                     <h3>Create New User</h3>
+    //                     <form onSubmit={handleCreateUser}>
+    //                         <div className="form-row">
+    //                             <input
+    //                                 type="text"
+    //                                 placeholder="First Name"
+    //                                 value={newUserData.firstName}
+    //                                 onChange={(e) => setNewUserData({...newUserData, firstName: e.target.value})}
+    //                                 required
+    //                             />
+    //                             <input
+    //                                 type="text"
+    //                                 placeholder="Last Name"
+    //                                 value={newUserData.lastName}
+    //                                 onChange={(e) => setNewUserData({...newUserData, lastName: e.target.value})}
+    //                                 required
+    //                             />
+    //                         </div>
+    //                         <input
+    //                             type="email"
+    //                             placeholder="Email"
+    //                             value={newUserData.email}
+    //                             onChange={(e) => setNewUserData({...newUserData, email: e.target.value})}
+    //                             required
+    //                         />
+    //                         <input
+    //                             type="password"
+    //                             placeholder="Password"
+    //                             value={newUserData.password}
+    //                             onChange={(e) => setNewUserData({...newUserData, password: e.target.value})}
+    //                             required
+    //                         />
+    //                         <select
+    //                             value={newUserData.role}
+    //                             onChange={(e) => setNewUserData({...newUserData, role: e.target.value})}
+    //                         >
+    //                             <option value="student">Student</option>
+    //                             <option value="teacher">Teacher</option>
+    //                             <option value="admin">Admin</option>
+    //                         </select>
+    //                         <div className="form-actions">
+    //                             <button type="submit">Create User</button>
+    //                             <button type="button" onClick={() => setShowCreateUserForm(false)}>Cancel</button>
+    //                         </div>
+    //                     </form>
+    //                 </div>
+    //             </div>
+    //         )}
+    
+    //         <div className="users-grid">
+    //             {allUsers.map(user => (
+    //                 <div key={user._id} className="user-card">
+    //                     <div className="user-avatar">
+    //                         {user.firstName?.charAt(0)}{user.lastName?.charAt(0)}
+    //                     </div>
+    //                     <div className="user-info">
+    //                         <h4>{user.firstName} {user.lastName}</h4>
+    //                         <p>{user.email}</p>
+    //                         <span className={`role-badge ${user.role}`}>{user.role}</span>
+    //                         <span className={`status-badge ${user.isApproved ? 'approved' : 'pending'}`}>
+    //                             {user.isApproved ? '✅ Approved' : '⏳ Pending'}
+    //                         </span>
+    //                     </div>
+    //                     {!user.isApproved && (
+    //                         <div className="user-actions">
+    //                             <button 
+    //                                 className="approve-btn"
+    //                                 onClick={() => handleUserApproval(user._id, true)}
+    //                             >
+    //                                 Approve
+    //                             </button>
+    //                             <button 
+    //                                 className="reject-btn"
+    //                                 onClick={() => handleUserApproval(user._id, false)}
+    //                             >
+    //                                 Reject
+    //                             </button>
+    //                         </div>
+    //                     )}
+    //                 </div>
+    //             ))}
+    //         </div>
+    //     </div>
+    // );
+    
+        const renderUserManagement = () => (
         <div className="user-management-section">
             <div className="section-header">
-                <h2>👥 User Management</h2>
-                <button 
-                    className="create-user-btn"
-                    onClick={() => setShowCreateUserForm(true)}
-                >
-                    ➕ Create New User
-                </button>
+                <div className="header-left">
+                    <h2>👥 User Management</h2>
+                    <div className="user-stats">
+                        <span className="stat-item">
+                            <strong>{allUsers.length}</strong> Total Users
+                        </span>
+                        <span className="stat-item">
+                            <strong>{pendingUsers.length}</strong> Pending
+                        </span>
+                        <span className="stat-item">
+                            <strong>{allUsers.filter(u => u.isApproved).length}</strong> Approved
+                        </span>
+                    </div>
+                </div>
+                <div className="header-actions">
+                    <div className="search-filter-bar">
+                        <input 
+                            type="text" 
+                            placeholder="🔍 Search users..." 
+                            className="search-input"
+                        />
+                        <select className="filter-select">
+                            <option value="">All Roles</option>
+                            <option value="student">Students</option>
+                            <option value="teacher">Teachers</option>
+                            <option value="admin">Admins</option>
+                        </select>
+                        <select className="filter-select">
+                            <option value="">All Status</option>
+                            <option value="approved">Approved</option>
+                            <option value="pending">Pending</option>
+                        </select>
+                    </div>
+                    <button 
+                        className="create-user-btn"
+                        onClick={() => setShowCreateUserForm(true)}
+                    >
+                        ➕ Create New User
+                    </button>
+                </div>
             </div>
     
             {showCreateUserForm && (
-                <div className="create-user-modal">
-                    <div className="modal-content">
-                        <h3>Create New User</h3>
-                        <form onSubmit={handleCreateUser}>
-                            <div className="form-row">
-                                <input
-                                    type="text"
-                                    placeholder="First Name"
-                                    value={newUserData.firstName}
-                                    onChange={(e) => setNewUserData({...newUserData, firstName: e.target.value})}
-                                    required
-                                />
-                                <input
-                                    type="text"
-                                    placeholder="Last Name"
-                                    value={newUserData.lastName}
-                                    onChange={(e) => setNewUserData({...newUserData, lastName: e.target.value})}
-                                    required
-                                />
-                            </div>
-                            <input
-                                type="email"
-                                placeholder="Email"
-                                value={newUserData.email}
-                                onChange={(e) => setNewUserData({...newUserData, email: e.target.value})}
-                                required
-                            />
-                            <input
-                                type="password"
-                                placeholder="Password"
-                                value={newUserData.password}
-                                onChange={(e) => setNewUserData({...newUserData, password: e.target.value})}
-                                required
-                            />
-                            <select
-                                value={newUserData.role}
-                                onChange={(e) => setNewUserData({...newUserData, role: e.target.value})}
+                <div className="create-user-modal-overlay">
+                    <div className="create-user-modal">
+                        <div className="modal-header">
+                            <h3>✨ Create New User</h3>
+                            <button 
+                                className="close-modal-btn"
+                                onClick={() => setShowCreateUserForm(false)}
                             >
-                                <option value="student">Student</option>
-                                <option value="teacher">Teacher</option>
-                                <option value="admin">Admin</option>
-                            </select>
-                            <div className="form-actions">
-                                <button type="submit">Create User</button>
-                                <button type="button" onClick={() => setShowCreateUserForm(false)}>Cancel</button>
-                            </div>
-                        </form>
+                                ✕
+                            </button>
+                        </div>
+                        <div className="modal-content">
+                            <form onSubmit={handleCreateUser}>
+                                <div className="form-grid">
+                                    <div className="form-group">
+                                        <label>First Name</label>
+                                        <input
+                                            type="text"
+                                            placeholder="Enter first name"
+                                            value={newUserData.firstName}
+                                            onChange={(e) => setNewUserData({...newUserData, firstName: e.target.value})}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Last Name</label>
+                                        <input
+                                            type="text"
+                                            placeholder="Enter last name"
+                                            value={newUserData.lastName}
+                                            onChange={(e) => setNewUserData({...newUserData, lastName: e.target.value})}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group full-width">
+                                        <label>Email Address</label>
+                                        <input
+                                            type="email"
+                                            placeholder="Enter email address"
+                                            value={newUserData.email}
+                                            onChange={(e) => setNewUserData({...newUserData, email: e.target.value})}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Password</label>
+                                        <input
+                                            type="password"
+                                            placeholder="Enter password"
+                                            value={newUserData.password}
+                                            onChange={(e) => setNewUserData({...newUserData, password: e.target.value})}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Role</label>
+                                        <select
+                                            value={newUserData.role}
+                                            onChange={(e) => setNewUserData({...newUserData, role: e.target.value})}
+                                        >
+                                            <option value="student">👨‍🎓 Student</option>
+                                            <option value="teacher">👨‍🏫 Teacher</option>
+                                            <option value="admin">👨‍💼 Admin</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="form-actions">
+                                    <button type="button" className="cancel-btn" onClick={() => setShowCreateUserForm(false)}>
+                                        Cancel
+                                    </button>
+                                    <button type="submit" className="submit-btn">
+                                        ✨ Create User
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             )}
     
-            <div className="users-grid">
-                {allUsers.map(user => (
-                    <div key={user._id} className="user-card">
-                        <div className="user-avatar">
-                            {user.firstName?.charAt(0)}{user.lastName?.charAt(0)}
-                        </div>
-                        <div className="user-info">
-                            <h4>{user.firstName} {user.lastName}</h4>
-                            <p>{user.email}</p>
-                            <span className={`role-badge ${user.role}`}>{user.role}</span>
-                            <span className={`status-badge ${user.isApproved ? 'approved' : 'pending'}`}>
-                                {user.isApproved ? '✅ Approved' : '⏳ Pending'}
-                            </span>
-                        </div>
-                        {!user.isApproved && (
-                            <div className="user-actions">
-                                <button 
-                                    className="approve-btn"
-                                    onClick={() => handleUserApproval(user._id, true)}
-                                >
-                                    Approve
-                                </button>
-                                <button 
-                                    className="reject-btn"
-                                    onClick={() => handleUserApproval(user._id, false)}
-                                >
-                                    Reject
-                                </button>
-                            </div>
-                        )}
+            <div className="users-table-container">
+                <div className="table-wrapper">
+                    <table className="users-table">
+                        <thead>
+                            <tr>
+                                <th className="sortable">
+                                    <div className="th-content">
+                                        👤 User
+                                        <span className="sort-icon">↕️</span>
+                                    </div>
+                                </th>
+                                <th className="sortable">
+                                    <div className="th-content">
+                                        📧 Contact
+                                        <span className="sort-icon">↕️</span>
+                                    </div>
+                                </th>
+                                <th className="sortable">
+                                    <div className="th-content">
+                                        🎭 Role
+                                        <span className="sort-icon">↕️</span>
+                                    </div>
+                                </th>
+                                <th className="sortable">
+                                    <div className="th-content">
+                                        📊 Status
+                                        <span className="sort-icon">↕️</span>
+                                    </div>
+                                </th>
+                                <th className="sortable">
+                                    <div className="th-content">
+                                        📅 Joined
+                                        <span className="sort-icon">↕️</span>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div className="th-content">
+                                        ⚡ Actions
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {allUsers.map((user, index) => (
+                                <tr key={user._id} className={`user-row ${!user.isApproved ? 'pending-row' : ''}`}>
+                                    <td className="user-cell">
+                                        <div className="user-info-cell">
+                                            <div className="user-avatar-table">
+                                                <div className={`avatar-circle ${user.role}`}>
+                                                    {user.firstName?.charAt(0)}{user.lastName?.charAt(0)}
+                                                </div>
+                                                <div className="online-indicator"></div>
+                                            </div>
+                                            <div className="user-details">
+                                                <div className="user-name">
+                                                    {user.firstName} {user.lastName}
+                                                </div>
+                                                <div className="user-id">
+                                                    ID: {user._id.slice(-8)}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="contact-cell">
+                                        <div className="contact-info">
+                                            <div className="email-primary">
+                                                {user.email}
+                                            </div>
+                                            {user.phone && (
+                                                <div className="phone-secondary">
+                                                    📱 {user.phone}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td className="role-cell">
+                                        <span className={`role-badge-table ${user.role}`}>
+                                            <span className="role-icon">
+                                                {user.role === 'admin' ? '👨‍💼' : 
+                                                 user.role === 'teacher' ? '👨‍🏫' : '👨‍🎓'}
+                                            </span>
+                                            <span className="role-text">
+                                                {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                                            </span>
+                                        </span>
+                                    </td>
+                                    <td className="status-cell">
+                                        <div className="status-container">
+                                            <span className={`status-badge-table ${user.isApproved ? 'approved' : 'pending'}`}>
+                                                <span className="status-dot"></span>
+                                                <span className="status-text">
+                                                    {user.isApproved ? 'Approved' : 'Pending'}
+                                                </span>
+                                            </span>
+                                            {!user.isApproved && (
+                                                <span className="urgency-indicator">
+                                                    ⚠️ Needs Review
+                                                </span>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td className="date-cell">
+                                        <div className="date-info">
+                                            <div className="join-date">
+                                                {new Date(user.createdAt || Date.now()).toLocaleDateString()}
+                                            </div>
+                                            <div className="time-ago">
+                                                {(() => {
+                                                    const days = Math.floor((Date.now() - new Date(user.createdAt || Date.now())) / (1000 * 60 * 60 * 24));
+                                                    return days === 0 ? 'Today' : `${days} days ago`;
+                                                })()}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="actions-cell">
+                                        <div className="action-buttons">
+                                            {!user.isApproved ? (
+                                                <>
+                                                    <button 
+                                                        className="action-btn approve-btn-table"
+                                                        onClick={() => handleUserApproval(user._id, true)}
+                                                        title="Approve User"
+                                                    >
+                                                        ✅
+                                                    </button>
+                                                    <button 
+                                                        className="action-btn reject-btn-table"
+                                                        onClick={() => handleUserApproval(user._id, false)}
+                                                        title="Reject User"
+                                                    >
+                                                        ❌
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <button 
+                                                    className="action-btn view-btn-table"
+                                                    title="View Details"
+                                                >
+                                                    👁️
+                                                </button>
+                                            )}
+                                            <div className="action-dropdown">
+                                                <button className="dropdown-toggle">⋮</button>
+                                                <div className="dropdown-menu">
+                                                    <button className="dropdown-item">📝 Edit</button>
+                                                    <button className="dropdown-item">📧 Message</button>
+                                                    <button className="dropdown-item">🔒 Reset Password</button>
+                                                    <hr className="dropdown-divider" />
+                                                    <button className="dropdown-item danger">🗑️ Delete</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+    
+                <div className="table-footer">
+                    <div className="table-info">
+                        <span>Showing {allUsers.length} of {allUsers.length} users</span>
                     </div>
-                ))}
+                    <div className="table-pagination">
+                        <button className="pagination-btn" disabled={true}>
+                            ← Previous
+                        </button>
+                        <div className="pagination-numbers">
+                            <button className="page-number active">1</button>
+                            <button className="page-number">2</button>
+                            <button className="page-number">3</button>
+                        </div>
+                        <button className="pagination-btn">
+                            Next →
+                        </button>
+                    </div>
+                </div>
+            </div>
+    
+            <div className="bulk-actions-bar">
+                <div className="bulk-actions-left">
+                    <input type="checkbox" id="select-all" />
+                    <label htmlFor="select-all">Select All</label>
+                    <span className="selected-count">0 selected</span>
+                </div>
+                <div className="bulk-actions-right">
+                    <button className="bulk-btn approve-all">✅ Approve Selected</button>
+                    <button className="bulk-btn reject-all">❌ Reject Selected</button>
+                    <button className="bulk-btn export">📤 Export</button>
+                </div>
             </div>
         </div>
     );
-    
+
     const renderApplicationManagement = () => (
         <div className="applications-section">
             <h2>📋 Application Management</h2>
@@ -2178,7 +2498,6 @@ const Dashboard = () => {
             </div>
         </div>
     );
-    };
+};
     
-    export default Dashboard;
-    // ...existing code...
+export default Dashboard;
