@@ -71,8 +71,8 @@ const Dashboard = () => {
     });
 
     const history = useHistory();
-    const API_BASE_URL = process.env.REACT_APP_API_URL ;
-    // const API_BASE_URL = 'http://localhost:5000'; // Test with local server
+    // const API_BASE_URL = process.env.REACT_APP_API_URL ;
+    const API_BASE_URL = 'http://localhost:5000'; // Test with local server
 
     // Fetch functions - Fixed to handle MongoDB data properly
     const fetchPendingUsers = async (token) => {
@@ -321,67 +321,6 @@ const Dashboard = () => {
         localStorage.clear();
         history.push('/');
     };
-
-    // useEffect(() => {
-    //     const checkAuth = async () => {
-    //         const token = localStorage.getItem('authToken');
-            
-    //         if (!token) {
-    //             history.push('/');
-    //             return;
-    //         }
-    
-    //         try {
-    //             console.log('Checking authentication...');
-    //             const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
-    //                 headers: {
-    //                     'Authorization': `Bearer ${token}`,
-    //                     'Content-Type': 'application/json'
-    //                 }
-    //             });
-    
-    //             if (!response.ok) {
-    //                 throw new Error('Authentication failed');
-    //             }
-    
-    //             const data = await response.json();
-    //             const userData = data.user;
-    //             console.log('User data received:', userData);
-    
-    //             setUser({
-    //                 id: userData.id || userData._id,
-    //                 email: userData.email,
-    //                 firstName: userData.firstName,
-    //                 lastName: userData.lastName,
-    //                 role: userData.role,
-    //                 name: `${userData.firstName} ${userData.lastName}`.trim() || userData.email?.split('@')[0] || 'User',
-    //                 isApproved: userData.isApproved
-    //             });
-    
-    //             localStorage.setItem('userRole', userData.role);
-    //             localStorage.setItem('userEmail', userData.email);
-    
-    //             // Fetch admin-specific data if user is admin
-    //             if (userData.role === 'admin') {
-    //                 console.log('Fetching admin data...');
-    //                 await fetchPendingUsers(token);
-    //                 await fetchApplicationSubmissions(token);
-    //                 await fetchContactSubmissions(token);
-    //                 await fetchAllUsers(token);
-    //             }
-    
-    //         } catch (error) {
-    //             console.error('Authentication error:', error);
-    //             localStorage.clear();
-    //             history.push('/');
-    //         }
-    
-    //         setIsLoading(false);
-    //     };
-    
-    //     checkAuth();
-    // }, [history, API_BASE_URL]);
-
         // Around line 360, update the useEffect:
     useEffect(() => {
         const checkAuth = async () => {
@@ -1499,7 +1438,6 @@ const Dashboard = () => {
         </div>
     );
 
-        // ...existing code...
     const renderTeacherMessages = () => (
         <div className="messages-section">
             <div className="section-header">
@@ -1674,343 +1612,591 @@ const Dashboard = () => {
     );
     
     // Admin Dashboard Components
+    
     const renderAdminOverview = () => (
-        <>
-            <div className="system-health-header">
-                <div className="health-indicator">
-                    <div className="health-score">
-                        <div className="score-circle">
-                            <svg viewBox="0 0 100 100">
-                                <circle cx="50" cy="50" r="45" stroke="#e5e7eb" strokeWidth="6" fill="none" />
-                                <circle 
-                                    cx="50" 
-                                    cy="50" 
-                                    r="45" 
-                                    stroke="#10b981" 
-                                    strokeWidth="6" 
-                                    fill="none"
-                                    strokeDasharray={`${dashboardData.admin.systemHealth * 2.83} 283`}
-                                    strokeLinecap="round"
-                                    transform="rotate(-90 50 50)"
-                                />
-                            </svg>
-                            <div className="score-text">
-                                <span className="score-number">{dashboardData.admin.systemHealth}%</span>
-                                <span className="score-label">Healthy</span>
+        <div className="space-y-8">
+            {/* System Health Header */}
+            <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 rounded-3xl shadow-2xl overflow-hidden">
+                <div className="relative p-8">
+                    {/* Background Pattern */}
+                    <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-48 translate-x-48"></div>
+                    <div className="absolute bottom-0 left-0 w-72 h-72 bg-white/5 rounded-full translate-y-36 -translate-x-36"></div>
+                    
+                    <div className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+                        {/* System Health Score */}
+                        <div className="flex flex-col items-center lg:items-start">
+                            <div className="relative w-32 h-32 mb-4">
+                                <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 100 100">
+                                    <circle 
+                                        cx="50" 
+                                        cy="50" 
+                                        r="40" 
+                                        stroke="rgba(255,255,255,0.2)" 
+                                        strokeWidth="8" 
+                                        fill="transparent"
+                                    />
+                                    <circle 
+                                        cx="50" 
+                                        cy="50" 
+                                        r="40" 
+                                        stroke="white" 
+                                        strokeWidth="8" 
+                                        fill="transparent"
+                                        strokeDasharray={`${dashboardData.admin.systemHealth * 2.51} 251`}
+                                        strokeLinecap="round"
+                                        className="transition-all duration-1000 ease-out"
+                                    />
+                                </svg>
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <div className="text-center">
+                                        <div className="text-3xl font-bold text-white">{dashboardData.admin.systemHealth}%</div>
+                                        <div className="text-xs text-white/80 font-medium">HEALTHY</div>
+                                    </div>
+                                </div>
                             </div>
+                            <h2 className="text-2xl font-bold text-white mb-2">System Health Monitor</h2>
+                            <p className="text-white/80 text-center lg:text-left">All systems operating optimally</p>
                         </div>
-                    </div>
-                    <div className="system-stats">
-                        <h2>System Health Monitor</h2>
-                        <div className="health-metrics">
-                            <div className="metric">
-                                <span className="metric-label">Server Load</span>
-                                <div className="metric-bar">
-                                    <div className="metric-fill" style={{ width: `${dashboardData.admin.serverLoad}%`, backgroundColor: '#3b82f6' }}></div>
+    
+                        {/* Real-time Metrics */}
+                        <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="flex items-center space-x-3">
+                                        <div className="w-10 h-10 bg-green-500/20 rounded-xl flex items-center justify-center">
+                                            <span className="text-green-400 text-xl">🖥️</span>
+                                        </div>
+                                        <div>
+                                            <h3 className="text-white font-semibold">Server Load</h3>
+                                            <p className="text-white/60 text-sm">CPU utilization</p>
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <div className="text-2xl font-bold text-white">{dashboardData.admin.serverLoad}%</div>
+                                        <div className="text-green-400 text-sm font-medium">↗ Optimal</div>
+                                    </div>
                                 </div>
-                                <span className="metric-value">{dashboardData.admin.serverLoad}%</span>
+                                <div className="w-full bg-white/20 rounded-full h-2">
+                                    <div 
+                                        className="bg-gradient-to-r from-green-400 to-emerald-500 h-2 rounded-full transition-all duration-1000"
+                                        style={{ width: `${dashboardData.admin.serverLoad}%` }}
+                                    ></div>
+                                </div>
                             </div>
-                            <div className="metric">
-                                <span className="metric-label">Storage Used</span>
-                                <div className="metric-bar">
-                                    <div className="metric-fill" style={{ width: `${dashboardData.admin.storageUsed}%`, backgroundColor: '#f59e0b' }}></div>
+    
+                            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="flex items-center space-x-3">
+                                        <div className="w-10 h-10 bg-orange-500/20 rounded-xl flex items-center justify-center">
+                                            <span className="text-orange-400 text-xl">💾</span>
+                                        </div>
+                                        <div>
+                                            <h3 className="text-white font-semibold">Storage Used</h3>
+                                            <p className="text-white/60 text-sm">Database & files</p>
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <div className="text-2xl font-bold text-white">{dashboardData.admin.storageUsed}%</div>
+                                        <div className="text-orange-400 text-sm font-medium">📈 Growing</div>
+                                    </div>
                                 </div>
-                                <span className="metric-value">{dashboardData.admin.storageUsed}%</span>
+                                <div className="w-full bg-white/20 rounded-full h-2">
+                                    <div 
+                                        className="bg-gradient-to-r from-orange-400 to-yellow-500 h-2 rounded-full transition-all duration-1000"
+                                        style={{ width: `${dashboardData.admin.storageUsed}%` }}
+                                    ></div>
+                                </div>
+                            </div>
+    
+                            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="flex items-center space-x-3">
+                                        <div className="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center">
+                                            <span className="text-blue-400 text-xl">⚡</span>
+                                        </div>
+                                        <div>
+                                            <h3 className="text-white font-semibold">Response Time</h3>
+                                            <p className="text-white/60 text-sm">Average API speed</p>
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <div className="text-2xl font-bold text-white">142ms</div>
+                                        <div className="text-blue-400 text-sm font-medium">⚡ Fast</div>
+                                    </div>
+                                </div>
+                                <div className="flex space-x-1">
+                                    {[...Array(10)].map((_, i) => (
+                                        <div 
+                                            key={i} 
+                                            className={`h-8 w-3 rounded-sm ${i < 7 ? 'bg-blue-400' : 'bg-white/20'}`}
+                                        ></div>
+                                    ))}
+                                </div>
+                            </div>
+    
+                            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="flex items-center space-x-3">
+                                        <div className="w-10 h-10 bg-purple-500/20 rounded-xl flex items-center justify-center">
+                                            <span className="text-purple-400 text-xl">🌐</span>
+                                        </div>
+                                        <div>
+                                            <h3 className="text-white font-semibold">Active Sessions</h3>
+                                            <p className="text-white/60 text-sm">Current users online</p>
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <div className="text-2xl font-bold text-white">247</div>
+                                        <div className="text-purple-400 text-sm font-medium">👥 Active</div>
+                                    </div>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <div className="flex space-x-1">
+                                        <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                                        <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse delay-75"></div>
+                                        <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse delay-150"></div>
+                                    </div>
+                                    <span className="text-white/60 text-sm">Live monitoring</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
     
-            <div className="dashboard-stats">
-                <div className="stat-card gradient-blue">
-                    <div className="stat-icon">👥</div>
-                    <div className="stat-content">
-                        <h3>Total Users</h3>
-                        <p className="stat-number">{allUsers.length}</p>
-                        <span className="stat-trend">{pendingUsers.length} pending approval</span>
+            {/* Key Metrics Dashboard */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
+                    <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-6 text-white">
+                        <div className="flex items-center justify-between">
+                            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <span className="text-2xl">👥</span>
+                            </div>
+                            <div className="text-right">
+                                <div className="text-3xl font-bold">{allUsers.length}</div>
+                                <div className="text-blue-100 text-sm font-medium">Total Users</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="p-6">
+                        <div className="flex items-center justify-between text-sm">
+                            <span className="text-gray-600">Pending approval</span>
+                            <span className="font-semibold text-orange-600">{pendingUsers.length}</span>
+                        </div>
+                        <div className="mt-4 bg-gray-200 rounded-full h-2">
+                            <div 
+                                className="bg-blue-500 h-2 rounded-full transition-all duration-1000"
+                                style={{ width: `${(allUsers.filter(u => u.isApproved).length / allUsers.length) * 100}%` }}
+                            ></div>
+                        </div>
+                        <div className="mt-2 text-xs text-gray-500">
+                            {Math.round((allUsers.filter(u => u.isApproved).length / allUsers.length) * 100)}% approved
+                        </div>
                     </div>
                 </div>
-                <div className="stat-card gradient-green">
-                    <div className="stat-icon">📋</div>
-                    <div className="stat-content">
-                        <h3>Applications</h3>
-                        <p className="stat-number">{applicationSubmissions.length}</p>
-                        <span className="stat-trend">{dashboardData.admin.pendingApplications || 0} pending</span>
+    
+                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
+                    <div className="bg-gradient-to-br from-green-500 to-green-600 p-6 text-white">
+                        <div className="flex items-center justify-between">
+                            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <span className="text-2xl">📋</span>
+                            </div>
+                            <div className="text-right">
+                                <div className="text-3xl font-bold">{applicationSubmissions.length}</div>
+                                <div className="text-green-100 text-sm font-medium">Applications</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="p-6">
+                        <div className="flex items-center justify-between text-sm">
+                            <span className="text-gray-600">Pending review</span>
+                            <span className="font-semibold text-orange-600">{dashboardData.admin.pendingApplications || 0}</span>
+                        </div>
+                        <div className="mt-4 bg-gray-200 rounded-full h-2">
+                            <div 
+                                className="bg-green-500 h-2 rounded-full transition-all duration-1000"
+                                style={{ width: `${applicationSubmissions.length > 0 ? ((applicationSubmissions.filter(app => app.status === 'approved').length / applicationSubmissions.length) * 100) : 0}%` }}
+                            ></div>
+                        </div>
+                        <div className="mt-2 text-xs text-gray-500">
+                            {applicationSubmissions.filter(app => app.status === 'approved').length} approved
+                        </div>
                     </div>
                 </div>
-                <div className="stat-card gradient-orange">
-                    <div className="stat-icon">📧</div>
-                    <div className="stat-content">
-                        <h3>Contact Messages</h3>
-                        <p className="stat-number">{contactSubmissions.length}</p>
-                        <span className="stat-trend">{dashboardData.admin.pendingContacts || 0} pending</span>
+    
+                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
+                    <div className="bg-gradient-to-br from-orange-500 to-orange-600 p-6 text-white">
+                        <div className="flex items-center justify-between">
+                            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <span className="text-2xl">📧</span>
+                            </div>
+                            <div className="text-right">
+                                <div className="text-3xl font-bold">{contactSubmissions.length}</div>
+                                <div className="text-orange-100 text-sm font-medium">Messages</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="p-6">
+                        <div className="flex items-center justify-between text-sm">
+                            <span className="text-gray-600">Needs response</span>
+                            <span className="font-semibold text-red-600">{dashboardData.admin.pendingContacts || 0}</span>
+                        </div>
+                        <div className="mt-4 bg-gray-200 rounded-full h-2">
+                            <div 
+                                className="bg-orange-500 h-2 rounded-full transition-all duration-1000"
+                                style={{ width: `${contactSubmissions.length > 0 ? ((contactSubmissions.filter(contact => contact.status === 'resolved').length / contactSubmissions.length) * 100) : 0}%` }}
+                            ></div>
+                        </div>
+                        <div className="mt-2 text-xs text-gray-500">
+                            {contactSubmissions.filter(contact => contact.status === 'resolved').length} resolved
+                        </div>
                     </div>
                 </div>
-                <div className="stat-card gradient-purple">
-                    <div className="stat-icon">🖥️</div>
-                    <div className="stat-content">
-                        <h3>System Uptime</h3>
-                        <p className="stat-number">99.8%</p>
-                        <span className="stat-trend">Last 30 days</span>
+    
+                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
+                    <div className="bg-gradient-to-br from-purple-500 to-purple-600 p-6 text-white">
+                        <div className="flex items-center justify-between">
+                            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <span className="text-2xl">⏱️</span>
+                            </div>
+                            <div className="text-right">
+                                <div className="text-3xl font-bold">99.9%</div>
+                                <div className="text-purple-100 text-sm font-medium">Uptime</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="p-6">
+                        <div className="flex items-center justify-between text-sm">
+                            <span className="text-gray-600">Last 30 days</span>
+                            <span className="font-semibold text-green-600">Excellent</span>
+                        </div>
+                        <div className="mt-4 bg-gray-200 rounded-full h-2">
+                            <div className="bg-purple-500 h-2 rounded-full transition-all duration-1000" style={{ width: '99.9%' }}></div>
+                        </div>
+                        <div className="mt-2 text-xs text-gray-500">
+                            43.2 minutes downtime
+                        </div>
                     </div>
                 </div>
             </div>
     
-            <div className="dashboard-content">
-                <div className="admin-quick-overview">
-                    <div className="overview-section">
-                        <h3>📊 Quick Stats</h3>
-                        <div className="quick-stats-grid">
-                            <div className="quick-stat">
-                                <span className="stat-label">Students</span>
-                                <span className="stat-value">{allUsers.filter(u => u.role === 'student').length}</span>
+            {/* Main Content Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* User Role Distribution */}
+                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                    <div className="p-6 border-b border-gray-200">
+                        <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                            <span className="mr-2">📊</span>
+                            User Distribution
+                        </h3>
+                        <p className="text-sm text-gray-600 mt-1">Platform user breakdown by role</p>
+                    </div>
+                    <div className="p-6">
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between p-4 bg-blue-50 rounded-xl border border-blue-200">
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                                        <span className="text-white text-sm font-bold">👨‍🎓</span>
+                                    </div>
+                                    <div>
+                                        <div className="font-semibold text-gray-900">Students</div>
+                                        <div className="text-sm text-gray-600">Active learners</div>
+                                    </div>
+                                </div>
+                                <div className="text-right">
+                                    <div className="text-2xl font-bold text-blue-600">{allUsers.filter(u => u.role === 'student').length}</div>
+                                    <div className="text-xs text-blue-500 font-medium">
+                                        {Math.round((allUsers.filter(u => u.role === 'student').length / allUsers.length) * 100)}%
+                                    </div>
+                                </div>
                             </div>
-                            <div className="quick-stat">
-                                <span className="stat-label">Teachers</span>
-                                <span className="stat-value">{allUsers.filter(u => u.role === 'teacher').length}</span>
+    
+                            <div className="flex items-center justify-between p-4 bg-green-50 rounded-xl border border-green-200">
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
+                                        <span className="text-white text-sm font-bold">👨‍🏫</span>
+                                    </div>
+                                    <div>
+                                        <div className="font-semibold text-gray-900">Teachers</div>
+                                        <div className="text-sm text-gray-600">Course instructors</div>
+                                    </div>
+                                </div>
+                                <div className="text-right">
+                                    <div className="text-2xl font-bold text-green-600">{allUsers.filter(u => u.role === 'teacher').length}</div>
+                                    <div className="text-xs text-green-500 font-medium">
+                                        {Math.round((allUsers.filter(u => u.role === 'teacher').length / allUsers.length) * 100)}%
+                                    </div>
+                                </div>
                             </div>
-                            <div className="quick-stat">
-                                <span className="stat-label">Admins</span>
-                                <span className="stat-value">{allUsers.filter(u => u.role === 'admin').length}</span>
+    
+                            <div className="flex items-center justify-between p-4 bg-purple-50 rounded-xl border border-purple-200">
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+                                        <span className="text-white text-sm font-bold">👨‍💼</span>
+                                    </div>
+                                    <div>
+                                        <div className="font-semibold text-gray-900">Administrators</div>
+                                        <div className="text-sm text-gray-600">System managers</div>
+                                    </div>
+                                </div>
+                                <div className="text-right">
+                                    <div className="text-2xl font-bold text-purple-600">{allUsers.filter(u => u.role === 'admin').length}</div>
+                                    <div className="text-xs text-purple-500 font-medium">
+                                        {Math.round((allUsers.filter(u => u.role === 'admin').length / allUsers.length) * 100)}%
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+    
+                        <div className="mt-6 p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl">
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm font-medium text-gray-700">Total Active Users</span>
+                                <span className="text-lg font-bold text-gray-900">{allUsers.filter(u => u.isApproved).length}</span>
+                            </div>
+                            <div className="mt-2 text-xs text-gray-500">
+                                Growth rate: +{Math.floor(Math.random() * 15) + 5}% this month
                             </div>
                         </div>
                     </div>
                 </div>
     
-                {contactSubmissions.length > 0 && (
-                    <div className="contact-submissions">
-                        <h3>📧 Recent Contact Submissions</h3>
-                        <div className="submissions-list">
-                            {contactSubmissions.slice(0, 3).map(contact => (
-                                <div key={contact._id} className={`submission-card ${contact.status}`}>
-                                    <div className="submission-header">
-                                        <div className="contact-info">
-                                            <h4>{contact.name}</h4>
-                                            <p className="contact-email">{contact.email}</p>
-                                            <span className={`status-badge ${contact.status}`}>
-                                                {contact.status === 'pending' ? '⏳ Pending' : 
-                                                contact.status === 'approved' ? '✅ Approved' : 
-                                                contact.status === 'resolved' ? '✅ Resolved' : '❌ Ignored'}
+                {/* Recent Activity Feed */}
+                <div className="lg:col-span-2 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                    <div className="p-6 border-b border-gray-200">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                                    <span className="mr-2">⚡</span>
+                                    Real-time Activity
+                                </h3>
+                                <p className="text-sm text-gray-600 mt-1">Live system events and user actions</p>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                                <span className="text-sm text-gray-500">Live</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="p-6">
+                        <div className="space-y-4">
+                            {/* Pending User Approvals */}
+                            {pendingUsers.length > 0 && pendingUsers.slice(0, 3).map(user => (
+                                <div key={user._id} className="flex items-start space-x-4 p-4 bg-orange-25 border border-orange-200 rounded-xl hover:bg-orange-50 transition-colors">
+                                    <div className="relative">
+                                        <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-red-500 rounded-xl flex items-center justify-center text-white font-semibold">
+                                            {user.firstName?.charAt(0)}{user.lastName?.charAt(0)}
+                                        </div>
+                                        <div className="absolute -top-1 -right-1 w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center">
+                                            <span className="text-white text-xs">!</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center justify-between">
+                                            <h4 className="text-sm font-semibold text-gray-900">
+                                                New {user.role} registration
+                                            </h4>
+                                            <span className="text-xs text-gray-500">
+                                                {new Date(user.createdAt || Date.now()).toLocaleDateString()}
                                             </span>
                                         </div>
-                                        <div className="submission-date">
-                                            <small>{new Date(contact.createdAt).toLocaleDateString()}</small>
-                                        </div>
-                                    </div>
-                                    <div className="submission-content">
-                                        <p><strong>Subject:</strong> {contact.subject}</p>
-                                        <p><strong>Message:</strong></p>
-                                        <div className="message-content">
-                                            {contact.message.length > 100 ? 
-                                                `${contact.message.substring(0, 100)}...` : 
-                                                contact.message
-                                            }
-                                        </div>
-                                    </div>
-                                    {contact.status === 'pending' && (
-                                        <div className="submission-actions">
+                                        <p className="text-sm text-gray-600">
+                                            {user.firstName} {user.lastName} ({user.email}) awaiting approval
+                                        </p>
+                                        <div className="flex space-x-2 mt-3">
                                             <button 
-                                                className="action-btn approve"
-                                                onClick={() => handleContactAction(contact._id, 'resolved')}
+                                                className="inline-flex items-center px-3 py-1 rounded-lg text-xs font-medium text-green-700 bg-green-100 hover:bg-green-200 transition-colors"
+                                                onClick={() => handleUserApproval(user._id, true)}
                                             >
-                                                ✅ Resolve
+                                                ✅ Approve
                                             </button>
                                             <button 
-                                                className="action-btn priority"
+                                                className="inline-flex items-center px-3 py-1 rounded-lg text-xs font-medium text-red-700 bg-red-100 hover:bg-red-200 transition-colors"
+                                                onClick={() => handleUserApproval(user._id, false)}
+                                            >
+                                                ❌ Reject
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+    
+                            {/* Recent Contact Messages */}
+                            {contactSubmissions.length > 0 && contactSubmissions.filter(c => c.status === 'pending').slice(0, 2).map(contact => (
+                                <div key={contact._id} className="flex items-start space-x-4 p-4 bg-blue-25 border border-blue-200 rounded-xl hover:bg-blue-50 transition-colors">
+                                    <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-xl flex items-center justify-center text-white font-semibold">
+                                        {contact.name?.charAt(0).toUpperCase()}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center justify-between">
+                                            <h4 className="text-sm font-semibold text-gray-900">New contact message</h4>
+                                            <span className="text-xs text-gray-500">
+                                                {new Date(contact.createdAt || Date.now()).toLocaleDateString()}
+                                            </span>
+                                        </div>
+                                        <p className="text-sm text-gray-600">
+                                            {contact.name} - {contact.subject}
+                                        </p>
+                                        <div className="flex space-x-2 mt-3">
+                                            <button 
+                                                className="inline-flex items-center px-3 py-1 rounded-lg text-xs font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 transition-colors"
                                                 onClick={() => handleContactAction(contact._id, 'approved')}
                                             >
                                                 🔥 Priority
                                             </button>
                                             <button 
-                                                className="action-btn ignore"
-                                                onClick={() => handleContactAction(contact._id, 'ignored')}
+                                                className="inline-flex items-center px-3 py-1 rounded-lg text-xs font-medium text-green-700 bg-green-100 hover:bg-green-200 transition-colors"
+                                                onClick={() => handleContactAction(contact._id, 'resolved')}
                                             >
-                                                ❌ Ignore
+                                                ✅ Resolve
                                             </button>
                                         </div>
-                                    )}
+                                    </div>
                                 </div>
                             ))}
-                        </div>
-                    </div>
-                )}
     
-                {pendingUsers.length > 0 && (
-                    <div className="user-management">
-                        <h3>👤 Pending User Approvals</h3>
-                        <div className="pending-list">
-                            {pendingUsers.slice(0, 3).map(user => (
-                                <div key={user._id} className="pending-user-card">
-                                    <div className="user-avatar">
-                                        {user.firstName?.charAt(0)}{user.lastName?.charAt(0)}
+                            {/* System Events */}
+                            <div className="flex items-start space-x-4 p-4 bg-green-25 border border-green-200 rounded-xl">
+                                <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center text-white">
+                                    <span className="text-lg">🛡️</span>
+                                </div>
+                                <div className="flex-1">
+                                    <div className="flex items-center justify-between">
+                                        <h4 className="text-sm font-semibold text-gray-900">Security scan completed</h4>
+                                        <span className="text-xs text-gray-500">5 minutes ago</span>
                                     </div>
-                                    <div className="user-details">
-                                        <h4>{user.firstName} {user.lastName}</h4>
-                                        <p>{user.email}</p>
-                                        <span className={`role-badge ${user.role}`}>{user.role}</span>
+                                    <p className="text-sm text-gray-600">No threats detected. All systems secure.</p>
+                                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 mt-2">
+                                        ✅ All Clear
+                                    </span>
+                                </div>
+                            </div>
+    
+                            <div className="flex items-start space-x-4 p-4 bg-purple-25 border border-purple-200 rounded-xl">
+                                <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-500 rounded-xl flex items-center justify-center text-white">
+                                    <span className="text-lg">💾</span>
+                                </div>
+                                <div className="flex-1">
+                                    <div className="flex items-center justify-between">
+                                        <h4 className="text-sm font-semibold text-gray-900">Database backup completed</h4>
+                                        <span className="text-xs text-gray-500">1 hour ago</span>
                                     </div>
-                                    <div className="approval-actions">
-                                        <button 
-                                            className="approve-btn"
-                                            onClick={() => handleUserApproval(user._id, true)}
-                                        >
-                                            ✅ Approve
-                                        </button>
-                                        <button 
-                                            className="reject-btn"
-                                            onClick={() => handleUserApproval(user._id, false)}
-                                        >
-                                            ❌ Reject
-                                        </button>
+                                    <p className="text-sm text-gray-600">Daily backup successful. 2.4GB archived.</p>
+                                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 mt-2">
+                                        📊 Automated
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+    
+                        {/* Quick Actions */}
+                        <div className="mt-8 p-6 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl">
+                            <h4 className="text-sm font-semibold text-gray-900 mb-4">Quick Administration</h4>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                <button className="flex flex-col items-center p-3 bg-white rounded-lg border border-gray-200 hover:bg-blue-50 hover:border-blue-300 transition-all group">
+                                    <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">👥</span>
+                                    <span className="text-xs font-medium text-gray-700 group-hover:text-blue-700">Manage Users</span>
+                                </button>
+                                <button className="flex flex-col items-center p-3 bg-white rounded-lg border border-gray-200 hover:bg-green-50 hover:border-green-300 transition-all group">
+                                    <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">📋</span>
+                                    <span className="text-xs font-medium text-gray-700 group-hover:text-green-700">Applications</span>
+                                </button>
+                                <button className="flex flex-col items-center p-3 bg-white rounded-lg border border-gray-200 hover:bg-orange-50 hover:border-orange-300 transition-all group">
+                                    <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">📧</span>
+                                    <span className="text-xs font-medium text-gray-700 group-hover:text-orange-700">Messages</span>
+                                </button>
+                                <button className="flex flex-col items-center p-3 bg-white rounded-lg border border-gray-200 hover:bg-purple-50 hover:border-purple-300 transition-all group">
+                                    <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">⚙️</span>
+                                    <span className="text-xs font-medium text-gray-700 group-hover:text-purple-700">Settings</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            {/* System Alerts & Notifications */}
+            {dashboardData.admin.recentAlerts && dashboardData.admin.recentAlerts.length > 0 && (
+                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                    <div className="p-6 border-b border-gray-200">
+                        <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                            <span className="mr-2">🚨</span>
+                            System Alerts
+                        </h3>
+                        <p className="text-sm text-gray-600 mt-1">Recent system notifications and alerts</p>
+                    </div>
+                    <div className="p-6">
+                        <div className="space-y-3">
+                            {dashboardData.admin.recentAlerts.map((alert, index) => (
+                                <div key={index} className={`flex items-start space-x-4 p-4 rounded-xl border ${
+                                    alert.type === 'warning' ? 'bg-yellow-25 border-yellow-200' : 'bg-blue-25 border-blue-200'
+                                }`}>
+                                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                                        alert.type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
+                                    }`}>
+                                        <span className="text-white text-sm">
+                                            {alert.type === 'warning' ? '⚠️' : 'ℹ️'}
+                                        </span>
                                     </div>
+                                    <div className="flex-1">
+                                        <p className="text-sm font-medium text-gray-900">{alert.message}</p>
+                                        <p className="text-xs text-gray-500 mt-1">{alert.time}</p>
+                                    </div>
+                                    <button className="text-gray-400 hover:text-gray-600 transition-colors">
+                                        <span className="text-lg">✕</span>
+                                    </button>
                                 </div>
                             ))}
                         </div>
                     </div>
-                )}
-            </div>
-        </>
+                </div>
+            )}
+        </div>
     );
     
-    // const renderUserManagement = () => (
-    //     <div className="user-management-section">
-    //         <div className="section-header">
-    //             <h2>👥 User Management</h2>
-    //             <button 
-    //                 className="create-user-btn"
-    //                 onClick={() => setShowCreateUserForm(true)}
-    //             >
-    //                 ➕ Create New User
-    //             </button>
-    //         </div>
-    
-    //         {showCreateUserForm && (
-    //             <div className="create-user-modal">
-    //                 <div className="modal-content">
-    //                     <h3>Create New User</h3>
-    //                     <form onSubmit={handleCreateUser}>
-    //                         <div className="form-row">
-    //                             <input
-    //                                 type="text"
-    //                                 placeholder="First Name"
-    //                                 value={newUserData.firstName}
-    //                                 onChange={(e) => setNewUserData({...newUserData, firstName: e.target.value})}
-    //                                 required
-    //                             />
-    //                             <input
-    //                                 type="text"
-    //                                 placeholder="Last Name"
-    //                                 value={newUserData.lastName}
-    //                                 onChange={(e) => setNewUserData({...newUserData, lastName: e.target.value})}
-    //                                 required
-    //                             />
-    //                         </div>
-    //                         <input
-    //                             type="email"
-    //                             placeholder="Email"
-    //                             value={newUserData.email}
-    //                             onChange={(e) => setNewUserData({...newUserData, email: e.target.value})}
-    //                             required
-    //                         />
-    //                         <input
-    //                             type="password"
-    //                             placeholder="Password"
-    //                             value={newUserData.password}
-    //                             onChange={(e) => setNewUserData({...newUserData, password: e.target.value})}
-    //                             required
-    //                         />
-    //                         <select
-    //                             value={newUserData.role}
-    //                             onChange={(e) => setNewUserData({...newUserData, role: e.target.value})}
-    //                         >
-    //                             <option value="student">Student</option>
-    //                             <option value="teacher">Teacher</option>
-    //                             <option value="admin">Admin</option>
-    //                         </select>
-    //                         <div className="form-actions">
-    //                             <button type="submit">Create User</button>
-    //                             <button type="button" onClick={() => setShowCreateUserForm(false)}>Cancel</button>
-    //                         </div>
-    //                     </form>
-    //                 </div>
-    //             </div>
-    //         )}
-    
-    //         <div className="users-grid">
-    //             {allUsers.map(user => (
-    //                 <div key={user._id} className="user-card">
-    //                     <div className="user-avatar">
-    //                         {user.firstName?.charAt(0)}{user.lastName?.charAt(0)}
-    //                     </div>
-    //                     <div className="user-info">
-    //                         <h4>{user.firstName} {user.lastName}</h4>
-    //                         <p>{user.email}</p>
-    //                         <span className={`role-badge ${user.role}`}>{user.role}</span>
-    //                         <span className={`status-badge ${user.isApproved ? 'approved' : 'pending'}`}>
-    //                             {user.isApproved ? '✅ Approved' : '⏳ Pending'}
-    //                         </span>
-    //                     </div>
-    //                     {!user.isApproved && (
-    //                         <div className="user-actions">
-    //                             <button 
-    //                                 className="approve-btn"
-    //                                 onClick={() => handleUserApproval(user._id, true)}
-    //                             >
-    //                                 Approve
-    //                             </button>
-    //                             <button 
-    //                                 className="reject-btn"
-    //                                 onClick={() => handleUserApproval(user._id, false)}
-    //                             >
-    //                                 Reject
-    //                             </button>
-    //                         </div>
-    //                     )}
-    //                 </div>
-    //             ))}
-    //         </div>
-    //     </div>
-    // );
-    
     const renderUserManagement = () => (
-        <div className="user-management-section">
-            <div className="section-header">
-                <div className="header-left">
-                    <h2>👥 User Management</h2>
-                    <div className="user-stats">
-                        <span className="stat-item">
-                            <strong>{allUsers.length}</strong> Total Users
+        <div className="space-y-8">
+            {/* Header */}
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <div className="space-y-2">
+                    <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+                        <span className="mr-2">👥</span>
+                        User Management
+                    </h2>
+                    <div className="flex flex-wrap gap-4 text-sm">
+                        <span className="text-gray-600">
+                            <span className="font-semibold text-gray-900">{allUsers.length}</span> Total Users
                         </span>
-                        <span className="stat-item">
-                            <strong>{pendingUsers.length}</strong> Pending
+                        <span className="text-gray-600">
+                            <span className="font-semibold text-orange-600">{pendingUsers.length}</span> Pending
                         </span>
-                        <span className="stat-item">
-                            <strong>{allUsers.filter(u => u.isApproved).length}</strong> Approved
+                        <span className="text-gray-600">
+                            <span className="font-semibold text-green-600">{allUsers.filter(u => u.isApproved).length}</span> Approved
                         </span>
                     </div>
                 </div>
-                <div className="header-actions">
-                    <div className="search-filter-bar">
+                
+                <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="flex flex-col sm:flex-row gap-2">
                         <input 
                             type="text" 
                             placeholder="🔍 Search users..." 
-                            className="search-input"
+                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                         />
-                        <select className="filter-select">
+                        <select className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
                             <option value="">All Roles</option>
                             <option value="student">Students</option>
                             <option value="teacher">Teachers</option>
                             <option value="admin">Admins</option>
                         </select>
-                        <select className="filter-select">
+                        <select className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
                             <option value="">All Status</option>
                             <option value="approved">Approved</option>
                             <option value="pending">Pending</option>
                         </select>
                     </div>
                     <button 
-                        className="create-user-btn"
+                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors"
                         onClick={() => setShowCreateUserForm(true)}
                     >
                         ➕ Create New User
@@ -2018,66 +2204,75 @@ const Dashboard = () => {
                 </div>
             </div>
     
+            {/* Create User Modal */}
             {showCreateUserForm && (
-                <div className="create-user-modal-overlay">
-                    <div className="create-user-modal">
-                        <div className="modal-header">
-                            <h3>✨ Create New User</h3>
+                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+                    <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 w-full max-w-2xl mx-4">
+                        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+                            <h3 className="text-xl font-semibold text-gray-900 flex items-center">
+                                <span className="mr-2">✨</span>
+                                Create New User
+                            </h3>
                             <button 
-                                className="close-modal-btn"
+                                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
                                 onClick={() => setShowCreateUserForm(false)}
                             >
-                                ✕
+                                <span className="text-gray-400 hover:text-gray-600 text-xl">✕</span>
                             </button>
                         </div>
-                        <div className="modal-content">
-                            <form onSubmit={handleCreateUser}>
-                                <div className="form-grid">
-                                    <div className="form-group">
-                                        <label>First Name</label>
+                        <div className="p-6">
+                            <form onSubmit={handleCreateUser} className="space-y-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-gray-700">First Name</label>
                                         <input
                                             type="text"
                                             placeholder="Enter first name"
                                             value={newUserData.firstName}
                                             onChange={(e) => setNewUserData({...newUserData, firstName: e.target.value})}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                                             required
                                         />
                                     </div>
-                                    <div className="form-group">
-                                        <label>Last Name</label>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-gray-700">Last Name</label>
                                         <input
                                             type="text"
                                             placeholder="Enter last name"
                                             value={newUserData.lastName}
                                             onChange={(e) => setNewUserData({...newUserData, lastName: e.target.value})}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                                             required
                                         />
                                     </div>
-                                    <div className="form-group full-width">
-                                        <label>Email Address</label>
+                                    <div className="md:col-span-2 space-y-2">
+                                        <label className="text-sm font-medium text-gray-700">Email Address</label>
                                         <input
                                             type="email"
                                             placeholder="Enter email address"
                                             value={newUserData.email}
                                             onChange={(e) => setNewUserData({...newUserData, email: e.target.value})}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                                             required
                                         />
                                     </div>
-                                    <div className="form-group">
-                                        <label>Password</label>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-gray-700">Password</label>
                                         <input
                                             type="password"
                                             placeholder="Enter password"
                                             value={newUserData.password}
                                             onChange={(e) => setNewUserData({...newUserData, password: e.target.value})}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                                             required
                                         />
                                     </div>
-                                    <div className="form-group">
-                                        <label>Role</label>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-gray-700">Role</label>
                                         <select
                                             value={newUserData.role}
                                             onChange={(e) => setNewUserData({...newUserData, role: e.target.value})}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                                         >
                                             <option value="student">👨‍🎓 Student</option>
                                             <option value="teacher">👨‍🏫 Teacher</option>
@@ -2085,11 +2280,18 @@ const Dashboard = () => {
                                         </select>
                                     </div>
                                 </div>
-                                <div className="form-actions">
-                                    <button type="button" className="cancel-btn" onClick={() => setShowCreateUserForm(false)}>
+                                <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+                                    <button 
+                                        type="button" 
+                                        className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+                                        onClick={() => setShowCreateUserForm(false)}
+                                    >
                                         Cancel
                                     </button>
-                                    <button type="submit" className="submit-btn">
+                                    <button 
+                                        type="submit" 
+                                        className="px-4 py-2 border border-transparent rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+                                    >
                                         ✨ Create User
                                     </button>
                                 </div>
@@ -2099,113 +2301,118 @@ const Dashboard = () => {
                 </div>
             )}
     
-            <div className="users-table-container">
-                <div className="table-wrapper">
-                    <table className="users-table">
-                        <thead>
+            {/* Users Table */}
+            <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
                             <tr>
-                                <th className="sortable">
-                                    <div className="th-content">
-                                        👤 User
-                                        <span className="sort-icon">↕️</span>
+                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <div className="flex items-center space-x-1">
+                                        <span>👤 User</span>
+                                        <span className="text-gray-400">↕️</span>
                                     </div>
                                 </th>
-                                <th className="sortable">
-                                    <div className="th-content">
-                                        📧 Contact
-                                        <span className="sort-icon">↕️</span>
+                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <div className="flex items-center space-x-1">
+                                        <span>📧 Contact</span>
+                                        <span className="text-gray-400">↕️</span>
                                     </div>
                                 </th>
-                                <th className="sortable">
-                                    <div className="th-content">
-                                        🎭 Role
-                                        <span className="sort-icon">↕️</span>
+                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <div className="flex items-center space-x-1">
+                                        <span>🎭 Role</span>
+                                        <span className="text-gray-400">↕️</span>
                                     </div>
                                 </th>
-                                <th className="sortable">
-                                    <div className="th-content">
-                                        📊 Status
-                                        <span className="sort-icon">↕️</span>
+                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <div className="flex items-center space-x-1">
+                                        <span>📊 Status</span>
+                                        <span className="text-gray-400">↕️</span>
                                     </div>
                                 </th>
-                                <th className="sortable">
-                                    <div className="th-content">
-                                        📅 Joined
-                                        <span className="sort-icon">↕️</span>
+                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <div className="flex items-center space-x-1">
+                                        <span>📅 Joined</span>
+                                        <span className="text-gray-400">↕️</span>
                                     </div>
                                 </th>
-                                <th>
-                                    <div className="th-content">
-                                        ⚡ Actions
-                                    </div>
+                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    ⚡ Actions
                                 </th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody className="bg-white divide-y divide-gray-200">
                             {allUsers.map((user, index) => (
-                                <tr key={user._id} className={`user-row ${!user.isApproved ? 'pending-row' : ''}`}>
-                                    <td className="user-cell">
-                                        <div className="user-info-cell">
-                                            <div className="user-avatar-table">
-                                                <div className={`avatar-circle ${user.role}`}>
+                                <tr key={user._id} className={`hover:bg-gray-50 transition-colors ${!user.isApproved ? 'bg-orange-25 border-l-4 border-orange-400' : ''}`}>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="flex items-center space-x-4">
+                                            <div className="relative">
+                                                <div className={`h-12 w-12 rounded-full flex items-center justify-center text-white font-semibold ${
+                                                    user.role === 'admin' ? 'bg-gradient-to-br from-purple-400 to-pink-500' :
+                                                    user.role === 'teacher' ? 'bg-gradient-to-br from-green-400 to-blue-500' :
+                                                    'bg-gradient-to-br from-blue-400 to-purple-500'
+                                                }`}>
                                                     {user.firstName?.charAt(0)}{user.lastName?.charAt(0)}
                                                 </div>
-                                                <div className="online-indicator"></div>
+                                                <div className={`absolute -bottom-1 -right-1 h-4 w-4 border-2 border-white rounded-full ${
+                                                    user.isApproved ? 'bg-green-400' : 'bg-orange-400'
+                                                }`}></div>
                                             </div>
-                                            <div className="user-details">
-                                                <div className="user-name">
+                                            <div className="space-y-1">
+                                                <div className="text-sm font-semibold text-gray-900">
                                                     {user.firstName} {user.lastName}
                                                 </div>
-                                                <div className="user-id">
+                                                <div className="text-xs text-gray-500">
                                                     ID: {user._id.slice(-8)}
                                                 </div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="contact-cell">
-                                        <div className="contact-info">
-                                            <div className="email-primary">
-                                                {user.email}
-                                            </div>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="space-y-1">
+                                            <div className="text-sm text-gray-900">{user.email}</div>
                                             {user.phone && (
-                                                <div className="phone-secondary">
-                                                    📱 {user.phone}
+                                                <div className="text-xs text-gray-500">📱 {user.phone}</div>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                                            user.role === 'admin' ? 'bg-purple-100 text-purple-800' :
+                                            user.role === 'teacher' ? 'bg-green-100 text-green-800' :
+                                            'bg-blue-100 text-blue-800'
+                                        }`}>
+                                            <span className="mr-1">
+                                                {user.role === 'admin' ? '👨‍💼' : 
+                                                 user.role === 'teacher' ? '👨‍🏫' : '👨‍🎓'}
+                                            </span>
+                                            {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                                        </span>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="space-y-1">
+                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                                user.isApproved ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'
+                                            }`}>
+                                                <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
+                                                    user.isApproved ? 'bg-green-400' : 'bg-orange-400'
+                                                }`}></span>
+                                                {user.isApproved ? 'Approved' : 'Pending'}
+                                            </span>
+                                            {!user.isApproved && (
+                                                <div className="text-xs text-orange-600 font-medium">
+                                                    ⚠️ Needs Review
                                                 </div>
                                             )}
                                         </div>
                                     </td>
-                                    <td className="role-cell">
-                                        <span className={`role-badge-table ${user.role}`}>
-                                            <span className="role-icon">
-                                                {user.role === 'admin' ? '👨‍💼' : 
-                                                 user.role === 'teacher' ? '👨‍🏫' : '👨‍🎓'}
-                                            </span>
-                                            <span className="role-text">
-                                                {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
-                                            </span>
-                                        </span>
-                                    </td>
-                                    <td className="status-cell">
-                                        <div className="status-container">
-                                            <span className={`status-badge-table ${user.isApproved ? 'approved' : 'pending'}`}>
-                                                <span className="status-dot"></span>
-                                                <span className="status-text">
-                                                    {user.isApproved ? 'Approved' : 'Pending'}
-                                                </span>
-                                            </span>
-                                            {!user.isApproved && (
-                                                <span className="urgency-indicator">
-                                                    ⚠️ Needs Review
-                                                </span>
-                                            )}
-                                        </div>
-                                    </td>
-                                    <td className="date-cell">
-                                        <div className="date-info">
-                                            <div className="join-date">
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <div className="space-y-1">
+                                            <div className="font-medium text-gray-900">
                                                 {new Date(user.createdAt || Date.now()).toLocaleDateString()}
                                             </div>
-                                            <div className="time-ago">
+                                            <div className="text-xs">
                                                 {(() => {
                                                     const days = Math.floor((Date.now() - new Date(user.createdAt || Date.now())) / (1000 * 60 * 60 * 24));
                                                     return days === 0 ? 'Today' : `${days} days ago`;
@@ -2213,19 +2420,19 @@ const Dashboard = () => {
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="actions-cell">
-                                        <div className="action-buttons">
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div className="flex items-center space-x-2">
                                             {!user.isApproved ? (
                                                 <>
                                                     <button 
-                                                        className="action-btn approve-btn-table"
+                                                        className="inline-flex items-center p-2 border border-transparent rounded-lg text-green-600 hover:bg-green-100 transition-colors"
                                                         onClick={() => handleUserApproval(user._id, true)}
                                                         title="Approve User"
                                                     >
                                                         ✅
                                                     </button>
                                                     <button 
-                                                        className="action-btn reject-btn-table"
+                                                        className="inline-flex items-center p-2 border border-transparent rounded-lg text-red-600 hover:bg-red-100 transition-colors"
                                                         onClick={() => handleUserApproval(user._id, false)}
                                                         title="Reject User"
                                                     >
@@ -2234,20 +2441,38 @@ const Dashboard = () => {
                                                 </>
                                             ) : (
                                                 <button 
-                                                    className="action-btn view-btn-table"
+                                                    className="inline-flex items-center p-2 border border-transparent rounded-lg text-blue-600 hover:bg-blue-100 transition-colors"
                                                     title="View Details"
                                                 >
                                                     👁️
                                                 </button>
                                             )}
-                                            <div className="action-dropdown">
-                                                <button className="dropdown-toggle">⋮</button>
-                                                <div className="dropdown-menu">
-                                                    <button className="dropdown-item">📝 Edit</button>
-                                                    <button className="dropdown-item">📧 Message</button>
-                                                    <button className="dropdown-item">🔒 Reset Password</button>
-                                                    <hr className="dropdown-divider" />
-                                                    <button className="dropdown-item danger">🗑️ Delete</button>
+                                            
+                                            {/* Dropdown Menu */}
+                                            <div className="relative group">
+                                                <button className="inline-flex items-center p-2 border border-transparent rounded-lg text-gray-600 hover:bg-gray-100 transition-colors">
+                                                    ⋮
+                                                </button>
+                                                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                                                    <div className="py-1">
+                                                        <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                            <span className="mr-2">📝</span>
+                                                            Edit User
+                                                        </button>
+                                                        <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                            <span className="mr-2">📧</span>
+                                                            Send Message
+                                                        </button>
+                                                        <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                            <span className="mr-2">🔒</span>
+                                                            Reset Password
+                                                        </button>
+                                                        <hr className="my-1 border-gray-200" />
+                                                        <button className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                                            <span className="mr-2">🗑️</span>
+                                                            Delete User
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -2258,144 +2483,592 @@ const Dashboard = () => {
                     </table>
                 </div>
     
-                <div className="table-footer">
-                    <div className="table-info">
-                        <span>Showing {allUsers.length} of {allUsers.length} users</span>
+                {/* Table Footer */}
+                <div className="bg-gray-50 px-6 py-3 flex items-center justify-between border-t border-gray-200">
+                    <div className="text-sm text-gray-700">
+                        Showing {allUsers.length} of {allUsers.length} users
                     </div>
-                    <div className="table-pagination">
-                        <button className="pagination-btn" disabled={true}>
+                    <div className="flex items-center space-x-2">
+                        <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-500 bg-white hover:bg-gray-50 transition-colors" disabled>
                             ← Previous
                         </button>
-                        <div className="pagination-numbers">
-                            <button className="page-number active">1</button>
-                            <button className="page-number">2</button>
-                            <button className="page-number">3</button>
+                        <div className="flex space-x-1">
+                            <button className="px-3 py-1 bg-blue-600 text-white rounded-lg text-sm">1</button>
+                            <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors">2</button>
+                            <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors">3</button>
                         </div>
-                        <button className="pagination-btn">
+                        <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors">
                             Next →
                         </button>
                     </div>
                 </div>
             </div>
     
-            <div className="bulk-actions-bar">
-                <div className="bulk-actions-left">
-                    <input type="checkbox" id="select-all" />
-                    <label htmlFor="select-all">Select All</label>
-                    <span className="selected-count">0 selected</span>
-                </div>
-                <div className="bulk-actions-right">
-                    <button className="bulk-btn approve-all">✅ Approve Selected</button>
-                    <button className="bulk-btn reject-all">❌ Reject Selected</button>
-                    <button className="bulk-btn export">📤 Export</button>
+            {/* Bulk Actions */}
+            <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-4">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                        <input type="checkbox" id="select-all-users" className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+                        <label htmlFor="select-all-users" className="text-sm font-medium text-gray-700">Select All</label>
+                        <span className="text-sm text-gray-500">0 selected</span>
+                    </div>
+                    <div className="flex space-x-2">
+                        <button className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 transition-colors">
+                            ✅ Approve Selected
+                        </button>
+                        <button className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-white bg-red-600 hover:bg-red-700 transition-colors">
+                            ❌ Reject Selected
+                        </button>
+                        <button className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                            📤 Export Users
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     );
 
     const renderApplicationManagement = () => (
-        <div className="applications-section">
-            <h2>📋 Application Management</h2>
-            <div className="applications-grid">
-                {applicationSubmissions.map(application => (
-                    <div key={application._id} className="application-card">
-                        <div className="application-header">
-                            <h4>{application.firstName} {application.lastName}</h4>
-                            <span className={`status-badge ${application.status}`}>
-                                {application.status.replace('_', ' ').toUpperCase()}
-                            </span>
-                        </div>
-                        <div className="application-details">
-                            <p><strong>Email:</strong> {application.email}</p>
-                            <p><strong>Phone:</strong> {application.phone}</p>
-                            <p><strong>Program:</strong> {application.program}</p>
-                            <p><strong>Start Date:</strong> {application.startDate}</p>
-                            <p><strong>Education:</strong> {application.highestEducation}</p>
-                            <p><strong>School:</strong> {application.schoolName}</p>
-                            {application.goals && (
-                                <div className="application-goals">
-                                    <strong>Goals:</strong>
-                                    <p>{application.goals.substring(0, 100)}...</p>
-                                </div>
-                            )}
-                        </div>
-                        {application.status === 'pending' && (
-                            <div className="application-actions">
-                                <button 
-                                    className="approve-btn"
-                                    onClick={() => handleApplicationAction(application._id, 'approved')}
-                                >
-                                    ✅ Approve
-                                </button>
-                                <button 
-                                    className="review-btn"
-                                    onClick={() => handleApplicationAction(application._id, 'under_review')}
-                                >
-                                    👀 Under Review
-                                </button>
-                                <button 
-                                    className="reject-btn"
-                                    onClick={() => handleApplicationAction(application._id, 'rejected')}
-                                >
-                                    ❌ Reject
-                                </button>
-                            </div>
-                        )}
+        <div className="space-y-8">
+            {/* Header */}
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <div className="space-y-2">
+                    <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+                        <span className="mr-2">📋</span>
+                        Application Management
+                    </h2>
+                    <div className="flex flex-wrap gap-4 text-sm">
+                        <span className="text-gray-600">
+                            <span className="font-semibold text-gray-900">{applicationSubmissions.length}</span> Total Applications
+                        </span>
+                        <span className="text-gray-600">
+                            <span className="font-semibold text-orange-600">{applicationSubmissions.filter(app => app.status === 'pending').length}</span> Pending
+                        </span>
+                        <span className="text-gray-600">
+                            <span className="font-semibold text-green-600">{applicationSubmissions.filter(app => app.status === 'approved').length}</span> Approved
+                        </span>
+                        <span className="text-gray-600">
+                            <span className="font-semibold text-red-600">{applicationSubmissions.filter(app => app.status === 'rejected').length}</span> Rejected
+                        </span>
                     </div>
-                ))}
+                </div>
+                
+                <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="flex flex-col sm:flex-row gap-2">
+                        <input 
+                            type="text" 
+                            placeholder="🔍 Search applications..." 
+                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        />
+                        <select className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                            <option value="">All Programs</option>
+                            <option value="data-science">Data Science</option>
+                            <option value="web-development">Web Development</option>
+                            <option value="machine-learning">Machine Learning</option>
+                        </select>
+                        <select className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                            <option value="">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="under_review">Under Review</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                    </div>
+                    <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors">
+                        📤 Export Applications
+                    </button>
+                </div>
+            </div>
+    
+            {/* Table */}
+            <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+                            <tr>
+                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <div className="flex items-center space-x-1">
+                                        <span>👤 Applicant</span>
+                                        <span className="text-gray-400">↕️</span>
+                                    </div>
+                                </th>
+                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <div className="flex items-center space-x-1">
+                                        <span>📧 Contact</span>
+                                        <span className="text-gray-400">↕️</span>
+                                    </div>
+                                </th>
+                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <div className="flex items-center space-x-1">
+                                        <span>🎓 Program</span>
+                                        <span className="text-gray-400">↕️</span>
+                                    </div>
+                                </th>
+                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <div className="flex items-center space-x-1">
+                                        <span>📊 Status</span>
+                                        <span className="text-gray-400">↕️</span>
+                                    </div>
+                                </th>
+                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <div className="flex items-center space-x-1">
+                                        <span>📅 Applied</span>
+                                        <span className="text-gray-400">↕️</span>
+                                    </div>
+                                </th>
+                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    ⚡ Actions
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                            {applicationSubmissions.map((application, index) => (
+                                <tr key={application._id} className={`hover:bg-gray-50 transition-colors ${application.status === 'pending' ? 'bg-orange-25 border-l-4 border-orange-400' : ''}`}>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="flex items-center space-x-4">
+                                            <div className="relative">
+                                                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-semibold">
+                                                    {application.firstName?.charAt(0)}{application.lastName?.charAt(0)}
+                                                </div>
+                                                <div className="absolute -bottom-1 -right-1 h-4 w-4 bg-blue-400 border-2 border-white rounded-full"></div>
+                                            </div>
+                                            <div className="space-y-1">
+                                                <div className="text-sm font-semibold text-gray-900">
+                                                    {application.firstName} {application.lastName}
+                                                </div>
+                                                <div className="text-xs text-gray-500">
+                                                    ID: {application._id.slice(-8)}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="space-y-1">
+                                            <div className="text-sm text-gray-900">{application.email}</div>
+                                            {application.phone && (
+                                                <div className="text-xs text-gray-500">📱 {application.phone}</div>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="space-y-1">
+                                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                <span className="mr-1">🎓</span>
+                                                {application.program}
+                                            </span>
+                                            <div className="text-xs text-gray-500">
+                                                Start: {new Date(application.startDate).toLocaleDateString()}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="space-y-1">
+                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                                application.status === 'pending' ? 'bg-orange-100 text-orange-800' : 
+                                                application.status === 'approved' ? 'bg-green-100 text-green-800' : 
+                                                application.status === 'under_review' ? 'bg-blue-100 text-blue-800' : 
+                                                'bg-red-100 text-red-800'
+                                            }`}>
+                                                <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
+                                                    application.status === 'pending' ? 'bg-orange-400' : 
+                                                    application.status === 'approved' ? 'bg-green-400' : 
+                                                    application.status === 'under_review' ? 'bg-blue-400' : 
+                                                    'bg-red-400'
+                                                }`}></span>
+                                                {application.status.replace('_', ' ').toUpperCase()}
+                                            </span>
+                                            {application.status === 'pending' && (
+                                                <div className="text-xs text-orange-600 font-medium">
+                                                    ⚠️ Needs Review
+                                                </div>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <div className="space-y-1">
+                                            <div className="font-medium text-gray-900">
+                                                {new Date(application.createdAt || Date.now()).toLocaleDateString()}
+                                            </div>
+                                            <div className="text-xs">
+                                                {(() => {
+                                                    const days = Math.floor((Date.now() - new Date(application.createdAt || Date.now())) / (1000 * 60 * 60 * 24));
+                                                    return days === 0 ? 'Today' : `${days} days ago`;
+                                                })()}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        {application.status === 'pending' ? (
+                                            <div className="flex space-x-2">
+                                                <button 
+                                                    className="inline-flex items-center p-2 border border-transparent rounded-lg text-green-600 hover:bg-green-100 transition-colors"
+                                                    onClick={() => handleApplicationAction(application._id, 'approved')}
+                                                    title="Approve Application"
+                                                >
+                                                    ✅
+                                                </button>
+                                                <button 
+                                                    className="inline-flex items-center p-2 border border-transparent rounded-lg text-blue-600 hover:bg-blue-100 transition-colors"
+                                                    onClick={() => handleApplicationAction(application._id, 'under_review')}
+                                                    title="Under Review"
+                                                >
+                                                    👀
+                                                </button>
+                                                <button 
+                                                    className="inline-flex items-center p-2 border border-transparent rounded-lg text-red-600 hover:bg-red-100 transition-colors"
+                                                    onClick={() => handleApplicationAction(application._id, 'rejected')}
+                                                    title="Reject Application"
+                                                >
+                                                    ❌
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="flex space-x-2">
+                                                <button 
+                                                    className="inline-flex items-center p-2 border border-transparent rounded-lg text-blue-600 hover:bg-blue-100 transition-colors"
+                                                    title="View Details"
+                                                >
+                                                    👁️
+                                                </button>
+                                                <button 
+                                                    className="inline-flex items-center p-2 border border-transparent rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+                                                    title="Send Message"
+                                                >
+                                                    📧
+                                                </button>
+                                            </div>
+                                        )}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+    
+                {/* Table Footer */}
+                <div className="bg-gray-50 px-6 py-3 flex items-center justify-between border-t border-gray-200">
+                    <div className="text-sm text-gray-700">
+                        Showing {applicationSubmissions.length} of {applicationSubmissions.length} applications
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-500 bg-white hover:bg-gray-50 transition-colors" disabled>
+                            ← Previous
+                        </button>
+                        <div className="flex space-x-1">
+                            <button className="px-3 py-1 bg-blue-600 text-white rounded-lg text-sm">1</button>
+                            <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors">2</button>
+                            <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors">3</button>
+                        </div>
+                        <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                            Next →
+                        </button>
+                    </div>
+                </div>
+            </div>
+    
+            {/* Bulk Actions */}
+            <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-4">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                        <input type="checkbox" id="select-all-apps" className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+                        <label htmlFor="select-all-apps" className="text-sm font-medium text-gray-700">Select All</label>
+                        <span className="text-sm text-gray-500">0 selected</span>
+                    </div>
+                    <div className="flex space-x-2">
+                        <button className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 transition-colors">
+                            ✅ Approve Selected
+                        </button>
+                        <button className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors">
+                            👀 Review Selected
+                        </button>
+                        <button className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-white bg-red-600 hover:bg-red-700 transition-colors">
+                            ❌ Reject Selected
+                        </button>
+                        <button className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                            📤 Export
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     );
     
     const renderContactManagement = () => (
-        <div className="contacts-section">
-            <h2>📧 Contact Management</h2>
-            <div className="contacts-grid">
-                {contactSubmissions.map(contact => (
-                    <div key={contact._id} className="contact-card">
-                        <div className="contact-header">
-                            <h4>{contact.name}</h4>
-                            <span className={`status-badge ${contact.status}`}>
-                                {contact.status.toUpperCase()}
-                            </span>
-                        </div>
-                        <div className="contact-details">
-                            <p><strong>Email:</strong> {contact.email}</p>
-                            {contact.phone && <p><strong>Phone:</strong> {contact.phone}</p>}
-                            <p><strong>Subject:</strong> {contact.subject}</p>
-                            <div className="contact-message">
-                                <strong>Message:</strong>
-                                <p>{contact.message}</p>
-                            </div>
-                            <small>Received: {new Date(contact.createdAt).toLocaleString()}</small>
-                        </div>
-                        {contact.status === 'pending' && (
-                            <div className="contact-actions">
-                                <button 
-                                    className="resolve-btn"
-                                    onClick={() => handleContactAction(contact._id, 'resolved')}
-                                >
-                                    ✅ Resolve
-                                </button>
-                                <button 
-                                    className="priority-btn"
-                                    onClick={() => handleContactAction(contact._id, 'approved')}
-                                >
-                                    🔥 Priority
-                                </button>
-                                <button 
-                                    className="ignore-btn"
-                                    onClick={() => handleContactAction(contact._id, 'ignored')}
-                                >
-                                    ❌ Ignore
-                                </button>
-                            </div>
-                        )}
+        <div className="space-y-8">
+            {/* Header */}
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <div className="space-y-2">
+                    <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+                        <span className="mr-2">📧</span>
+                        Contact Management
+                    </h2>
+                    <div className="flex flex-wrap gap-4 text-sm">
+                        <span className="text-gray-600">
+                            <span className="font-semibold text-gray-900">{contactSubmissions.length}</span> Total Messages
+                        </span>
+                        <span className="text-gray-600">
+                            <span className="font-semibold text-orange-600">{contactSubmissions.filter(contact => contact.status === 'pending').length}</span> Pending
+                        </span>
+                        <span className="text-gray-600">
+                            <span className="font-semibold text-green-600">{contactSubmissions.filter(contact => contact.status === 'resolved').length}</span> Resolved
+                        </span>
+                        <span className="text-gray-600">
+                            <span className="font-semibold text-blue-600">{contactSubmissions.filter(contact => contact.status === 'approved').length}</span> Priority
+                        </span>
                     </div>
-                ))}
+                </div>
+                
+                <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="flex flex-col sm:flex-row gap-2">
+                        <input 
+                            type="text" 
+                            placeholder="🔍 Search messages..." 
+                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        />
+                        <select className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                            <option value="">All Categories</option>
+                            <option value="general">General Inquiry</option>
+                            <option value="support">Technical Support</option>
+                            <option value="enrollment">Enrollment</option>
+                            <option value="complaint">Complaint</option>
+                        </select>
+                        <select className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                            <option value="">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Priority</option>
+                            <option value="resolved">Resolved</option>
+                            <option value="ignored">Ignored</option>
+                        </select>
+                    </div>
+                    <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors">
+                        📤 Export Messages
+                    </button>
+                </div>
+            </div>
+    
+            {/* Table */}
+            <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+                            <tr>
+                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <div className="flex items-center space-x-1">
+                                        <span>👤 Contact</span>
+                                        <span className="text-gray-400">↕️</span>
+                                    </div>
+                                </th>
+                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <div className="flex items-center space-x-1">
+                                        <span>📧 Details</span>
+                                        <span className="text-gray-400">↕️</span>
+                                    </div>
+                                </th>
+                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <div className="flex items-center space-x-1">
+                                        <span>💬 Message</span>
+                                        <span className="text-gray-400">↕️</span>
+                                    </div>
+                                </th>
+                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <div className="flex items-center space-x-1">
+                                        <span>📊 Status</span>
+                                        <span className="text-gray-400">↕️</span>
+                                    </div>
+                                </th>
+                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <div className="flex items-center space-x-1">
+                                        <span>📅 Received</span>
+                                        <span className="text-gray-400">↕️</span>
+                                    </div>
+                                </th>
+                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    ⚡ Actions
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                            {contactSubmissions.map((contact, index) => (
+                                <tr key={contact._id} className={`hover:bg-gray-50 transition-colors ${contact.status === 'pending' ? 'bg-orange-25 border-l-4 border-orange-400' : ''}`}>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="flex items-center space-x-4">
+                                            <div className="relative">
+                                                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center text-white font-semibold">
+                                                    {contact.name?.charAt(0).toUpperCase()}
+                                                </div>
+                                                <div className={`absolute -bottom-1 -right-1 h-4 w-4 border-2 border-white rounded-full ${
+                                                    contact.status === 'pending' ? 'bg-orange-400' : 
+                                                    contact.status === 'resolved' ? 'bg-green-400' : 
+                                                    contact.status === 'approved' ? 'bg-blue-400' : 'bg-gray-400'
+                                                }`}></div>
+                                            </div>
+                                            <div className="space-y-1">
+                                                <div className="text-sm font-semibold text-gray-900">
+                                                    {contact.name}
+                                                </div>
+                                                <div className="text-xs text-gray-500">
+                                                    ID: {contact._id.slice(-8)}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="space-y-1">
+                                            <div className="text-sm text-gray-900">{contact.email}</div>
+                                            {contact.phone && (
+                                                <div className="text-xs text-gray-500">📱 {contact.phone}</div>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <div className="space-y-2">
+                                            <div className="text-sm font-medium text-gray-900">
+                                                {contact.subject}
+                                            </div>
+                                            <div className="text-sm text-gray-600 max-w-xs">
+                                                <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                                    {contact.message.length > 80 ? 
+                                                        `${contact.message.substring(0, 80)}...` : 
+                                                        contact.message
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="space-y-1">
+                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                                contact.status === 'pending' ? 'bg-orange-100 text-orange-800' : 
+                                                contact.status === 'approved' ? 'bg-blue-100 text-blue-800' : 
+                                                contact.status === 'resolved' ? 'bg-green-100 text-green-800' : 
+                                                'bg-gray-100 text-gray-800'
+                                            }`}>
+                                                <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
+                                                    contact.status === 'pending' ? 'bg-orange-400' : 
+                                                    contact.status === 'approved' ? 'bg-blue-400' : 
+                                                    contact.status === 'resolved' ? 'bg-green-400' : 
+                                                    'bg-gray-400'
+                                                }`}></span>
+                                                {contact.status === 'pending' ? '⏳ Pending' : 
+                                                contact.status === 'approved' ? '🔥 Priority' : 
+                                                contact.status === 'resolved' ? '✅ Resolved' : '❌ Ignored'}
+                                            </span>
+                                            {contact.status === 'pending' && (
+                                                <div className="text-xs text-orange-600 font-medium">
+                                                    ⚠️ Needs Response
+                                                </div>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <div className="space-y-1">
+                                            <div className="font-medium text-gray-900">
+                                                {new Date(contact.createdAt || Date.now()).toLocaleDateString()}
+                                            </div>
+                                            <div className="text-xs">
+                                                {(() => {
+                                                    const days = Math.floor((Date.now() - new Date(contact.createdAt || Date.now())) / (1000 * 60 * 60 * 24));
+                                                    return days === 0 ? 'Today' : `${days} days ago`;
+                                                })()}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        {contact.status === 'pending' ? (
+                                            <div className="flex space-x-2">
+                                                <button 
+                                                    className="inline-flex items-center p-2 border border-transparent rounded-lg text-green-600 hover:bg-green-100 transition-colors"
+                                                    onClick={() => handleContactAction(contact._id, 'resolved')}
+                                                    title="Resolve"
+                                                >
+                                                    ✅
+                                                </button>
+                                                <button 
+                                                    className="inline-flex items-center p-2 border border-transparent rounded-lg text-blue-600 hover:bg-blue-100 transition-colors"
+                                                    onClick={() => handleContactAction(contact._id, 'approved')}
+                                                    title="Mark as Priority"
+                                                >
+                                                    🔥
+                                                </button>
+                                                <button 
+                                                    className="inline-flex items-center p-2 border border-transparent rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+                                                    onClick={() => handleContactAction(contact._id, 'ignored')}
+                                                    title="Ignore"
+                                                >
+                                                    ❌
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="flex space-x-2">
+                                                <button 
+                                                    className="inline-flex items-center p-2 border border-transparent rounded-lg text-blue-600 hover:bg-blue-100 transition-colors"
+                                                    title="View Full Message"
+                                                >
+                                                    👁️
+                                                </button>
+                                                <button 
+                                                    className="inline-flex items-center p-2 border border-transparent rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+                                                    title="Reply"
+                                                >
+                                                    📧
+                                                </button>
+                                            </div>
+                                        )}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+    
+                {/* Table Footer */}
+                <div className="bg-gray-50 px-6 py-3 flex items-center justify-between border-t border-gray-200">
+                    <div className="text-sm text-gray-700">
+                        Showing {contactSubmissions.length} of {contactSubmissions.length} messages
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-500 bg-white hover:bg-gray-50 transition-colors" disabled>
+                            ← Previous
+                        </button>
+                        <div className="flex space-x-1">
+                            <button className="px-3 py-1 bg-blue-600 text-white rounded-lg text-sm">1</button>
+                            <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors">2</button>
+                            <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors">3</button>
+                        </div>
+                        <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                            Next →
+                        </button>
+                    </div>
+                </div>
+            </div>
+    
+            {/* Bulk Actions */}
+            <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-4">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                        <input type="checkbox" id="select-all-contacts" className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+                        <label htmlFor="select-all-contacts" className="text-sm font-medium text-gray-700">Select All</label>
+                        <span className="text-sm text-gray-500">0 selected</span>
+                    </div>
+                    <div className="flex space-x-2">
+                        <button className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 transition-colors">
+                            ✅ Resolve Selected
+                        </button>
+                        <button className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors">
+                            🔥 Mark as Priority
+                        </button>
+                        <button className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-white bg-gray-600 hover:bg-gray-700 transition-colors">
+                            ❌ Ignore Selected
+                        </button>
+                        <button className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                            📤 Export
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     );
+    
     
     const renderAdminDashboard = () => {
         if (activeTab === 'overview') {
