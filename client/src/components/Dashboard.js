@@ -72,20 +72,16 @@ const Dashboard = () => {
     });
 
     const history = useHistory();
-<<<<<<< HEAD
     // Base API URL
     const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
     const token = localStorage.getItem("authToken");
-=======
 
     // const API_BASE_URL = process.env.REACT_APP_API_URL ;
     // const API_BASE_URL = 'http://localhost:5000'; // Test with local server
 
-    const API_BASE_URL = process.env.REACT_APP_API_URL ;
-    const token = localStorage.getItem("token");
+    // const API_BASE_URL = process.env.REACT_APP_API_URL ;
+    // const token = localStorage.getItem("token");
     // const API_BASE_URL = 'http://localhost:5000'; // Test with local server
-
->>>>>>> 2fb947f3221e21b0544a993a71c7fd40e14fca37
 
     // Fetch functions - Fixed to handle MongoDB data properly
     const fetchPendingUsers = async (token) => {
@@ -3250,77 +3246,363 @@ const Dashboard = () => {
             </div>
         </div>
     );
-
+    
     const renderTeacherMessages = () => (
-        <div className="messages-section">
-            <div className="section-header">
-                <h2>💬 Messages & Communications</h2>
-                <button className="compose-btn">✍️ Compose Message</button>
+        <div className="space-y-8">
+            {/* Header */}
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <div className="space-y-2">
+                    <h2 className="text-3xl font-bold text-gray-900 flex items-center">
+                        <span className="mr-3 text-4xl">💬</span>
+                        Messages & Communications
+                    </h2>
+                    <p className="text-gray-600 text-lg">Connect with students and manage course communications</p>
+                </div>
+                
+                <div className="flex space-x-3">
+                    <button className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                        <span className="mr-2">📊</span>
+                        Analytics
+                    </button>
+                    <button className="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-xl text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl">
+                        <span className="mr-2 text-lg">✍️</span>
+                        Compose Message
+                    </button>
+                </div>
             </div>
     
-            <div className="messages-layout">
-                <div className="message-sidebar">
-                    <div className="message-filters">
-                        <button className="filter-btn active">All Messages</button>
-                        <button className="filter-btn">Student Questions</button>
-                        <button className="filter-btn">Announcements</button>
-                        <button className="filter-btn">Urgent</button>
+            {/* Communication Statistics */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
+                    <div className="bg-gradient-to-br from-blue-500 to-indigo-600 p-6 text-white">
+                        <div className="flex items-center justify-between">
+                            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <span className="text-2xl">📧</span>
+                            </div>
+                            <div className="text-right">
+                                <div className="text-3xl font-bold">23</div>
+                                <div className="text-blue-100 text-sm font-medium">Unread Messages</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50">
+                        <div className="flex items-center justify-between text-sm">
+                            <span className="text-gray-600">Today</span>
+                            <span className="font-semibold text-red-600">5 urgent</span>
+                        </div>
                     </div>
                 </div>
     
-                <div className="messages-content">
-                    <div className="message-thread">
-                        <div className="message-item unread">
-                            <div className="message-avatar">JS</div>
-                            <div className="message-content">
-                                <div className="message-header">
-                                    <span className="sender-name">John Smith</span>
-                                    <span className="message-time">2 hours ago</span>
-                                    <span className="message-course">Data Science 101</span>
-                                </div>
-                                <div className="message-preview">
-                                    Question about the regression analysis assignment...
-                                </div>
+                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
+                    <div className="bg-gradient-to-br from-green-500 to-emerald-600 p-6 text-white">
+                        <div className="flex items-center justify-between">
+                            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <span className="text-2xl">❓</span>
                             </div>
-                            <div className="message-status urgent">!</div>
-                        </div>
-    
-                        <div className="message-item">
-                            <div className="message-avatar">MJ</div>
-                            <div className="message-content">
-                                <div className="message-header">
-                                    <span className="sender-name">Mary Johnson</span>
-                                    <span className="message-time">5 hours ago</span>
-                                    <span className="message-course">ML Basics</span>
-                                </div>
-                                <div className="message-preview">
-                                    Thank you for the detailed feedback on my project...
-                                </div>
+                            <div className="text-right">
+                                <div className="text-3xl font-bold">47</div>
+                                <div className="text-green-100 text-sm font-medium">Student Questions</div>
                             </div>
                         </div>
+                    </div>
+                    <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50">
+                        <div className="flex items-center justify-between text-sm">
+                            <span className="text-gray-600">This week</span>
+                            <span className="font-semibold text-green-600">92% answered</span>
+                        </div>
+                    </div>
+                </div>
     
-                        <div className="message-item">
-                            <div className="message-avatar">AD</div>
-                            <div className="message-content">
-                                <div className="message-header">
-                                    <span className="sender-name">Admin Department</span>
-                                    <span className="message-time">1 day ago</span>
-                                    <span className="message-course">System</span>
+                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
+                    <div className="bg-gradient-to-br from-purple-500 to-pink-600 p-6 text-white">
+                        <div className="flex items-center justify-between">
+                            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <span className="text-2xl">📢</span>
+                            </div>
+                            <div className="text-right">
+                                <div className="text-3xl font-bold">8</div>
+                                <div className="text-purple-100 text-sm font-medium">Announcements</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50">
+                        <div className="flex items-center justify-between text-sm">
+                            <span className="text-gray-600">This month</span>
+                            <span className="font-semibold text-purple-600">86% read</span>
+                        </div>
+                    </div>
+                </div>
+    
+                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
+                    <div className="bg-gradient-to-br from-orange-500 to-red-600 p-6 text-white">
+                        <div className="flex items-center justify-between">
+                            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <span className="text-2xl">⏱️</span>
+                            </div>
+                            <div className="text-right">
+                                <div className="text-3xl font-bold">2.3h</div>
+                                <div className="text-orange-100 text-sm font-medium">Avg Response</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="p-4 bg-gradient-to-r from-orange-50 to-red-50">
+                        <div className="flex items-center justify-between text-sm">
+                            <span className="text-gray-600">Response time</span>
+                            <span className="font-semibold text-green-600">Excellent</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            {/* Main Messages Interface */}
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                {/* Sidebar Filters */}
+                <div className="lg:col-span-1 space-y-6">
+                    <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                        <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+                            <h3 className="text-lg font-bold text-gray-900 flex items-center">
+                                <span className="mr-2 text-xl">🔍</span>
+                                Message Filters
+                            </h3>
+                        </div>
+                        <div className="p-6">
+                            <div className="space-y-3">
+                                {[
+                                    { label: 'All Messages', count: 156, active: true, color: 'text-blue-600 bg-blue-50' },
+                                    { label: 'Unread', count: 23, active: false, color: 'text-red-600 bg-red-50' },
+                                    { label: 'Student Questions', count: 47, active: false, color: 'text-green-600 bg-green-50' },
+                                    { label: 'Announcements', count: 8, active: false, color: 'text-purple-600 bg-purple-50' },
+                                    { label: 'Urgent', count: 5, active: false, color: 'text-orange-600 bg-orange-50' }
+                                ].map((filter, index) => (
+                                    <button key={index} className={`w-full flex items-center justify-between p-3 rounded-xl border transition-all hover:shadow-md ${
+                                        filter.active ? 'border-blue-300 bg-blue-50' : 'border-gray-200 hover:bg-gray-50'
+                                    }`}>
+                                        <span className={`font-medium ${filter.active ? 'text-blue-700' : 'text-gray-700'}`}>
+                                            {filter.label}
+                                        </span>
+                                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${filter.color}`}>
+                                            {filter.count}
+                                        </span>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+    
+                    {/* Quick Actions */}
+                    <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                        <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-green-50 to-emerald-50">
+                            <h3 className="text-lg font-bold text-gray-900 flex items-center">
+                                <span className="mr-2 text-xl">⚡</span>
+                                Quick Actions
+                            </h3>
+                        </div>
+                        <div className="p-6">
+                            <div className="space-y-3">
+                                {[
+                                    { icon: '📢', label: 'Send Announcement', color: 'bg-blue-50 border-blue-200 hover:bg-blue-100 text-blue-700' },
+                                    { icon: '📅', label: 'Schedule Reminder', color: 'bg-green-50 border-green-200 hover:bg-green-100 text-green-700' },
+                                    { icon: '🎯', label: 'Grade Notification', color: 'bg-purple-50 border-purple-200 hover:bg-purple-100 text-purple-700' },
+                                    { icon: '📚', label: 'Share Resources', color: 'bg-orange-50 border-orange-200 hover:bg-orange-100 text-orange-700' }
+                                ].map((action, index) => (
+                                    <button key={index} className={`w-full flex items-center space-x-3 p-3 rounded-xl border transition-all group ${action.color}`}>
+                                        <span className="text-xl group-hover:scale-110 transition-transform">{action.icon}</span>
+                                        <span className="font-medium">{action.label}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+                {/* Messages List */}
+                <div className="lg:col-span-3">
+                    <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                        <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
+                            <div className="flex items-center justify-between">
+                                <h3 className="text-lg font-bold text-gray-900">Recent Messages</h3>
+                                <div className="flex items-center space-x-2">
+                                    <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                                    <span className="text-sm text-gray-500 font-medium">Live Updates</span>
                                 </div>
-                                <div className="message-preview">
-                                    Grade submission deadline reminder...
+                            </div>
+                        </div>
+                        <div className="max-h-96 overflow-y-auto">
+                            <div className="divide-y divide-gray-200">
+                                {/* Urgent Message */}
+                                <div className="p-6 bg-gradient-to-r from-red-50 to-pink-50 border-l-4 border-red-500 hover:bg-red-100 transition-colors cursor-pointer group">
+                                    <div className="flex items-start space-x-4">
+                                        <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-pink-600 rounded-xl flex items-center justify-center text-white font-semibold group-hover:scale-110 transition-transform">
+                                            JS
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center space-x-3 mb-2">
+                                                <span className="font-semibold text-gray-900">John Smith</span>
+                                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                    🚨 Urgent
+                                                </span>
+                                                <span className="text-sm text-gray-500">2 hours ago</span>
+                                            </div>
+                                            <div className="flex items-center space-x-2 mb-2">
+                                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                    Data Science 101
+                                                </span>
+                                            </div>
+                                            <p className="text-gray-700 font-medium mb-1">Question about regression analysis assignment</p>
+                                            <p className="text-sm text-gray-600">I'm having trouble understanding the difference between linear and logistic regression. Could you please provide some clarification before the deadline tomorrow?</p>
+                                            <div className="flex items-center space-x-4 mt-3">
+                                                <button className="inline-flex items-center px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium">
+                                                    <span className="mr-1">⚡</span>
+                                                    Reply Now
+                                                </button>
+                                                <button className="inline-flex items-center px-3 py-1 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
+                                                    <span className="mr-1">📞</span>
+                                                    Schedule Call
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+    
+                                {/* Regular Message */}
+                                <div className="p-6 hover:bg-gray-50 transition-colors cursor-pointer group">
+                                    <div className="flex items-start space-x-4">
+                                        <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center text-white font-semibold group-hover:scale-110 transition-transform">
+                                            MJ
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center space-x-3 mb-2">
+                                                <span className="font-semibold text-gray-900">Mary Johnson</span>
+                                                <span className="text-sm text-gray-500">5 hours ago</span>
+                                            </div>
+                                            <div className="flex items-center space-x-2 mb-2">
+                                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                    Machine Learning Basics
+                                                </span>
+                                            </div>
+                                            <p className="text-gray-700 font-medium mb-1">Thank you for the detailed feedback</p>
+                                            <p className="text-sm text-gray-600">Your comments on my neural network project were very helpful. I've implemented the suggested improvements and would love to get your thoughts...</p>
+                                            <div className="flex items-center space-x-4 mt-3">
+                                                <button className="inline-flex items-center px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
+                                                    <span className="mr-1">💬</span>
+                                                    Reply
+                                                </button>
+                                                <button className="inline-flex items-center px-3 py-1 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
+                                                    <span className="mr-1">👁️</span>
+                                                    View Project
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+    
+                                {/* System Message */}
+                                <div className="p-6 hover:bg-gray-50 transition-colors cursor-pointer group">
+                                    <div className="flex items-start space-x-4">
+                                        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white font-semibold group-hover:scale-110 transition-transform">
+                                            <span className="text-lg">🏫</span>
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center space-x-3 mb-2">
+                                                <span className="font-semibold text-gray-900">Admin Department</span>
+                                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                    System
+                                                </span>
+                                                <span className="text-sm text-gray-500">1 day ago</span>
+                                            </div>
+                                            <p className="text-gray-700 font-medium mb-1">Grade submission deadline reminder</p>
+                                            <p className="text-sm text-gray-600">Please remember that final grades for the current semester are due by Friday, June 15th at 11:59 PM...</p>
+                                            <div className="flex items-center space-x-4 mt-3">
+                                                <button className="inline-flex items-center px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
+                                                    <span className="mr-1">📋</span>
+                                                    View Details
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+    
+                                {/* More messages... */}
+                                <div className="p-6 hover:bg-gray-50 transition-colors cursor-pointer group">
+                                    <div className="flex items-start space-x-4">
+                                        <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center text-white font-semibold group-hover:scale-110 transition-transform">
+                                            AL
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center space-x-3 mb-2">
+                                                <span className="font-semibold text-gray-900">Alice Lee</span>
+                                                <span className="text-sm text-gray-500">2 days ago</span>
+                                            </div>
+                                            <div className="flex items-center space-x-2 mb-2">
+                                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                                    Python Programming
+                                                </span>
+                                            </div>
+                                            <p className="text-gray-700 font-medium mb-1">Request for office hours</p>
+                                            <p className="text-sm text-gray-600">I would like to schedule some one-on-one time to discuss my final project proposal. When would be a good time for you?</p>
+                                            <div className="flex items-center space-x-4 mt-3">
+                                                <button className="inline-flex items-center px-3 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium">
+                                                    <span className="mr-1">📅</span>
+                                                    Schedule Meeting
+                                                </button>
+                                                <button className="inline-flex items-center px-3 py-1 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
+                                                    <span className="mr-1">💬</span>
+                                                    Reply
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
     
-                    <div className="quick-announcements">
-                        <h3>📢 Quick Announcements</h3>
-                        <div className="announcement-templates">
-                            <button className="template-btn">Remind about upcoming deadline</button>
-                            <button className="template-btn">Share study resources</button>
-                            <button className="template-btn">Class schedule change</button>
-                            <button className="template-btn">Congratulate top performers</button>
+                    {/* Quick Announcement Templates */}
+                    <div className="mt-8 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                        <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50">
+                            <h3 className="text-lg font-bold text-gray-900 flex items-center">
+                                <span className="mr-2 text-xl">📢</span>
+                                Quick Announcement Templates
+                            </h3>
+                            <p className="text-sm text-gray-600 mt-1">Send common announcements with one click</p>
+                        </div>
+                        <div className="p-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {[
+                                    { 
+                                        title: 'Assignment Reminder', 
+                                        desc: 'Remind students about upcoming deadlines',
+                                        icon: '⏰',
+                                        color: 'bg-orange-50 border-orange-200 hover:bg-orange-100 text-orange-700'
+                                    },
+                                    { 
+                                        title: 'Study Resources', 
+                                        desc: 'Share additional learning materials',
+                                        icon: '📚',
+                                        color: 'bg-blue-50 border-blue-200 hover:bg-blue-100 text-blue-700'
+                                    },
+                                    { 
+                                        title: 'Class Schedule Change', 
+                                        desc: 'Notify about schedule modifications',
+                                        icon: '📅',
+                                        color: 'bg-purple-50 border-purple-200 hover:bg-purple-100 text-purple-700'
+                                    },
+                                    { 
+                                        title: 'Congratulate Top Performers', 
+                                        desc: 'Celebrate student achievements',
+                                        icon: '🏆',
+                                        color: 'bg-green-50 border-green-200 hover:bg-green-100 text-green-700'
+                                    }
+                                ].map((template, index) => (
+                                    <button key={index} className={`flex items-start space-x-4 p-4 rounded-xl border transition-all group ${template.color}`}>
+                                        <span className="text-2xl group-hover:scale-110 transition-transform">{template.icon}</span>
+                                        <div className="text-left">
+                                            <h4 className="font-semibold mb-1">{template.title}</h4>
+                                            <p className="text-sm opacity-80">{template.desc}</p>
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -3329,97 +3611,412 @@ const Dashboard = () => {
     );
     
     const renderTeacherSettings = () => (
-        <div className="settings-section">
-            <div className="section-header">
-                <h2>⚙️ Teacher Settings</h2>
-            </div>
-    
-            <div className="settings-grid">
-                <div className="settings-card">
-                    <h3>📊 Grading Preferences</h3>
-                    <div className="setting-item">
-                        <label>Default Grading Scale</label>
-                        <select>
-                            <option>A-F Letter Grades</option>
-                            <option>0-100 Percentage</option>
-                            <option>1-10 Scale</option>
-                        </select>
-                    </div>
-                    <div className="setting-item">
-                        <label>Auto-release Grades</label>
-                        <input type="checkbox" />
-                        <span>Automatically release grades to students</span>
-                    </div>
-                    <div className="setting-item">
-                        <label>Late Submission Penalty</label>
-                        <input type="number" placeholder="10" />
-                        <span>% per day late</span>
-                    </div>
+        <div className="space-y-8">
+            {/* Header */}
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <div className="space-y-2">
+                    <h2 className="text-3xl font-bold text-gray-900 flex items-center">
+                        <span className="mr-3 text-4xl">⚙️</span>
+                        Teacher Settings
+                    </h2>
+                    <p className="text-gray-600 text-lg">Customize your teaching experience and preferences</p>
                 </div>
-    
-                <div className="settings-card">
-                    <h3>🔔 Notification Settings</h3>
-                    <div className="setting-item">
-                        <label>Email Notifications</label>
-                        <input type="checkbox" defaultChecked />
-                        <span>Receive email for new student messages</span>
-                    </div>
-                    <div className="setting-item">
-                        <label>Assignment Reminders</label>
-                        <input type="checkbox" defaultChecked />
-                        <span>Get reminded about grading deadlines</span>
-                    </div>
-                    <div className="setting-item">
-                        <label>Weekly Reports</label>
-                        <input type="checkbox" />
-                        <span>Receive weekly class performance summary</span>
-                    </div>
-                </div>
-    
-                <div className="settings-card">
-                    <h3>👥 Class Management</h3>
-                    <div className="setting-item">
-                        <label>Default Class Size Limit</label>
-                        <input type="number" defaultValue="50" />
-                    </div>
-                    <div className="setting-item">
-                        <label>Allow Student Collaboration</label>
-                        <input type="checkbox" defaultChecked />
-                        <span>Students can work in groups</span>
-                    </div>
-                    <div className="setting-item">
-                        <label>Automatic Attendance Tracking</label>
-                        <input type="checkbox" />
-                        <span>Track student login times</span>
-                    </div>
-                </div>
-    
-                <div className="settings-card">
-                    <h3>🎨 Dashboard Customization</h3>
-                    <div className="setting-item">
-                        <label>Dashboard Theme</label>
-                        <select>
-                            <option>Light Mode</option>
-                            <option>Dark Mode</option>
-                            <option>Auto (System)</option>
-                        </select>
-                    </div>
-                    <div className="setting-item">
-                        <label>Show Engagement Metrics</label>
-                        <input type="checkbox" defaultChecked />
-                        <span>Display real-time engagement data</span>
-                    </div>
-                    <div className="setting-item">
-                        <label>Quick Actions Sidebar</label>
-                        <input type="checkbox" defaultChecked />
-                        <span>Show quick tools in sidebar</span>
-                    </div>
+                
+                <div className="flex space-x-3">
+                    <button className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                        <span className="mr-2">🔄</span>
+                        Reset to Defaults
+                    </button>
+                    <button className="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-xl text-white bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-xl">
+                        <span className="mr-2 text-lg">💾</span>
+                        Save Settings
+                    </button>
                 </div>
             </div>
     
-            <div className="settings-actions">
-                <button className="save-btn">💾 Save Settings</button>
-                <button className="reset-btn">🔄 Reset to Defaults</button>
+            {/* Settings Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Grading Preferences */}
+                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                    <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+                        <h3 className="text-xl font-bold text-gray-900 flex items-center">
+                            <span className="mr-3 text-2xl">📊</span>
+                            Grading Preferences
+                        </h3>
+                        <p className="text-sm text-gray-600 mt-1">Configure your grading system and policies</p>
+                    </div>
+                    <div className="p-6 space-y-6">
+                        <div className="space-y-3">
+                            <label className="block text-sm font-medium text-gray-700">Default Grading Scale</label>
+                            <select className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white">
+                                <option>A-F Letter Grades</option>
+                                <option>0-100 Percentage</option>
+                                <option>1-10 Scale</option>
+                                <option>Pass/Fail</option>
+                            </select>
+                            <div className="text-xs text-gray-500">This will be the default for new assignments</div>
+                        </div>
+    
+                        <div className="space-y-3">
+                            <label className="block text-sm font-medium text-gray-700">Late Submission Penalty</label>
+                            <div className="flex items-center space-x-3">
+                                <input
+                                    type="number"
+                                    defaultValue="10"
+                                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                    placeholder="10"
+                                />
+                                <span className="text-sm text-gray-500 font-medium">% per day late</span>
+                            </div>
+                            <div className="text-xs text-gray-500">Applied automatically to late submissions</div>
+                        </div>
+    
+                        <div className="space-y-3">
+                            <label className="block text-sm font-medium text-gray-700">Grade Release Settings</label>
+                            <div className="space-y-3">
+                                <div className="flex items-center space-x-3">
+                                    <input 
+                                        type="checkbox" 
+                                        defaultChecked 
+                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                    />
+                                    <span className="text-sm text-gray-700">Auto-release grades to students</span>
+                                </div>
+                                <div className="flex items-center space-x-3">
+                                    <input 
+                                        type="checkbox" 
+                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                    />
+                                    <span className="text-sm text-gray-700">Require manual approval before release</span>
+                                </div>
+                                <div className="flex items-center space-x-3">
+                                    <input 
+                                        type="checkbox" 
+                                        defaultChecked 
+                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                    />
+                                    <span className="text-sm text-gray-700">Send email notifications for new grades</span>
+                                </div>
+                            </div>
+                        </div>
+    
+                        <div className="space-y-3">
+                            <label className="block text-sm font-medium text-gray-700">Rubric Preferences</label>
+                            <div className="grid grid-cols-1 gap-2">
+                                {['Detailed Rubrics', 'Point-based Scoring', 'Holistic Assessment', 'Peer Review Integration'].map((rubric, index) => (
+                                    <label key={index} className="flex items-center space-x-2 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                                        <input 
+                                            type="radio" 
+                                            name="rubric" 
+                                            defaultChecked={rubric === 'Detailed Rubrics'}
+                                            className="h-4 w-4 text-blue-600 focus:ring-blue-500"
+                                        />
+                                        <span className="text-sm text-gray-700">{rubric}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+                {/* Notification Settings */}
+                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                    <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-green-50 to-emerald-50">
+                        <h3 className="text-xl font-bold text-gray-900 flex items-center">
+                            <span className="mr-3 text-2xl">🔔</span>
+                            Notification Settings
+                        </h3>
+                        <p className="text-sm text-gray-600 mt-1">Control when and how you receive updates</p>
+                    </div>
+                    <div className="p-6 space-y-6">
+                        {[
+                            {
+                                title: 'New Student Messages',
+                                desc: 'Get notified when students send you messages',
+                                checked: true
+                            },
+                            {
+                                title: 'Assignment Submissions',
+                                desc: 'Alert when students submit assignments',
+                                checked: true
+                            },
+                            {
+                                title: 'Grading Deadlines',
+                                desc: 'Remind me about upcoming grading deadlines',
+                                checked: false
+                            },
+                            {
+                                title: 'Student Questions in Forums',
+                                desc: 'Notify when students post in course forums',
+                                checked: true
+                            },
+                            {
+                                title: 'Course Analytics Reports',
+                                desc: 'Weekly performance and engagement summaries',
+                                checked: false
+                            },
+                            {
+                                title: 'System Announcements',
+                                desc: 'Important updates from administration',
+                                checked: true
+                            }
+                        ].map((setting, index) => (
+                            <div key={index} className="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                                <input 
+                                    type="checkbox" 
+                                    defaultChecked={setting.checked}
+                                    className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                />
+                                <div className="flex-1">
+                                    <div className="font-medium text-gray-900">{setting.title}</div>
+                                    <div className="text-sm text-gray-600 mt-1">{setting.desc}</div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+    
+                {/* Class Management */}
+                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                    <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50">
+                        <h3 className="text-xl font-bold text-gray-900 flex items-center">
+                            <span className="mr-3 text-2xl">👥</span>
+                            Class Management
+                        </h3>
+                        <p className="text-sm text-gray-600 mt-1">Configure classroom policies and defaults</p>
+                    </div>
+                    <div className="p-6 space-y-6">
+                        <div className="space-y-3">
+                            <label className="block text-sm font-medium text-gray-700">Default Class Size Limit</label>
+                            <div className="flex items-center space-x-3">
+                                <input
+                                    type="number"
+                                    defaultValue="50"
+                                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                    placeholder="50"
+                                />
+                                <span className="text-sm text-gray-500 font-medium">students per class</span>
+                            </div>
+                            <div className="text-xs text-gray-500">Applied to new courses you create</div>
+                        </div>
+    
+                        <div className="space-y-4">
+                            <h4 className="font-semibold text-gray-900">Student Permissions</h4>
+                            {[
+                                {
+                                    title: 'Allow Student Collaboration',
+                                    desc: 'Students can work together on assignments',
+                                    checked: true
+                                },
+                                {
+                                    title: 'Enable Peer Reviews',
+                                    desc: 'Students can review each other\'s work',
+                                    checked: false
+                                },
+                                {
+                                    title: 'Discussion Forum Access',
+                                    desc: 'Students can create forum topics',
+                                    checked: true
+                                },
+                                {
+                                    title: 'File Sharing Between Students',
+                                    desc: 'Allow students to share files with classmates',
+                                    checked: false
+                                }
+                            ].map((permission, index) => (
+                                <div key={index} className="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                                    <input 
+                                        type="checkbox" 
+                                        defaultChecked={permission.checked}
+                                        className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                    />
+                                    <div className="flex-1">
+                                        <div className="font-medium text-gray-900">{permission.title}</div>
+                                        <div className="text-sm text-gray-600 mt-1">{permission.desc}</div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+    
+                        <div className="space-y-3">
+                            <label className="block text-sm font-medium text-gray-700">Attendance Tracking</label>
+                            <div className="space-y-3">
+                                <div className="flex items-center space-x-3">
+                                    <input 
+                                        type="checkbox" 
+                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                    />
+                                    <span className="text-sm text-gray-700">Automatic attendance tracking</span>
+                                </div>
+                                <div className="flex items-center space-x-3">
+                                    <input 
+                                        type="checkbox" 
+                                        defaultChecked 
+                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                    />
+                                    <span className="text-sm text-gray-700">Track student login times</span>
+                                </div>
+                                <div className="flex items-center space-x-3">
+                                    <input 
+                                        type="checkbox" 
+                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                    />
+                                    <span className="text-sm text-gray-700">Send attendance reports to admin</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+                {/* Dashboard Customization */}
+                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                    <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-orange-50 to-yellow-50">
+                        <h3 className="text-xl font-bold text-gray-900 flex items-center">
+                            <span className="mr-3 text-2xl">🎨</span>
+                            Dashboard Customization
+                        </h3>
+                        <p className="text-sm text-gray-600 mt-1">Personalize your teaching dashboard</p>
+                    </div>
+                    <div className="p-6 space-y-6">
+                        <div className="space-y-3">
+                            <label className="block text-sm font-medium text-gray-700">Dashboard Theme</label>
+                            <div className="grid grid-cols-3 gap-3">
+                                {[
+                                    { name: 'Light', icon: '☀️', active: true },
+                                    { name: 'Dark', icon: '🌙', active: false },
+                                    { name: 'Auto', icon: '🔄', active: false }
+                                ].map((theme, index) => (
+                                    <label key={index} className={`flex flex-col items-center p-4 border-2 rounded-xl cursor-pointer transition-all ${
+                                        theme.active ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
+                                    }`}>
+                                        <input 
+                                            type="radio" 
+                                            name="theme" 
+                                            defaultChecked={theme.active}
+                                            className="sr-only"
+                                        />
+                                        <span className="text-2xl mb-2">{theme.icon}</span>
+                                        <span className="text-sm font-medium text-gray-700">{theme.name}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+    
+                        <div className="space-y-4">
+                            <h4 className="font-semibold text-gray-900">Dashboard Widgets</h4>
+                            {[
+                                {
+                                    title: 'Show Real-time Engagement Metrics',
+                                    desc: 'Display live student engagement data',
+                                    checked: true
+                                },
+                                {
+                                    title: 'Quick Actions Sidebar',
+                                    desc: 'Show quick teaching tools in sidebar',
+                                    checked: true
+                                },
+                                {
+                                    title: 'Student Performance Graphs',
+                                    desc: 'Display performance charts on overview',
+                                    checked: false
+                                },
+                                {
+                                    title: 'Upcoming Deadlines Widget',
+                                    desc: 'Show assignment and grading deadlines',
+                                    checked: true
+                                }
+                            ].map((widget, index) => (
+                                <div key={index} className="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                                    <input 
+                                        type="checkbox" 
+                                        defaultChecked={widget.checked}
+                                        className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                    />
+                                    <div className="flex-1">
+                                        <div className="font-medium text-gray-900">{widget.title}</div>
+                                        <div className="text-sm text-gray-600 mt-1">{widget.desc}</div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+    
+                        <div className="space-y-3">
+                            <label className="block text-sm font-medium text-gray-700">Default Course View</label>
+                            <select className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white">
+                                <option>Grid View</option>
+                                <option>List View</option>
+                                <option>Card View</option>
+                                <option>Compact View</option>
+                            </select>
+                            <div className="text-xs text-gray-500">How courses are displayed on your dashboard</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            {/* Teaching Tools & Integrations */}
+            <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-indigo-50 to-purple-50">
+                    <h3 className="text-xl font-bold text-gray-900 flex items-center">
+                        <span className="mr-3 text-2xl">🛠️</span>
+                        Teaching Tools & Integrations
+                    </h3>
+                    <p className="text-sm text-gray-600 mt-1">Configure external tools and teaching preferences</p>
+                </div>
+                <div className="p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-4">
+                            <h4 className="font-semibold text-gray-900">Assignment Tools</h4>
+                            {[
+                                { title: 'Enable plagiarism detection', checked: true },
+                                { title: 'Auto-generate assignment codes', checked: false },
+                                { title: 'Anonymous grading option', checked: true },
+                                { title: 'Bulk download submissions', checked: true }
+                            ].map((tool, index) => (
+                                <div key={index} className="flex items-center space-x-3">
+                                    <input 
+                                        type="checkbox" 
+                                        defaultChecked={tool.checked}
+                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                    />
+                                    <span className="text-sm text-gray-700">{tool.title}</span>
+                                </div>
+                            ))}
+                        </div>
+                        
+                        <div className="space-y-4">
+                            <h4 className="font-semibold text-gray-900">Communication Tools</h4>
+                            {[
+                                { title: 'Enable video conferencing integration', checked: true },
+                                { title: 'Allow voice messages in chat', checked: false },
+                                { title: 'Auto-translate messages', checked: false },
+                                { title: 'Smart reply suggestions', checked: true }
+                            ].map((tool, index) => (
+                                <div key={index} className="flex items-center space-x-3">
+                                    <input 
+                                        type="checkbox" 
+                                        defaultChecked={tool.checked}
+                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                    />
+                                    <span className="text-sm text-gray-700">{tool.title}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+    
+                    <div className="mt-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+                        <div className="flex items-center space-x-3">
+                            <span className="text-blue-600 text-2xl">🚀</span>
+                            <div>
+                                <h4 className="font-semibold text-blue-900">Pro Teaching Features</h4>
+                                <p className="text-sm text-blue-700">Upgrade to unlock advanced analytics, AI-powered insights, and automated grading tools.</p>
+                            </div>
+                            <button className="ml-auto inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
+                                Learn More
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );
