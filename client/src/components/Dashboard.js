@@ -99,17 +99,21 @@ const Dashboard = () => {
             setPendingUsers([]);
         }
     };
-
+        // Around line 102, update the fetchApplicationSubmissions function:
     const fetchApplicationSubmissions = async (token) => {
         try {
             console.log('Fetching application submissions...');
-            const response = await fetch(`${API_BASE_URL}/api/applications/all`, {
+            console.log('API URL:', `${API_BASE_URL}/api/applications`); // Remove /all
+            
+            const response = await fetch(`${API_BASE_URL}/api/applications`, { // Remove /all
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             });
-
+    
+            console.log('Applications response status:', response.status);
+    
             if (response.ok) {
                 const data = await response.json();
                 console.log('Applications response:', data);
@@ -126,7 +130,8 @@ const Dashboard = () => {
                     }
                 }));
             } else {
-                console.warn('Applications endpoint returned error:', response.status);
+                const errorText = await response.text();
+                console.error('Applications endpoint returned error:', response.status, errorText);
                 setApplicationSubmissions([]);
             }
         } catch (error) {
@@ -134,17 +139,18 @@ const Dashboard = () => {
             setApplicationSubmissions([]);
         }
     };
-
+    
+    // Around line 162, update the fetchContactSubmissions function:
     const fetchContactSubmissions = async (token) => {
         try {
             console.log('Fetching contact submissions...');
-            const response = await fetch(`${API_BASE_URL}/api/contact/all`, {
+            const response = await fetch(`${API_BASE_URL}/api/contact`, { // Remove /all
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             });
-
+    
             if (response.ok) {
                 const data = await response.json();
                 console.log('Contacts response:', data);
@@ -315,33 +321,99 @@ const Dashboard = () => {
         history.push('/');
     };
 
-    // Main authentication effect - Fixed to properly fetch admin data
+    // useEffect(() => {
+    //     const checkAuth = async () => {
+    //         const token = localStorage.getItem('authToken');
+            
+    //         if (!token) {
+    //             history.push('/');
+    //             return;
+    //         }
+    
+    //         try {
+    //             console.log('Checking authentication...');
+    //             const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+    //                 headers: {
+    //                     'Authorization': `Bearer ${token}`,
+    //                     'Content-Type': 'application/json'
+    //                 }
+    //             });
+    
+    //             if (!response.ok) {
+    //                 throw new Error('Authentication failed');
+    //             }
+    
+    //             const data = await response.json();
+    //             const userData = data.user;
+    //             console.log('User data received:', userData);
+    
+    //             setUser({
+    //                 id: userData.id || userData._id,
+    //                 email: userData.email,
+    //                 firstName: userData.firstName,
+    //                 lastName: userData.lastName,
+    //                 role: userData.role,
+    //                 name: `${userData.firstName} ${userData.lastName}`.trim() || userData.email?.split('@')[0] || 'User',
+    //                 isApproved: userData.isApproved
+    //             });
+    
+    //             localStorage.setItem('userRole', userData.role);
+    //             localStorage.setItem('userEmail', userData.email);
+    
+    //             // Fetch admin-specific data if user is admin
+    //             if (userData.role === 'admin') {
+    //                 console.log('Fetching admin data...');
+    //                 await fetchPendingUsers(token);
+    //                 await fetchApplicationSubmissions(token);
+    //                 await fetchContactSubmissions(token);
+    //                 await fetchAllUsers(token);
+    //             }
+    
+    //         } catch (error) {
+    //             console.error('Authentication error:', error);
+    //             localStorage.clear();
+    //             history.push('/');
+    //         }
+    
+    //         setIsLoading(false);
+    //     };
+    
+    //     checkAuth();
+    // }, [history, API_BASE_URL]);
+
+        // Around line 360, update the useEffect:
     useEffect(() => {
         const checkAuth = async () => {
             const token = localStorage.getItem('authToken');
             
+            console.log('🔑 Token from localStorage:', token ? 'EXISTS' : 'MISSING');
+            console.log('🌐 API_BASE_URL:', API_BASE_URL);
+            
             if (!token) {
+                console.log('❌ No token found, redirecting to home');
                 history.push('/');
                 return;
             }
-
+    
             try {
-                console.log('Checking authentication...');
+                console.log('🔍 Checking authentication...');
                 const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
                     }
                 });
-
+    
+                console.log('👤 Auth response status:', response.status);
+    
                 if (!response.ok) {
-                    throw new Error('Token invalid');
+                    throw new Error(`Authentication failed: ${response.status}`);
                 }
-
+    
                 const data = await response.json();
                 const userData = data.user;
-                console.log('User data received:', userData);
-
+                console.log('✅ User authenticated:', userData);
+    
                 setUser({
                     id: userData.id || userData._id,
                     email: userData.email,
@@ -351,40 +423,49 @@ const Dashboard = () => {
                     name: `${userData.firstName} ${userData.lastName}`.trim() || userData.email?.split('@')[0] || 'User',
                     isApproved: userData.isApproved
                 });
-
+    
                 localStorage.setItem('userRole', userData.role);
                 localStorage.setItem('userEmail', userData.email);
-                localStorage.setItem('userName', `${userData.firstName} ${userData.lastName}`.trim());
-
-                // Fetch admin data if user is admin
+    
+                // Enhanced admin data fetching with better error handling
                 if (userData.role === 'admin') {
-                    console.log('User is admin, fetching admin data...');
+                    console.log('👑 Admin user detected, fetching admin data...');
+                    
                     try {
-                        // Fetch all admin data in parallel
-                        const adminDataPromises = [
-                            fetchPendingUsers(token),
-                            fetchContactSubmissions(token),
-                            fetchApplicationSubmissions(token),
-                            fetchAllUsers(token)
-                        ];
-
-                        await Promise.allSettled(adminDataPromises);
-                        console.log('Admin data fetch completed');
-                    } catch (fetchError) {
-                        console.error('Error fetching admin data:', fetchError);
+                        console.log('📋 Fetching applications...');
+                        await fetchApplicationSubmissions(token);
+                        console.log('✅ Applications fetch completed');
+                    } catch (error) {
+                        console.error('❌ Applications fetch failed:', error);
+                    }
+    
+                    try {
+                        console.log('📧 Fetching contacts...');
+                        await fetchContactSubmissions(token);
+                        console.log('✅ Contacts fetch completed');
+                    } catch (error) {
+                        console.error('❌ Contacts fetch failed:', error);
+                    }
+    
+                    try {
+                        console.log('👥 Fetching users...');
+                        await fetchPendingUsers(token);
+                        await fetchAllUsers(token);
+                        console.log('✅ Users fetch completed');
+                    } catch (error) {
+                        console.error('❌ Users fetch failed:', error);
                     }
                 }
-
+    
             } catch (error) {
-                console.error('Auth check failed:', error);
+                console.error('❌ Authentication error:', error);
                 localStorage.clear();
                 history.push('/');
-                return;
             }
-
+    
             setIsLoading(false);
         };
-
+    
         checkAuth();
     }, [history, API_BASE_URL]);
 
@@ -1891,7 +1972,7 @@ const Dashboard = () => {
     //     </div>
     // );
     
-        const renderUserManagement = () => (
+    const renderUserManagement = () => (
         <div className="user-management-section">
             <div className="section-header">
                 <div className="header-left">
