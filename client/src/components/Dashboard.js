@@ -73,7 +73,7 @@ const Dashboard = () => {
     const history = useHistory();
 <<<<<<< HEAD
     // const API_BASE_URL = process.env.REACT_APP_API_URL ;
-    const API_BASE_URL = 'http://localhost:5000'; // Test with local server
+    // const API_BASE_URL = 'http://localhost:5000'; // Test with local server
 =======
     const API_BASE_URL = process.env.REACT_APP_API_URL ;
     const token = localStorage.getItem("token");
