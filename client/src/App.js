@@ -1,4 +1,5 @@
 import './i18n'; // ✅ correct file name
+import './index.css'; // ✅ correct file name
 import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { useTranslation } from 'react-i18next'; // Add this import
