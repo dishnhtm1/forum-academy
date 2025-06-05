@@ -74,127 +74,252 @@ const Dashboard = () => {
     const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
     // Fetch functions - Fixed to handle MongoDB data properly
-    const fetchPendingUsers = async (token) => {
-        try {
-            console.log('Fetching pending users...');
-            const response = await fetch(`${API_BASE_URL}/api/auth/pending`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
+    // const fetchPendingUsers = async (token) => {
+    //     try {
+    //         console.log('Fetching pending users...');
+    //         const response = await fetch(`${API_BASE_URL}/api/auth/pending`, {
+    //             headers: {
+    //                 'Authorization': `Bearer ${token}`,
+    //                 'Content-Type': 'application/json'
+    //             }
+    //         });
 
-            if (response.ok) {
-                const data = await response.json();
-                console.log('Pending users response:', data);
-                const users = data.users || data || [];
-                setPendingUsers(users);
-                console.log('Pending users set:', users);
-            } else {
-                console.warn('Pending users endpoint returned error:', response.status);
+    //         if (response.ok) {
+    //             const data = await response.json();
+    //             console.log('Pending users response:', data);
+    //             const users = data.users || data || [];
+    //             setPendingUsers(users);
+    //             console.log('Pending users set:', users);
+    //         } else {
+    //             console.warn('Pending users endpoint returned error:', response.status);
+    //             setPendingUsers([]);
+    //         }
+    //     } catch (error) {
+    //         console.error('Failed to fetch pending users:', error);
+    //         setPendingUsers([]);
+    //     }
+    // };
+
+    // const fetchApplicationSubmissions = async (token) => {
+    //     try {
+    //         console.log('Fetching application submissions...');
+    //         const response = await fetch(`${API_BASE_URL}/api/applications/all`, {
+    //             headers: {
+    //                 'Authorization': `Bearer ${token}`,
+    //                 'Content-Type': 'application/json'
+    //             }
+    //         });
+
+    //         if (response.ok) {
+    //             const data = await response.json();
+    //             console.log('Applications response:', data);
+    //             const applications = data.applications || data || [];
+    //             setApplicationSubmissions(applications);
+    //             console.log('Applications set:', applications);
+                
+    //             // Update dashboard data
+    //             setDashboardData(prev => ({
+    //                 ...prev,
+    //                 admin: {
+    //                     ...prev.admin,
+    //                     pendingApplications: applications.filter(app => app.status === 'pending').length
+    //                 }
+    //             }));
+    //         } else {
+    //             console.warn('Applications endpoint returned error:', response.status);
+    //             setApplicationSubmissions([]);
+    //         }
+    //     } catch (error) {
+    //         console.error('Failed to fetch applications:', error);
+    //         setApplicationSubmissions([]);
+    //     }
+    // };
+
+    // const fetchContactSubmissions = async (token) => {
+    //     try {
+    //         console.log('Fetching contact submissions...');
+    //         const response = await fetch(`${API_BASE_URL}/api/contact/all`, {
+    //             headers: {
+    //                 'Authorization': `Bearer ${token}`,
+    //                 'Content-Type': 'application/json'
+    //             }
+    //         });
+
+    //         if (response.ok) {
+    //             const data = await response.json();
+    //             console.log('Contacts response:', data);
+    //             const contacts = data.contacts || data || [];
+    //             setContactSubmissions(contacts);
+    //             console.log('Contacts set:', contacts);
+                
+    //             // Update dashboard data
+    //             setDashboardData(prev => ({
+    //                 ...prev,
+    //                 admin: {
+    //                     ...prev.admin,
+    //                     pendingContacts: contacts.filter(contact => contact.status === 'pending').length
+    //                 }
+    //             }));
+    //         } else {
+    //             console.warn('Contacts endpoint returned error:', response.status);
+    //             setContactSubmissions([]);
+    //         }
+    //     } catch (error) {
+    //         console.error('Failed to fetch contact submissions:', error);
+    //         setContactSubmissions([]);
+    //     }
+    // };
+
+    // const fetchAllUsers = async (token) => {
+    //     try {
+    //         console.log('Fetching all users...');
+    //         const response = await fetch(`${API_BASE_URL}/api/auth/users`, {
+    //             headers: {
+    //                 'Authorization': `Bearer ${token}`,
+    //                 'Content-Type': 'application/json'
+    //             }
+    //         });
+
+    //         if (response.ok) {
+    //             const data = await response.json();
+    //             console.log('All users response:', data);
+    //             const users = data.users || data || [];
+    //             setAllUsers(users);
+    //             console.log('All users set:', users);
+    //         } else {
+    //             console.warn('Users endpoint returned error:', response.status);
+    //             setAllUsers([]);
+    //         }
+    //     } catch (error) {
+    //         console.error('Failed to fetch all users:', error);
+    //         setAllUsers([]);
+    //     }
+    // };
+
+
+        const API_BASE_URL = process.env.REACT_APP_API_URL || ;'http://localhost:5000';
+        const token = localStorage.getItem("token");
+
+        const fetchPendingUsers = async () => {
+            try {
+                console.log('Fetching pending users...');
+                const response = await fetch(`${API_BASE_URL}/api/auth/pending`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Pending users response:', data);
+                    const users = data.users || data || [];
+                    setPendingUsers(users);
+                    console.log('Pending users set:', users);
+                } else {
+                    console.warn('Pending users endpoint returned error:', response.status);
+                    setPendingUsers([]);
+                }
+            } catch (error) {
+                console.error('Failed to fetch pending users:', error);
                 setPendingUsers([]);
             }
-        } catch (error) {
-            console.error('Failed to fetch pending users:', error);
-            setPendingUsers([]);
-        }
-    };
+        };
 
-    const fetchApplicationSubmissions = async (token) => {
-        try {
-            console.log('Fetching application submissions...');
-            const response = await fetch(`${API_BASE_URL}/api/applications/all`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                console.log('Applications response:', data);
-                const applications = data.applications || data || [];
-                setApplicationSubmissions(applications);
-                console.log('Applications set:', applications);
-                
-                // Update dashboard data
-                setDashboardData(prev => ({
-                    ...prev,
-                    admin: {
-                        ...prev.admin,
-                        pendingApplications: applications.filter(app => app.status === 'pending').length
+        const fetchAllUsers = async () => {
+            try {
+                console.log('Fetching all users...');
+                const response = await fetch(`${API_BASE_URL}/api/auth/users`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
                     }
-                }));
-            } else {
-                console.warn('Applications endpoint returned error:', response.status);
-                setApplicationSubmissions([]);
-            }
-        } catch (error) {
-            console.error('Failed to fetch applications:', error);
-            setApplicationSubmissions([]);
-        }
-    };
+                });
 
-    const fetchContactSubmissions = async (token) => {
-        try {
-            console.log('Fetching contact submissions...');
-            const response = await fetch(`${API_BASE_URL}/api/contact/all`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('All users response:', data);
+                    const users = data.users || data || [];
+                    setAllUsers(users);
+                    console.log('All users set:', users);
+                } else {
+                    console.warn('Users endpoint returned error:', response.status);
+                    setAllUsers([]);
                 }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                console.log('Contacts response:', data);
-                const contacts = data.contacts || data || [];
-                setContactSubmissions(contacts);
-                console.log('Contacts set:', contacts);
-                
-                // Update dashboard data
-                setDashboardData(prev => ({
-                    ...prev,
-                    admin: {
-                        ...prev.admin,
-                        pendingContacts: contacts.filter(contact => contact.status === 'pending').length
-                    }
-                }));
-            } else {
-                console.warn('Contacts endpoint returned error:', response.status);
-                setContactSubmissions([]);
-            }
-        } catch (error) {
-            console.error('Failed to fetch contact submissions:', error);
-            setContactSubmissions([]);
-        }
-    };
-
-    const fetchAllUsers = async (token) => {
-        try {
-            console.log('Fetching all users...');
-            const response = await fetch(`${API_BASE_URL}/api/auth/users`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                console.log('All users response:', data);
-                const users = data.users || data || [];
-                setAllUsers(users);
-                console.log('All users set:', users);
-            } else {
-                console.warn('Users endpoint returned error:', response.status);
+            } catch (error) {
+                console.error('Failed to fetch all users:', error);
                 setAllUsers([]);
             }
-        } catch (error) {
-            console.error('Failed to fetch all users:', error);
-            setAllUsers([]);
-        }
-    };
+        };
+
+        const fetchApplicationSubmissions = async () => {
+            try {
+                console.log('Fetching application submissions...');
+                const response = await fetch(`${API_BASE_URL}/api/application`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Applications response:', data);
+                    const applications = data.applications || data || [];
+                    setApplicationSubmissions(applications);
+                    console.log('Applications set:', applications);
+
+                    setDashboardData(prev => ({
+                        ...prev,
+                        admin: {
+                            ...prev.admin,
+                            pendingApplications: applications.filter(app => app.status === 'pending').length
+                        }
+                    }));
+                } else {
+                    console.warn('Applications endpoint returned error:', response.status);
+                    setApplicationSubmissions([]);
+                }
+            } catch (error) {
+                console.error('Failed to fetch applications:', error);
+                setApplicationSubmissions([]);
+            }
+        };
+
+        const fetchContactSubmissions = async () => {
+            try {
+                console.log('Fetching contact submissions...');
+                const response = await fetch(`${API_BASE_URL}/api/contact`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Contacts response:', data);
+                    const contacts = data.contacts || data || [];
+                    setContactSubmissions(contacts);
+                    console.log('Contacts set:', contacts);
+
+                    setDashboardData(prev => ({
+                        ...prev,
+                        admin: {
+                            ...prev.admin,
+                            pendingContacts: contacts.filter(contact => contact.status === 'pending').length
+                        }
+                    }));
+                } else {
+                    console.warn('Contacts endpoint returned error:', response.status);
+                    setContactSubmissions([]);
+                }
+            } catch (error) {
+                console.error('Failed to fetch contact submissions:', error);
+                setContactSubmissions([]);
+            }
+        };
+
 
     // Handler functions
     const handleUserApproval = async (userId, approve) => {
