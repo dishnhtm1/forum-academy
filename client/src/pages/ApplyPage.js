@@ -236,6 +236,7 @@ const ApplyPage = () => {
 //                },
  //               body: JSON.stringify(applicationData)
  //           });
+            const token = localStorage.getItem("token");
 
             const API_URL = process.env.REACT_APP_API_URL;
 
