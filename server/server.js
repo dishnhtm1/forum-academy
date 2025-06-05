@@ -246,49 +246,12 @@ app.use(cors({
 
 app.use(express.json());
 
-<<<<<<< HEAD
-// Request logging
-=======
 // Request logging middleware
->>>>>>> 5ed7c49756788ffc53ec75294749f87232091185
 app.use((req, res, next) => {
     console.log(`📥 ${req.method} ${req.path} - ${new Date().toISOString()}`);
     next();
 });
 
-<<<<<<< HEAD
-// Routes
-console.log('🔧 Loading routes...');
-
-// Auth routes
-try {
-    const authRoutes = require('./routes/authRoutes');
-    app.use('/api/auth', authRoutes);
-    console.log('✅ Auth routes loaded');
-} catch (error) {
-    console.error('❌ Auth routes error:', error.message);
-}
-
-// Application routes - MAKE SURE THIS IS INCLUDED
-try {
-    const applicationRoutes = require('./routes/applicationRoutes');
-    app.use('/api/applications', applicationRoutes);
-    console.log('✅ Application routes loaded');
-} catch (error) {
-    console.error('❌ Application routes error:', error.message);
-}
-
-// Contact routes - MAKE SURE THIS IS INCLUDED
-try {
-    const contactRoutes = require('./routes/contactRoutes');
-    app.use('/api/contact', contactRoutes);
-    console.log('✅ Contact routes loaded');
-} catch (error) {
-    console.error('❌ Contact routes error:', error.message);
-}
-
-// Health check
-=======
 // Test route
 app.get('/api/test-server', (req, res) => {
     console.log('🧪 Test server route hit');
@@ -299,32 +262,64 @@ app.get('/api/test-server', (req, res) => {
     });
 });
 
-// ✅ Load and use routes
-app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/contact', require('./routes/contactRoutes'));
-app.use('/api/applications', require('./routes/applicationRoutes'));
-app.use('/api/application', require('./routes/applicationRoutes')); // For compatibility
-app.use('/api/admin', require('./routes/adminRoutes'));
+// Routes with enhanced error handling
+console.log('🔧 Loading routes...');
+
+// Auth routes
+try {
+    const authRoutes = require('./routes/authRoutes');
+    app.use('/api/auth', authRoutes);
+    console.log('✅ Auth routes loaded and mounted');
+} catch (error) {
+    console.error('❌ Failed to load auth routes:', error.message);
+}
+
+// Application routes
+try {
+    const applicationRoutes = require('./routes/applicationRoutes');
+    app.use('/api/applications', applicationRoutes);
+    app.use('/api/application', applicationRoutes); // Backward compatibility
+    console.log('✅ Application routes loaded and mounted');
+} catch (error) {
+    console.error('❌ Failed to load application routes:', error.message);
+}
+
+// Contact routes
+try {
+    const contactRoutes = require('./routes/contactRoutes');
+    app.use('/api/contact', contactRoutes);
+    console.log('✅ Contact routes loaded and mounted');
+} catch (error) {
+    console.error('❌ Failed to load contact routes:', error.message);
+}
+
+// Admin routes
+try {
+    const adminRoutes = require('./routes/adminRoutes');
+    app.use('/api/admin', adminRoutes);
+    console.log('✅ Admin routes loaded and mounted');
+} catch (error) {
+    console.error('❌ Failed to load admin routes:', error.message);
+}
 
 // Health check route
->>>>>>> 5ed7c49756788ffc53ec75294749f87232091185
 app.get('/api/health', (req, res) => {
-    console.log('🏥 Health check');
+    console.log('🏥 Health check hit');
     res.json({ 
         message: 'Server is running', 
         status: 'OK',
         timestamp: new Date().toISOString(),
-        routes: ['auth', 'applications', 'contact']
+        routes: ['auth', 'applications', 'contact', 'admin']
     });
 });
 
 // Root route
 app.get('/', (req, res) => {
-    console.log('🏠 Root route');
+    console.log('🏠 Root route hit');
     res.send('✅ Backend is running with all routes.');
 });
 
-// List routes for debugging
+// Debug routes endpoint
 app.get('/api/debug/routes', (req, res) => {
     const routes = [];
     app._router.stack.forEach((middleware) => {
@@ -348,21 +343,23 @@ app.get('/api/debug/routes', (req, res) => {
     res.json({ routes });
 });
 
-// Error handling
+// Error handler middleware
 app.use(errorHandler);
 
-// 404 handler
+// 404 handler (MUST be last)
 app.use((req, res) => {
-    console.log(`❌ 404 - ${req.method} ${req.originalUrl}`);
+    console.log(`❌ 404 - Route not found: ${req.method} ${req.originalUrl}`);
     res.status(404).json({
         message: 'Route not found',
         method: req.method,
         path: req.originalUrl,
+        timestamp: new Date().toISOString(),
         availableRoutes: [
             '/api/health',
             '/api/auth/*',
             '/api/applications/*',
-            '/api/contact/*'
+            '/api/contact/*',
+            '/api/admin/*'
         ]
     });
 });
@@ -371,14 +368,8 @@ app.use((req, res) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
-<<<<<<< HEAD
-    console.log('📍 Environment:', process.env.NODE_ENV || 'development');
-    console.log('🔧 Routes loaded successfully');
-});
-=======
-    console.log(`📍 Server URL: ${process.env.NODE_ENV === 'production'
-        ? 'https://forum-backend-api-a7hgg9g7hmgegrh3.eastasia-01.azurewebsites.net'
+    console.log(`📍 Server URL: ${process.env.NODE_ENV === 'production' 
+        ? 'https://forum-backend-api-a7hgg9g7hmgegrh3.eastasia-01.azurewebsites.net' 
         : `http://localhost:${PORT}`}`);
     console.log('🔧 Routes loaded, server ready!');
 });
->>>>>>> 5ed7c49756788ffc53ec75294749f87232091185
