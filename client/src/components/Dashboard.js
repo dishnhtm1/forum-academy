@@ -11,6 +11,10 @@ const Dashboard = () => {
     const [applicationSubmissions, setApplicationSubmissions] = useState([]);
     const [contactSubmissions, setContactSubmissions] = useState([]);
     const [allUsers, setAllUsers] = useState([]);
+    const [showEditUserForm, setShowEditUserForm] = useState(false);
+    const [editingUser, setEditingUser] = useState(null);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [userToDelete, setUserToDelete] = useState(null);
     const [showCreateUserForm, setShowCreateUserForm] = useState(false);
     const [newUserData, setNewUserData] = useState({
         firstName: '',
@@ -74,7 +78,8 @@ const Dashboard = () => {
     const history = useHistory();
     // Base API URL
     const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-    const token = localStorage.getItem("authToken");
+    // const getToken = localStorage.getItem("authToken");
+    const getToken = () => localStorage.getItem("authToken");
 
     // const API_BASE_URL = process.env.REACT_APP_API_URL ;
     // const API_BASE_URL = 'http://localhost:5000'; // Test with local server
@@ -83,7 +88,6 @@ const Dashboard = () => {
     // const token = localStorage.getItem("token");
     // const API_BASE_URL = 'http://localhost:5000'; // Test with local server
 
-    // Fetch functions - Fixed to handle MongoDB data properly
     const fetchPendingUsers = async (token) => {
         try {
             console.log('Fetching pending users...');
@@ -100,6 +104,15 @@ const Dashboard = () => {
                 const users = data.users || data || [];
                 setPendingUsers(users);
                 console.log('Pending users set:', users);
+                
+                // Update dashboard data
+                setDashboardData(prev => ({
+                    ...prev,
+                    admin: {
+                        ...prev.admin,
+                        pendingApplications: users.length
+                    }
+                }));
             } else {
                 console.warn('Pending users endpoint returned error:', response.status);
                 setPendingUsers([]);
@@ -109,6 +122,7 @@ const Dashboard = () => {
             setPendingUsers([]);
         }
     };
+
         // Around line 102, update the fetchApplicationSubmissions function:
     const fetchApplicationSubmissions = async (token) => {
         try {
@@ -212,19 +226,16 @@ const Dashboard = () => {
         }
     };
 
-    // Handler functions
     const handleUserApproval = async (userId, approve) => {
-        const token = localStorage.getItem('authToken');
+        const token = getToken();
         try {
-            const endpoint = approve ? 'approve' : 'reject';
-            const method = approve ? 'PUT' : 'DELETE';
-            
-            const response = await fetch(`${API_BASE_URL}/api/auth/${endpoint}/${userId}`, {
-                method,
+            const response = await fetch(`${API_BASE_URL}/api/users/${userId}/approval`, { // ✅ Use new user routes
+                method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
-                }
+                },
+                body: JSON.stringify({ approved: approve })
             });
 
             if (response.ok) {
@@ -293,7 +304,7 @@ const Dashboard = () => {
 
     const handleCreateUser = async (e) => {
         e.preventDefault();
-        const token = localStorage.getItem('authToken');
+        const token = getToken(); // Use helper function
         
         try {
             const response = await fetch(`${API_BASE_URL}/api/auth/create-user`, {
@@ -326,14 +337,126 @@ const Dashboard = () => {
         }
     };
 
+    const handleEditUser = (user) => {
+        setEditingUser(user);
+        setNewUserData({
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            role: user.role,
+            password: '' // Don't populate password for security
+        });
+        setShowEditUserForm(true);
+    };
+
+    const handleUpdateUser = async (e) => {
+        e.preventDefault();
+        try {
+            const token = getToken(); // Use helper function
+            const updateData = {
+                firstName: newUserData.firstName,
+                lastName: newUserData.lastName,
+                email: newUserData.email,
+                role: newUserData.role
+            };
+            
+            // Only include password if it was provided
+            if (newUserData.password.trim()) {
+                updateData.password = newUserData.password;
+            }
+
+            const response = await fetch(`${API_BASE_URL}/api/users/${editingUser._id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(updateData)
+            });
+
+            if (response.ok) {
+                const updatedUser = await response.json();
+                
+                // Update the user in the local state
+                setAllUsers(prevUsers => 
+                    prevUsers.map(user => 
+                        user._id === editingUser._id ? updatedUser : user
+                    )
+                );
+                
+                setShowEditUserForm(false);
+                setEditingUser(null);
+                setNewUserData({
+                    firstName: '',
+                    lastName: '',
+                    email: '',
+                    password: '',
+                    role: 'student'
+                });
+                
+                alert('User updated successfully!');
+            } else {
+                const error = await response.json();
+                alert(`Error updating user: ${error.message}`);
+            }
+        } catch (error) {
+            console.error('Error updating user:', error);
+            alert('Error updating user. Please try again.');
+        }
+    };
+
+    const handleDeleteUser = (user) => {
+        setUserToDelete(user);
+        setShowDeleteConfirm(true);
+    };
+
+    const confirmDeleteUser = async () => {
+        try {
+            const token = getToken(); // ✅ Use helper function consistently
+            console.log('🗑️ Attempting to delete user:', userToDelete._id);
+            
+            const response = await fetch(`${API_BASE_URL}/api/users/${userToDelete._id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            console.log('Delete response status:', response.status);
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log('Delete successful:', result);
+                
+                // Remove user from local state
+                setAllUsers(prevUsers => 
+                    prevUsers.filter(user => user._id !== userToDelete._id)
+                );
+                
+                setShowDeleteConfirm(false);
+                setUserToDelete(null);
+                
+                alert('User deleted successfully!');
+            } else {
+                const error = await response.json();
+                console.error('Delete failed:', error);
+                alert(`Error deleting user: ${error.message || 'Unknown error'}`);
+            }
+        } catch (error) {
+            console.error('Error deleting user:', error);
+            alert('Error deleting user. Please try again.');
+        }
+    };
+
     const handleLogout = () => {
         localStorage.clear();
         history.push('/');
     };
-        // Around line 360, update the useEffect:
+    
     useEffect(() => {
         const checkAuth = async () => {
-            const token = localStorage.getItem('authToken');
+            const token = getToken(); // Use helper function
             
             console.log('🔑 Token from localStorage:', token ? 'EXISTS' : 'MISSING');
             console.log('🌐 API_BASE_URL:', API_BASE_URL);
@@ -343,7 +466,7 @@ const Dashboard = () => {
                 history.push('/');
                 return;
             }
-    
+
             try {
                 console.log('🔍 Checking authentication...');
                 const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
@@ -352,17 +475,17 @@ const Dashboard = () => {
                         'Content-Type': 'application/json'
                     }
                 });
-    
+
                 console.log('👤 Auth response status:', response.status);
-    
+
                 if (!response.ok) {
                     throw new Error(`Authentication failed: ${response.status}`);
                 }
-    
+
                 const data = await response.json();
                 const userData = data.user;
                 console.log('✅ User authenticated:', userData);
-    
+
                 setUser({
                     id: userData.id || userData._id,
                     email: userData.email,
@@ -372,10 +495,10 @@ const Dashboard = () => {
                     name: `${userData.firstName} ${userData.lastName}`.trim() || userData.email?.split('@')[0] || 'User',
                     isApproved: userData.isApproved
                 });
-    
+
                 localStorage.setItem('userRole', userData.role);
                 localStorage.setItem('userEmail', userData.email);
-    
+
                 // Enhanced admin data fetching with better error handling
                 if (userData.role === 'admin') {
                     console.log('👑 Admin user detected, fetching admin data...');
@@ -387,7 +510,7 @@ const Dashboard = () => {
                     } catch (error) {
                         console.error('❌ Applications fetch failed:', error);
                     }
-    
+
                     try {
                         console.log('📧 Fetching contacts...');
                         await fetchContactSubmissions(token);
@@ -395,7 +518,7 @@ const Dashboard = () => {
                     } catch (error) {
                         console.error('❌ Contacts fetch failed:', error);
                     }
-    
+
                     try {
                         console.log('👥 Fetching users...');
                         await fetchPendingUsers(token);
@@ -405,16 +528,16 @@ const Dashboard = () => {
                         console.error('❌ Users fetch failed:', error);
                     }
                 }
-    
+
             } catch (error) {
                 console.error('❌ Authentication error:', error);
                 localStorage.clear();
                 history.push('/');
             }
-    
+
             setIsLoading(false);
         };
-    
+
         checkAuth();
     }, [history, API_BASE_URL]);
     
@@ -4562,7 +4685,379 @@ const Dashboard = () => {
             )}
         </div>
     );
+    //     <div className="space-y-8">
+    //         {/* Header */}
+    //         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+    //             <div className="space-y-2">
+    //                 <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+    //                     <span className="mr-2">👥</span>
+    //                     User Management
+    //                 </h2>
+    //                 <div className="flex flex-wrap gap-4 text-sm">
+    //                     <span className="text-gray-600">
+    //                         <span className="font-semibold text-gray-900">{allUsers.length}</span> Total Users
+    //                     </span>
+    //                     <span className="text-gray-600">
+    //                         <span className="font-semibold text-orange-600">{pendingUsers.length}</span> Pending
+    //                     </span>
+    //                     <span className="text-gray-600">
+    //                         <span className="font-semibold text-green-600">{allUsers.filter(u => u.isApproved).length}</span> Approved
+    //                     </span>
+    //                 </div>
+    //             </div>
+                
+    //             <div className="flex flex-col sm:flex-row gap-3">
+    //                 <div className="flex flex-col sm:flex-row gap-2">
+    //                     <input 
+    //                         type="text" 
+    //                         placeholder="🔍 Search users..." 
+    //                         className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+    //                     />
+    //                     <select className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+    //                         <option value="">All Roles</option>
+    //                         <option value="student">Students</option>
+    //                         <option value="teacher">Teachers</option>
+    //                         <option value="admin">Admins</option>
+    //                     </select>
+    //                     <select className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+    //                         <option value="">All Status</option>
+    //                         <option value="approved">Approved</option>
+    //                         <option value="pending">Pending</option>
+    //                     </select>
+    //                 </div>
+    //                 <button 
+    //                     className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+    //                     onClick={() => setShowCreateUserForm(true)}
+    //                 >
+    //                     ➕ Create New User
+    //                 </button>
+    //             </div>
+    //         </div>
     
+    //         {/* Create User Modal */}
+    //         {showCreateUserForm && (
+    //             <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+    //                 <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 w-full max-w-2xl mx-4">
+    //                     <div className="flex items-center justify-between p-6 border-b border-gray-200">
+    //                         <h3 className="text-xl font-semibold text-gray-900 flex items-center">
+    //                             <span className="mr-2">✨</span>
+    //                             Create New User
+    //                         </h3>
+    //                         <button 
+    //                             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+    //                             onClick={() => setShowCreateUserForm(false)}
+    //                         >
+    //                             <span className="text-gray-400 hover:text-gray-600 text-xl">✕</span>
+    //                         </button>
+    //                     </div>
+    //                     <div className="p-6">
+    //                         <form onSubmit={handleCreateUser} className="space-y-6">
+    //                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    //                                 <div className="space-y-2">
+    //                                     <label className="text-sm font-medium text-gray-700">First Name</label>
+    //                                     <input
+    //                                         type="text"
+    //                                         placeholder="Enter first name"
+    //                                         value={newUserData.firstName}
+    //                                         onChange={(e) => setNewUserData({...newUserData, firstName: e.target.value})}
+    //                                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+    //                                         required
+    //                                     />
+    //                                 </div>
+    //                                 <div className="space-y-2">
+    //                                     <label className="text-sm font-medium text-gray-700">Last Name</label>
+    //                                     <input
+    //                                         type="text"
+    //                                         placeholder="Enter last name"
+    //                                         value={newUserData.lastName}
+    //                                         onChange={(e) => setNewUserData({...newUserData, lastName: e.target.value})}
+    //                                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+    //                                         required
+    //                                     />
+    //                                 </div>
+    //                                 <div className="md:col-span-2 space-y-2">
+    //                                     <label className="text-sm font-medium text-gray-700">Email Address</label>
+    //                                     <input
+    //                                         type="email"
+    //                                         placeholder="Enter email address"
+    //                                         value={newUserData.email}
+    //                                         onChange={(e) => setNewUserData({...newUserData, email: e.target.value})}
+    //                                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+    //                                         required
+    //                                     />
+    //                                 </div>
+    //                                 <div className="space-y-2">
+    //                                     <label className="text-sm font-medium text-gray-700">Password</label>
+    //                                     <input
+    //                                         type="password"
+    //                                         placeholder="Enter password"
+    //                                         value={newUserData.password}
+    //                                         onChange={(e) => setNewUserData({...newUserData, password: e.target.value})}
+    //                                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+    //                                         required
+    //                                     />
+    //                                 </div>
+    //                                 <div className="space-y-2">
+    //                                     <label className="text-sm font-medium text-gray-700">Role</label>
+    //                                     <select
+    //                                         value={newUserData.role}
+    //                                         onChange={(e) => setNewUserData({...newUserData, role: e.target.value})}
+    //                                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+    //                                     >
+    //                                         <option value="student">👨‍🎓 Student</option>
+    //                                         <option value="teacher">👨‍🏫 Teacher</option>
+    //                                         <option value="admin">👨‍💼 Admin</option>
+    //                                     </select>
+    //                                 </div>
+    //                             </div>
+    //                             <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+    //                                 <button 
+    //                                     type="button" 
+    //                                     className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+    //                                     onClick={() => setShowCreateUserForm(false)}
+    //                                 >
+    //                                     Cancel
+    //                                 </button>
+    //                                 <button 
+    //                                     type="submit" 
+    //                                     className="px-4 py-2 border border-transparent rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+    //                                 >
+    //                                     ✨ Create User
+    //                                 </button>
+    //                             </div>
+    //                         </form>
+    //                     </div>
+    //                 </div>
+    //             </div>
+    //         )}
+    
+    //         {/* Users Table */}
+    //         <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+    //             <div className="overflow-x-auto">
+    //                 <table className="min-w-full divide-y divide-gray-200">
+    //                     <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+    //                         <tr>
+    //                             <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+    //                                 <div className="flex items-center space-x-1">
+    //                                     <span>👤 User</span>
+    //                                     <span className="text-gray-400">↕️</span>
+    //                                 </div>
+    //                             </th>
+    //                             <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+    //                                 <div className="flex items-center space-x-1">
+    //                                     <span>📧 Contact</span>
+    //                                     <span className="text-gray-400">↕️</span>
+    //                                 </div>
+    //                             </th>
+    //                             <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+    //                                 <div className="flex items-center space-x-1">
+    //                                     <span>🎭 Role</span>
+    //                                     <span className="text-gray-400">↕️</span>
+    //                                 </div>
+    //                             </th>
+    //                             <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+    //                                 <div className="flex items-center space-x-1">
+    //                                     <span>📊 Status</span>
+    //                                     <span className="text-gray-400">↕️</span>
+    //                                 </div>
+    //                             </th>
+    //                             <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+    //                                 <div className="flex items-center space-x-1">
+    //                                     <span>📅 Joined</span>
+    //                                     <span className="text-gray-400">↕️</span>
+    //                                 </div>
+    //                             </th>
+    //                             <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+    //                                 ⚡ Actions
+    //                             </th>
+    //                         </tr>
+    //                     </thead>
+    //                     <tbody className="bg-white divide-y divide-gray-200">
+    //                         {allUsers.map((user, index) => (
+    //                             <tr key={user._id} className={`hover:bg-gray-50 transition-colors ${!user.isApproved ? 'bg-orange-25 border-l-4 border-orange-400' : ''}`}>
+    //                                 <td className="px-6 py-4 whitespace-nowrap">
+    //                                     <div className="flex items-center space-x-4">
+    //                                         <div className="relative">
+    //                                             <div className={`h-12 w-12 rounded-full flex items-center justify-center text-white font-semibold ${
+    //                                                 user.role === 'admin' ? 'bg-gradient-to-br from-purple-400 to-pink-500' :
+    //                                                 user.role === 'teacher' ? 'bg-gradient-to-br from-green-400 to-blue-500' :
+    //                                                 'bg-gradient-to-br from-blue-400 to-purple-500'
+    //                                             }`}>
+    //                                                 {user.firstName?.charAt(0)}{user.lastName?.charAt(0)}
+    //                                             </div>
+    //                                             <div className={`absolute -bottom-1 -right-1 h-4 w-4 border-2 border-white rounded-full ${
+    //                                                 user.isApproved ? 'bg-green-400' : 'bg-orange-400'
+    //                                             }`}></div>
+    //                                         </div>
+    //                                         <div className="space-y-1">
+    //                                             <div className="text-sm font-semibold text-gray-900">
+    //                                                 {user.firstName} {user.lastName}
+    //                                             </div>
+    //                                             <div className="text-xs text-gray-500">
+    //                                                 ID: {user._id.slice(-8)}
+    //                                             </div>
+    //                                         </div>
+    //                                     </div>
+    //                                 </td>
+    //                                 <td className="px-6 py-4 whitespace-nowrap">
+    //                                     <div className="space-y-1">
+    //                                         <div className="text-sm text-gray-900">{user.email}</div>
+    //                                         {user.phone && (
+    //                                             <div className="text-xs text-gray-500">📱 {user.phone}</div>
+    //                                         )}
+    //                                     </div>
+    //                                 </td>
+    //                                 <td className="px-6 py-4 whitespace-nowrap">
+    //                                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+    //                                         user.role === 'admin' ? 'bg-purple-100 text-purple-800' :
+    //                                         user.role === 'teacher' ? 'bg-green-100 text-green-800' :
+    //                                         'bg-blue-100 text-blue-800'
+    //                                     }`}>
+    //                                         <span className="mr-1">
+    //                                             {user.role === 'admin' ? '👨‍💼' : 
+    //                                              user.role === 'teacher' ? '👨‍🏫' : '👨‍🎓'}
+    //                                         </span>
+    //                                         {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+    //                                     </span>
+    //                                 </td>
+    //                                 <td className="px-6 py-4 whitespace-nowrap">
+    //                                     <div className="space-y-1">
+    //                                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+    //                                             user.isApproved ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'
+    //                                         }`}>
+    //                                             <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
+    //                                                 user.isApproved ? 'bg-green-400' : 'bg-orange-400'
+    //                                             }`}></span>
+    //                                             {user.isApproved ? 'Approved' : 'Pending'}
+    //                                         </span>
+    //                                         {!user.isApproved && (
+    //                                             <div className="text-xs text-orange-600 font-medium">
+    //                                                 ⚠️ Needs Review
+    //                                             </div>
+    //                                         )}
+    //                                     </div>
+    //                                 </td>
+    //                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+    //                                     <div className="space-y-1">
+    //                                         <div className="font-medium text-gray-900">
+    //                                             {new Date(user.createdAt || Date.now()).toLocaleDateString()}
+    //                                         </div>
+    //                                         <div className="text-xs">
+    //                                             {(() => {
+    //                                                 const days = Math.floor((Date.now() - new Date(user.createdAt || Date.now())) / (1000 * 60 * 60 * 24));
+    //                                                 return days === 0 ? 'Today' : `${days} days ago`;
+    //                                             })()}
+    //                                         </div>
+    //                                     </div>
+    //                                 </td>
+    //                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+    //                                     <div className="flex items-center space-x-2">
+    //                                         {!user.isApproved ? (
+    //                                             <>
+    //                                                 <button 
+    //                                                     className="inline-flex items-center p-2 border border-transparent rounded-lg text-green-600 hover:bg-green-100 transition-colors"
+    //                                                     onClick={() => handleUserApproval(user._id, true)}
+    //                                                     title="Approve User"
+    //                                                 >
+    //                                                     ✅
+    //                                                 </button>
+    //                                                 <button 
+    //                                                     className="inline-flex items-center p-2 border border-transparent rounded-lg text-red-600 hover:bg-red-100 transition-colors"
+    //                                                     onClick={() => handleUserApproval(user._id, false)}
+    //                                                     title="Reject User"
+    //                                                 >
+    //                                                     ❌
+    //                                                 </button>
+    //                                             </>
+    //                                         ) : (
+    //                                             <button 
+    //                                                 className="inline-flex items-center p-2 border border-transparent rounded-lg text-blue-600 hover:bg-blue-100 transition-colors"
+    //                                                 title="View Details"
+    //                                             >
+    //                                                 👁️
+    //                                             </button>
+    //                                         )}
+                                            
+    //                                         {/* Dropdown Menu */}
+    //                                         <div className="relative group">
+    //                                             <button className="inline-flex items-center p-2 border border-transparent rounded-lg text-gray-600 hover:bg-gray-100 transition-colors">
+    //                                                 ⋮
+    //                                             </button>
+    //                                             <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+    //                                                 <div className="py-1">
+    //                                                     <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+    //                                                         <span className="mr-2">📝</span>
+    //                                                         Edit User
+    //                                                     </button>
+    //                                                     <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+    //                                                         <span className="mr-2">📧</span>
+    //                                                         Send Message
+    //                                                     </button>
+    //                                                     <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+    //                                                         <span className="mr-2">🔒</span>
+    //                                                         Reset Password
+    //                                                     </button>
+    //                                                     <hr className="my-1 border-gray-200" />
+    //                                                     <button className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+    //                                                         <span className="mr-2">🗑️</span>
+    //                                                         Delete User
+    //                                                     </button>
+    //                                                 </div>
+    //                                             </div>
+    //                                         </div>
+    //                                     </div>
+    //                                 </td>
+    //                             </tr>
+    //                         ))}
+    //                     </tbody>
+    //                 </table>
+    //             </div>
+    
+    //             {/* Table Footer */}
+    //             <div className="bg-gray-50 px-6 py-3 flex items-center justify-between border-t border-gray-200">
+    //                 <div className="text-sm text-gray-700">
+    //                     Showing {allUsers.length} of {allUsers.length} users
+    //                 </div>
+    //                 <div className="flex items-center space-x-2">
+    //                     <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-500 bg-white hover:bg-gray-50 transition-colors" disabled>
+    //                         ← Previous
+    //                     </button>
+    //                     <div className="flex space-x-1">
+    //                         <button className="px-3 py-1 bg-blue-600 text-white rounded-lg text-sm">1</button>
+    //                         <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors">2</button>
+    //                         <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors">3</button>
+    //                     </div>
+    //                     <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+    //                         Next →
+    //                     </button>
+    //                 </div>
+    //             </div>
+    //         </div>
+    
+    //         {/* Bulk Actions */}
+    //         <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-4">
+    //             <div className="flex items-center justify-between">
+    //                 <div className="flex items-center space-x-4">
+    //                     <input type="checkbox" id="select-all-users" className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+    //                     <label htmlFor="select-all-users" className="text-sm font-medium text-gray-700">Select All</label>
+    //                     <span className="text-sm text-gray-500">0 selected</span>
+    //                 </div>
+    //                 <div className="flex space-x-2">
+    //                     <button className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 transition-colors">
+    //                         ✅ Approve Selected
+    //                     </button>
+    //                     <button className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-white bg-red-600 hover:bg-red-700 transition-colors">
+    //                         ❌ Reject Selected
+    //                     </button>
+    //                     <button className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+    //                         📤 Export Users
+    //                     </button>
+    //                 </div>
+    //             </div>
+    //         </div>
+    //     </div>
+    // );
+
     const renderUserManagement = () => (
         <div className="space-y-8">
             {/* Header */}
@@ -4612,7 +5107,7 @@ const Dashboard = () => {
                     </button>
                 </div>
             </div>
-    
+
             {/* Create User Modal */}
             {showCreateUserForm && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
@@ -4709,7 +5204,161 @@ const Dashboard = () => {
                     </div>
                 </div>
             )}
-    
+
+            {/* Edit User Modal */}
+            {showEditUserForm && (
+                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+                    <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 w-full max-w-2xl mx-4">
+                        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+                            <h3 className="text-xl font-semibold text-gray-900 flex items-center">
+                                <span className="mr-2">📝</span>
+                                Edit User
+                            </h3>
+                            <button 
+                                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                                onClick={() => {
+                                    setShowEditUserForm(false);
+                                    setEditingUser(null);
+                                    setNewUserData({
+                                        firstName: '',
+                                        lastName: '',
+                                        email: '',
+                                        password: '',
+                                        role: 'student'
+                                    });
+                                }}
+                            >
+                                <span className="text-gray-400 hover:text-gray-600 text-xl">✕</span>
+                            </button>
+                        </div>
+                        <div className="p-6">
+                            <form onSubmit={handleUpdateUser} className="space-y-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-gray-700">First Name</label>
+                                        <input
+                                            type="text"
+                                            placeholder="Enter first name"
+                                            value={newUserData.firstName}
+                                            onChange={(e) => setNewUserData({...newUserData, firstName: e.target.value})}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-gray-700">Last Name</label>
+                                        <input
+                                            type="text"
+                                            placeholder="Enter last name"
+                                            value={newUserData.lastName}
+                                            onChange={(e) => setNewUserData({...newUserData, lastName: e.target.value})}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="md:col-span-2 space-y-2">
+                                        <label className="text-sm font-medium text-gray-700">Email Address</label>
+                                        <input
+                                            type="email"
+                                            placeholder="Enter email address"
+                                            value={newUserData.email}
+                                            onChange={(e) => setNewUserData({...newUserData, email: e.target.value})}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-gray-700">Password</label>
+                                        <input
+                                            type="password"
+                                            placeholder="Leave blank to keep current password"
+                                            value={newUserData.password}
+                                            onChange={(e) => setNewUserData({...newUserData, password: e.target.value})}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                        />
+                                        <div className="text-xs text-gray-500">Leave blank to keep current password</div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-gray-700">Role</label>
+                                        <select
+                                            value={newUserData.role}
+                                            onChange={(e) => setNewUserData({...newUserData, role: e.target.value})}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                        >
+                                            <option value="student">👨‍🎓 Student</option>
+                                            <option value="teacher">👨‍🏫 Teacher</option>
+                                            <option value="admin">👨‍💼 Admin</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+                                    <button 
+                                        type="button" 
+                                        className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+                                        onClick={() => {
+                                            setShowEditUserForm(false);
+                                            setEditingUser(null);
+                                            setNewUserData({
+                                                firstName: '',
+                                                lastName: '',
+                                                email: '',
+                                                password: '',
+                                                role: 'student'
+                                            });
+                                        }}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button 
+                                        type="submit" 
+                                        className="px-4 py-2 border border-transparent rounded-lg text-white bg-green-600 hover:bg-green-700 transition-colors"
+                                    >
+                                        💾 Update User
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Confirmation Modal */}
+            {showDeleteConfirm && (
+                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+                    <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 w-full max-w-md mx-4">
+                        <div className="p-6">
+                            <div className="flex items-center justify-center w-12 h-12 mx-auto mb-4 bg-red-100 rounded-full">
+                                <span className="text-2xl">⚠️</span>
+                            </div>
+                            <h3 className="text-lg font-semibold text-gray-900 text-center mb-2">
+                                Delete User
+                            </h3>
+                            <p className="text-gray-600 text-center mb-6">
+                                Are you sure you want to delete <strong>{userToDelete?.firstName} {userToDelete?.lastName}</strong>? 
+                                This action cannot be undone.
+                            </p>
+                            <div className="flex justify-center space-x-3">
+                                <button 
+                                    className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+                                    onClick={() => {
+                                        setShowDeleteConfirm(false);
+                                        setUserToDelete(null);
+                                    }}
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    className="px-4 py-2 border border-transparent rounded-lg text-white bg-red-600 hover:bg-red-700 transition-colors"
+                                    onClick={confirmDeleteUser}
+                                >
+                                    🗑️ Delete User
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Users Table */}
             <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
                 <div className="overflow-x-auto">
@@ -4794,7 +5443,7 @@ const Dashboard = () => {
                                         }`}>
                                             <span className="mr-1">
                                                 {user.role === 'admin' ? '👨‍💼' : 
-                                                 user.role === 'teacher' ? '👨‍🏫' : '👨‍🎓'}
+                                                user.role === 'teacher' ? '👨‍🏫' : '👨‍🎓'}
                                             </span>
                                             {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
                                         </span>
@@ -4849,12 +5498,22 @@ const Dashboard = () => {
                                                     </button>
                                                 </>
                                             ) : (
-                                                <button 
-                                                    className="inline-flex items-center p-2 border border-transparent rounded-lg text-blue-600 hover:bg-blue-100 transition-colors"
-                                                    title="View Details"
-                                                >
-                                                    👁️
-                                                </button>
+                                                <>
+                                                    <button 
+                                                        className="inline-flex items-center p-2 border border-transparent rounded-lg text-blue-600 hover:bg-blue-100 transition-colors"
+                                                        onClick={() => handleEditUser(user)}
+                                                        title="Edit User"
+                                                    >
+                                                        📝
+                                                    </button>
+                                                    <button 
+                                                        className="inline-flex items-center p-2 border border-transparent rounded-lg text-red-600 hover:bg-red-100 transition-colors"
+                                                        onClick={() => handleDeleteUser(user)}
+                                                        title="Delete User"
+                                                    >
+                                                        🗑️
+                                                    </button>
+                                                </>
                                             )}
                                             
                                             {/* Dropdown Menu */}
@@ -4864,7 +5523,10 @@ const Dashboard = () => {
                                                 </button>
                                                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                                                     <div className="py-1">
-                                                        <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                        <button 
+                                                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                            onClick={() => handleEditUser(user)}
+                                                        >
                                                             <span className="mr-2">📝</span>
                                                             Edit User
                                                         </button>
@@ -4877,7 +5539,10 @@ const Dashboard = () => {
                                                             Reset Password
                                                         </button>
                                                         <hr className="my-1 border-gray-200" />
-                                                        <button className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                                        <button 
+                                                            className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                                                            onClick={() => handleDeleteUser(user)}
+                                                        >
                                                             <span className="mr-2">🗑️</span>
                                                             Delete User
                                                         </button>
@@ -4891,7 +5556,7 @@ const Dashboard = () => {
                         </tbody>
                     </table>
                 </div>
-    
+
                 {/* Table Footer */}
                 <div className="bg-gray-50 px-6 py-3 flex items-center justify-between border-t border-gray-200">
                     <div className="text-sm text-gray-700">
@@ -4912,7 +5577,7 @@ const Dashboard = () => {
                     </div>
                 </div>
             </div>
-    
+
             {/* Bulk Actions */}
             <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-4">
                 <div className="flex items-center justify-between">
