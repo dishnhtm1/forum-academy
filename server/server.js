@@ -196,6 +196,7 @@ app.use(cors({
 
 app.use(express.json());
 
+<<<<<<< HEAD
 // Request logging middleware
 app.use((req, res, next) => {
     console.log(`📥 ${req.method} ${req.path} - ${new Date().toISOString()}`);
@@ -240,6 +241,14 @@ try {
     console.error('❌ Failed to load contact routes:', error.message);
 }
 
+=======
+// Routes (remove duplicates)
+app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/contact', require('./routes/contactRoutes'));
+app.use('/api/applications', require('./routes/applicationRoutes'));
+app.use('/api/application', require('./routes/applicationRoutes')); // Backward compatibility
+app.use('/api/admin', require('./routes/adminRoutes'));
+>>>>>>> 3a528a6b30254de37c8952fcce18f2b4bbfa226a
 // Health check route
 app.get('/api/health', (req, res) => {
     console.log('🏥 Health check hit');
@@ -271,8 +280,12 @@ app.use((req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
+<<<<<<< HEAD
 app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
     console.log(`📍 Server URL: ${process.env.NODE_ENV === 'production' ? 'https://forum-backend-api-a7hgg9g7hmgegrh3.eastasia-01.azurewebsites.net' : `http://localhost:${PORT}`}`);
     console.log('🔧 Routes loaded, server ready!');
 });
+=======
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+>>>>>>> 3a528a6b30254de37c8952fcce18f2b4bbfa226a
