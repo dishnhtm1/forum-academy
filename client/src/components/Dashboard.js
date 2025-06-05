@@ -71,7 +71,8 @@ const Dashboard = () => {
     });
 
     const history = useHistory();
-    const API_BASE_URL = process.env.REACT_APP_API_URL ;
+    const API_URL = process.env.REACT_APP_API_URL;
+    const token = localStorage.getItem("token");
     //const API_BASE_URL = 'http://localhost:5000'; // Test with local server
 
     // Fetch functions - Fixed to handle MongoDB data properly
