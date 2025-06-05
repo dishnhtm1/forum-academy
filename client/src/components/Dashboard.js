@@ -71,8 +71,14 @@ const Dashboard = () => {
     });
 
     const history = useHistory();
+<<<<<<< HEAD
     // const API_BASE_URL = process.env.REACT_APP_API_URL ;
     const API_BASE_URL = 'http://localhost:5000'; // Test with local server
+=======
+    const API_BASE_URL = process.env.REACT_APP_API_URL ;
+    const token = localStorage.getItem("token");
+    //const API_BASE_URL = 'http://localhost:5000'; // Test with local server
+>>>>>>> 5ed7c49756788ffc53ec75294749f87232091185
 
     // Fetch functions - Fixed to handle MongoDB data properly
     const fetchPendingUsers = async (token) => {
