@@ -148,16 +148,27 @@ const ContactPage = () => {
 //                body: JSON.stringify(formData)
 //            });
 
-    const API_URL = process.env.REACT_APP_API_URL; // ✅ REQUIRED line
+//    const API_URL = process.env.REACT_APP_API_URL; // ✅ REQUIRED line
+//        try {
+//            const response = await fetch(`${API_URL}/api/contact`, {
+ //               method: 'POST',
+//                headers: {
+//                    'Content-Type': 'application/json'
+//                },
+//                body: JSON.stringify(formData)
+//         });
+        const API_URL = process.env.REACT_APP_API_URL;
+        const token = localStorage.getItem("token"); // ✅ Get token
+
         try {
             const response = await fetch(`${API_URL}/api/contact`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` // ✅ Add token to header
                 },
                 body: JSON.stringify(formData)
-         });
-    
+            });
             const data = await response.json();
     
             if (response.ok) {
