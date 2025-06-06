@@ -15,6 +15,12 @@ const Dashboard = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedRole, setSelectedRole] = useState('');
     const [selectedStatus, setSelectedStatus] = useState('');
+    const [searchTermApp, setSearchTermApp] = useState('');
+    const [selectedProgram, setSelectedProgram] = useState('');
+    const [selectedAppStatus, setSelectedAppStatus] = useState('');
+    const [searchTermContact, setSearchTermContact] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [selectedContactStatus, setSelectedContactStatus] = useState('');
     const [showEditUserForm, setShowEditUserForm] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -26,6 +32,20 @@ const Dashboard = () => {
         email: '',
         password: '',
         role: 'student'
+    });
+
+        // Add new state for course creation
+    const [showCreateCourseForm, setShowCreateCourseForm] = useState(false);
+    const [newCourseData, setNewCourseData] = useState({
+        title: '',
+        description: '',
+        category: '',
+        level: 'beginner',
+        duration: '',
+        maxStudents: '',
+        price: '',
+        tags: '',
+        syllabus: ''
     });
     
     const [isTransitioning, setIsTransitioning] = useState(false);
@@ -468,6 +488,120 @@ const Dashboard = () => {
             
             return matchesSearch && matchesRole && matchesStatus;
         });
+    };
+
+    // Add these filter functions before the render functions
+    const getFilteredApplications = () => {
+        // Debug: Show actual program values in the data
+        const uniquePrograms = [...new Set(applicationSubmissions.map(app => app.program).filter(Boolean))];
+        console.log('🔍 Unique program values in database:', uniquePrograms);
+        
+        const filtered = applicationSubmissions.filter(app => {
+            const matchesSearch = !searchTermApp || 
+                app.firstName?.toLowerCase().includes(searchTermApp.toLowerCase()) ||
+                app.lastName?.toLowerCase().includes(searchTermApp.toLowerCase()) ||
+                app.email?.toLowerCase().includes(searchTermApp.toLowerCase()) ||
+                app.program?.toLowerCase().includes(searchTermApp.toLowerCase());
+            
+            // FIX: Handle all possible "all programs" values properly
+            const matchesProgram = !selectedProgram || 
+                selectedProgram === '' || 
+                selectedProgram === 'All Programs' || 
+                selectedProgram === 'all' ||
+                selectedProgram === 'All' ||
+                app.program === selectedProgram; // ✅ This should match exactly with database values
+                
+            const matchesStatus = !selectedAppStatus || 
+                selectedAppStatus === '' || 
+                selectedAppStatus === 'All Statuses' || 
+                selectedAppStatus === 'all' ||
+                app.status === selectedAppStatus;
+            
+            return matchesSearch && matchesProgram && matchesStatus;
+        });
+        
+        console.log('📊 Filtered applications:', filtered.length);
+        return filtered;
+    };
+    
+    const getFilteredContacts = () => {
+        const uniqueSubjects = [...new Set(contactSubmissions.map(c => c.subject).filter(Boolean))];
+        // console.log('🔍 Unique subject values in database:', uniqueSubjects);
+        
+        // Rest of your existing filtering logic...
+        const filtered = contactSubmissions.filter(contact => {
+            const matchesSearch = !searchTermContact || 
+                contact.name?.toLowerCase().includes(searchTermContact.toLowerCase()) ||
+                contact.email?.toLowerCase().includes(searchTermContact.toLowerCase()) ||
+                contact.subject?.toLowerCase().includes(searchTermContact.toLowerCase()) ||
+                contact.message?.toLowerCase().includes(searchTermContact.toLowerCase());
+            
+            const matchesCategory = !selectedCategory || 
+                selectedCategory === '' || 
+                selectedCategory === 'All Categories' || 
+                selectedCategory === 'all' ||
+                selectedCategory === 'All' ||
+                contact.subject === selectedCategory;
+                
+            const matchesStatus = !selectedContactStatus || 
+                selectedContactStatus === '' || 
+                selectedContactStatus === 'All Statuses' || 
+                selectedContactStatus === 'all' ||
+                contact.status === selectedContactStatus;
+            
+            return matchesSearch && matchesCategory && matchesStatus;
+        });
+        
+        // console.log('📊 Filtered results:', filtered.length);
+        return filtered;
+    };
+
+    // Add course creation handler
+    const handleCreateCourse = async (e) => {
+        e.preventDefault();
+        const token = getToken();
+        
+        try {
+            const coursePayload = {
+                ...newCourseData,
+                tags: newCourseData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
+                maxStudents: parseInt(newCourseData.maxStudents) || 0,
+                price: parseFloat(newCourseData.price) || 0
+            };
+
+            const response = await fetch(`${API_BASE_URL}/api/courses`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(coursePayload)
+            });
+
+            if (response.ok) {
+                const createdCourse = await response.json();
+                alert('Course created successfully!');
+                setShowCreateCourseForm(false);
+                setNewCourseData({
+                    title: '',
+                    description: '',
+                    category: '',
+                    level: 'beginner',
+                    duration: '',
+                    maxStudents: '',
+                    price: '',
+                    tags: '',
+                    syllabus: ''
+                });
+                // Optionally refresh course list here
+            } else {
+                const errorData = await response.json();
+                alert(`Error: ${errorData.message || 'Failed to create course'}`);
+            }
+        } catch (error) {
+            console.error('Failed to create course:', error);
+            alert('Failed to create course. Please try again.');
+        }
     };
 
     const handleLogout = () => {
@@ -2492,6 +2626,7 @@ const Dashboard = () => {
 
     const renderTeacherCourses = () => (
         <div className="space-y-8">
+
             {/* Header */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div className="space-y-2">
@@ -2502,11 +2637,203 @@ const Dashboard = () => {
                     <p className="text-gray-600 text-lg">Manage your courses and track student progress</p>
                 </div>
                 
-                <button className="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-xl text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl">
+                <button 
+                    onClick={() => setShowCreateCourseForm(true)}
+                    className="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-xl text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+                >
                     <span className="mr-2 text-lg">➕</span>
                     Create New Course
                 </button>
             </div>
+
+            {/* Course Creation Modal */}
+            {showCreateCourseForm && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                        <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+                            <div className="flex items-center justify-between">
+                                <h3 className="text-2xl font-bold text-gray-900 flex items-center">
+                                    <span className="mr-3 text-3xl">🎓</span>
+                                    Create New Course
+                                </h3>
+                                <button 
+                                    onClick={() => setShowCreateCourseForm(false)}
+                                    className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
+                                >
+                                    <span className="text-2xl text-gray-500">✕</span>
+                                </button>
+                            </div>
+                            <p className="text-gray-600 mt-2">Fill in the details to create your new course</p>
+                        </div>
+
+                        <form onSubmit={handleCreateCourse} className="p-6 space-y-6">
+                            {/* Course Title */}
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                    Course Title *
+                                </label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={newCourseData.title}
+                                    onChange={(e) => setNewCourseData({...newCourseData, title: e.target.value})}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                    placeholder="e.g., Introduction to Data Science"
+                                />
+                            </div>
+
+                            {/* Course Description */}
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                    Course Description *
+                                </label>
+                                <textarea
+                                    required
+                                    rows="4"
+                                    value={newCourseData.description}
+                                    onChange={(e) => setNewCourseData({...newCourseData, description: e.target.value})}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                                    placeholder="Describe what students will learn in this course..."
+                                />
+                            </div>
+
+                            {/* Category and Level */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                        Category *
+                                    </label>
+                                    <select
+                                        required
+                                        value={newCourseData.category}
+                                        onChange={(e) => setNewCourseData({...newCourseData, category: e.target.value})}
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
+                                    >
+                                        <option value="">Select Category</option>
+                                        <option value="programming">Programming</option>
+                                        <option value="data-science">Data Science</option>
+                                        <option value="machine-learning">Machine Learning</option>
+                                        <option value="web-development">Web Development</option>
+                                        <option value="mobile-development">Mobile Development</option>
+                                        <option value="cybersecurity">Cybersecurity</option>
+                                        <option value="cloud-computing">Cloud Computing</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                        Difficulty Level *
+                                    </label>
+                                    <select
+                                        required
+                                        value={newCourseData.level}
+                                        onChange={(e) => setNewCourseData({...newCourseData, level: e.target.value})}
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
+                                    >
+                                        <option value="beginner">Beginner</option>
+                                        <option value="intermediate">Intermediate</option>
+                                        <option value="advanced">Advanced</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            {/* Duration and Max Students */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                        Duration (weeks)
+                                    </label>
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        value={newCourseData.duration}
+                                        onChange={(e) => setNewCourseData({...newCourseData, duration: e.target.value})}
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                        placeholder="e.g., 12"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                        Max Students
+                                    </label>
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        value={newCourseData.maxStudents}
+                                        onChange={(e) => setNewCourseData({...newCourseData, maxStudents: e.target.value})}
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                        placeholder="e.g., 50"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Price and Tags */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                        Price ($)
+                                    </label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        value={newCourseData.price}
+                                        onChange={(e) => setNewCourseData({...newCourseData, price: e.target.value})}
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                        placeholder="0.00"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                        Tags
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={newCourseData.tags}
+                                        onChange={(e) => setNewCourseData({...newCourseData, tags: e.target.value})}
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                        placeholder="e.g., python, data, statistics (comma separated)"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Syllabus */}
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                    Course Syllabus
+                                </label>
+                                <textarea
+                                    rows="6"
+                                    value={newCourseData.syllabus}
+                                    onChange={(e) => setNewCourseData({...newCourseData, syllabus: e.target.value})}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                                    placeholder="Week 1: Introduction to concepts&#10;Week 2: Core fundamentals&#10;Week 3: Practical applications..."
+                                />
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="flex space-x-4 pt-6 border-t border-gray-200">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowCreateCourseForm(false)}
+                                    className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl font-medium"
+                                >
+                                    Create Course
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
     
             {/* Course Statistics Overview */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -5266,6 +5593,7 @@ const Dashboard = () => {
         </div>
     );
 
+    // Updated renderApplicationManagement function
     const renderApplicationManagement = () => (
         <div className="space-y-8">
             {/* Header */}
@@ -5296,15 +5624,29 @@ const Dashboard = () => {
                         <input 
                             type="text" 
                             placeholder="🔍 Search applications..." 
+                            value={searchTermApp}
+                            onChange={(e) => setSearchTermApp(e.target.value)}
                             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                         />
-                        <select className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                        {/* // Find your application management render function and update the program dropdown: */}
+                        <select 
+                            value={selectedProgram} 
+                            onChange={(e) => setSelectedProgram(e.target.value)}
+                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
+                        >
                             <option value="">All Programs</option>
-                            <option value="data-science">Data Science</option>
-                            <option value="web-development">Web Development</option>
-                            <option value="machine-learning">Machine Learning</option>
+                            {/* ✅ Update these to match the EXACT database values */}
+                            <option value="webDevelopment">Web Development</option>
+                            <option value="dataScience">Data Science and Analytics</option>
+                            <option value="cybersecurity">Cybersecurity</option>
+                            <option value="cloudComputing">Cloud Computing</option>
+                            <option value="aiMachineLearning">AI & Machine Learning</option>
                         </select>
-                        <select className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                        <select 
+                            value={selectedAppStatus}
+                            onChange={(e) => setSelectedAppStatus(e.target.value)}
+                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        >
                             <option value="">All Status</option>
                             <option value="pending">Pending</option>
                             <option value="approved">Approved</option>
@@ -5317,7 +5659,7 @@ const Dashboard = () => {
                     </button>
                 </div>
             </div>
-    
+
             {/* Table */}
             <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
                 <div className="overflow-x-auto">
@@ -5360,7 +5702,7 @@ const Dashboard = () => {
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
-                            {applicationSubmissions.map((application, index) => (
+                            {getFilteredApplications().map((application, index) => (
                                 <tr key={application._id} className={`hover:bg-gray-50 transition-colors ${application.status === 'pending' ? 'bg-orange-25 border-l-4 border-orange-400' : ''}`}>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center space-x-4">
@@ -5482,11 +5824,16 @@ const Dashboard = () => {
                         </tbody>
                     </table>
                 </div>
-    
+
                 {/* Table Footer */}
                 <div className="bg-gray-50 px-6 py-3 flex items-center justify-between border-t border-gray-200">
                     <div className="text-sm text-gray-700">
-                        Showing {applicationSubmissions.length} of {applicationSubmissions.length} applications
+                        Showing {getFilteredApplications().length} of {applicationSubmissions.length} applications
+                        {(searchTermApp || selectedProgram || selectedAppStatus) && (
+                            <span className="ml-2 text-blue-600 font-medium">
+                                (filtered)
+                            </span>
+                        )}
                     </div>
                     <div className="flex items-center space-x-2">
                         <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-500 bg-white hover:bg-gray-50 transition-colors" disabled>
@@ -5503,14 +5850,14 @@ const Dashboard = () => {
                     </div>
                 </div>
             </div>
-    
+
             {/* Bulk Actions */}
             <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-4">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
                         <input type="checkbox" id="select-all-apps" className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
                         <label htmlFor="select-all-apps" className="text-sm font-medium text-gray-700">Select All</label>
-                        <span className="text-sm text-gray-500">0 selected</span>
+                        <span className="text-sm text-gray-500">{getFilteredApplications().length} items</span>
                     </div>
                     <div className="flex space-x-2">
                         <button className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 transition-colors">
@@ -5523,14 +5870,15 @@ const Dashboard = () => {
                             ❌ Reject Selected
                         </button>
                         <button className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
-                            📤 Export
+                            📤 Export Filtered
                         </button>
                     </div>
                 </div>
             </div>
         </div>
     );
-    
+
+    // Updated renderContactManagement function
     const renderContactManagement = () => (
         <div className="space-y-8">
             {/* Header */}
@@ -5561,16 +5909,27 @@ const Dashboard = () => {
                         <input 
                             type="text" 
                             placeholder="🔍 Search messages..." 
+                            value={searchTermContact}
+                            onChange={(e) => setSearchTermContact(e.target.value)}
                             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                         />
-                        <select className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                        <select 
+                            value={selectedCategory} 
+                            onChange={(e) => setSelectedCategory(e.target.value)}
+                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
+                        >
                             <option value="">All Categories</option>
-                            <option value="general">General Inquiry</option>
-                            <option value="support">Technical Support</option>
-                            <option value="enrollment">Enrollment</option>
-                            <option value="complaint">Complaint</option>
+                            <option value="general">General</option>
+                            <option value="admissions">Admission</option>
+                            <option value="courses">Course Information</option>
+                            <option value="careers">Career Services</option>
+                            <option value="others">Others</option>
                         </select>
-                        <select className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                        <select 
+                            value={selectedContactStatus}
+                            onChange={(e) => setSelectedContactStatus(e.target.value)}
+                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        >
                             <option value="">All Status</option>
                             <option value="pending">Pending</option>
                             <option value="approved">Priority</option>
@@ -5583,7 +5942,7 @@ const Dashboard = () => {
                     </button>
                 </div>
             </div>
-    
+
             {/* Table */}
             <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
                 <div className="overflow-x-auto">
@@ -5626,7 +5985,7 @@ const Dashboard = () => {
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
-                            {contactSubmissions.map((contact, index) => (
+                            {getFilteredContacts().map((contact, index) => (
                                 <tr key={contact._id} className={`hover:bg-gray-50 transition-colors ${contact.status === 'pending' ? 'bg-orange-25 border-l-4 border-orange-400' : ''}`}>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center space-x-4">
@@ -5758,11 +6117,16 @@ const Dashboard = () => {
                         </tbody>
                     </table>
                 </div>
-    
+
                 {/* Table Footer */}
                 <div className="bg-gray-50 px-6 py-3 flex items-center justify-between border-t border-gray-200">
                     <div className="text-sm text-gray-700">
-                        Showing {contactSubmissions.length} of {contactSubmissions.length} messages
+                        Showing {getFilteredContacts().length} of {contactSubmissions.length} messages
+                        {(searchTermContact || selectedCategory || selectedContactStatus) && (
+                            <span className="ml-2 text-blue-600 font-medium">
+                                (filtered)
+                            </span>
+                        )}
                     </div>
                     <div className="flex items-center space-x-2">
                         <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-500 bg-white hover:bg-gray-50 transition-colors" disabled>
@@ -5779,14 +6143,14 @@ const Dashboard = () => {
                     </div>
                 </div>
             </div>
-    
+
             {/* Bulk Actions */}
             <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-4">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
                         <input type="checkbox" id="select-all-contacts" className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
                         <label htmlFor="select-all-contacts" className="text-sm font-medium text-gray-700">Select All</label>
-                        <span className="text-sm text-gray-500">0 selected</span>
+                        <span className="text-sm text-gray-500">{getFilteredContacts().length} items</span>
                     </div>
                     <div className="flex space-x-2">
                         <button className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 transition-colors">
@@ -5799,7 +6163,7 @@ const Dashboard = () => {
                             ❌ Ignore Selected
                         </button>
                         <button className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
-                            📤 Export
+                            📤 Export Filtered
                         </button>
                     </div>
                 </div>
