@@ -6570,16 +6570,17 @@ const Dashboard = () => {
             </div>
         </div>
     );
-    
+
     const renderAdminSidebar = () => (
-        <nav className="flex flex-col space-y-2 p-4">
+        <nav className="flex flex-col space-y-2 p-2 sm:p-4">
             <button 
-                className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
+                className={`flex items-center justify-center sm:justify-start space-x-0 sm:space-x-3 px-2 sm:px-4 py-3 rounded-xl transition-all duration-200 group ${
                     activeTab === 'overview' 
                     ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg transform scale-105' 
                     : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                 }`}
                 onClick={() => setActiveTab('overview')}
+                title="Overview"
             >
                 <div className={`p-2 rounded-lg ${
                     activeTab === 'overview' 
@@ -6590,16 +6591,17 @@ const Dashboard = () => {
                         <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
                     </svg>
                 </div>
-                <span className="font-medium">Overview</span>
+                <span className="font-medium hidden sm:block">Overview</span>
             </button>
     
             <button 
-                className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
+                className={`flex items-center justify-center sm:justify-start space-x-0 sm:space-x-3 px-2 sm:px-4 py-3 rounded-xl transition-all duration-200 group ${
                     activeTab === 'users' 
                     ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg transform scale-105' 
                     : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                 }`}
                 onClick={() => setActiveTab('users')}
+                title="Users"
             >
                 <div className={`p-2 rounded-lg ${
                     activeTab === 'users' 
@@ -6610,16 +6612,17 @@ const Dashboard = () => {
                         <path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A2.96 2.96 0 0 0 17 6.5c-.86 0-1.76.34-2.42 1.01L12 10l2.58 2.58c.76.76 2 .76 2.76 0l.66-.66V22h2zM12.5 11.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5S11 9.17 11 10s.67 1.5 1.5 1.5zM5.5 6c1.11 0 2-.89 2-2s-.89-2-2-2-2 .89-2 2 .89 2 2 2zm1.5 16v-6H9l-2.54-7.63A2.96 2.96 0 0 0 3.5 6.5c-.86 0-1.76.34-2.42 1.01L0 10l2.58 2.58c.76.76 2 .76 2.76 0L6 12v10h1z"/>
                     </svg>
                 </div>
-                <span className="font-medium">Users</span>
+                <span className="font-medium hidden sm:block">Users</span>
             </button>
     
             <button 
-                className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
+                className={`flex items-center justify-center sm:justify-start space-x-0 sm:space-x-3 px-2 sm:px-4 py-3 rounded-xl transition-all duration-200 group ${
                     activeTab === 'applications' 
                     ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-lg transform scale-105' 
                     : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                 }`}
                 onClick={() => setActiveTab('applications')}
+                title="Applications"
             >
                 <div className={`p-2 rounded-lg ${
                     activeTab === 'applications' 
@@ -6630,16 +6633,17 @@ const Dashboard = () => {
                         <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h8c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
                     </svg>
                 </div>
-                <span className="font-medium">Applications</span>
+                <span className="font-medium hidden sm:block">Applications</span>
             </button>
     
             <button 
-                className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
+                className={`flex items-center justify-center sm:justify-start space-x-0 sm:space-x-3 px-2 sm:px-4 py-3 rounded-xl transition-all duration-200 group ${
                     activeTab === 'contacts' 
                     ? 'bg-gradient-to-r from-purple-500 to-pink-600 text-white shadow-lg transform scale-105' 
                     : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                 }`}
                 onClick={() => setActiveTab('contacts')}
+                title="Contacts"
             >
                 <div className={`p-2 rounded-lg ${
                     activeTab === 'contacts' 
@@ -6650,16 +6654,17 @@ const Dashboard = () => {
                         <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
                     </svg>
                 </div>
-                <span className="font-medium">Contacts</span>
+                <span className="font-medium hidden sm:block">Contacts</span>
             </button>
     
             <button 
-                className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
+                className={`flex items-center justify-center sm:justify-start space-x-0 sm:space-x-3 px-2 sm:px-4 py-3 rounded-xl transition-all duration-200 group ${
                     activeTab === 'settings' 
                     ? 'bg-gradient-to-r from-gray-500 to-slate-600 text-white shadow-lg transform scale-105' 
                     : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                 }`}
                 onClick={() => setActiveTab('settings')}
+                title="Settings"
             >
                 <div className={`p-2 rounded-lg ${
                     activeTab === 'settings' 
@@ -6670,10 +6675,114 @@ const Dashboard = () => {
                         <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
                     </svg>
                 </div>
-                <span className="font-medium">Settings</span>
+                <span className="font-medium hidden sm:block">Settings</span>
             </button>
         </nav>
     );
+    
+    // const renderAdminSidebar = () => (
+    //     <nav className="flex flex-col space-y-2 p-4">
+    //         <button 
+    //             className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
+    //                 activeTab === 'overview' 
+    //                 ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg transform scale-105' 
+    //                 : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+    //             }`}
+    //             onClick={() => setActiveTab('overview')}
+    //         >
+    //             <div className={`p-2 rounded-lg ${
+    //                 activeTab === 'overview' 
+    //                 ? 'bg-white/20' 
+    //                 : 'bg-blue-100 group-hover:bg-blue-200'
+    //             }`}>
+    //                 <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+    //                     <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+    //                 </svg>
+    //             </div>
+    //             <span className="font-medium">Overview</span>
+    //         </button>
+    
+    //         <button 
+    //             className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
+    //                 activeTab === 'users' 
+    //                 ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg transform scale-105' 
+    //                 : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+    //             }`}
+    //             onClick={() => setActiveTab('users')}
+    //         >
+    //             <div className={`p-2 rounded-lg ${
+    //                 activeTab === 'users' 
+    //                 ? 'bg-white/20' 
+    //                 : 'bg-green-100 group-hover:bg-green-200'
+    //             }`}>
+    //                 <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+    //                     <path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A2.96 2.96 0 0 0 17 6.5c-.86 0-1.76.34-2.42 1.01L12 10l2.58 2.58c.76.76 2 .76 2.76 0l.66-.66V22h2zM12.5 11.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5S11 9.17 11 10s.67 1.5 1.5 1.5zM5.5 6c1.11 0 2-.89 2-2s-.89-2-2-2-2 .89-2 2 .89 2 2 2zm1.5 16v-6H9l-2.54-7.63A2.96 2.96 0 0 0 3.5 6.5c-.86 0-1.76.34-2.42 1.01L0 10l2.58 2.58c.76.76 2 .76 2.76 0L6 12v10h1z"/>
+    //                 </svg>
+    //             </div>
+    //             <span className="font-medium">Users</span>
+    //         </button>
+    
+    //         <button 
+    //             className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
+    //                 activeTab === 'applications' 
+    //                 ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-lg transform scale-105' 
+    //                 : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+    //             }`}
+    //             onClick={() => setActiveTab('applications')}
+    //         >
+    //             <div className={`p-2 rounded-lg ${
+    //                 activeTab === 'applications' 
+    //                 ? 'bg-white/20' 
+    //                 : 'bg-orange-100 group-hover:bg-orange-200'
+    //             }`}>
+    //                 <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+    //                     <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h8c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+    //                 </svg>
+    //             </div>
+    //             <span className="font-medium">Applications</span>
+    //         </button>
+    
+    //         <button 
+    //             className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
+    //                 activeTab === 'contacts' 
+    //                 ? 'bg-gradient-to-r from-purple-500 to-pink-600 text-white shadow-lg transform scale-105' 
+    //                 : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+    //             }`}
+    //             onClick={() => setActiveTab('contacts')}
+    //         >
+    //             <div className={`p-2 rounded-lg ${
+    //                 activeTab === 'contacts' 
+    //                 ? 'bg-white/20' 
+    //                 : 'bg-purple-100 group-hover:bg-purple-200'
+    //             }`}>
+    //                 <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+    //                     <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+    //                 </svg>
+    //             </div>
+    //             <span className="font-medium">Contacts</span>
+    //         </button>
+    
+    //         <button 
+    //             className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
+    //                 activeTab === 'settings' 
+    //                 ? 'bg-gradient-to-r from-gray-500 to-slate-600 text-white shadow-lg transform scale-105' 
+    //                 : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+    //             }`}
+    //             onClick={() => setActiveTab('settings')}
+    //         >
+    //             <div className={`p-2 rounded-lg ${
+    //                 activeTab === 'settings' 
+    //                 ? 'bg-white/20' 
+    //                 : 'bg-gray-100 group-hover:bg-gray-200'
+    //             }`}>
+    //                 <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+    //                     <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+    //                 </svg>
+    //             </div>
+    //             <span className="font-medium">Settings</span>
+    //         </button>
+    //     </nav>
+    // );
     
     const renderDefaultSidebar = () => (
         <nav className="flex flex-col space-y-2 p-4">
@@ -6792,6 +6901,158 @@ const Dashboard = () => {
         }
     };
     
+// Replace your existing renderDashboardTabs function with this updated version:
+
+    const renderDashboardTabs = () => {
+        const studentTabs = [
+            { id: 'overview', label: 'Overview', icon: '🏠', gradient: 'from-blue-500 to-indigo-600', bgColor: 'bg-blue-100 group-hover:bg-blue-200' },
+            { id: 'courses', label: 'My Courses', icon: '📚', gradient: 'from-green-500 to-emerald-600', bgColor: 'bg-green-100 group-hover:bg-green-200' },
+            { id: 'analytics', label: 'Analytics', icon: '📈', gradient: 'from-purple-500 to-violet-600', bgColor: 'bg-purple-100 group-hover:bg-purple-200' },
+            { id: 'messages', label: 'Messages', icon: '💬', gradient: 'from-orange-500 to-red-600', bgColor: 'bg-orange-100 group-hover:bg-orange-200' },
+            { id: 'settings', label: 'Settings', icon: '⚙️', gradient: 'from-gray-500 to-slate-600', bgColor: 'bg-gray-100 group-hover:bg-gray-200' }
+        ];
+
+        const teacherTabs = [
+            { id: 'overview', label: 'Overview', icon: '📊', gradient: 'from-blue-500 to-purple-600', bgColor: 'bg-blue-100 group-hover:bg-blue-200' },
+            { id: 'courses', label: 'Courses', icon: '📚', gradient: 'from-green-500 to-teal-600', bgColor: 'bg-green-100 group-hover:bg-green-200' },
+            { id: 'analytics', label: 'Analytics', icon: '📈', gradient: 'from-purple-500 to-pink-600', bgColor: 'bg-purple-100 group-hover:bg-purple-200' },
+            { id: 'messages', label: 'Messages', icon: '💬', gradient: 'from-orange-500 to-amber-600', bgColor: 'bg-orange-100 group-hover:bg-orange-200' },
+            { id: 'settings', label: 'Settings', icon: '⚙️', gradient: 'from-gray-500 to-zinc-600', bgColor: 'bg-gray-100 group-hover:bg-gray-200' }
+        ];
+
+        const tabs = user.role === 'teacher' ? teacherTabs : studentTabs;
+
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100 flex">
+                {/* Responsive Sidebar */}
+                <div className="w-16 sm:w-80 bg-white/80 backdrop-blur-xl shadow-2xl border-r border-gray-200/50 flex flex-col">
+                    {/* Sidebar Header - Updated for small screens */}
+                    <div className="p-2 sm:p-6 border-b border-gray-200/50">
+                        <div className="flex items-center justify-center sm:justify-start space-x-0 sm:space-x-3 mb-4">
+                            <div className="w-8 sm:w-12 h-8 sm:h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                                <span className="text-white text-lg sm:text-xl font-bold">
+                                    {user?.role === 'teacher' ? '📚' : '🎓'}
+                                </span>
+                            </div>
+                            <div className="hidden sm:block">
+                                <h2 className="text-xl font-bold text-gray-900">FIA Portal</h2>
+                                <p className="text-sm text-gray-600">{user?.role === 'teacher' ? 'Teacher Dashboard' : 'Student Dashboard'}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Navigation Items - Updated with Admin-style colored buttons */}
+                    <nav className="flex-1 py-2 sm:py-6 px-2 sm:px-4 space-y-2">
+                        {tabs.map((tab) => (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id)}
+                                title={tab.label} // Tooltip for mobile
+                                className={`w-full flex items-center justify-center sm:justify-start space-x-0 sm:space-x-3 px-2 sm:px-4 py-3 rounded-xl transition-all duration-200 group ${
+                                    activeTab === tab.id
+                                        ? `bg-gradient-to-r ${tab.gradient} text-white shadow-lg transform scale-105`
+                                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                                }`}
+                            >
+                                <div className={`p-2 rounded-lg ${
+                                    activeTab === tab.id 
+                                    ? 'bg-white/20' 
+                                    : tab.bgColor
+                                }`}>
+                                    <span className="text-lg sm:text-base">{tab.icon}</span>
+                                </div>
+                                <span className="hidden sm:block font-medium">{tab.label}</span>
+                            </button>
+                        ))}
+                    </nav>
+
+                    {/* User Profile Section */}
+                    <div className="p-2 sm:p-6 border-t border-gray-200/50">
+                        <div className="flex items-center justify-center sm:justify-start space-x-0 sm:space-x-3 mb-4">
+                            <div className="w-8 sm:w-12 h-8 sm:h-12 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center text-white font-semibold text-sm sm:text-lg">
+                                {user?.name?.charAt(0).toUpperCase()}
+                            </div>
+                            <div className="flex-1 min-w-0 hidden sm:block">
+                                <p className="text-sm font-semibold text-gray-900 truncate">{user?.name}</p>
+                                <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+                            </div>
+                        </div>
+                        
+                        {/* Logout Button */}
+                        <button
+                            onClick={handleLogout}
+                            title="Logout" // Tooltip for mobile
+                            className="w-full flex items-center justify-center space-x-0 sm:space-x-2 px-2 sm:px-4 py-3 bg-gradient-to-r from-red-500 to-pink-600 text-white rounded-xl hover:from-red-600 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+                        >
+                            <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+                            </svg>
+                            <span className="font-medium hidden sm:block">Logout</span>
+                        </button>
+                    </div>
+                </div>
+
+                {/* Main Content Area */}
+                <div className="flex-1 flex flex-col overflow-hidden">
+                    {/* Top Header - Mobile Only */}
+                    <div className="sm:hidden bg-white/80 backdrop-blur-xl shadow-sm border-b border-gray-200/50 p-4">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <h1 className="text-lg font-bold text-gray-900">
+                                    {tabs.find(tab => tab.id === activeTab)?.label || 'Dashboard'}
+                                </h1>
+                                <p className="text-sm text-gray-600 capitalize">{user.role} Portal</p>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 capitalize">
+                                    {user.role}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Desktop Header */}
+                    <div className="hidden sm:block bg-white/80 backdrop-blur-xl shadow-lg border-b border-gray-200/50 px-4 sm:px-8 py-4 sm:py-6">
+                        <div className="max-w-7xl mx-auto">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+                                <div>
+                                    <h1 className="text-xl sm:text-3xl font-bold text-gray-900 flex items-center">
+                                        Welcome back, {user?.name}! 
+                                        <span className="ml-2 text-2xl sm:text-4xl">👋</span>
+                                    </h1>
+                                    <p className="text-gray-600 mt-1 text-sm sm:text-base">
+                                        Here's what's happening in your {user?.role} dashboard today.
+                                    </p>
+                                </div>
+                                <div className="flex items-center justify-between sm:justify-end space-x-4">
+                                    <div className="flex items-center space-x-2 px-3 sm:px-4 py-1 sm:py-2 bg-green-100 text-green-800 rounded-full">
+                                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                        <span className="text-xs sm:text-sm font-medium">Online</span>
+                                    </div>
+                                    <div className="text-xs sm:text-sm text-gray-500 hidden sm:block">
+                                        {new Date().toLocaleDateString('en-US', { 
+                                            weekday: 'long', 
+                                            year: 'numeric', 
+                                            month: 'long', 
+                                            day: 'numeric' 
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Dashboard Content */}
+                    <div className="flex-1 overflow-auto">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-4 sm:py-8">
+                            {user.role === 'teacher' ? renderTeacherDashboard() : renderStudentDashboard()}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+    
     const getRoleDisplayName = (role) => {
         const roleNames = {
             student: 'Student',
@@ -6811,92 +7072,154 @@ const Dashboard = () => {
     };
     
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100 flex">
-            {/* Sidebar */}
-            <div className="w-80 bg-white/80 backdrop-blur-xl shadow-2xl border-r border-gray-200/50 flex flex-col">
-                {/* Sidebar Header */}
-                <div className="p-6 border-b border-gray-200/50">
-                    <div className="flex items-center space-x-3 mb-4">
-                        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-                            <span className="text-white text-xl font-bold">
-                                {user?.role === 'admin' ? '⚡' : user?.role === 'teacher' ? '📚' : '🎓'}
-                            </span>
+        <div className="min-h-screen">
+            {/* Loading Screen */}
+            {isLoading && (
+                <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100 flex items-center justify-center">
+                    <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-gray-200/50 p-12 text-center max-w-md mx-4">
+                        {/* Animated Spinner */}
+                        <div className="relative w-20 h-20 mx-auto mb-8">
+                            <div className="absolute inset-0 border-4 border-gray-200 rounded-full"></div>
+                            <div className="absolute inset-0 border-4 border-transparent border-t-blue-500 border-r-purple-500 rounded-full animate-spin"></div>
+                            <div className="absolute inset-2 border-4 border-transparent border-t-purple-400 border-r-blue-400 rounded-full animate-spin animation-delay-75"></div>
+                            <div className="absolute inset-4 border-4 border-transparent border-t-blue-300 border-r-purple-300 rounded-full animate-spin animation-delay-150"></div>
                         </div>
-                        <div>
-                            <h2 className="text-xl font-bold text-gray-900">{getDashboardTitle(user?.role)}</h2>
-                            <p className="text-sm text-gray-600">{getRoleDisplayName(user?.role)} Portal</p>
-                        </div>
-                    </div>
-                </div>
-                
-                {/* Navigation */}
-                <div className="flex-1 py-6">
-                    {user?.role === 'admin' ? renderAdminSidebar() : renderDefaultSidebar()}
-                </div>
     
-                {/* Sidebar Footer */}
-                <div className="p-6 border-t border-gray-200/50">
-                    <div className="flex items-center space-x-3 mb-4">
-                        <div className="w-12 h-12 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center text-white font-semibold text-lg">
-                            {user?.name?.charAt(0).toUpperCase()}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-gray-900 truncate">{user?.name}</p>
-                            <p className="text-xs text-gray-500 truncate">{user?.email}</p>
-                        </div>
-                    </div>
-                    <button 
-                        className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-gradient-to-r from-red-500 to-pink-600 text-white rounded-xl hover:from-red-600 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
-                        onClick={handleLogout}
-                    >
-                        <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
-                        </svg>
-                        <span className="font-medium">Logout</span>
-                    </button>
-                </div>
-            </div>
-    
-            {/* Main Content */}
-            <div className="flex-1 flex flex-col overflow-hidden">
-                {/* Dashboard Header */}
-                <div className="bg-white/80 backdrop-blur-xl shadow-lg border-b border-gray-200/50 px-8 py-6">
-                    <div className="max-w-7xl mx-auto">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <h1 className="text-3xl font-bold text-gray-900 flex items-center">
-                                    Welcome back, {user?.name}! 
-                                    <span className="ml-2 text-4xl">👋</span>
-                                </h1>
-                                <p className="text-gray-600 mt-1">
-                                    Here's what's happening in your {getRoleDisplayName(user?.role).toLowerCase()} dashboard today.
-                                </p>
+                        {/* Loading Text */}
+                        <div className="space-y-4">
+                            <h2 className="text-2xl font-bold text-gray-900 flex items-center justify-center">
+                                <span className="mr-2">🚀</span>
+                                Loading Your Dashboard
+                            </h2>
+                            <p className="text-gray-600 text-lg font-medium">
+                                Preparing your personalized experience...
+                            </p>
+                            
+                            {/* Progress Dots */}
+                            <div className="flex justify-center space-x-2 mt-6">
+                                <div className="w-3 h-3 bg-blue-500 rounded-full animate-bounce"></div>
+                                <div className="w-3 h-3 bg-purple-500 rounded-full animate-bounce animation-delay-100"></div>
+                                <div className="w-3 h-3 bg-indigo-500 rounded-full animate-bounce animation-delay-200"></div>
                             </div>
-                            <div className="flex items-center space-x-4">
-                                <div className="flex items-center space-x-2 px-4 py-2 bg-green-100 text-green-800 rounded-full">
-                                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                                    <span className="text-sm font-medium">Online</span>
+    
+                            {/* Loading Steps */}
+                            <div className="mt-8 space-y-2 text-sm text-gray-500">
+                                <div className="flex items-center justify-center space-x-2">
+                                    <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                                    <span>Authenticating user</span>
                                 </div>
-                                <div className="text-sm text-gray-500">
-                                    {new Date().toLocaleDateString('en-US', { 
-                                        weekday: 'long', 
-                                        year: 'numeric', 
-                                        month: 'long', 
-                                        day: 'numeric' 
-                                    })}
+                                <div className="flex items-center justify-center space-x-2">
+                                    <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                                    <span>Loading dashboard data</span>
+                                </div>
+                                <div className="flex items-center justify-center space-x-2">
+                                    <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+                                    <span>Customizing interface</span>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
     
-                {/* Dashboard Content */}
-                <div className="flex-1 overflow-auto">
-                    <div className="max-w-7xl mx-auto px-8 py-8">
-                        {renderDashboardContent()}
+                        {/* Decorative Background Elements */}
+                        <div className="absolute inset-0 overflow-hidden rounded-3xl pointer-events-none">
+                            <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full"></div>
+                            <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-gradient-to-br from-purple-400/20 to-indigo-400/20 rounded-full"></div>
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
+    
+            {/* Student & Teacher Dashboard with Responsive Sidebar */}
+            {!isLoading && (user?.role === 'student' || user?.role === 'teacher') && renderDashboardTabs()}
+    
+            {/* Admin Dashboard - Keep existing admin layout */}
+            {!isLoading && user?.role === 'admin' && (
+                <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100 flex">
+                    {/* Admin Sidebar - Updated for responsiveness */}
+                    <div className="w-16 sm:w-80 bg-white/80 backdrop-blur-xl shadow-2xl border-r border-gray-200/50 flex flex-col">
+                        {/* Admin Sidebar Header */}
+                        <div className="p-2 sm:p-6 border-b border-gray-200/50">
+                            <div className="flex items-center justify-center sm:justify-start space-x-0 sm:space-x-3 mb-4">
+                                <div className="w-8 sm:w-12 h-8 sm:h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                                    <span className="text-white text-lg sm:text-xl font-bold">⚡</span>
+                                </div>
+                                <div className="hidden sm:block">
+                                    <h2 className="text-xl font-bold text-gray-900">System Health Monitor</h2>
+                                    <p className="text-sm text-gray-600">Administrator Portal</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {/* Admin Navigation */}
+                        <div className="flex-1 py-2 sm:py-6">
+                            {renderAdminSidebar()}
+                        </div>
+    
+                        {/* Admin Sidebar Footer */}
+                        <div className="p-2 sm:p-6 border-t border-gray-200/50">
+                            <div className="flex items-center justify-center sm:justify-start space-x-0 sm:space-x-3 mb-4">
+                                <div className="w-8 sm:w-12 h-8 sm:h-12 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center text-white font-semibold text-sm sm:text-lg">
+                                    {user?.name?.charAt(0).toUpperCase()}
+                                </div>
+                                <div className="flex-1 min-w-0 hidden sm:block">
+                                    <p className="text-sm font-semibold text-gray-900 truncate">{user?.name}</p>
+                                    <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+                                </div>
+                            </div>
+                            <button 
+                                className="w-full flex items-center justify-center space-x-0 sm:space-x-2 px-2 sm:px-4 py-3 bg-gradient-to-r from-red-500 to-pink-600 text-white rounded-xl hover:from-red-600 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+                                onClick={handleLogout}
+                                title="Logout"
+                            >
+                                <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+                                </svg>
+                                <span className="font-medium hidden sm:block">Logout</span>
+                            </button>
+                        </div>
+                    </div>
+    
+                    {/* Admin Main Content */}
+                    <div className="flex-1 flex flex-col overflow-hidden">
+                        {/* Admin Header */}
+                        <div className="bg-white/80 backdrop-blur-xl shadow-lg border-b border-gray-200/50 px-4 sm:px-8 py-4 sm:py-6">
+                            <div className="max-w-7xl mx-auto">
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+                                    <div>
+                                        <h1 className="text-xl sm:text-3xl font-bold text-gray-900 flex items-center">
+                                            Welcome back, {user?.name}! 
+                                            <span className="ml-2 text-2xl sm:text-4xl">👋</span>
+                                        </h1>
+                                        <p className="text-gray-600 mt-1 text-sm sm:text-base">
+                                            Here's what's happening in your administrator dashboard today.
+                                        </p>
+                                    </div>
+                                    <div className="flex items-center justify-between sm:justify-end space-x-4">
+                                        <div className="flex items-center space-x-2 px-3 sm:px-4 py-1 sm:py-2 bg-green-100 text-green-800 rounded-full">
+                                            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                            <span className="text-xs sm:text-sm font-medium">Online</span>
+                                        </div>
+                                        <div className="text-xs sm:text-sm text-gray-500 hidden sm:block">
+                                            {new Date().toLocaleDateString('en-US', { 
+                                                weekday: 'long', 
+                                                year: 'numeric', 
+                                                month: 'long', 
+                                                day: 'numeric' 
+                                            })}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+    
+                        {/* Admin Dashboard Content */}
+                        <div className="flex-1 overflow-auto">
+                            <div className="max-w-7xl mx-auto px-4 sm:px-8 py-4 sm:py-8">
+                                {renderAdminDashboard()}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
