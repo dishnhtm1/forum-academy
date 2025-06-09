@@ -388,7 +388,7 @@ const Dashboard = () => {
             if (newUserData.password.trim()) {
                 updateData.password = newUserData.password;
             }
-
+    
             const response = await fetch(`${API_BASE_URL}/api/users/${editingUser._id}`, {
                 method: 'PUT',
                 headers: {
@@ -397,7 +397,7 @@ const Dashboard = () => {
                 },
                 body: JSON.stringify(updateData)
             });
-
+    
             if (response.ok) {
                 const updatedUser = await response.json();
                 
@@ -428,6 +428,62 @@ const Dashboard = () => {
             alert('Error updating user. Please try again.');
         }
     };
+
+    // const handleUpdateUser = async (e) => {
+    //     e.preventDefault();
+    //     try {
+    //         const token = getToken(); // Use helper function
+    //         const updateData = {
+    //             firstName: newUserData.firstName,
+    //             lastName: newUserData.lastName,
+    //             email: newUserData.email,
+    //             role: newUserData.role
+    //         };
+            
+    //         // Only include password if it was provided
+    //         if (newUserData.password.trim()) {
+    //             updateData.password = newUserData.password;
+    //         }
+
+    //         const response = await fetch(`${API_BASE_URL}/api/users/${editingUser._id}`, {
+    //             method: 'PUT',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //                 'Authorization': `Bearer ${token}`
+    //             },
+    //             body: JSON.stringify(updateData)
+    //         });
+
+    //         if (response.ok) {
+    //             const updatedUser = await response.json();
+                
+    //             // Update the user in the local state
+    //             setAllUsers(prevUsers => 
+    //                 prevUsers.map(user => 
+    //                     user._id === editingUser._id ? updatedUser : user
+    //                 )
+    //             );
+                
+    //             setShowEditUserForm(false);
+    //             setEditingUser(null);
+    //             setNewUserData({
+    //                 firstName: '',
+    //                 lastName: '',
+    //                 email: '',
+    //                 password: '',
+    //                 role: 'student'
+    //             });
+                
+    //             alert('User updated successfully!');
+    //         } else {
+    //             const error = await response.json();
+    //             alert(`Error updating user: ${error.message}`);
+    //         }
+    //     } catch (error) {
+    //         console.error('Error updating user:', error);
+    //         alert('Error updating user. Please try again.');
+    //     }
+    // };
 
     const handleDeleteUser = (user) => {
         setUserToDelete(user);

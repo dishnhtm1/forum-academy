@@ -836,3 +836,74 @@
         font-size: 14px;
     }
 }
+
+/* Add these styles to your existing LoginModal.css file */
+
+.form-success.modern {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+    border: 1px solid #22c55e;
+    border-radius: var(--border-radius-lg);
+    color: #15803d;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 24px;
+    animation: slideDown 0.3s ease-out;
+}
+
+.form-success.modern .material-icons {
+    font-size: 20px;
+    color: #22c55e;
+}
+
+.back-to-login {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: transparent;
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    color: var(--text-secondary);
+    font-family: var(--modal-font);
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    margin-top: 16px;
+}
+
+.back-to-login:hover {
+    background: var(--bg-secondary);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.back-to-login .material-icons {
+    font-size: 20px;
+}
+
+.forgot-link {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    padding: 4px 8px;
+    border-radius: var(--border-radius-sm);
+}
+
+.forgot-link:hover {
+    color: var(--primary-hover);
+    background: var(--primary-color-10);
+    transform: translateX(2px);
+}

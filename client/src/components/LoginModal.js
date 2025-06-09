@@ -12,9 +12,15 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [formError, setFormError] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+        // Add these missing state variables for forgot password functionality
+    const [showForgotPassword, setShowForgotPassword] = useState(false);
+    const [forgotEmail, setForgotEmail] = useState('');
+    const [forgotLoading, setForgotLoading] = useState(false);
+    const [forgotMessage, setForgotMessage] = useState('');
+    const [forgotError, setForgotError] = useState('')
     const history = useHistory();
+    // Fixed API base URL - removed /api from here since we'll add it in the fetc mbingjuhvygtbfdzSXxqw XCVBJNKLM;,./'
 
-    // Fixed API base URL - removed /api from here since we'll add it in the fetch
     const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
     useEffect(() => {
@@ -89,6 +95,96 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick }) => {
             };
         }
     }, [isVisible]);
+
+       // Add forgot password handler
+    // const handleForgotPassword = async (e) => {
+    //     e.preventDefault();
+    //     setForgotError('');
+    //     setForgotMessage('');
+    //     setForgotLoading(true);
+
+    //     try {
+    //         const response = await fetch(`${API_BASE_URL}/api/auth/forgot-password`, {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json'
+    //             },
+    //             body: JSON.stringify({ email: forgotEmail })
+    //         });
+
+    //         const data = await response.json();
+
+    //         if (!response.ok) {
+    //             throw new Error(data.message || 'Failed to send reset email');
+    //         }
+
+    //         setForgotMessage('Password reset email sent successfully! Please check your inbox.');
+    //         setTimeout(() => {
+    //             setShowForgotPassword(false);
+    //             setForgotEmail('');
+    //             setForgotMessage('');
+    //         }, 3000);
+
+    //     } catch (error) {
+    //         console.error('Forgot password error:', error);
+    //         setForgotError(error.message || 'Failed to send reset email. Please try again.');
+    //     } finally {
+    //         setForgotLoading(false);
+    //     }
+    // };
+
+    // // Clear forgot password form when modal closes
+    // useEffect(() => {
+    //     if (!isOpen) {
+    //         setEmail('');
+    //         setPassword('');
+    //         setFormError('');
+    //         setShowForgotPassword(false);
+    //         setForgotEmail('');
+    //         setForgotMessage('');
+    //         setForgotError('');
+    //     }
+    // }, [isOpen]);
+        // ...existing code...
+    const handleForgotPassword = async (e) => {
+        e.preventDefault();
+        setForgotError('');
+        setForgotMessage('');
+        setForgotLoading(true);
+    
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/auth/forgot-password`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email: forgotEmail })
+            });
+    
+            const data = await response.json();
+    
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to send reset email');
+            }
+    
+            setForgotMessage('OTP sent successfully! Redirecting...');
+            
+            // Navigate to OTP verification page
+            setTimeout(() => {
+                history.push('/verify-otp', { 
+                    email: forgotEmail 
+                });
+                onClose(); // Close the modal
+            }, 1500);
+    
+        } catch (error) {
+            console.error('Forgot password error:', error);
+            setForgotError(error.message || 'Service temporarily unavailable. Please contact support.');
+        } finally {
+            setForgotLoading(false);
+        }
+    };
+    // ...existing code...
 
     // Updated handleLogin function with proper API endpoint
     const handleLogin = async (e) => {
@@ -174,123 +270,210 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick }) => {
                 
                 <div className="login-modal-content">
                     <div className="login-form-container">
-                        <div className="login-header">
-                            <div className="login-logo">
-                                <div className="ring-container">
-                                    <div className="ring"></div>
-                                    <div className="ring"></div>
-                                    <div className="ring"></div>
-                                    <div className="ring"></div>
-                                    <div className="logo-text">FORUM ACADEMY</div>
+                        {!showForgotPassword ? (
+                            <>
+                                {/* Existing login form */}
+                                <div className="login-header">
+                                    <div className="login-logo">
+                                        <div className="ring-container">
+                                            <div className="ring"></div>
+                                            <div className="ring"></div>
+                                            <div className="ring"></div>
+                                            <div className="ring"></div>
+                                            <div className="logo-text">FORUM ACADEMY</div>
+                                        </div>
+                                    </div>
+                                    <h2>{t('login.header.title')}</h2>
+                                    <p>{t('login.header.subtitle')}</p>
                                 </div>
-                            </div>
-                            <h2>{t('login.header.title')}</h2>
-                            <p>{t('login.header.subtitle')}</p>
-                        </div>
-                        
-                        {formError && (
-                            <div className="form-error modern">
-                                <span className="material-icons">error_outline</span>
-                                <span>{formError}</span>
-                            </div>
-                        )}
-                        
-                        <form className="login-form" onSubmit={handleLogin}>
-                            <div className="form-group">
-                                <div className="input-wrapper">
-                                    <span className="material-icons input-icon">email</span>
-                                    <input
-                                        type="email"
-                                        id="login-modal-email"  // Fixed: Changed from "login-email" to unique ID
-                                        placeholder={t('login.form.emailPlaceholder')}
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        required
-                                        className="form-input modern"
-                                    />
+                                
+                                {formError && (
+                                    <div className="form-error modern">
+                                        <span className="material-icons">error_outline</span>
+                                        <span>{formError}</span>
+                                    </div>
+                                )}
+                                
+                                <form className="login-form" onSubmit={handleLogin}>
+                                    {/* Existing form fields */}
+                                    <div className="form-group">
+                                        <div className="input-wrapper">
+                                            <span className="material-icons input-icon">email</span>
+                                            <input
+                                                type="email"
+                                                id="login-modal-email"
+                                                placeholder={t('login.form.emailPlaceholder')}
+                                                value={email}
+                                                onChange={(e) => setEmail(e.target.value)}
+                                                required
+                                                className="form-input modern"
+                                            />
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="form-group">
+                                        <div className="input-wrapper">
+                                            <span className="material-icons input-icon">lock</span>
+                                            <input
+                                                type={showPassword ? "text" : "password"}
+                                                id="login-modal-password"
+                                                placeholder={t('login.form.passwordPlaceholder')}
+                                                value={password}
+                                                onChange={(e) => setPassword(e.target.value)}
+                                                required
+                                                className="form-input modern"
+                                            />
+                                            <button
+                                                type="button"
+                                                className="toggle-password"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                                tabIndex="-1"
+                                                aria-label={showPassword ? t('login.form.hidePassword') : t('login.form.showPassword')}
+                                            >
+                                                <span className="material-icons">
+                                                    {showPassword ? 'visibility_off' : 'visibility'}
+                                                </span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="form-options modern">
+                                        <label className="custom-checkbox modern">
+                                            <input
+                                                type="checkbox"
+                                                checked={rememberMe}
+                                                onChange={() => setRememberMe(!rememberMe)}
+                                            />
+                                            <span className="checkbox-mark"></span>
+                                            <span className="checkbox-label">{t('login.form.rememberMe')}</span>
+                                        </label>
+                                        <button
+                                            type="button"
+                                            className="forgot-link"
+                                            onClick={() => setShowForgotPassword(true)}
+                                        >
+                                            {t('login.form.forgotPassword')}
+                                        </button>
+                                    </div>
+                                    
+                                    <button 
+                                        type="submit" 
+                                        className={`login-button modern ${isLoading ? '' : ''}`}
+                                        disabled={isLoading}
+                                    >
+                                        {isLoading ? (
+                                            <>
+                                                <span className="button-loader"></span>
+                                                <span>{t('login.form.signingIn')}</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <span>{t('login.form.signIn')}</span>
+                                                <span className="material-icons button-icon">arrow_forward</span>
+                                            </>
+                                        )}
+                                    </button>
+                                    
+                                    {/* Register section */}
+                                    <div className="register-section">
+                                        <div className="divider">
+                                            <span>{t('login.register.newToPlatform')}</span>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            className="register-button"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                onRegisterClick();
+                                            }}
+                                        >
+                                            <span className="material-icons">person_add</span>
+                                            <span>{t('login.register.createAccount')}</span>
+                                        </button>
+                                    </div>
+                                </form>
+                            </>
+                        ) : (
+                            /* Forgot Password Form */
+                            <>
+                                <div className="login-header">
+                                    <div className="login-logo">
+                                        <div className="ring-container">
+                                            <div className="ring"></div>
+                                            <div className="ring"></div>
+                                            <div className="ring"></div>
+                                            <div className="ring"></div>
+                                            <div className="logo-text">FORUM ACADEMY</div>
+                                        </div>
+                                    </div>
+                                    <h2>Reset Password</h2>
+                                    <p>Enter your email address and we'll send you a link to reset your password.</p>
                                 </div>
-                            </div>
-                            
-                            <div className="form-group">
-                                <div className="input-wrapper">
-                                    <span className="material-icons input-icon">lock</span>
-                                    <input
-                                        type={showPassword ? "text" : "password"}
-                                        id="login-modal-password"  // Fixed: Changed from "password" to unique ID
-                                        placeholder={t('login.form.passwordPlaceholder')}
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        required
-                                        className="form-input modern"
-                                    />
+
+                                {forgotError && (
+                                    <div className="form-error modern">
+                                        <span className="material-icons">error_outline</span>
+                                        <span>{forgotError}</span>
+                                    </div>
+                                )}
+
+                                {forgotMessage && (
+                                    <div className="form-success modern">
+                                        <span className="material-icons">check_circle</span>
+                                        <span>{forgotMessage}</span>
+                                    </div>
+                                )}
+
+                                <form className="login-form" onSubmit={handleForgotPassword}>
+                                    <div className="form-group">
+                                        <div className="input-wrapper">
+                                            <span className="material-icons input-icon">email</span>
+                                            <input
+                                                type="email"
+                                                placeholder="Enter your email address"
+                                                value={forgotEmail}
+                                                onChange={(e) => setForgotEmail(e.target.value)}
+                                                required
+                                                className="form-input modern"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <button 
+                                        type="submit" 
+                                        className={`login-button modern ${forgotLoading ? 'loading' : ''}`}
+                                        disabled={forgotLoading}
+                                    >
+                                        {forgotLoading ? (
+                                            <>
+                                                <span className="button-loader"></span>
+                                                <span>Sending...</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <span>Send Reset Email</span>
+                                                <span className="material-icons button-icon">send</span>
+                                            </>
+                                        )}
+                                    </button>
+
                                     <button
                                         type="button"
-                                        className="toggle-password"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                        tabIndex="-1"
-                                        aria-label={showPassword ? t('login.form.hidePassword') : t('login.form.showPassword')}
+                                        className="back-to-login"
+                                        onClick={() => setShowForgotPassword(false)}
                                     >
-                                        <span className="material-icons">
-                                            {showPassword ? 'visibility_off' : 'visibility'}
-                                        </span>
+                                        <span className="material-icons">arrow_back</span>
+                                        Back to Login
                                     </button>
-                                </div>
-                            </div>
-                            
-                            <div className="form-options modern">
-                                <label className="custom-checkbox modern">
-                                    <input
-                                        type="checkbox"
-                                        checked={rememberMe}
-                                        onChange={() => setRememberMe(!rememberMe)}
-                                    />
-                                    <span className="checkbox-mark"></span>
-                                    <span className="checkbox-label">{t('login.form.rememberMe')}</span>
-                                </label>
-                                <a href="#" className="forgot-link">{t('login.form.forgotPassword')}</a>
-                            </div>
-                            
-                            <button 
-                                type="submit" 
-                                className={`login-button modern ${isLoading ? '' : ''}`}
-                                disabled={isLoading}
-                            >
-                                {isLoading ? (
-                                    <>
-                                        <span className="button-loader"></span>
-                                        <span>{t('login.form.signingIn')}</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <span>{t('login.form.signIn')}</span>
-                                        <span className="material-icons button-icon">arrow_forward</span>
-                                    </>
-                                )}
-                            </button>
-                            
-                            {/* Register section */}
-                            <div className="register-section">
-                                <div className="divider">
-                                    <span>{t('login.register.newToPlatform')}</span>
-                                </div>
-                                <button
-                                    type="button"
-                                    className="register-button"
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        onRegisterClick();
-                                    }}
-                                >
-                                    <span className="material-icons">person_add</span>
-                                    <span>{t('login.register.createAccount')}</span>
-                                </button>
-                            </div>
-                        </form>
+                                </form>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>
         </div>
     );
 };
+
 
 export default LoginModal;
