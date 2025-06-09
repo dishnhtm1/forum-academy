@@ -1,5 +1,6 @@
 // import React, { useEffect } from 'react';
 // import { Link } from 'react-router-dom';
+// import { useTranslation } from 'react-i18next';
 // import CourseSection from '../components/CourseSection';
 // import AboutSection from '../components/AboutSection';
 // import StatsSection from '../components/StatsSection';
@@ -9,6 +10,8 @@
 // import '../styles/HomePage.css';
 
 // const HomePage = () => {
+//     const { t } = useTranslation();
+
 //     // Add animation effects when components enter viewport
 //     useEffect(() => {
 //         // If anime.js is available, add entry animations for sections
@@ -47,8 +50,8 @@
 //             <section className="section" id="courses">
 //                 <div className="container" style={{ maxWidth: '1100px', padding: '2rem 1.5rem' }}>
 //                     <div className="section-header">
-//                         <h2>Our Courses</h2>
-//                         <p>Explore our wide range of IT courses designed to prepare you for the careers of today and tomorrow.</p>
+//                         <h2>{t('home.courses.title')}</h2>
+//                         <p>{t('home.courses.description')}</p>
 //                     </div>
                     
 //                     {/* Course filters */}
@@ -56,27 +59,27 @@
 //                         <div className="inner">
 //                             <button className="filter-btn tag active">
 //                                 <span className="material-icons">school</span>
-//                                 All Courses
+//                                 {t('home.courses.allCourses')}
 //                             </button>
 //                             <button className="filter-btn tag">
 //                                 <span className="material-icons">code</span>
-//                                 Web Development
+//                                 {t('courses.webDevelopment')}
 //                             </button>
 //                             <button className="filter-btn tag">
 //                                 <span className="material-icons">analytics</span>
-//                                 Data Science
+//                                 {t('courses.dataScience')}
 //                             </button>
 //                             <button className="filter-btn tag">
 //                                 <span className="material-icons">security</span>
-//                                 Cybersecurity
+//                                 {t('courses.cybersecurity')}
 //                             </button>
 //                             <button className="filter-btn tag">
 //                                 <span className="material-icons">cloud</span>
-//                                 Cloud Computing
+//                                 {t('courses.cloudComputing')}
 //                             </button>
 //                             <button className="filter-btn tag">
 //                                 <span className="material-icons">smart_toy</span>
-//                                 Artificial Intelligence
+//                                 {t('courses.aiMl')}
 //                             </button>
 //                         </div>
 //                         <div className="fade"></div>
@@ -97,8 +100,8 @@
 //             <section className="section" id="stats">
 //                 <div className="container">
 //                     <div className="section-header">
-//                         <h2>Our Impact</h2>
-//                         <p>The numbers that define our success in preparing the next generation of tech professionals.</p>
+//                         <h2>{t('home.stats.title')}</h2>
+//                         <p>{t('home.stats.description')}</p>
 //                     </div>
 //                     <StatsSection />
 //                 </div>
@@ -108,8 +111,8 @@
 //             <section className="section" id="news">
 //                 <div className="container">
 //                     <NewsSection 
-//                         title="Latest News & Events"
-//                         subtitle="Stay updated with our latest announcements, events, and tech industry insights."
+//                         title={t('home.news.title')}
+//                         subtitle={t('home.news.subtitle')}
 //                     />
 //                 </div>
 //             </section>
@@ -118,8 +121,8 @@
 //             <section className="section" id="contact">
 //                 <div className="container">
 //                     <ContactSection 
-//                         title="Get In Touch"
-//                         subtitle="Have questions? We're here to help you start your journey in tech education."
+//                         title={t('home.contact.title')}
+//                         subtitle={t('home.contact.subtitle')}
 //                     />
 //                 </div>
 //             </section>
@@ -138,7 +141,6 @@ import StatsSection from '../components/StatsSection';
 import NewsSection from '../components/NewsSection';
 import ContactSection from '../components/ContactSection';
 import Hero from '../components/Hero';
-import '../styles/HomePage.css';
 
 const HomePage = () => {
     const { t } = useTranslation();
@@ -173,47 +175,52 @@ const HomePage = () => {
     }, []);
 
     return (
-        <div className="home-page">
+        <div className="home-page bg-gradient-to-br from-slate-50 to-gray-100 min-h-screen">
             {/* Hero Section */}
             <Hero />
                 
             {/* Course Catalog Section - Key Feature 1 */}
-            <section className="section" id="courses">
-                <div className="container" style={{ maxWidth: '1100px', padding: '2rem 1.5rem' }}>
-                    <div className="section-header">
-                        <h2>{t('home.courses.title')}</h2>
-                        <p>{t('home.courses.description')}</p>
+            <section className="section opacity-0 transform translate-y-5 transition-all duration-600 ease-out py-16 lg:py-20" id="courses">
+                <div className="container max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="section-header text-center mb-12 lg:mb-16">
+                        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-800 mb-4 relative">
+                            {t('home.courses.title')}
+                            <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 w-16 h-1 bg-gradient-to-r from-slate-300 to-slate-400 rounded-full"></div>
+                        </h2>
+                        <p className="text-lg text-slate-600 leading-relaxed mt-6 max-w-2xl mx-auto">
+                            {t('home.courses.description')}
+                        </p>
                     </div>
                     
                     {/* Course filters */}
-                    <div className="course-filters tag-list" style={{ margin: '1.5rem 0' }}>
-                        <div className="inner">
-                            <button className="filter-btn tag active">
-                                <span className="material-icons">school</span>
-                                {t('home.courses.allCourses')}
+                    <div className="course-filters relative overflow-x-auto py-4 mb-12">
+                        <div className="flex gap-3 sm:gap-4 min-w-max px-4 sm:px-0">
+                            <button className="filter-btn flex items-center gap-2 bg-white border-2 border-slate-200 rounded-xl px-4 sm:px-6 py-3 font-medium text-slate-600 hover:border-slate-300 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 whitespace-nowrap shadow-sm bg-slate-50 border-slate-300 text-slate-700">
+                                <span className="material-icons text-xl">school</span>
+                                <span className="text-sm sm:text-base">{t('home.courses.allCourses')}</span>
                             </button>
-                            <button className="filter-btn tag">
-                                <span className="material-icons">code</span>
-                                {t('courses.webDevelopment')}
+                            <button className="filter-btn flex items-center gap-2 bg-white border-2 border-slate-200 rounded-xl px-4 sm:px-6 py-3 font-medium text-slate-600 hover:border-slate-300 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 whitespace-nowrap shadow-sm">
+                                <span className="material-icons text-xl">code</span>
+                                <span className="text-sm sm:text-base">{t('courses.webDevelopment')}</span>
                             </button>
-                            <button className="filter-btn tag">
-                                <span className="material-icons">analytics</span>
-                                {t('courses.dataScience')}
+                            <button className="filter-btn flex items-center gap-2 bg-white border-2 border-slate-200 rounded-xl px-4 sm:px-6 py-3 font-medium text-slate-600 hover:border-slate-300 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 whitespace-nowrap shadow-sm">
+                                <span className="material-icons text-xl">analytics</span>
+                                <span className="text-sm sm:text-base">{t('courses.dataScience')}</span>
                             </button>
-                            <button className="filter-btn tag">
-                                <span className="material-icons">security</span>
-                                {t('courses.cybersecurity')}
+                            <button className="filter-btn flex items-center gap-2 bg-white border-2 border-slate-200 rounded-xl px-4 sm:px-6 py-3 font-medium text-slate-600 hover:border-slate-300 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 whitespace-nowrap shadow-sm">
+                                <span className="material-icons text-xl">security</span>
+                                <span className="text-sm sm:text-base">{t('courses.cybersecurity')}</span>
                             </button>
-                            <button className="filter-btn tag">
-                                <span className="material-icons">cloud</span>
-                                {t('courses.cloudComputing')}
+                            <button className="filter-btn flex items-center gap-2 bg-white border-2 border-slate-200 rounded-xl px-4 sm:px-6 py-3 font-medium text-slate-600 hover:border-slate-300 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 whitespace-nowrap shadow-sm">
+                                <span className="material-icons text-xl">cloud</span>
+                                <span className="text-sm sm:text-base">{t('courses.cloudComputing')}</span>
                             </button>
-                            <button className="filter-btn tag">
-                                <span className="material-icons">smart_toy</span>
-                                {t('courses.aiMl')}
+                            <button className="filter-btn flex items-center gap-2 bg-white border-2 border-slate-200 rounded-xl px-4 sm:px-6 py-3 font-medium text-slate-600 hover:border-slate-300 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 whitespace-nowrap shadow-sm">
+                                <span className="material-icons text-xl">smart_toy</span>
+                                <span className="text-sm sm:text-base">{t('courses.aiMl')}</span>
                             </button>
                         </div>
-                        <div className="fade"></div>
+                        <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-slate-50 to-transparent pointer-events-none sm:hidden"></div>
                     </div>
                     
                     <CourseSection />
@@ -221,26 +228,31 @@ const HomePage = () => {
             </section>
 
             {/* About Section - Key Feature 2 */}
-            <section className="section">
-                <div className="container">
+            <section className="section opacity-0 transform translate-y-5 transition-all duration-600 ease-out py-16 lg:py-20">
+                <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <AboutSection />
                 </div>
             </section>
 
             {/* Stats Section */}
-            <section className="section" id="stats">
-                <div className="container">
-                    <div className="section-header">
-                        <h2>{t('home.stats.title')}</h2>
-                        <p>{t('home.stats.description')}</p>
+            <section className="section opacity-0 transform translate-y-5 transition-all duration-600 ease-out py-16 lg:py-20" id="stats">
+                <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="section-header text-center mb-12 lg:mb-16">
+                        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-800 mb-4 relative">
+                            {t('home.stats.title')}
+                            <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 w-16 h-1 bg-gradient-to-r from-slate-300 to-slate-400 rounded-full"></div>
+                        </h2>
+                        <p className="text-lg text-slate-600 leading-relaxed mt-6 max-w-2xl mx-auto">
+                            {t('home.stats.description')}
+                        </p>
                     </div>
                     <StatsSection />
                 </div>
             </section>
 
             {/* News Section */}
-            <section className="section" id="news">
-                <div className="container">
+            <section className="section opacity-0 transform translate-y-5 transition-all duration-600 ease-out py-16 lg:py-20" id="news">
+                <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <NewsSection 
                         title={t('home.news.title')}
                         subtitle={t('home.news.subtitle')}
@@ -249,8 +261,8 @@ const HomePage = () => {
             </section>
             
             {/* Contact Section */}
-            <section className="section" id="contact">
-                <div className="container">
+            <section className="section opacity-0 transform translate-y-5 transition-all duration-600 ease-out py-16 lg:py-20" id="contact">
+                <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <ContactSection 
                         title={t('home.contact.title')}
                         subtitle={t('home.contact.subtitle')}
