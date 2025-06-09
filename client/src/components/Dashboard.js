@@ -1,10 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement,
+    Title, Tooltip, Legend, ArcElement, } from 'chart.js';
+import { Bar, Line, Doughnut } from 'react-chartjs-2';
+
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    LineElement,
+    PointElement,
+    Title,
+    Tooltip,
+    Legend,
+    ArcElement
+);
 
 
 const Dashboard = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [user, setUser] = useState(null);
     const [activeTab, setActiveTab] = useState('overview');
     const [isLoading, setIsLoading] = useState(true);
@@ -26,6 +41,10 @@ const Dashboard = () => {
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [userToDelete, setUserToDelete] = useState(null);
     const [showCreateUserForm, setShowCreateUserForm] = useState(false);
+    const [currentLanguage, setCurrentLanguage] = useState('en');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(10); // Adjust this number as needed
+    const [isDarkMode, setIsDarkMode] = useState(false);
     const [newUserData, setNewUserData] = useState({
         firstName: '',
         lastName: '',
@@ -34,7 +53,105 @@ const Dashboard = () => {
         role: 'student'
     });
 
-        // Add new state for course creation
+    // Add these helper functions
+    const getTotalPages = () => {
+        const totalItems = getFilteredApplications().length; // or getFilteredUsers().length depending on context
+        return Math.ceil(totalItems / itemsPerPage);
+    };
+
+    const getCurrentPageItems = () => {
+        const filteredItems = getFilteredApplications(); // or getFilteredUsers() depending on context
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        return filteredItems.slice(startIndex, endIndex);
+    };
+
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    };
+
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
+    const handleNextPage = () => {
+        if (currentPage < getTotalPages()) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
+    // ADD THESE HANDLER FUNCTIONS
+    const handleLanguageToggle = (language) => {
+        setCurrentLanguage(language);
+        if (i18n) {
+            i18n.changeLanguage(language);
+        }
+        localStorage.setItem('preferredLanguage', language);
+        console.log(`Language switched to: ${language}`);
+    };
+
+    const handleThemeToggle = (theme) => {
+        const isDark = theme === 'dark';
+        setIsDarkMode(isDark);
+        localStorage.setItem('preferredTheme', theme);
+        
+        // Apply dark mode classes to body and document
+        if (isDark) {
+            document.body.classList.add('dark');
+            document.documentElement.classList.add('dark');
+            document.documentElement.style.colorScheme = 'dark';
+            // Apply dark styles to the entire page
+            document.body.style.backgroundColor = '#1f2937';
+            document.body.style.color = '#f9fafb';
+        } else {
+            document.body.classList.remove('dark');
+            document.documentElement.classList.remove('dark');
+            document.documentElement.style.colorScheme = 'light';
+            // Reset to light styles
+            document.body.style.backgroundColor = '';
+            document.body.style.color = '';
+        }
+        console.log(`Theme switched to: ${theme}`);
+    };
+
+    //toggleDarkMode function near the top of your Dashboard component
+    const toggleDarkMode = () => {
+        setIsDarkMode(prevMode => {
+            const newMode = !prevMode;
+            localStorage.setItem('darkMode', newMode.toString());
+            return newMode;
+        });
+    };
+
+    // ADD useEffect to load saved preferences
+    useEffect(() => {
+        // Load saved language preference
+        const savedLanguage = localStorage.getItem('preferredLanguage');
+        if (savedLanguage) {
+            setCurrentLanguage(savedLanguage);
+            if (i18n) {
+                i18n.changeLanguage(savedLanguage);
+            }
+        }
+
+        // Load saved theme preference
+        const savedTheme = localStorage.getItem('preferredTheme');
+        if (savedTheme) {
+            const isDark = savedTheme === 'dark';
+            setIsDarkMode(isDark);
+            if (isDark) {
+                document.body.classList.add('dark');
+                document.documentElement.classList.add('dark');
+                document.documentElement.style.colorScheme = 'dark';
+                document.body.style.backgroundColor = '#1f2937';
+                document.body.style.color = '#f9fafb';
+            }
+        }
+    }, [i18n]);
+
+    // Add new state for course creation
     const [showCreateCourseForm, setShowCreateCourseForm] = useState(false);
     const [newCourseData, setNewCourseData] = useState({
         title: '',
@@ -429,62 +546,6 @@ const Dashboard = () => {
         }
     };
 
-    // const handleUpdateUser = async (e) => {
-    //     e.preventDefault();
-    //     try {
-    //         const token = getToken(); // Use helper function
-    //         const updateData = {
-    //             firstName: newUserData.firstName,
-    //             lastName: newUserData.lastName,
-    //             email: newUserData.email,
-    //             role: newUserData.role
-    //         };
-            
-    //         // Only include password if it was provided
-    //         if (newUserData.password.trim()) {
-    //             updateData.password = newUserData.password;
-    //         }
-
-    //         const response = await fetch(`${API_BASE_URL}/api/users/${editingUser._id}`, {
-    //             method: 'PUT',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //                 'Authorization': `Bearer ${token}`
-    //             },
-    //             body: JSON.stringify(updateData)
-    //         });
-
-    //         if (response.ok) {
-    //             const updatedUser = await response.json();
-                
-    //             // Update the user in the local state
-    //             setAllUsers(prevUsers => 
-    //                 prevUsers.map(user => 
-    //                     user._id === editingUser._id ? updatedUser : user
-    //                 )
-    //             );
-                
-    //             setShowEditUserForm(false);
-    //             setEditingUser(null);
-    //             setNewUserData({
-    //                 firstName: '',
-    //                 lastName: '',
-    //                 email: '',
-    //                 password: '',
-    //                 role: 'student'
-    //             });
-                
-    //             alert('User updated successfully!');
-    //         } else {
-    //             const error = await response.json();
-    //             alert(`Error updating user: ${error.message}`);
-    //         }
-    //     } catch (error) {
-    //         console.error('Error updating user:', error);
-    //         alert('Error updating user. Please try again.');
-    //     }
-    // };
-
     const handleDeleteUser = (user) => {
         setUserToDelete(user);
         setShowDeleteConfirm(true);
@@ -529,7 +590,6 @@ const Dashboard = () => {
         }
     };
 
-    // Add this filtering function before the renderUserManagement function
     const getFilteredUsers = () => {
         return allUsers.filter(user => {
             const matchesSearch = searchTerm === '' || 
@@ -546,7 +606,6 @@ const Dashboard = () => {
         });
     };
 
-    // Add these filter functions before the render functions
     const getFilteredApplications = () => {
         // Debug: Show actual program values in the data
         const uniquePrograms = [...new Set(applicationSubmissions.map(app => app.program).filter(Boolean))];
@@ -612,7 +671,6 @@ const Dashboard = () => {
         return filtered;
     };
 
-    // Add course creation handler
     const handleCreateCourse = async (e) => {
         e.preventDefault();
         const token = getToken();
@@ -823,13 +881,25 @@ const Dashboard = () => {
         }
         return renderStudentOverview();
     };
-
+    
     const renderStudentOverview = () => (
-        <div className="space-y-8">
+        <div className={`space-y-8 ${isDarkMode ? 'dark' : ''}`}>
             {/* Hero Section - Learning Journey */}
-            <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 rounded-3xl p-8 border border-gray-200 shadow-xl overflow-hidden relative">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-200/30 to-purple-200/30 rounded-full -translate-y-32 translate-x-32"></div>
-                <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-indigo-200/30 to-pink-200/30 rounded-full translate-y-24 -translate-x-24"></div>
+            <div className={`${
+                isDarkMode 
+                    ? 'bg-gradient-to-br from-gray-800 via-gray-900 to-black border-gray-700' 
+                    : 'bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 border-gray-200'
+            } rounded-3xl p-8 shadow-xl overflow-hidden relative`}>
+                <div className={`absolute top-0 right-0 w-64 h-64 ${
+                    isDarkMode 
+                        ? 'bg-gradient-to-br from-blue-900/30 to-purple-900/30' 
+                        : 'bg-gradient-to-br from-blue-200/30 to-purple-200/30'
+                } rounded-full -translate-y-32 translate-x-32`}></div>
+                <div className={`absolute bottom-0 left-0 w-48 h-48 ${
+                    isDarkMode 
+                        ? 'bg-gradient-to-tr from-indigo-900/30 to-pink-900/30' 
+                        : 'bg-gradient-to-tr from-indigo-200/30 to-pink-200/30'
+                } rounded-full translate-y-24 -translate-x-24`}></div>
                 
                 <div className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
                     {/* Progress Circle */}
@@ -840,7 +910,7 @@ const Dashboard = () => {
                                     cx="50" 
                                     cy="50" 
                                     r="40" 
-                                    stroke="rgba(229, 231, 235, 0.8)" 
+                                    stroke={isDarkMode ? "rgba(75, 85, 99, 0.8)" : "rgba(229, 231, 235, 0.8)"} 
                                     strokeWidth="6" 
                                     fill="transparent"
                                 />
@@ -864,8 +934,12 @@ const Dashboard = () => {
                             </svg>
                             <div className="absolute inset-0 flex items-center justify-center">
                                 <div className="text-center">
-                                    <div className="text-4xl font-bold text-gray-900 mb-1">{dashboardData.student.journeyProgress}%</div>
-                                    <div className="text-sm text-gray-600 font-medium">Complete</div>
+                                    <div className={`text-4xl font-bold mb-1 ${
+                                        isDarkMode ? 'text-white' : 'text-gray-900'
+                                    }`}>{dashboardData.student.journeyProgress}%</div>
+                                    <div className={`text-sm font-medium ${
+                                        isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                                    }`}>Complete</div>
                                 </div>
                             </div>
                         </div>
@@ -874,37 +948,61 @@ const Dashboard = () => {
                     {/* Journey Stats */}
                     <div className="lg:col-span-2 space-y-6">
                         <div>
-                            <h1 className="text-3xl font-bold text-gray-900 mb-2">Your Learning Journey</h1>
-                            <p className="text-gray-600 text-lg">Keep up the amazing progress! You're doing great.</p>
+                            <h1 className={`text-3xl font-bold mb-2 ${
+                                isDarkMode ? 'text-white' : 'text-gray-900'
+                            }`}>Your Learning Journey</h1>
+                            <p className={`text-lg ${
+                                isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                            }`}>Keep up the amazing progress! You're doing great.</p>
                         </div>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/50">
+                            <div className={`${
+                                isDarkMode 
+                                    ? 'bg-gray-800/60 border-gray-600/50' 
+                                    : 'bg-white/60 border-white/50'
+                            } backdrop-blur-sm rounded-2xl p-6 border`}>
                                 <div className="flex items-center space-x-3 mb-2">
                                     <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center">
                                         <span className="text-white text-lg">🎯</span>
                                     </div>
                                     <div>
-                                        <div className="text-2xl font-bold text-gray-900">{dashboardData.student.completedMilestones}</div>
-                                        <div className="text-sm text-gray-600">Milestones Achieved</div>
+                                        <div className={`text-2xl font-bold ${
+                                            isDarkMode ? 'text-white' : 'text-gray-900'
+                                        }`}>{dashboardData.student.completedMilestones}</div>
+                                        <div className={`text-sm ${
+                                            isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                                        }`}>Milestones Achieved</div>
                                     </div>
                                 </div>
-                                <div className="text-xs text-gray-500">
+                                <div className={`text-xs ${
+                                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                                }`}>
                                     {dashboardData.student.totalMilestones - dashboardData.student.completedMilestones} more to go
                                 </div>
                             </div>
     
-                            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/50">
+                            <div className={`${
+                                isDarkMode 
+                                    ? 'bg-gray-800/60 border-gray-600/50' 
+                                    : 'bg-white/60 border-white/50'
+                            } backdrop-blur-sm rounded-2xl p-6 border`}>
                                 <div className="flex items-center space-x-3 mb-2">
                                     <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center">
                                         <span className="text-white text-lg">🔥</span>
                                     </div>
                                     <div>
-                                        <div className="text-2xl font-bold text-gray-900">{dashboardData.student.streak}</div>
-                                        <div className="text-sm text-gray-600">Day Streak</div>
+                                        <div className={`text-2xl font-bold ${
+                                            isDarkMode ? 'text-white' : 'text-gray-900'
+                                        }`}>{dashboardData.student.streak}</div>
+                                        <div className={`text-sm ${
+                                            isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                                        }`}>Day Streak</div>
                                     </div>
                                 </div>
-                                <div className="text-xs text-gray-500">
+                                <div className={`text-xs ${
+                                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                                }`}>
                                     Keep it up!
                                 </div>
                             </div>
@@ -915,7 +1013,11 @@ const Dashboard = () => {
     
             {/* Quick Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
+                <div className={`${
+                    isDarkMode 
+                        ? 'bg-gray-800 border-gray-700' 
+                        : 'bg-white border-gray-100'
+                } rounded-2xl shadow-xl overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
                     <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-6 text-white">
                         <div className="flex items-center justify-between">
                             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -927,15 +1029,21 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="p-4">
+                    <div className={`p-4 ${
+                        isDarkMode ? 'bg-gray-700' : 'bg-gray-50'
+                    }`}>
                         <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-600">This month</span>
+                            <span className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>This month</span>
                             <span className="font-semibold text-green-600">+1 new</span>
                         </div>
                     </div>
                 </div>
     
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
+                <div className={`${
+                    isDarkMode 
+                        ? 'bg-gray-800 border-gray-700' 
+                        : 'bg-white border-gray-100'
+                } rounded-2xl shadow-xl overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
                     <div className="bg-gradient-to-br from-green-500 to-green-600 p-6 text-white">
                         <div className="flex items-center justify-between">
                             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -947,15 +1055,21 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="p-4">
+                    <div className={`p-4 ${
+                        isDarkMode ? 'bg-gray-700' : 'bg-gray-50'
+                    }`}>
                         <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-600">Urgent</span>
+                            <span className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>Urgent</span>
                             <span className="font-semibold text-red-600">1 due soon</span>
                         </div>
                     </div>
                 </div>
     
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
+                <div className={`${
+                    isDarkMode 
+                        ? 'bg-gray-800 border-gray-700' 
+                        : 'bg-white border-gray-100'
+                } rounded-2xl shadow-xl overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
                     <div className="bg-gradient-to-br from-purple-500 to-purple-600 p-6 text-white">
                         <div className="flex items-center justify-between">
                             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -967,15 +1081,21 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="p-4">
+                    <div className={`p-4 ${
+                        isDarkMode ? 'bg-gray-700' : 'bg-gray-50'
+                    }`}>
                         <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-600">Weekly goal</span>
+                            <span className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>Weekly goal</span>
                             <span className="font-semibold text-purple-600">{dashboardData.student.studyGoals.weekly}h</span>
                         </div>
                     </div>
                 </div>
     
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
+                <div className={`${
+                    isDarkMode 
+                        ? 'bg-gray-800 border-gray-700' 
+                        : 'bg-white border-gray-100'
+                } rounded-2xl shadow-xl overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
                     <div className="bg-gradient-to-br from-orange-500 to-orange-600 p-6 text-white">
                         <div className="flex items-center justify-between">
                             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -987,9 +1107,11 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="p-4">
+                    <div className={`p-4 ${
+                        isDarkMode ? 'bg-gray-700' : 'bg-gray-50'
+                    }`}>
                         <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-600">Improvement</span>
+                            <span className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>Improvement</span>
                             <span className="font-semibold text-green-600">+0.2</span>
                         </div>
                     </div>
@@ -1000,16 +1122,32 @@ const Dashboard = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* AI Recommendations */}
                 <div className="lg:col-span-2 space-y-8">
-                    <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                        <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-                            <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                    <div className={`${
+                        isDarkMode 
+                            ? 'bg-gray-800 border-gray-700' 
+                            : 'bg-white border-gray-100'
+                    } rounded-2xl shadow-xl overflow-hidden`}>
+                        <div className={`p-6 border-b ${
+                            isDarkMode 
+                                ? 'border-gray-600 bg-gradient-to-r from-blue-900/50 to-indigo-900/50' 
+                                : 'border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50'
+                        }`}>
+                            <h3 className={`text-lg font-semibold flex items-center ${
+                                isDarkMode ? 'text-white' : 'text-gray-900'
+                            }`}>
                                 <span className="mr-2">🤖</span>
                                 AI Study Recommendations
                             </h3>
-                            <p className="text-sm text-gray-600 mt-1">Personalized suggestions to boost your learning</p>
+                            <p className={`text-sm mt-1 ${
+                                isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                            }`}>Personalized suggestions to boost your learning</p>
                         </div>
                         <div className="p-6">
-                            <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-2xl p-6 border border-red-200">
+                            <div className={`${
+                                isDarkMode 
+                                    ? 'bg-gradient-to-r from-red-900/30 to-orange-900/30 border-red-700' 
+                                    : 'bg-gradient-to-r from-red-50 to-orange-50 border-red-200'
+                            } rounded-2xl p-6 border`}>
                                 <div className="flex items-start justify-between mb-4">
                                     <div className="flex items-center space-x-3">
                                         <div className="w-10 h-10 bg-red-500 rounded-xl flex items-center justify-center">
@@ -1019,18 +1157,28 @@ const Dashboard = () => {
                                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                                                 High Priority
                                             </span>
-                                            <div className="text-sm text-gray-600 mt-1">Estimated: 45 minutes</div>
+                                            <div className={`text-sm mt-1 ${
+                                                isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                                            }`}>Estimated: 45 minutes</div>
                                         </div>
                                     </div>
                                 </div>
-                                <h4 className="text-lg font-semibold text-gray-900 mb-2">Review Statistical Hypothesis Testing</h4>
-                                <p className="text-gray-600 mb-4">Based on your recent quiz performance, focusing on this topic will boost your Data Science grade significantly.</p>
+                                <h4 className={`text-lg font-semibold mb-2 ${
+                                    isDarkMode ? 'text-white' : 'text-gray-900'
+                                }`}>Review Statistical Hypothesis Testing</h4>
+                                <p className={`mb-4 ${
+                                    isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                                }`}>Based on your recent quiz performance, focusing on this topic will boost your Data Science grade significantly.</p>
                                 <div className="flex space-x-3">
                                     <button className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                                         <span className="mr-2">🚀</span>
                                         Start Study Session
                                     </button>
-                                    <button className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                                    <button className={`inline-flex items-center px-4 py-2 border rounded-lg transition-colors ${
+                                        isDarkMode 
+                                            ? 'border-gray-600 text-gray-300 hover:bg-gray-700' 
+                                            : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                                    }`}>
                                         <span className="mr-2">📅</span>
                                         Schedule Later
                                     </button>
@@ -1040,19 +1188,37 @@ const Dashboard = () => {
                     </div>
     
                     {/* Upcoming Deadlines */}
-                    <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                        <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-orange-50 to-red-50">
-                            <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                    <div className={`${
+                        isDarkMode 
+                            ? 'bg-gray-800 border-gray-700' 
+                            : 'bg-white border-gray-100'
+                    } rounded-2xl shadow-xl overflow-hidden`}>
+                        <div className={`p-6 border-b ${
+                            isDarkMode 
+                                ? 'border-gray-600 bg-gradient-to-r from-orange-900/50 to-red-900/50' 
+                                : 'border-gray-200 bg-gradient-to-r from-orange-50 to-red-50'
+                        }`}>
+                            <h3 className={`text-lg font-semibold flex items-center ${
+                                isDarkMode ? 'text-white' : 'text-gray-900'
+                            }`}>
                                 <span className="mr-2">📅</span>
                                 Upcoming Deadlines
                             </h3>
-                            <p className="text-sm text-gray-600 mt-1">Stay on top of your assignments</p>
+                            <p className={`text-sm mt-1 ${
+                                isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                            }`}>Stay on top of your assignments</p>
                         </div>
                         <div className="p-6">
                             <div className="space-y-4">
                                 {dashboardData.student.upcomingDeadlines.map(deadline => (
                                     <div key={deadline.id} className={`flex items-center space-x-4 p-4 rounded-2xl border transition-all hover:shadow-md ${
-                                        deadline.urgent ? 'bg-red-25 border-red-200' : 'bg-gray-50 border-gray-200'
+                                        deadline.urgent 
+                                            ? isDarkMode 
+                                                ? 'bg-red-900/20 border-red-700' 
+                                                : 'bg-red-25 border-red-200'
+                                            : isDarkMode 
+                                                ? 'bg-gray-700 border-gray-600' 
+                                                : 'bg-gray-50 border-gray-200'
                                     }`}>
                                         <div className="flex-shrink-0">
                                             <div className={`w-16 h-16 rounded-2xl flex flex-col items-center justify-center text-white font-semibold ${
@@ -1063,8 +1229,12 @@ const Dashboard = () => {
                                             </div>
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <h4 className="text-sm font-semibold text-gray-900 truncate">{deadline.title}</h4>
-                                            <p className="text-sm text-gray-600">{deadline.course}</p>
+                                            <h4 className={`text-sm font-semibold truncate ${
+                                                isDarkMode ? 'text-white' : 'text-gray-900'
+                                            }`}>{deadline.title}</h4>
+                                            <p className={`text-sm ${
+                                                isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                                            }`}>{deadline.course}</p>
                                             <div className="flex items-center mt-2">
                                                 <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                                                     deadline.urgent ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'
@@ -1087,16 +1257,28 @@ const Dashboard = () => {
                 {/* Sidebar Content */}
                 <div className="space-y-8">
                     {/* Performance Insights */}
-                    <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                        <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-green-50 to-emerald-50">
-                            <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                    <div className={`${
+                        isDarkMode 
+                            ? 'bg-gray-800 border-gray-700' 
+                            : 'bg-white border-gray-100'
+                    } rounded-2xl shadow-xl overflow-hidden`}>
+                        <div className={`p-6 border-b ${
+                            isDarkMode 
+                                ? 'border-gray-600 bg-gradient-to-r from-green-900/50 to-emerald-900/50' 
+                                : 'border-gray-200 bg-gradient-to-r from-green-50 to-emerald-50'
+                        }`}>
+                            <h3 className={`text-lg font-semibold flex items-center ${
+                                isDarkMode ? 'text-white' : 'text-gray-900'
+                            }`}>
                                 <span className="mr-2">📈</span>
                                 Performance Insights
                             </h3>
                         </div>
                         <div className="p-6 space-y-6">
                             <div>
-                                <h4 className="text-sm font-semibold text-gray-900 mb-3 flex items-center">
+                                <h4 className={`text-sm font-semibold mb-3 flex items-center ${
+                                    isDarkMode ? 'text-white' : 'text-gray-900'
+                                }`}>
                                     <span className="mr-2">💪</span>
                                     Your Strengths
                                 </h4>
@@ -1111,7 +1293,9 @@ const Dashboard = () => {
                             </div>
                             
                             <div>
-                                <h4 className="text-sm font-semibold text-gray-900 mb-3 flex items-center">
+                                <h4 className={`text-sm font-semibold mb-3 flex items-center ${
+                                    isDarkMode ? 'text-white' : 'text-gray-900'
+                                }`}>
                                     <span className="mr-2">🎯</span>
                                     Areas for Growth
                                 </h4>
@@ -1128,31 +1312,67 @@ const Dashboard = () => {
                     </div>
     
                     {/* Quick Actions */}
-                    <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                        <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50">
-                            <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                    <div className={`${
+                        isDarkMode 
+                            ? 'bg-gray-800 border-gray-700' 
+                            : 'bg-white border-gray-100'
+                    } rounded-2xl shadow-xl overflow-hidden`}>
+                        <div className={`p-6 border-b ${
+                            isDarkMode 
+                                ? 'border-gray-600 bg-gradient-to-r from-purple-900/50 to-pink-900/50' 
+                                : 'border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50'
+                        }`}>
+                            <h3 className={`text-lg font-semibold flex items-center ${
+                                isDarkMode ? 'text-white' : 'text-gray-900'
+                            }`}>
                                 <span className="mr-2">⚡</span>
                                 Quick Actions
                             </h3>
-                            <p className="text-sm text-gray-600 mt-1">Get things done faster</p>
+                            <p className={`text-sm mt-1 ${
+                                isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                            }`}>Get things done faster</p>
                         </div>
                         <div className="p-6">
                             <div className="grid grid-cols-2 gap-3">
-                                <button className="flex flex-col items-center p-4 bg-blue-50 rounded-xl border border-blue-200 hover:bg-blue-100 transition-colors group">
+                                <button className={`flex flex-col items-center p-4 rounded-xl border transition-colors group ${
+                                    isDarkMode 
+                                        ? 'bg-blue-900/20 border-blue-700 hover:bg-blue-800/30' 
+                                        : 'bg-blue-50 border-blue-200 hover:bg-blue-100'
+                                }`}>
                                     <span className="text-2xl mb-2 group-hover:scale-110 transition-transform">💬</span>
-                                    <span className="text-sm font-medium text-gray-700">Ask Question</span>
+                                    <span className={`text-sm font-medium ${
+                                        isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                                    }`}>Ask Question</span>
                                 </button>
-                                <button className="flex flex-col items-center p-4 bg-green-50 rounded-xl border border-green-200 hover:bg-green-100 transition-colors group">
+                                <button className={`flex flex-col items-center p-4 rounded-xl border transition-colors group ${
+                                    isDarkMode 
+                                        ? 'bg-green-900/20 border-green-700 hover:bg-green-800/30' 
+                                        : 'bg-green-50 border-green-200 hover:bg-green-100'
+                                }`}>
                                     <span className="text-2xl mb-2 group-hover:scale-110 transition-transform">📝</span>
-                                    <span className="text-sm font-medium text-gray-700">Take Quiz</span>
+                                    <span className={`text-sm font-medium ${
+                                        isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                                    }`}>Take Quiz</span>
                                 </button>
-                                <button className="flex flex-col items-center p-4 bg-purple-50 rounded-xl border border-purple-200 hover:bg-purple-100 transition-colors group">
+                                <button className={`flex flex-col items-center p-4 rounded-xl border transition-colors group ${
+                                    isDarkMode 
+                                        ? 'bg-purple-900/20 border-purple-700 hover:bg-purple-800/30' 
+                                        : 'bg-purple-50 border-purple-200 hover:bg-purple-100'
+                                }`}>
                                     <span className="text-2xl mb-2 group-hover:scale-110 transition-transform">🎯</span>
-                                    <span className="text-sm font-medium text-gray-700">Set Goal</span>
+                                    <span className={`text-sm font-medium ${
+                                        isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                                    }`}>Set Goal</span>
                                 </button>
-                                <button className="flex flex-col items-center p-4 bg-orange-50 rounded-xl border border-orange-200 hover:bg-orange-100 transition-colors group">
+                                <button className={`flex flex-col items-center p-4 rounded-xl border transition-colors group ${
+                                    isDarkMode 
+                                        ? 'bg-orange-900/20 border-orange-700 hover:bg-orange-800/30' 
+                                        : 'bg-orange-50 border-orange-200 hover:bg-orange-100'
+                                }`}>
                                     <span className="text-2xl mb-2 group-hover:scale-110 transition-transform">📖</span>
-                                    <span className="text-sm font-medium text-gray-700">Study Notes</span>
+                                    <span className={`text-sm font-medium ${
+                                        isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                                    }`}>Study Notes</span>
                                 </button>
                             </div>
                         </div>
@@ -1163,15 +1383,17 @@ const Dashboard = () => {
     );
     
     const renderStudentCourses = () => (
-        <div className="space-y-8">
+        <div className={`space-y-8 ${isDarkMode ? 'dark' : ''}`}>
             {/* Header */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div className="space-y-2">
-                    <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+                    <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                         <span className="mr-2">📚</span>
                         My Learning Path
                     </h2>
-                    <p className="text-gray-600">Track your progress across all enrolled courses</p>
+                    <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>
+                        Track your progress across all enrolled courses
+                    </p>
                 </div>
                 
                 <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors">
@@ -1181,76 +1403,144 @@ const Dashboard = () => {
             </div>
     
             {/* Learning Progress Overview */}
-            <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-                    <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+            <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl overflow-hidden transition-colors duration-300`}>
+                <div className={`p-6 border-b ${isDarkMode ? 'border-gray-600 bg-gradient-to-r from-blue-900/50 to-indigo-900/50' : 'border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50'} transition-colors duration-300`}>
+                    <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                         <span className="mr-2">📊</span>
                         Overall Progress
                     </h3>
-                    <p className="text-sm text-gray-600 mt-1">Your learning statistics at a glance</p>
+                    <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mt-1 transition-colors duration-300`}>
+                        Your learning statistics at a glance
+                    </p>
                 </div>
                 <div className="p-6">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="text-center p-6 bg-blue-50 rounded-2xl border border-blue-200">
+                        {/* Course Completion Card */}
+                        <div className={`text-center p-6 ${isDarkMode ? 'bg-blue-900/30 border-blue-700' : 'bg-blue-50 border-blue-200'} rounded-2xl border transition-colors duration-300`}>
                             <div className="relative w-24 h-24 mx-auto mb-4">
                                 <svg className="w-24 h-24 transform -rotate-90" viewBox="0 0 36 36">
-                                    <circle cx="18" cy="18" r="16" fill="none" stroke="#e5e7eb" strokeWidth="2"/>
-                                    <circle cx="18" cy="18" r="16" fill="none" stroke="#3b82f6" strokeWidth="2"
-                                        strokeDasharray="75, 100" strokeLinecap="round" transform="rotate(-90 18 18)"/>
+                                    <circle 
+                                        cx="18" 
+                                        cy="18" 
+                                        r="16" 
+                                        fill="none" 
+                                        stroke={isDarkMode ? "#374151" : "#e5e7eb"} 
+                                        strokeWidth="2"
+                                    />
+                                    <circle 
+                                        cx="18" 
+                                        cy="18" 
+                                        r="16" 
+                                        fill="none" 
+                                        stroke="#3b82f6" 
+                                        strokeWidth="2"
+                                        strokeDasharray="75, 100" 
+                                        strokeLinecap="round" 
+                                        transform="rotate(-90 18 18)"
+                                    />
                                 </svg>
                                 <div className="absolute inset-0 flex items-center justify-center">
                                     <span className="text-xl font-bold text-blue-600">75%</span>
                                 </div>
                             </div>
-                            <h4 className="font-semibold text-gray-900 mb-1">Course Completion</h4>
-                            <p className="text-sm text-gray-600">3 of 4 courses completed</p>
+                            <h4 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-1 transition-colors duration-300`}>
+                                Course Completion
+                            </h4>
+                            <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>
+                                3 of 4 courses completed
+                            </p>
                         </div>
     
-                        <div className="text-center p-6 bg-green-50 rounded-2xl border border-green-200">
+                        {/* Assignment Score Card */}
+                        <div className={`text-center p-6 ${isDarkMode ? 'bg-green-900/30 border-green-700' : 'bg-green-50 border-green-200'} rounded-2xl border transition-colors duration-300`}>
                             <div className="relative w-24 h-24 mx-auto mb-4">
                                 <svg className="w-24 h-24 transform -rotate-90" viewBox="0 0 36 36">
-                                    <circle cx="18" cy="18" r="16" fill="none" stroke="#e5e7eb" strokeWidth="2"/>
-                                    <circle cx="18" cy="18" r="16" fill="none" stroke="#10b981" strokeWidth="2"
-                                        strokeDasharray="88, 100" strokeLinecap="round" transform="rotate(-90 18 18)"/>
+                                    <circle 
+                                        cx="18" 
+                                        cy="18" 
+                                        r="16" 
+                                        fill="none" 
+                                        stroke={isDarkMode ? "#374151" : "#e5e7eb"} 
+                                        strokeWidth="2"
+                                    />
+                                    <circle 
+                                        cx="18" 
+                                        cy="18" 
+                                        r="16" 
+                                        fill="none" 
+                                        stroke="#10b981" 
+                                        strokeWidth="2"
+                                        strokeDasharray="88, 100" 
+                                        strokeLinecap="round" 
+                                        transform="rotate(-90 18 18)"
+                                    />
                                 </svg>
                                 <div className="absolute inset-0 flex items-center justify-center">
                                     <span className="text-xl font-bold text-green-600">88%</span>
                                 </div>
                             </div>
-                            <h4 className="font-semibold text-gray-900 mb-1">Assignment Score</h4>
-                            <p className="text-sm text-gray-600">Average across all courses</p>
+                            <h4 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-1 transition-colors duration-300`}>
+                                Assignment Score
+                            </h4>
+                            <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>
+                                Average across all courses
+                            </p>
                         </div>
     
-                        <div className="text-center p-6 bg-orange-50 rounded-2xl border border-orange-200">
+                        {/* Study Goal Card */}
+                        <div className={`text-center p-6 ${isDarkMode ? 'bg-orange-900/30 border-orange-700' : 'bg-orange-50 border-orange-200'} rounded-2xl border transition-colors duration-300`}>
                             <div className="relative w-24 h-24 mx-auto mb-4">
                                 <svg className="w-24 h-24 transform -rotate-90" viewBox="0 0 36 36">
-                                    <circle cx="18" cy="18" r="16" fill="none" stroke="#e5e7eb" strokeWidth="2"/>
-                                    <circle cx="18" cy="18" r="16" fill="none" stroke="#f59e0b" strokeWidth="2"
-                                        strokeDasharray="60, 100" strokeLinecap="round" transform="rotate(-90 18 18)"/>
+                                    <circle 
+                                        cx="18" 
+                                        cy="18" 
+                                        r="16" 
+                                        fill="none" 
+                                        stroke={isDarkMode ? "#374151" : "#e5e7eb"} 
+                                        strokeWidth="2"
+                                    />
+                                    <circle 
+                                        cx="18" 
+                                        cy="18" 
+                                        r="16" 
+                                        fill="none" 
+                                        stroke="#f59e0b" 
+                                        strokeWidth="2"
+                                        strokeDasharray="60, 100" 
+                                        strokeLinecap="round" 
+                                        transform="rotate(-90 18 18)"
+                                    />
                                 </svg>
                                 <div className="absolute inset-0 flex items-center justify-center">
                                     <span className="text-xl font-bold text-orange-600">60%</span>
                                 </div>
                             </div>
-                            <h4 className="font-semibold text-gray-900 mb-1">Study Goal</h4>
-                            <p className="text-sm text-gray-600">12h of 20h weekly goal</p>
+                            <h4 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-1 transition-colors duration-300`}>
+                                Study Goal
+                            </h4>
+                            <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>
+                                12h of 20h weekly goal
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
     
             {/* Enrolled Courses */}
-            <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-green-50 to-emerald-50">
-                    <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+            <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl overflow-hidden transition-colors duration-300`}>
+                <div className={`p-6 border-b ${isDarkMode ? 'border-gray-600 bg-gradient-to-r from-green-900/50 to-emerald-900/50' : 'border-gray-200 bg-gradient-to-r from-green-50 to-emerald-50'} transition-colors duration-300`}>
+                    <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                         <span className="mr-2">📖</span>
                         Enrolled Courses
                     </h3>
-                    <p className="text-sm text-gray-600 mt-1">Continue your learning journey</p>
+                    <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mt-1 transition-colors duration-300`}>
+                        Continue your learning journey
+                    </p>
                 </div>
                 <div className="p-6">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200 hover:shadow-lg transition-all duration-300 group">
+                        {/* Data Science Course Card */}
+                        <div className={`${isDarkMode ? 'bg-gradient-to-br from-blue-900/50 to-indigo-900/50 border-blue-700' : 'bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200'} rounded-2xl p-6 border hover:shadow-lg transition-all duration-300 group`}>
                             <div className="flex items-start justify-between mb-4">
                                 <div className="flex items-center space-x-3">
                                     <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center text-white text-lg">
@@ -1260,7 +1550,9 @@ const Dashboard = () => {
                                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                             Data Science
                                         </span>
-                                        <div className="text-xs text-gray-500 mt-1">Beginner Level</div>
+                                        <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mt-1 transition-colors duration-300`}>
+                                            Beginner Level
+                                        </div>
                                     </div>
                                 </div>
                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
@@ -1268,18 +1560,28 @@ const Dashboard = () => {
                                 </span>
                             </div>
                             
-                            <h4 className="text-lg font-semibold text-gray-900 mb-2">Introduction to Data Science</h4>
-                            <p className="text-gray-600 text-sm mb-4">Learn the fundamentals of data analysis, visualization, and statistical thinking.</p>
+                            <h4 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-2 transition-colors duration-300`}>
+                                Introduction to Data Science
+                            </h4>
+                            <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} text-sm mb-4 transition-colors duration-300`}>
+                                Learn the fundamentals of data analysis, visualization, and statistical thinking.
+                            </p>
                             
                             <div className="mb-4">
                                 <div className="flex items-center justify-between text-sm mb-2">
-                                    <span className="text-gray-600">Progress</span>
-                                    <span className="font-semibold text-gray-900">85% Complete</span>
+                                    <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>
+                                        Progress
+                                    </span>
+                                    <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>
+                                        85% Complete
+                                    </span>
                                 </div>
-                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                <div className={`w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full h-2 transition-colors duration-300`}>
                                     <div className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-1000" style={{width: '85%'}}></div>
                                 </div>
-                                <div className="text-xs text-gray-500 mt-1">Next: Python Basics</div>
+                                <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mt-1 transition-colors duration-300`}>
+                                    Next: Python Basics
+                                </div>
                             </div>
                             
                             <div className="flex space-x-3">
@@ -1287,14 +1589,15 @@ const Dashboard = () => {
                                     <span className="mr-2">🚀</span>
                                     Continue Learning
                                 </button>
-                                <button className="inline-flex items-center px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                                <button className={`inline-flex items-center px-3 py-2 border ${isDarkMode ? 'border-gray-600 text-gray-300 hover:bg-gray-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'} rounded-lg transition-colors`}>
                                     <span className="mr-1">📁</span>
                                     Materials
                                 </button>
                             </div>
                         </div>
     
-                        <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-200 hover:shadow-lg transition-all duration-300 group">
+                        {/* JavaScript Course Card */}
+                        <div className={`${isDarkMode ? 'bg-gradient-to-br from-green-900/50 to-emerald-900/50 border-green-700' : 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-200'} rounded-2xl p-6 border hover:shadow-lg transition-all duration-300 group`}>
                             <div className="flex items-start justify-between mb-4">
                                 <div className="flex items-center space-x-3">
                                     <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center text-white text-lg">
@@ -1304,7 +1607,9 @@ const Dashboard = () => {
                                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                             Web Development
                                         </span>
-                                        <div className="text-xs text-gray-500 mt-1">Intermediate Level</div>
+                                        <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mt-1 transition-colors duration-300`}>
+                                            Intermediate Level
+                                        </div>
                                     </div>
                                 </div>
                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
@@ -1312,18 +1617,28 @@ const Dashboard = () => {
                                 </span>
                             </div>
                             
-                            <h4 className="text-lg font-semibold text-gray-900 mb-2">Full-Stack JavaScript</h4>
-                            <p className="text-gray-600 text-sm mb-4">Master modern JavaScript development with React, Node.js, and MongoDB.</p>
+                            <h4 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-2 transition-colors duration-300`}>
+                                Full-Stack JavaScript
+                            </h4>
+                            <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} text-sm mb-4 transition-colors duration-300`}>
+                                Master modern JavaScript development with React, Node.js, and MongoDB.
+                            </p>
                             
                             <div className="mb-4">
                                 <div className="flex items-center justify-between text-sm mb-2">
-                                    <span className="text-gray-600">Progress</span>
-                                    <span className="font-semibold text-gray-900">62% Complete</span>
+                                    <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>
+                                        Progress
+                                    </span>
+                                    <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>
+                                        62% Complete
+                                    </span>
                                 </div>
-                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                <div className={`w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full h-2 transition-colors duration-300`}>
                                     <div className="bg-gradient-to-r from-green-500 to-green-600 h-2 rounded-full transition-all duration-1000" style={{width: '62%'}}></div>
                                 </div>
-                                <div className="text-xs text-gray-500 mt-1">Next: React Hooks</div>
+                                <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mt-1 transition-colors duration-300`}>
+                                    Next: React Hooks
+                                </div>
                             </div>
                             
                             <div className="flex space-x-3">
@@ -1331,7 +1646,7 @@ const Dashboard = () => {
                                     <span className="mr-2">🚀</span>
                                     Continue Learning
                                 </button>
-                                <button className="inline-flex items-center px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                                <button className={`inline-flex items-center px-3 py-2 border ${isDarkMode ? 'border-gray-600 text-gray-300 hover:bg-gray-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'} rounded-lg transition-colors`}>
                                     <span className="mr-1">📁</span>
                                     Materials
                                 </button>
@@ -1342,21 +1657,27 @@ const Dashboard = () => {
             </div>
         </div>
     );
-
+    
     const renderStudentAnalytics = () => (
-        <div className="space-y-8">
+        <div className={`space-y-8 ${isDarkMode ? 'dark' : ''}`}>
             {/* Header */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div className="space-y-2">
-                    <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+                    <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                         <span className="mr-2">📊</span>
                         Learning Analytics
                     </h2>
-                    <p className="text-gray-600">Track your progress and discover insights about your learning journey</p>
+                    <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>
+                        Track your progress and discover insights about your learning journey
+                    </p>
                 </div>
                 
                 <div className="flex items-center space-x-3">
-                    <select className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white">
+                    <select className={`px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                        isDarkMode 
+                            ? 'bg-gray-800 border-gray-600 text-white' 
+                            : 'bg-white border-gray-300 text-gray-900'
+                    }`}>
                         <option>Last 30 days</option>
                         <option>This semester</option>
                         <option>All time</option>
@@ -1370,7 +1691,7 @@ const Dashboard = () => {
     
             {/* Analytics Overview Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
+                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
                     <div className="bg-gradient-to-br from-blue-500 to-indigo-600 p-6 text-white">
                         <div className="flex items-center justify-between">
                             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -1382,9 +1703,13 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50">
+                    <div className={`p-4 ${
+                        isDarkMode 
+                            ? 'bg-gradient-to-r from-blue-900/50 to-indigo-900/50' 
+                            : 'bg-gradient-to-r from-blue-50 to-indigo-50'
+                    } transition-colors duration-300`}>
                         <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-600">Since last week</span>
+                            <span className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>Since last week</span>
                             <span className="font-semibold text-green-600 flex items-center">
                                 <span className="mr-1">↗</span>
                                 +2 days
@@ -1393,7 +1718,7 @@ const Dashboard = () => {
                     </div>
                 </div>
     
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
+                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
                     <div className="bg-gradient-to-br from-green-500 to-emerald-600 p-6 text-white">
                         <div className="flex items-center justify-between">
                             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -1405,9 +1730,13 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50">
+                    <div className={`p-4 ${
+                        isDarkMode 
+                            ? 'bg-gradient-to-r from-green-900/50 to-emerald-900/50' 
+                            : 'bg-gradient-to-r from-green-50 to-emerald-50'
+                    } transition-colors duration-300`}>
                         <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-600">Improvement</span>
+                            <span className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>Improvement</span>
                             <span className="font-semibold text-green-600 flex items-center">
                                 <span className="mr-1">↗</span>
                                 +5.2%
@@ -1416,7 +1745,7 @@ const Dashboard = () => {
                     </div>
                 </div>
     
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
+                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
                     <div className="bg-gradient-to-br from-orange-500 to-red-600 p-6 text-white">
                         <div className="flex items-center justify-between">
                             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -1428,15 +1757,19 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="p-4 bg-gradient-to-r from-orange-50 to-red-50">
+                    <div className={`p-4 ${
+                        isDarkMode 
+                            ? 'bg-gradient-to-r from-orange-900/50 to-red-900/50' 
+                            : 'bg-gradient-to-r from-orange-50 to-red-50'
+                    } transition-colors duration-300`}>
                         <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-600">This week</span>
+                            <span className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>This week</span>
                             <span className="font-semibold text-orange-600">Goal: 20h</span>
                         </div>
                     </div>
                 </div>
     
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
+                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
                     <div className="bg-gradient-to-br from-purple-500 to-pink-600 p-6 text-white">
                         <div className="flex items-center justify-between">
                             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -1448,9 +1781,13 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50">
+                    <div className={`p-4 ${
+                        isDarkMode 
+                            ? 'bg-gradient-to-r from-purple-900/50 to-pink-900/50' 
+                            : 'bg-gradient-to-r from-purple-50 to-pink-50'
+                    } transition-colors duration-300`}>
                         <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-600">This month</span>
+                            <span className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>This month</span>
                             <span className="font-semibold text-purple-600">75% rate</span>
                         </div>
                     </div>
@@ -1460,18 +1797,28 @@ const Dashboard = () => {
             {/* Main Analytics Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Performance Trends */}
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                    <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-                        <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+                    <div className={`p-6 border-b ${
+                        isDarkMode 
+                            ? 'border-gray-600 bg-gradient-to-r from-blue-900/50 to-indigo-900/50' 
+                            : 'border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50'
+                    } transition-colors duration-300`}>
+                        <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                             <span className="mr-2">📈</span>
                             Performance Trends
                         </h3>
-                        <p className="text-sm text-gray-600 mt-1">Your weekly progress overview</p>
+                        <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mt-1 transition-colors duration-300`}>
+                            Your weekly progress overview
+                        </p>
                     </div>
                     <div className="p-6">
                         <div className="space-y-6">
                             {/* Chart */}
-                            <div className="relative h-48 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4">
+                            <div className={`relative h-48 ${
+                                isDarkMode 
+                                    ? 'bg-gradient-to-br from-blue-900/30 to-indigo-900/30' 
+                                    : 'bg-gradient-to-br from-blue-50 to-indigo-50'
+                            } rounded-xl p-4 transition-colors duration-300`}>
                                 <div className="flex items-end justify-between h-full space-x-2">
                                     {[
                                         { week: 'Week 1', height: '70%', value: '85%', color: 'bg-blue-500' },
@@ -1485,11 +1832,15 @@ const Dashboard = () => {
                                                     className={`w-full ${bar.color} rounded-t-lg transition-all duration-1000 ease-out hover:opacity-80 cursor-pointer`}
                                                     style={{ height: bar.height }}
                                                 ></div>
-                                                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <div className={`absolute -top-8 left-1/2 transform -translate-x-1/2 ${
+                                                    isDarkMode ? 'bg-gray-700 text-white' : 'bg-gray-800 text-white'
+                                                } text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity`}>
                                                     {bar.value}
                                                 </div>
                                             </div>
-                                            <div className="text-xs text-gray-600 mt-2 font-medium">{bar.week}</div>
+                                            <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mt-2 font-medium transition-colors duration-300`}>
+                                                {bar.week}
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
@@ -1497,21 +1848,41 @@ const Dashboard = () => {
                             
                             {/* Performance Insights */}
                             <div className="grid grid-cols-2 gap-4">
-                                <div className="bg-green-50 rounded-xl p-4 border border-green-200">
+                                <div className={`${
+                                    isDarkMode 
+                                        ? 'bg-green-900/30 border-green-700' 
+                                        : 'bg-green-50 border-green-200'
+                                } rounded-xl p-4 border transition-colors duration-300`}>
                                     <div className="flex items-center space-x-2 mb-2">
                                         <span className="text-green-600 text-lg">📈</span>
-                                        <span className="text-sm font-semibold text-green-800">Best Week</span>
+                                        <span className={`text-sm font-semibold ${
+                                            isDarkMode ? 'text-green-400' : 'text-green-800'
+                                        } transition-colors duration-300`}>Best Week</span>
                                     </div>
-                                    <div className="text-2xl font-bold text-green-900">Week 4</div>
-                                    <div className="text-xs text-green-600">92% average score</div>
+                                    <div className={`text-2xl font-bold ${
+                                        isDarkMode ? 'text-green-300' : 'text-green-900'
+                                    } transition-colors duration-300`}>Week 4</div>
+                                    <div className={`text-xs ${
+                                        isDarkMode ? 'text-green-400' : 'text-green-600'
+                                    } transition-colors duration-300`}>92% average score</div>
                                 </div>
-                                <div className="bg-orange-50 rounded-xl p-4 border border-orange-200">
+                                <div className={`${
+                                    isDarkMode 
+                                        ? 'bg-orange-900/30 border-orange-700' 
+                                        : 'bg-orange-50 border-orange-200'
+                                } rounded-xl p-4 border transition-colors duration-300`}>
                                     <div className="flex items-center space-x-2 mb-2">
                                         <span className="text-orange-600 text-lg">🎯</span>
-                                        <span className="text-sm font-semibold text-orange-800">Focus Area</span>
+                                        <span className={`text-sm font-semibold ${
+                                            isDarkMode ? 'text-orange-400' : 'text-orange-800'
+                                        } transition-colors duration-300`}>Focus Area</span>
                                     </div>
-                                    <div className="text-sm font-bold text-orange-900">Time Management</div>
-                                    <div className="text-xs text-orange-600">Needs improvement</div>
+                                    <div className={`text-sm font-bold ${
+                                        isDarkMode ? 'text-orange-300' : 'text-orange-900'
+                                    } transition-colors duration-300`}>Time Management</div>
+                                    <div className={`text-xs ${
+                                        isDarkMode ? 'text-orange-400' : 'text-orange-600'
+                                    } transition-colors duration-300`}>Needs improvement</div>
                                 </div>
                             </div>
                         </div>
@@ -1519,13 +1890,19 @@ const Dashboard = () => {
                 </div>
     
                 {/* Subject Performance */}
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                    <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-green-50 to-emerald-50">
-                        <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+                    <div className={`p-6 border-b ${
+                        isDarkMode 
+                            ? 'border-gray-600 bg-gradient-to-r from-green-900/50 to-emerald-900/50' 
+                            : 'border-gray-200 bg-gradient-to-r from-green-50 to-emerald-50'
+                    } transition-colors duration-300`}>
+                        <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                             <span className="mr-2">📚</span>
                             Subject Performance
                         </h3>
-                        <p className="text-sm text-gray-600 mt-1">Performance across different subjects</p>
+                        <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mt-1 transition-colors duration-300`}>
+                            Performance across different subjects
+                        </p>
                     </div>
                     <div className="p-6">
                         <div className="space-y-6">
@@ -1541,12 +1918,18 @@ const Dashboard = () => {
                                                 {subject.name.charAt(0)}
                                             </div>
                                             <div>
-                                                <h4 className="font-semibold text-gray-900">{subject.name}</h4>
-                                                <div className="text-sm text-gray-500">Current progress</div>
+                                                <h4 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>
+                                                    {subject.name}
+                                                </h4>
+                                                <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
+                                                    Current progress
+                                                </div>
                                             </div>
                                         </div>
                                         <div className="text-right">
-                                            <div className="text-xl font-bold text-gray-900">{subject.score}%</div>
+                                            <div className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>
+                                                {subject.score}%
+                                            </div>
                                             <div className={`text-sm font-medium ${
                                                 subject.trend.startsWith('+') ? 'text-green-600' : 
                                                 subject.trend.startsWith('-') ? 'text-red-600' : 'text-gray-600'
@@ -1555,7 +1938,7 @@ const Dashboard = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="w-full bg-gray-200 rounded-full h-3">
+                                    <div className={`w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full h-3 transition-colors duration-300`}>
                                         <div 
                                             className={`${subject.bg} h-3 rounded-full transition-all duration-1000 ease-out`}
                                             style={{ width: `${subject.score}%` }}
@@ -1568,13 +1951,19 @@ const Dashboard = () => {
                 </div>
     
                 {/* Recent Achievements */}
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                    <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-yellow-50 to-orange-50">
-                        <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+                    <div className={`p-6 border-b ${
+                        isDarkMode 
+                            ? 'border-gray-600 bg-gradient-to-r from-yellow-900/50 to-orange-900/50' 
+                            : 'border-gray-200 bg-gradient-to-r from-yellow-50 to-orange-50'
+                    } transition-colors duration-300`}>
+                        <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                             <span className="mr-2">🏆</span>
                             Recent Achievements
                         </h3>
-                        <p className="text-sm text-gray-600 mt-1">Your latest milestones and badges</p>
+                        <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mt-1 transition-colors duration-300`}>
+                            Your latest milestones and badges
+                        </p>
                     </div>
                     <div className="p-6">
                         <div className="space-y-4">
@@ -1601,34 +1990,58 @@ const Dashboard = () => {
                                     color: 'bg-purple-500'
                                 }
                             ].map((achievement, index) => (
-                                <div key={index} className="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl border border-gray-200 hover:bg-gray-100 transition-colors">
+                                <div key={index} className={`flex items-start space-x-4 p-4 ${
+                                    isDarkMode 
+                                        ? 'bg-gray-700 border-gray-600 hover:bg-gray-600' 
+                                        : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+                                } rounded-xl border transition-colors`}>
                                     <div className={`w-12 h-12 ${achievement.color} rounded-xl flex items-center justify-center text-white text-xl`}>
                                         {achievement.icon}
                                     </div>
                                     <div className="flex-1">
-                                        <h4 className="font-semibold text-gray-900 mb-1">{achievement.title}</h4>
-                                        <p className="text-sm text-gray-600 mb-2">{achievement.desc}</p>
-                                        <span className="text-xs text-gray-500 font-medium">{achievement.date}</span>
+                                        <h4 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-1 transition-colors duration-300`}>
+                                            {achievement.title}
+                                        </h4>
+                                        <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mb-2 transition-colors duration-300`}>
+                                            {achievement.desc}
+                                        </p>
+                                        <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} font-medium transition-colors duration-300`}>
+                                            {achievement.date}
+                                        </span>
                                     </div>
-                                    <button className="p-2 text-gray-400 hover:text-blue-600 transition-colors">
+                                    <button className={`p-2 ${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-400 hover:text-blue-600'} transition-colors`}>
                                         <span className="text-lg">🔗</span>
                                     </button>
                                 </div>
                             ))}
                         </div>
                         
-                        <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+                        <div className={`mt-6 p-4 ${
+                            isDarkMode 
+                                ? 'bg-gradient-to-r from-blue-900/50 to-indigo-900/50 border-blue-700' 
+                                : 'bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200'
+                        } rounded-xl border transition-colors duration-300`}>
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <h4 className="font-semibold text-blue-900">Next Achievement</h4>
-                                    <p className="text-sm text-blue-700">Study for 30 days straight</p>
+                                    <h4 className={`font-semibold ${
+                                        isDarkMode ? 'text-blue-300' : 'text-blue-900'
+                                    } transition-colors duration-300`}>Next Achievement</h4>
+                                    <p className={`text-sm ${
+                                        isDarkMode ? 'text-blue-400' : 'text-blue-700'
+                                    } transition-colors duration-300`}>Study for 30 days straight</p>
                                 </div>
                                 <div className="text-right">
-                                    <div className="text-lg font-bold text-blue-900">7/30</div>
-                                    <div className="text-xs text-blue-600">Days completed</div>
+                                    <div className={`text-lg font-bold ${
+                                        isDarkMode ? 'text-blue-300' : 'text-blue-900'
+                                    } transition-colors duration-300`}>7/30</div>
+                                    <div className={`text-xs ${
+                                        isDarkMode ? 'text-blue-400' : 'text-blue-600'
+                                    } transition-colors duration-300`}>Days completed</div>
                                 </div>
                             </div>
-                            <div className="mt-3 w-full bg-blue-200 rounded-full h-2">
+                            <div className={`mt-3 w-full ${
+                                isDarkMode ? 'bg-blue-800' : 'bg-blue-200'
+                            } rounded-full h-2 transition-colors duration-300`}>
                                 <div className="bg-blue-600 h-2 rounded-full transition-all duration-1000" style={{ width: '23%' }}></div>
                             </div>
                         </div>
@@ -1636,13 +2049,19 @@ const Dashboard = () => {
                 </div>
     
                 {/* Study Patterns */}
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                    <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50">
-                        <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+                    <div className={`p-6 border-b ${
+                        isDarkMode 
+                            ? 'border-gray-600 bg-gradient-to-r from-purple-900/50 to-pink-900/50' 
+                            : 'border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50'
+                    } transition-colors duration-300`}>
+                        <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                             <span className="mr-2">⏰</span>
                             Study Patterns
                         </h3>
-                        <p className="text-sm text-gray-600 mt-1">When you learn best</p>
+                        <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mt-1 transition-colors duration-300`}>
+                            When you learn best
+                        </p>
                     </div>
                     <div className="p-6">
                         <div className="space-y-4">
@@ -1654,24 +2073,38 @@ const Dashboard = () => {
                                 { time: '7:00 PM', level: 'Medium', percentage: 75, color: 'bg-yellow-500' }
                             ].map((pattern, index) => (
                                 <div key={index} className="flex items-center space-x-4">
-                                    <div className="w-20 text-sm font-medium text-gray-700">{pattern.time}</div>
-                                    <div className="flex-1 bg-gray-200 rounded-full h-3">
+                                    <div className={`w-20 text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
+                                        {pattern.time}
+                                    </div>
+                                    <div className={`flex-1 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full h-3 transition-colors duration-300`}>
                                         <div 
                                             className={`${pattern.color} h-3 rounded-full transition-all duration-1000`}
                                             style={{ width: `${pattern.percentage}%` }}
                                         ></div>
                                     </div>
-                                    <div className="w-16 text-sm font-medium text-gray-700">{pattern.level}</div>
+                                    <div className={`w-16 text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
+                                        {pattern.level}
+                                    </div>
                                 </div>
                             ))}
                         </div>
                         
-                        <div className="mt-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200">
+                        <div className={`mt-6 p-4 ${
+                            isDarkMode 
+                                ? 'bg-gradient-to-r from-green-900/50 to-emerald-900/50 border-green-700' 
+                                : 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-200'
+                        } rounded-xl border transition-colors duration-300`}>
                             <div className="flex items-center space-x-3">
                                 <span className="text-green-600 text-2xl">💡</span>
                                 <div>
-                                    <h4 className="font-semibold text-green-900">Productivity Tip</h4>
-                                    <p className="text-sm text-green-700">You're most focused at 9 AM and 2 PM. Schedule your toughest topics during these times!</p>
+                                    <h4 className={`font-semibold ${
+                                        isDarkMode ? 'text-green-300' : 'text-green-900'
+                                    } transition-colors duration-300`}>Productivity Tip</h4>
+                                    <p className={`text-sm ${
+                                        isDarkMode ? 'text-green-400' : 'text-green-700'
+                                    } transition-colors duration-300`}>
+                                        You're most focused at 9 AM and 2 PM. Schedule your toughest topics during these times!
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -1680,17 +2113,19 @@ const Dashboard = () => {
             </div>
         </div>
     );
-    
+
     const renderStudentMessages = () => (
-        <div className="space-y-8">
+        <div className={`space-y-8 ${isDarkMode ? 'dark' : ''}`}>
             {/* Header */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div className="space-y-2">
-                    <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+                    <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                         <span className="mr-2">💬</span>
                         Messages & Discussions
                     </h2>
-                    <p className="text-gray-600">Connect with instructors, join study groups, and get help</p>
+                    <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>
+                        Connect with instructors, join study groups, and get help
+                    </p>
                 </div>
                 
                 <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors">
@@ -1700,15 +2135,15 @@ const Dashboard = () => {
             </div>
     
             {/* Message Tabs */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-                <div className="flex flex-wrap border-b border-gray-200 bg-gray-50">
+            <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-lg border overflow-hidden transition-colors duration-300`}>
+                <div className={`flex flex-wrap border-b ${isDarkMode ? 'border-gray-600 bg-gray-700' : 'border-gray-200 bg-gray-50'} transition-colors duration-300`}>
                     {['All Messages', 'My Questions', 'Study Groups', 'Announcements'].map((tab, index) => (
                         <button 
                             key={index}
                             className={`px-6 py-4 text-sm font-medium transition-colors border-b-2 ${
                                 index === 0 
-                                    ? 'text-blue-600 border-blue-600 bg-white' 
-                                    : 'text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300'
+                                    ? `text-blue-600 border-blue-600 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}` 
+                                    : `${isDarkMode ? 'text-gray-300 hover:text-white hover:border-gray-400' : 'text-gray-500 hover:text-gray-700 hover:border-gray-300'} border-transparent`
                             }`}
                         >
                             {tab}
@@ -1722,7 +2157,11 @@ const Dashboard = () => {
                         {/* Discussion Threads */}
                         <div className="lg:col-span-2 space-y-4">
                             {/* Unread Message */}
-                            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200 relative overflow-hidden">
+                            <div className={`${
+                                isDarkMode 
+                                    ? 'bg-gradient-to-r from-blue-900/50 to-indigo-900/50 border-blue-700' 
+                                    : 'bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200'
+                            } rounded-2xl p-6 border relative overflow-hidden transition-colors duration-300`}>
                                 <div className="absolute top-4 right-4">
                                     <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                         New
@@ -1735,17 +2174,25 @@ const Dashboard = () => {
                                     </div>
                                     <div className="flex-1 space-y-3">
                                         <div className="flex items-center space-x-4 text-sm">
-                                            <span className="font-semibold text-gray-900">Dr. Smith</span>
+                                            <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>
+                                                Dr. Smith
+                                            </span>
                                             <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                                 Data Science 101
                                             </span>
-                                            <span className="text-gray-500">2 hours ago</span>
+                                            <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
+                                                2 hours ago
+                                            </span>
                                         </div>
-                                        <h4 className="text-lg font-semibold text-gray-900">Assignment 3 - Additional Resources</h4>
-                                        <p className="text-gray-600">I've uploaded some additional practice problems for the statistical analysis assignment. These will help you prepare for the upcoming quiz. Please review them before our next class.</p>
+                                        <h4 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>
+                                            Assignment 3 - Additional Resources
+                                        </h4>
+                                        <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>
+                                            I've uploaded some additional practice problems for the statistical analysis assignment. These will help you prepare for the upcoming quiz. Please review them before our next class.
+                                        </p>
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center space-x-4 text-sm">
-                                                <span className="flex items-center text-gray-500">
+                                                <span className={`flex items-center ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
                                                     <span className="mr-1">💬</span>
                                                     3 replies
                                                 </span>
@@ -1753,7 +2200,11 @@ const Dashboard = () => {
                                                     📢 Announcement
                                                 </span>
                                             </div>
-                                            <button className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-lg text-blue-700 bg-blue-100 hover:bg-blue-200 transition-colors">
+                                            <button className={`inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-lg ${
+                                                isDarkMode 
+                                                    ? 'text-blue-300 bg-blue-900/50 hover:bg-blue-800/50' 
+                                                    : 'text-blue-700 bg-blue-100 hover:bg-blue-200'
+                                            } transition-colors`}>
                                                 Reply
                                             </button>
                                         </div>
@@ -1762,24 +2213,36 @@ const Dashboard = () => {
                             </div>
     
                             {/* Study Group Message */}
-                            <div className="bg-white rounded-2xl p-6 border border-gray-200 hover:border-gray-300 transition-colors">
+                            <div className={`${
+                                isDarkMode 
+                                    ? 'bg-gray-800 border-gray-600 hover:border-gray-500' 
+                                    : 'bg-white border-gray-200 hover:border-gray-300'
+                            } rounded-2xl p-6 border transition-colors duration-300`}>
                                 <div className="flex items-start space-x-4">
                                     <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center text-white font-semibold">
                                         👥
                                     </div>
                                     <div className="flex-1 space-y-3">
                                         <div className="flex items-center space-x-4 text-sm">
-                                            <span className="font-semibold text-gray-900">Study Group #3</span>
+                                            <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>
+                                                Study Group #3
+                                            </span>
                                             <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                                                 JavaScript Fundamentals
                                             </span>
-                                            <span className="text-gray-500">5 hours ago</span>
+                                            <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
+                                                5 hours ago
+                                            </span>
                                         </div>
-                                        <h4 className="text-lg font-semibold text-gray-900">Weekly Study Session - React Hooks</h4>
-                                        <p className="text-gray-600">Hey everyone! This week we're covering React Hooks. Anyone wants to join our virtual session this Saturday at 2 PM? We'll be going through useState and useEffect with practical examples.</p>
+                                        <h4 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>
+                                            Weekly Study Session - React Hooks
+                                        </h4>
+                                        <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>
+                                            Hey everyone! This week we're covering React Hooks. Anyone wants to join our virtual session this Saturday at 2 PM? We'll be going through useState and useEffect with practical examples.
+                                        </p>
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center space-x-4 text-sm">
-                                                <span className="flex items-center text-gray-500">
+                                                <span className={`flex items-center ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
                                                     <span className="mr-1">💬</span>
                                                     8 replies
                                                 </span>
@@ -1788,10 +2251,18 @@ const Dashboard = () => {
                                                 </span>
                                             </div>
                                             <div className="flex space-x-2">
-                                                <button className="inline-flex items-center px-3 py-1 border border-green-300 text-sm font-medium rounded-lg text-green-700 bg-green-50 hover:bg-green-100 transition-colors">
+                                                <button className={`inline-flex items-center px-3 py-1 border border-green-300 text-sm font-medium rounded-lg text-green-700 ${
+                                                    isDarkMode 
+                                                        ? 'bg-green-900/50 hover:bg-green-800/50' 
+                                                        : 'bg-green-50 hover:bg-green-100'
+                                                } transition-colors`}>
                                                     Join
                                                 </button>
-                                                <button className="inline-flex items-center px-3 py-1 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                                                <button className={`inline-flex items-center px-3 py-1 border ${
+                                                    isDarkMode 
+                                                        ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' 
+                                                        : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                                                } text-sm font-medium rounded-lg transition-colors`}>
                                                     Reply
                                                 </button>
                                             </div>
@@ -1801,24 +2272,36 @@ const Dashboard = () => {
                             </div>
     
                             {/* Question Thread */}
-                            <div className="bg-white rounded-2xl p-6 border border-gray-200 hover:border-gray-300 transition-colors">
+                            <div className={`${
+                                isDarkMode 
+                                    ? 'bg-gray-800 border-gray-600 hover:border-gray-500' 
+                                    : 'bg-white border-gray-200 hover:border-gray-300'
+                            } rounded-2xl p-6 border transition-colors duration-300`}>
                                 <div className="flex items-start space-x-4">
                                     <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center text-white font-semibold">
                                         ME
                                     </div>
                                     <div className="flex-1 space-y-3">
                                         <div className="flex items-center space-x-4 text-sm">
-                                            <span className="font-semibold text-gray-900">My Question</span>
+                                            <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>
+                                                My Question
+                                            </span>
                                             <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                                 Machine Learning
                                             </span>
-                                            <span className="text-gray-500">1 day ago</span>
+                                            <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
+                                                1 day ago
+                                            </span>
                                         </div>
-                                        <h4 className="text-lg font-semibold text-gray-900">Understanding Gradient Descent</h4>
-                                        <p className="text-gray-600">I'm having trouble understanding how the learning rate affects the gradient descent algorithm. Could someone explain with a simple example?</p>
+                                        <h4 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>
+                                            Understanding Gradient Descent
+                                        </h4>
+                                        <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>
+                                            I'm having trouble understanding how the learning rate affects the gradient descent algorithm. Could someone explain with a simple example?
+                                        </p>
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center space-x-4 text-sm">
-                                                <span className="flex items-center text-gray-500">
+                                                <span className={`flex items-center ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
                                                     <span className="mr-1">💬</span>
                                                     2 replies
                                                 </span>
@@ -1826,7 +2309,11 @@ const Dashboard = () => {
                                                     ❓ Question
                                                 </span>
                                             </div>
-                                            <button className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-lg text-blue-700 bg-blue-100 hover:bg-blue-200 transition-colors">
+                                            <button className={`inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-lg ${
+                                                isDarkMode 
+                                                    ? 'text-blue-300 bg-blue-900/50 hover:bg-blue-800/50' 
+                                                    : 'text-blue-700 bg-blue-100 hover:bg-blue-200'
+                                            } transition-colors`}>
                                                 View Answers
                                             </button>
                                         </div>
@@ -1838,9 +2325,13 @@ const Dashboard = () => {
                         {/* Sidebar */}
                         <div className="space-y-6">
                             {/* Quick Help */}
-                            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-                                <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50">
-                                    <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                            <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-lg border overflow-hidden transition-colors duration-300`}>
+                                <div className={`p-6 border-b ${
+                                    isDarkMode 
+                                        ? 'border-gray-600 bg-gradient-to-r from-purple-900/50 to-pink-900/50' 
+                                        : 'border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50'
+                                } transition-colors duration-300`}>
+                                    <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                                         <span className="mr-2">🚀</span>
                                         Quick Help
                                     </h3>
@@ -1848,14 +2339,18 @@ const Dashboard = () => {
                                 <div className="p-6">
                                     <div className="grid grid-cols-2 gap-3">
                                         {[
-                                            { icon: '💡', label: 'Study Tips', color: 'bg-yellow-50 border-yellow-200 hover:bg-yellow-100' },
-                                            { icon: '🔧', label: 'Tech Support', color: 'bg-blue-50 border-blue-200 hover:bg-blue-100' },
-                                            { icon: '📚', label: 'Materials', color: 'bg-green-50 border-green-200 hover:bg-green-100' },
-                                            { icon: '⏰', label: 'Schedule', color: 'bg-purple-50 border-purple-200 hover:bg-purple-100' }
+                                            { icon: '💡', label: 'Study Tips', color: isDarkMode ? 'bg-yellow-900/50 border-yellow-700 hover:bg-yellow-800/50' : 'bg-yellow-50 border-yellow-200 hover:bg-yellow-100' },
+                                            { icon: '🔧', label: 'Tech Support', color: isDarkMode ? 'bg-blue-900/50 border-blue-700 hover:bg-blue-800/50' : 'bg-blue-50 border-blue-200 hover:bg-blue-100' },
+                                            { icon: '📚', label: 'Materials', color: isDarkMode ? 'bg-green-900/50 border-green-700 hover:bg-green-800/50' : 'bg-green-50 border-green-200 hover:bg-green-100' },
+                                            { icon: '⏰', label: 'Schedule', color: isDarkMode ? 'bg-purple-900/50 border-purple-700 hover:bg-purple-800/50' : 'bg-purple-50 border-purple-200 hover:bg-purple-100' }
                                         ].map((item, index) => (
                                             <button key={index} className={`flex flex-col items-center p-4 rounded-xl border transition-colors group ${item.color}`}>
                                                 <span className="text-2xl mb-2 group-hover:scale-110 transition-transform">{item.icon}</span>
-                                                <span className="text-sm font-medium text-gray-700">{item.label}</span>
+                                                <span className={`text-sm font-medium ${
+                                                    isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                                                } transition-colors duration-300`}>
+                                                    {item.label}
+                                                </span>
                                             </button>
                                         ))}
                                     </div>
@@ -1880,9 +2375,13 @@ const Dashboard = () => {
                             </div>
     
                             {/* Active Study Groups */}
-                            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-                                <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-green-50 to-emerald-50">
-                                    <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                            <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-lg border overflow-hidden transition-colors duration-300`}>
+                                <div className={`p-6 border-b ${
+                                    isDarkMode 
+                                        ? 'border-gray-600 bg-gradient-to-r from-green-900/50 to-emerald-900/50' 
+                                        : 'border-gray-200 bg-gradient-to-r from-green-50 to-emerald-50'
+                                } transition-colors duration-300`}>
+                                    <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                                         <span className="mr-2">👥</span>
                                         Your Study Groups
                                     </h3>
@@ -1894,13 +2393,19 @@ const Dashboard = () => {
                                             { name: 'Data Science Club', members: 8, active: false, color: 'bg-green-500' },
                                             { name: 'ML Beginners', members: 15, active: true, color: 'bg-purple-500' }
                                         ].map((group, index) => (
-                                            <div key={index} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl">
+                                            <div key={index} className={`flex items-center space-x-3 p-3 ${
+                                                isDarkMode ? 'bg-gray-700' : 'bg-gray-50'
+                                            } rounded-xl transition-colors duration-300`}>
                                                 <div className={`w-10 h-10 ${group.color} rounded-lg flex items-center justify-center text-white font-semibold text-sm`}>
                                                     {group.name.charAt(0)}
                                                 </div>
                                                 <div className="flex-1">
-                                                    <div className="font-medium text-gray-900">{group.name}</div>
-                                                    <div className="text-sm text-gray-500">{group.members} members</div>
+                                                    <div className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>
+                                                        {group.name}
+                                                    </div>
+                                                    <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
+                                                        {group.members} members
+                                                    </div>
                                                 </div>
                                                 <div className={`w-3 h-3 rounded-full ${group.active ? 'bg-green-400' : 'bg-gray-300'}`}></div>
                                             </div>
@@ -1917,330 +2422,393 @@ const Dashboard = () => {
             </div>
         </div>
     );
-    
+
     const renderStudentSettings = () => (
-        <div className="space-y-8">
+        <div className={`space-y-8 ${isDarkMode ? 'dark' : ''}`}>
             {/* Header */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div className="space-y-2">
-                    <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+                    <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                         <span className="mr-2">⚙️</span>
-                        Learning Preferences
+                        Account Settings
                     </h2>
-                    <p className="text-gray-600">Customize your learning experience and notification preferences</p>
+                    <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>
+                        Manage your account preferences and settings
+                    </p>
                 </div>
                 
-                <div className="flex space-x-3">
-                    <button className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
-                        🔄 Reset to Defaults
-                    </button>
-                    <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors">
-                        💾 Save Preferences
-                    </button>
-                </div>
+                <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors">
+                    💾 Save Changes
+                </button>
             </div>
     
-            {/* Settings Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Learning Goals */}
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                    <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-                        <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-                            <span className="mr-2">🎯</span>
-                            Learning Goals
-                        </h3>
-                        <p className="text-sm text-gray-600 mt-1">Set your study targets and preferences</p>
-                    </div>
-                    <div className="p-6 space-y-6">
-                        <div className="space-y-3">
-                            <label className="block text-sm font-medium text-gray-700">Weekly Study Goal</label>
-                            <div className="flex items-center space-x-3">
-                                <input
-                                    type="number"
-                                    defaultValue="20"
-                                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                    placeholder="Hours"
-                                />
-                                <span className="text-sm text-gray-500 font-medium">hours per week</span>
-                            </div>
-                            <div className="text-xs text-gray-500">Current progress: 14/20 hours this week</div>
-                        </div>
-    
-                        <div className="space-y-3">
-                            <label className="block text-sm font-medium text-gray-700">Preferred Learning Style</label>
-                            <select className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white">
-                                <option>Visual Learner</option>
-                                <option>Auditory Learner</option>
-                                <option>Kinesthetic Learner</option>
-                                <option>Reading/Writing Learner</option>
-                            </select>
-                            <div className="text-xs text-gray-500">Helps us recommend the best content format for you</div>
-                        </div>
-    
-                        <div className="space-y-3">
-                            <label className="block text-sm font-medium text-gray-700">Daily Study Reminder</label>
-                            <div className="flex items-center space-x-3">
-                                <input 
-                                    type="checkbox" 
-                                    defaultChecked 
-                                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                />
-                                <span className="text-sm text-gray-700">Send me daily study reminders</span>
-                            </div>
-                            <div className="text-xs text-gray-500">Get reminded to study at your optimal time</div>
-                        </div>
-    
-                        <div className="space-y-3">
-                            <label className="block text-sm font-medium text-gray-700">Difficulty Preference</label>
-                            <div className="grid grid-cols-2 gap-2">
-                                {['Beginner', 'Intermediate', 'Advanced', 'Adaptive'].map((level, index) => (
-                                    <label key={index} className="flex items-center space-x-2 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
-                                        <input 
-                                            type="radio" 
-                                            name="difficulty" 
-                                            defaultChecked={level === 'Adaptive'}
-                                            className="h-4 w-4 text-blue-600 focus:ring-blue-500"
-                                        />
-                                        <span className="text-sm text-gray-700">{level}</span>
-                                    </label>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-    
-                {/* Notification Preferences */}
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                    <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-green-50 to-emerald-50">
-                        <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-                            <span className="mr-2">🔔</span>
-                            Notification Preferences
-                        </h3>
-                        <p className="text-sm text-gray-600 mt-1">Control when and how you receive updates</p>
-                    </div>
-                    <div className="p-6 space-y-6">
-                        {[
-                            {
-                                title: 'Assignment Reminders',
-                                desc: 'Remind me 24 hours before due dates',
-                                checked: true
-                            },
-                            {
-                                title: 'Course Updates',
-                                desc: 'Notify me of new course materials',
-                                checked: true
-                            },
-                            {
-                                title: 'Discussion Replies',
-                                desc: 'Email me when someone replies to my questions',
-                                checked: false
-                            },
-                            {
-                                title: 'Study Group Invites',
-                                desc: 'Allow study group invitations',
-                                checked: true
-                            },
-                            {
-                                title: 'Achievement Notifications',
-                                desc: 'Celebrate milestones and badges',
-                                checked: true
-                            },
-                            {
-                                title: 'Weekly Progress Reports',
-                                desc: 'Get weekly learning summaries',
-                                checked: false
-                            }
-                        ].map((setting, index) => (
-                            <div key={index} className="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                                <input 
-                                    type="checkbox" 
-                                    defaultChecked={setting.checked}
-                                    className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                />
-                                <div className="flex-1">
-                                    <div className="font-medium text-gray-900">{setting.title}</div>
-                                    <div className="text-sm text-gray-600 mt-1">{setting.desc}</div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-    
-                {/* Dashboard Customization */}
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                    <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50">
-                        <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-                            <span className="mr-2">📱</span>
-                            Dashboard Customization
-                        </h3>
-                        <p className="text-sm text-gray-600 mt-1">Personalize your dashboard appearance</p>
-                    </div>
-                    <div className="p-6 space-y-6">
-                        <div className="space-y-3">
-                            <label className="block text-sm font-medium text-gray-700">Theme Preference</label>
-                            <div className="grid grid-cols-3 gap-3">
-                                {[
-                                    { name: 'Light', icon: '☀️', active: true },
-                                    { name: 'Dark', icon: '🌙', active: false },
-                                    { name: 'Auto', icon: '🔄', active: false }
-                                ].map((theme, index) => (
-                                    <label key={index} className={`flex flex-col items-center p-4 border-2 rounded-xl cursor-pointer transition-all ${
-                                        theme.active ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
-                                    }`}>
-                                        <input 
-                                            type="radio" 
-                                            name="theme" 
-                                            defaultChecked={theme.active}
-                                            className="sr-only"
-                                        />
-                                        <span className="text-2xl mb-2">{theme.icon}</span>
-                                        <span className="text-sm font-medium text-gray-700">{theme.name}</span>
-                                    </label>
-                                ))}
-                            </div>
-                        </div>
-    
-                        <div className="space-y-4">
-                            {[
-                                {
-                                    title: 'Show Progress Animations',
-                                    desc: 'Enable animated progress indicators',
-                                    checked: true
-                                },
-                                {
-                                    title: 'Compact View',
-                                    desc: 'Use compact layout for courses',
-                                    checked: false
-                                },
-                                {
-                                    title: 'Show Motivational Quotes',
-                                    desc: 'Display daily inspiration',
-                                    checked: true
-                                }
-                            ].map((setting, index) => (
-                                <div key={index} className="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                                    <input 
-                                        type="checkbox" 
-                                        defaultChecked={setting.checked}
-                                        className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                    />
-                                    <div className="flex-1">
-                                        <div className="font-medium text-gray-900">{setting.title}</div>
-                                        <div className="text-sm text-gray-600 mt-1">{setting.desc}</div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-    
-                {/* Academic Preferences */}
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                    <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-orange-50 to-yellow-50">
-                        <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-                            <span className="mr-2">🎓</span>
-                            Academic Preferences
-                        </h3>
-                        <p className="text-sm text-gray-600 mt-1">Configure your academic experience</p>
-                    </div>
-                    <div className="p-6 space-y-6">
-                        <div className="space-y-3">
-                            <label className="block text-sm font-medium text-gray-700">Quiz Settings</label>
-                            <div className="space-y-3">
-                                <div className="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                                    <input 
-                                        type="checkbox" 
-                                        className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                    />
-                                    <div className="flex-1">
-                                        <div className="font-medium text-gray-900">Auto-Submit Quizzes</div>
-                                        <div className="text-sm text-gray-600 mt-1">Automatically submit when time expires</div>
-                                    </div>
-                                </div>
-                                <div className="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                                    <input 
-                                        type="checkbox" 
-                                        defaultChecked
-                                        className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                    />
-                                    <div className="flex-1">
-                                        <div className="font-medium text-gray-900">Show Detailed Feedback</div>
-                                        <div className="text-sm text-gray-600 mt-1">Show explanations for quiz answers</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-    
-                        <div className="space-y-3">
-                            <label className="block text-sm font-medium text-gray-700">Study Reminders</label>
-                            <div className="grid grid-cols-1 gap-3">
-                                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200">
-                                    <div>
-                                        <div className="font-medium text-gray-900">Break Reminders</div>
-                                        <div className="text-sm text-gray-600">Remind me to take breaks</div>
-                                    </div>
-                                    <input 
-                                        type="checkbox" 
-                                        defaultChecked
-                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                    />
-                                </div>
-                                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200">
-                                    <div>
-                                        <div className="font-medium text-gray-900">Focus Mode</div>
-                                        <div className="text-sm text-gray-600">Block distracting websites during study</div>
-                                    </div>
-                                    <input 
-                                        type="checkbox"
-                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-    
-            {/* Privacy & Security */}
-            <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-red-50 to-pink-50">
-                    <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-                        <span className="mr-2">🔒</span>
-                        Privacy & Security
+            {/* User Account Information */}
+            <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+                <div className={`p-6 border-b ${
+                    isDarkMode 
+                        ? 'border-gray-600 bg-gradient-to-r from-blue-900/50 to-indigo-900/50' 
+                        : 'border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50'
+                } transition-colors duration-300`}>
+                    <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
+                        <span className="mr-2">👤</span>
+                        Account Information
                     </h3>
-                    <p className="text-sm text-gray-600 mt-1">Manage your privacy settings and account security</p>
+                    <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mt-1 transition-colors duration-300`}>
+                        Your profile and account details
+                    </p>
                 </div>
                 <div className="p-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-4">
-                            <h4 className="font-semibold text-gray-900">Profile Visibility</h4>
-                            {[
-                                { title: 'Show study streak to others', checked: true },
-                                { title: 'Allow others to see my achievements', checked: false },
-                                { title: 'Show my progress in study groups', checked: true }
-                            ].map((setting, index) => (
-                                <div key={index} className="flex items-center space-x-3">
-                                    <input 
-                                        type="checkbox" 
-                                        defaultChecked={setting.checked}
-                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                    />
-                                    <span className="text-sm text-gray-700">{setting.title}</span>
-                                </div>
-                            ))}
+                    <div className="flex items-start space-x-6">
+                        {/* Profile Picture */}
+                        <div className="relative">
+                            <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center text-white text-3xl font-bold shadow-lg">
+                                {user?.name?.charAt(0)?.toUpperCase() || 'S'}
+                            </div>
+                            <button className="absolute -bottom-2 -right-2 w-8 h-8 bg-blue-600 hover:bg-blue-700 rounded-full flex items-center justify-center text-white transition-colors">
+                                <span className="text-sm">📷</span>
+                            </button>
                         </div>
                         
+                        {/* User Details */}
+                        <div className="flex-1 space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-2 transition-colors duration-300`}>
+                                        Full Name
+                                    </label>
+                                    <input
+                                        type="text"
+                                        defaultValue={user?.name || "John Doe"}
+                                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                            isDarkMode 
+                                                ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                                                : 'bg-white border-gray-300 text-gray-900'
+                                        }`}
+                                        placeholder="Enter your full name"
+                                    />
+                                </div>
+                                <div>
+                                    <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-2 transition-colors duration-300`}>
+                                        Email Address
+                                    </label>
+                                    <input
+                                        type="email"
+                                        defaultValue={user?.email || "john.doe@example.com"}
+                                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                            isDarkMode 
+                                                ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                                                : 'bg-white border-gray-300 text-gray-900'
+                                        }`}
+                                        placeholder="Enter your email"
+                                    />
+                                </div>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-2 transition-colors duration-300`}>
+                                        Student ID
+                                    </label>
+                                    <input
+                                        type="text"
+                                        defaultValue={user?.studentId || "STU2024001"}
+                                        disabled
+                                        className={`w-full px-4 py-3 border rounded-lg transition-all ${
+                                            isDarkMode 
+                                                ? 'bg-gray-600 border-gray-600 text-gray-400' 
+                                                : 'bg-gray-100 border-gray-300 text-gray-500'
+                                        }`}
+                                    />
+                                </div>
+                                <div>
+                                    <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-2 transition-colors duration-300`}>
+                                        Join Date
+                                    </label>
+                                    <input
+                                        type="text"
+                                        defaultValue="September 15, 2024"
+                                        disabled
+                                        className={`w-full px-4 py-3 border rounded-lg transition-all ${
+                                            isDarkMode 
+                                                ? 'bg-gray-600 border-gray-600 text-gray-400' 
+                                                : 'bg-gray-100 border-gray-300 text-gray-500'
+                                        }`}
+                                    />
+                                </div>
+                            </div>
+    
+                            <div>
+                                <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-2 transition-colors duration-300`}>
+                                    Bio
+                                </label>
+                                <textarea
+                                    rows="3"
+                                    defaultValue="Passionate student learning data science and machine learning. Always eager to explore new technologies and solve complex problems."
+                                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none ${
+                                        isDarkMode 
+                                            ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                                            : 'bg-white border-gray-300 text-gray-900'
+                                    }`}
+                                    placeholder="Tell us about yourself..."
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            {/* Language & Display Settings */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Language Settings */}
+                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+                    <div className={`p-6 border-b ${
+                        isDarkMode 
+                            ? 'border-gray-600 bg-gradient-to-r from-green-900/50 to-emerald-900/50' 
+                            : 'border-gray-200 bg-gradient-to-r from-green-50 to-emerald-50'
+                    } transition-colors duration-300`}>
+                        <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
+                            <span className="mr-2">🌐</span>
+                            Language Settings
+                        </h3>
+                        <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mt-1 transition-colors duration-300`}>
+                            Choose your preferred language
+                        </p>
+                    </div>
+                    <div className="p-6 space-y-6">
                         <div className="space-y-4">
-                            <h4 className="font-semibold text-gray-900">Account Security</h4>
+                            <div 
+                                onClick={() => handleLanguageToggle('en')}
+                                className={`cursor-pointer flex items-center justify-between p-4 ${
+                                    currentLanguage === 'en' 
+                                        ? isDarkMode 
+                                            ? 'bg-blue-900/50 border-blue-600' 
+                                            : 'bg-blue-50 border-blue-300'
+                                        : isDarkMode 
+                                            ? 'bg-gray-700 border-gray-600' 
+                                            : 'bg-gray-50 border-gray-200'
+                                } rounded-xl border transition-all duration-300 hover:scale-[1.02]`}
+                            >
+                                <div className="flex items-center space-x-4">
+                                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                                        <span className="text-white text-lg">🇺🇸</span>
+                                    </div>
+                                    <div>
+                                        <div className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>
+                                            English
+                                        </div>
+                                        <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
+                                            Default language
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className={`relative w-6 h-6 rounded-full border-2 ${
+                                    currentLanguage === 'en' 
+                                        ? 'border-blue-500 bg-blue-500' 
+                                        : isDarkMode 
+                                            ? 'border-gray-500' 
+                                            : 'border-gray-300'
+                                } transition-all duration-300`}>
+                                    {currentLanguage === 'en' && (
+                                        <div className="absolute inset-1 bg-white rounded-full"></div>
+                                    )}
+                                </div>
+                            </div>
+    
+                            <div 
+                                onClick={() => handleLanguageToggle('ja')}
+                                className={`cursor-pointer flex items-center justify-between p-4 ${
+                                    currentLanguage === 'ja' 
+                                        ? isDarkMode 
+                                            ? 'bg-red-900/50 border-red-600' 
+                                            : 'bg-red-50 border-red-300'
+                                        : isDarkMode 
+                                            ? 'bg-gray-700 border-gray-600' 
+                                            : 'bg-gray-50 border-gray-200'
+                                } rounded-xl border transition-all duration-300 hover:scale-[1.02]`}
+                            >
+                                <div className="flex items-center space-x-4">
+                                    <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-pink-600 rounded-xl flex items-center justify-center">
+                                        <span className="text-white text-lg">🇯🇵</span>
+                                    </div>
+                                    <div>
+                                        <div className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>
+                                            Japanese
+                                        </div>
+                                        <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
+                                            日本語
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className={`relative w-6 h-6 rounded-full border-2 ${
+                                    currentLanguage === 'ja' 
+                                        ? 'border-red-500 bg-red-500' 
+                                        : isDarkMode 
+                                            ? 'border-gray-500' 
+                                            : 'border-gray-300'
+                                } transition-all duration-300`}>
+                                    {currentLanguage === 'ja' && (
+                                        <div className="absolute inset-1 bg-white rounded-full"></div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+    
+                        {/* Language Change Feedback */}
+                        {currentLanguage !== 'en' && (
+                            <div className={`p-4 ${
+                                isDarkMode 
+                                    ? 'bg-gradient-to-r from-green-900/50 to-emerald-900/50 border-green-700' 
+                                    : 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-200'
+                            } rounded-xl border transition-all duration-300`}>
+                                <div className="flex items-center space-x-3">
+                                    <span className="text-green-600 text-2xl">✅</span>
+                                    <div>
+                                        <h4 className={`font-semibold ${
+                                            isDarkMode ? 'text-green-300' : 'text-green-900'
+                                        } transition-colors duration-300`}>Language Changed</h4>
+                                        <p className={`text-sm ${
+                                            isDarkMode ? 'text-green-400' : 'text-green-700'
+                                        } transition-colors duration-300`}>
+                                            Interface language has been updated to {currentLanguage === 'ja' ? 'Japanese (日本語)' : 'English'}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+    
+                        <div className={`p-4 ${
+                            isDarkMode 
+                                ? 'bg-gradient-to-r from-blue-900/50 to-indigo-900/50 border-blue-700' 
+                                : 'bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200'
+                        } rounded-xl border transition-colors duration-300`}>
+                            <div className="flex items-center space-x-3">
+                                <span className="text-blue-600 text-2xl">💡</span>
+                                <div>
+                                    <h4 className={`font-semibold ${
+                                        isDarkMode ? 'text-blue-300' : 'text-blue-900'
+                                    } transition-colors duration-300`}>Language Note</h4>
+                                    <p className={`text-sm ${
+                                        isDarkMode ? 'text-blue-400' : 'text-blue-700'
+                                    } transition-colors duration-300`}>
+                                        Changing language will apply to the interface. Course content language may vary.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+                {/* Display Settings */}
+                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+                    <div className={`p-6 border-b ${
+                        isDarkMode 
+                            ? 'border-gray-600 bg-gradient-to-r from-purple-900/50 to-pink-900/50' 
+                            : 'border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50'
+                    } transition-colors duration-300`}>
+                        <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
+                            <span className="mr-2">🎨</span>
+                            Display Settings
+                        </h3>
+                        <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mt-1 transition-colors duration-300`}>
+                            Customize your visual experience
+                        </p>
+                    </div>
+                    <div className="p-6 space-y-6">
+                        <div className="space-y-4">
+                            <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
+                                Theme Preference
+                            </label>
+                            
                             <div className="space-y-3">
-                                <button className="w-full text-left p-4 bg-gray-50 rounded-xl border border-gray-200 hover:bg-gray-100 transition-colors">
-                                    <div className="font-medium text-gray-900">Change Password</div>
-                                    <div className="text-sm text-gray-600">Last changed 2 months ago</div>
-                                </button>
-                                <button className="w-full text-left p-4 bg-gray-50 rounded-xl border border-gray-200 hover:bg-gray-100 transition-colors">
-                                    <div className="font-medium text-gray-900">Two-Factor Authentication</div>
-                                    <div className="text-sm text-gray-600">Not enabled</div>
-                                </button>
+                                <div 
+                                    onClick={() => handleThemeToggle('light')}
+                                    className={`cursor-pointer flex items-center justify-between p-4 ${
+                                        !isDarkMode 
+                                            ? 'bg-blue-50 border-blue-300' 
+                                            : 'bg-gray-700 border-gray-600'
+                                    } rounded-xl border transition-all duration-300 hover:scale-[1.02]`}
+                                >
+                                    <div className="flex items-center space-x-4">
+                                        <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center">
+                                            <span className="text-white text-lg">☀️</span>
+                                        </div>
+                                        <div>
+                                            <div className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>
+                                                Light Mode
+                                            </div>
+                                            <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
+                                                Bright and clean interface
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className={`relative w-6 h-6 rounded-full border-2 ${
+                                        !isDarkMode 
+                                            ? 'border-blue-500 bg-blue-500' 
+                                            : isDarkMode 
+                                                ? 'border-gray-500' 
+                                                : 'border-gray-300'
+                                    } transition-all duration-300`}>
+                                        {!isDarkMode && (
+                                            <div className="absolute inset-1 bg-white rounded-full"></div>
+                                        )}
+                                    </div>
+                                </div>
+    
+                                <div 
+                                    onClick={() => handleThemeToggle('dark')}
+                                    className={`cursor-pointer flex items-center justify-between p-4 ${
+                                        isDarkMode 
+                                            ? 'bg-blue-900/50 border-blue-600' 
+                                            : 'bg-gray-50 border-gray-200'
+                                    } rounded-xl border transition-all duration-300 hover:scale-[1.02]`}
+                                >
+                                    <div className="flex items-center space-x-4">
+                                        <div className="w-12 h-12 bg-gradient-to-br from-gray-700 to-gray-900 rounded-xl flex items-center justify-center">
+                                            <span className="text-white text-lg">🌙</span>
+                                        </div>
+                                        <div>
+                                            <div className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>
+                                                Dark Mode
+                                            </div>
+                                            <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
+                                                Easy on the eyes, perfect for night study
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className={`relative w-6 h-6 rounded-full border-2 ${
+                                        isDarkMode 
+                                            ? 'border-blue-500 bg-blue-500' 
+                                            : 'border-gray-300'
+                                    } transition-all duration-300`}>
+                                        {isDarkMode && (
+                                            <div className="absolute inset-1 bg-white rounded-full"></div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+    
+                        {/* Theme Change Feedback */}
+                        <div className={`p-4 ${
+                            isDarkMode 
+                                ? 'bg-gradient-to-r from-green-900/50 to-emerald-900/50 border-green-700' 
+                                : 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-200'
+                        } rounded-xl border transition-colors duration-300`}>
+                            <div className="flex items-center space-x-3">
+                                <span className="text-green-600 text-2xl">✨</span>
+                                <div>
+                                    <h4 className={`font-semibold ${
+                                        isDarkMode ? 'text-green-300' : 'text-green-900'
+                                    } transition-colors duration-300`}>Theme Tip</h4>
+                                    <p className={`text-sm ${
+                                        isDarkMode ? 'text-green-400' : 'text-green-700'
+                                    } transition-colors duration-300`}>
+                                        {isDarkMode 
+                                            ? 'Dark mode is active! Perfect for studying in low-light environments.' 
+                                            : 'Light mode provides a bright, clean interface perfect for daytime use.'
+                                        }
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -2250,6 +2818,7 @@ const Dashboard = () => {
     );
 
     // Teacher Dashboard Components
+    
     const renderTeacherDashboard = () => {
         if (activeTab === 'overview') {
             return renderTeacherOverview();
@@ -2266,7 +2835,7 @@ const Dashboard = () => {
     };
 
     const renderTeacherOverview = () => (
-        <div className="space-y-8">
+        <div className={`space-y-8 ${isDarkMode ? 'dark' : ''}`}>
             {/* Classroom Pulse Header */}
             <div className="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 rounded-3xl shadow-2xl overflow-hidden relative">
                 {/* Animated background elements */}
@@ -2368,7 +2937,7 @@ const Dashboard = () => {
     
             {/* Key Statistics Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="group bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+                <div className={`group ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-300`}>
                     <div className="bg-gradient-to-br from-blue-500 to-indigo-600 p-6 text-white relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -translate-y-12 translate-x-12"></div>
                         <div className="relative z-10">
@@ -2389,7 +2958,7 @@ const Dashboard = () => {
                     </div>
                     <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50">
                         <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-600">This semester</span>
+                            <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>This semester</span>
                             <span className="font-semibold text-green-600 flex items-center">
                                 <span className="text-green-400 mr-1">↗</span>
                                 +12 new
@@ -2398,7 +2967,7 @@ const Dashboard = () => {
                     </div>
                 </div>
     
-                <div className="group bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+                <div className={`group ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-300`}>
                     <div className="bg-gradient-to-br from-emerald-500 to-teal-600 p-6 text-white relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -translate-y-12 translate-x-12"></div>
                         <div className="relative z-10">
@@ -2423,13 +2992,13 @@ const Dashboard = () => {
                     </div>
                     <div className="p-4 bg-gradient-to-r from-emerald-50 to-teal-50">
                         <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-600">Response rate</span>
+                            <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>Response rate</span>
                             <span className="font-semibold text-emerald-600">87%</span>
                         </div>
                     </div>
                 </div>
     
-                <div className="group bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+                <div className={`group ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-300`}>
                     <div className="bg-gradient-to-br from-orange-500 to-red-600 p-6 text-white relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -translate-y-12 translate-x-12"></div>
                         <div className="relative z-10">
@@ -2450,7 +3019,7 @@ const Dashboard = () => {
                     </div>
                     <div className="p-4 bg-gradient-to-r from-orange-50 to-red-50">
                         <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-600">Due soon</span>
+                            <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>Due soon</span>
                             <span className="font-semibold text-red-600 flex items-center">
                                 <span className="text-red-400 mr-1">⚠</span>
                                 2 overdue
@@ -2459,7 +3028,7 @@ const Dashboard = () => {
                     </div>
                 </div>
     
-                <div className="group bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+                <div className={`group ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-300`}>
                     <div className="bg-gradient-to-br from-purple-500 to-pink-600 p-6 text-white relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -translate-y-12 translate-x-12"></div>
                         <div className="relative z-10">
@@ -2480,7 +3049,7 @@ const Dashboard = () => {
                     </div>
                     <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50">
                         <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-600">This week</span>
+                            <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>This week</span>
                             <span className="font-semibold text-purple-600">12 total</span>
                         </div>
                     </div>
@@ -2490,20 +3059,20 @@ const Dashboard = () => {
             {/* Main Dashboard Content */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Topic Engagement Heatmap */}
-                <div className="lg:col-span-2 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                    <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-red-50 to-orange-50">
-                        <h3 className="text-xl font-bold text-gray-900 flex items-center">
+                <div className={`lg:col-span-2 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+                    <div className={`p-6 border-b ${isDarkMode ? 'border-gray-600' : 'border-gray-200'} bg-gradient-to-r ${isDarkMode ? 'from-red-900/50 to-orange-900/50' : 'from-red-50 to-orange-50'} transition-colors duration-300`}>
+                        <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                             <span className="mr-3 text-2xl">🔥</span>
                             Topic Engagement Heatmap
                         </h3>
-                        <p className="text-gray-600 mt-1">Student engagement levels across different topics</p>
+                        <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mt-1 transition-colors duration-300`}>Student engagement levels across different topics</p>
                     </div>
                     <div className="p-6">
                         <div className="space-y-4">
                             {Object.entries(dashboardData.teacher.engagementHeatmap).map(([topic, engagement]) => (
                                 <div key={topic} className="group">
                                     <div className="flex items-center justify-between mb-2">
-                                        <span className="font-medium text-gray-900">{topic}</span>
+                                        <span className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>{topic}</span>
                                         <span className={`text-sm font-bold px-2 py-1 rounded-full ${
                                             engagement > 80 ? 'text-green-700 bg-green-100' : 
                                             engagement > 60 ? 'text-yellow-700 bg-yellow-100' : 'text-red-700 bg-red-100'
@@ -2511,7 +3080,7 @@ const Dashboard = () => {
                                             {engagement}%
                                         </span>
                                     </div>
-                                    <div className="relative h-4 bg-gray-200 rounded-full overflow-hidden">
+                                    <div className={`relative h-4 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full overflow-hidden transition-colors duration-300`}>
                                         <div 
                                             className={`absolute inset-y-0 left-0 rounded-full transition-all duration-1000 ease-out shadow-md ${
                                                 engagement > 80 ? 'bg-gradient-to-r from-green-400 to-emerald-500' : 
@@ -2526,12 +3095,12 @@ const Dashboard = () => {
                         </div>
                         
                         {/* Engagement Insights */}
-                        <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+                        <div className={`mt-6 p-4 bg-gradient-to-r ${isDarkMode ? 'from-blue-900/50 to-indigo-900/50 border-blue-700' : 'from-blue-50 to-indigo-50 border-blue-200'} rounded-xl border transition-colors duration-300`}>
                             <div className="flex items-start space-x-3">
                                 <span className="text-blue-600 text-2xl">💡</span>
                                 <div>
-                                    <h4 className="font-semibold text-blue-900 mb-1">Engagement Insight</h4>
-                                    <p className="text-sm text-blue-700">
+                                    <h4 className={`font-semibold ${isDarkMode ? 'text-blue-300' : 'text-blue-900'} mb-1 transition-colors duration-300`}>Engagement Insight</h4>
+                                    <p className={`text-sm ${isDarkMode ? 'text-blue-400' : 'text-blue-700'} transition-colors duration-300`}>
                                         Machine Learning shows lower engagement (71%). Consider adding more interactive examples 
                                         or breaking down complex concepts into smaller modules.
                                     </p>
@@ -2544,17 +3113,17 @@ const Dashboard = () => {
                 {/* AI Teaching Insights & Quick Tools */}
                 <div className="space-y-8">
                     {/* AI Suggestions */}
-                    <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                        <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-indigo-50 to-purple-50">
-                            <h3 className="text-lg font-bold text-gray-900 flex items-center">
+                    <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+                        <div className={`p-6 border-b ${isDarkMode ? 'border-gray-600' : 'border-gray-200'} bg-gradient-to-r ${isDarkMode ? 'from-indigo-900/50 to-purple-900/50' : 'from-indigo-50 to-purple-50'} transition-colors duration-300`}>
+                            <h3 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                                 <span className="mr-2 text-xl">🤖</span>
                                 AI Teaching Insights
                             </h3>
-                            <p className="text-gray-600 text-sm mt-1">Smart recommendations for your classes</p>
+                            <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} text-sm mt-1 transition-colors duration-300`}>Smart recommendations for your classes</p>
                         </div>
                         <div className="p-6">
                             <div className="space-y-4">
-                                <div className="p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl border border-purple-200">
+                                <div className={`p-4 bg-gradient-to-br ${isDarkMode ? 'from-purple-900/50 to-pink-900/50 border-purple-700' : 'from-purple-50 to-pink-50 border-purple-200'} rounded-xl border transition-colors duration-300`}>
                                     <div className="flex items-start space-x-3 mb-3">
                                         <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
                                             <span className="text-white text-sm">📊</span>
@@ -2563,10 +3132,10 @@ const Dashboard = () => {
                                             <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 mb-2">
                                                 Data-Driven Recommendation
                                             </span>
-                                            <h4 className="font-semibold text-gray-900 mb-2">
+                                            <h4 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-2 transition-colors duration-300`}>
                                                 Consider Additional Practice for Machine Learning
                                             </h4>
-                                            <p className="text-sm text-gray-600 mb-4">
+                                            <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mb-4 transition-colors duration-300`}>
                                                 71% engagement suggests students may benefit from more interactive examples 
                                                 and hands-on coding exercises.
                                             </p>
@@ -2575,7 +3144,7 @@ const Dashboard = () => {
                                                     <span className="mr-1">🚀</span>
                                                     Create Session
                                                 </button>
-                                                <button className="inline-flex items-center px-3 py-1.5 border border-purple-300 text-purple-700 rounded-lg hover:bg-purple-50 transition-colors text-sm font-medium">
+                                                <button className={`inline-flex items-center px-3 py-1.5 border ${isDarkMode ? 'border-purple-600 text-purple-300 hover:bg-purple-900/50' : 'border-purple-300 text-purple-700 hover:bg-purple-50'} rounded-lg transition-colors text-sm font-medium`}>
                                                     <span className="mr-1">📅</span>
                                                     Schedule
                                                 </button>
@@ -2588,21 +3157,21 @@ const Dashboard = () => {
                     </div>
     
                     {/* Quick Teaching Tools */}
-                    <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                        <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-green-50 to-emerald-50">
-                            <h3 className="text-lg font-bold text-gray-900 flex items-center">
+                    <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+                        <div className={`p-6 border-b ${isDarkMode ? 'border-gray-600' : 'border-gray-200'} bg-gradient-to-r ${isDarkMode ? 'from-green-900/50 to-emerald-900/50' : 'from-green-50 to-emerald-50'} transition-colors duration-300`}>
+                            <h3 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                                 <span className="mr-2 text-xl">🛠️</span>
                                 Quick Teaching Tools
                             </h3>
-                            <p className="text-gray-600 text-sm mt-1">Instant access to common actions</p>
+                            <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} text-sm mt-1 transition-colors duration-300`}>Instant access to common actions</p>
                         </div>
                         <div className="p-6">
                             <div className="grid grid-cols-2 gap-3">
                                 {[
-                                    { icon: '📊', label: 'Create Poll', color: 'bg-blue-50 border-blue-200 hover:bg-blue-100 text-blue-700' },
-                                    { icon: '📝', label: 'New Quiz', color: 'bg-green-50 border-green-200 hover:bg-green-100 text-green-700' },
-                                    { icon: '📢', label: 'Announcement', color: 'bg-orange-50 border-orange-200 hover:bg-orange-100 text-orange-700' },
-                                    { icon: '📈', label: 'Grade Assignments', color: 'bg-purple-50 border-purple-200 hover:bg-purple-100 text-purple-700' }
+                                    { icon: '📊', label: 'Create Poll', color: isDarkMode ? 'bg-blue-900/50 border-blue-700 hover:bg-blue-800/50 text-blue-300' : 'bg-blue-50 border-blue-200 hover:bg-blue-100 text-blue-700' },
+                                    { icon: '📝', label: 'New Quiz', color: isDarkMode ? 'bg-green-900/50 border-green-700 hover:bg-green-800/50 text-green-300' : 'bg-green-50 border-green-200 hover:bg-green-100 text-green-700' },
+                                    { icon: '📢', label: 'Announcement', color: isDarkMode ? 'bg-orange-900/50 border-orange-700 hover:bg-orange-800/50 text-orange-300' : 'bg-orange-50 border-orange-200 hover:bg-orange-100 text-orange-700' },
+                                    { icon: '📈', label: 'Grade Assignments', color: isDarkMode ? 'bg-purple-900/50 border-purple-700 hover:bg-purple-800/50 text-purple-300' : 'bg-purple-50 border-purple-200 hover:bg-purple-100 text-purple-700' }
                                 ].map((tool, index) => (
                                     <button key={index} className={`flex flex-col items-center p-4 rounded-xl border transition-all duration-200 group ${tool.color}`}>
                                         <span className="text-2xl mb-2 group-hover:scale-110 transition-transform duration-200">{tool.icon}</span>
@@ -2616,26 +3185,26 @@ const Dashboard = () => {
             </div>
     
             {/* Real-time Activity Feed */}
-            <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-cyan-50 to-blue-50">
+            <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+                <div className={`p-6 border-b ${isDarkMode ? 'border-gray-600' : 'border-gray-200'} bg-gradient-to-r ${isDarkMode ? 'from-cyan-900/50 to-blue-900/50' : 'from-cyan-50 to-blue-50'} transition-colors duration-300`}>
                     <div className="flex items-center justify-between">
                         <div>
-                            <h3 className="text-xl font-bold text-gray-900 flex items-center">
+                            <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                                 <span className="mr-3 text-2xl">⚡</span>
                                 Real-time Activity
                             </h3>
-                            <p className="text-gray-600 mt-1">Live updates from your students</p>
+                            <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mt-1 transition-colors duration-300`}>Live updates from your students</p>
                         </div>
                         <div className="flex items-center space-x-2">
                             <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-                            <span className="text-sm text-gray-500 font-medium">Live</span>
+                            <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} font-medium transition-colors duration-300`}>Live</span>
                         </div>
                     </div>
                 </div>
                 <div className="p-6">
                     <div className="space-y-4">
                         {dashboardData.teacher.recentActivity.map((activity, index) => (
-                            <div key={index} className="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl border border-gray-200 hover:bg-gray-100 transition-colors group">
+                            <div key={index} className={`flex items-start space-x-4 p-4 ${isDarkMode ? 'bg-gray-700 border-gray-600 hover:bg-gray-600' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'} rounded-xl border transition-colors group`}>
                                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-white font-semibold ${
                                     activity.type === 'quiz_completed' ? 'bg-gradient-to-br from-green-400 to-emerald-500' : 'bg-gradient-to-br from-blue-400 to-indigo-500'
                                 }`}>
@@ -2644,11 +3213,11 @@ const Dashboard = () => {
                                 <div className="flex-1 min-w-0">
                                     {activity.type === 'quiz_completed' ? (
                                         <>
-                                            <p className="text-sm font-semibold text-gray-900">
+                                            <p className={`text-sm font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>
                                                 <span className="text-blue-600">{activity.student}</span> completed a quiz
                                             </p>
                                             <div className="flex items-center space-x-4 mt-1">
-                                                <span className="text-sm text-gray-600">{activity.course}</span>
+                                                <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>{activity.course}</span>
                                                 <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                                                     activity.score >= 90 ? 'bg-green-100 text-green-800' :
                                                     activity.score >= 70 ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'
@@ -2659,17 +3228,17 @@ const Dashboard = () => {
                                         </>
                                     ) : (
                                         <>
-                                            <p className="text-sm font-semibold text-gray-900">
+                                            <p className={`text-sm font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>
                                                 <span className="text-blue-600">{activity.student}</span> asked a question
                                             </p>
                                             <div className="flex items-center space-x-4 mt-1">
-                                                <span className="text-sm text-gray-600">{activity.course}</span>
-                                                <span className="text-sm text-gray-500">{activity.time}</span>
+                                                <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>{activity.course}</span>
+                                                <span className={`text-sm ${isDarkMode ? 'text-gray-500' : 'text-gray-500'} transition-colors duration-300`}>{activity.time}</span>
                                             </div>
                                         </>
                                     )}
                                 </div>
-                                <button className="opacity-0 group-hover:opacity-100 transition-opacity p-2 text-gray-400 hover:text-blue-600">
+                                <button className={`opacity-0 group-hover:opacity-100 transition-opacity p-2 ${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-400 hover:text-blue-600'}`}>
                                     <span className="text-lg">→</span>
                                 </button>
                             </div>
@@ -2681,16 +3250,16 @@ const Dashboard = () => {
     );
 
     const renderTeacherCourses = () => (
-        <div className="space-y-8">
-
+        <div className={`space-y-8 ${isDarkMode ? 'dark' : ''}`}>
+    
             {/* Header */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div className="space-y-2">
-                    <h2 className="text-3xl font-bold text-gray-900 flex items-center">
+                    <h2 className={`text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                         <span className="mr-3 text-4xl">📚</span>
                         My Courses
                     </h2>
-                    <p className="text-gray-600 text-lg">Manage your courses and track student progress</p>
+                    <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} text-lg transition-colors duration-300`}>Manage your courses and track student progress</p>
                 </div>
                 
                 <button 
@@ -2701,31 +3270,31 @@ const Dashboard = () => {
                     Create New Course
                 </button>
             </div>
-
+    
             {/* Course Creation Modal */}
             {showCreateCourseForm && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                        <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+                    <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto transition-colors duration-300`}>
+                        <div className={`p-6 border-b ${isDarkMode ? 'border-gray-600 bg-gradient-to-r from-blue-900/50 to-indigo-900/50' : 'border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50'} transition-colors duration-300`}>
                             <div className="flex items-center justify-between">
-                                <h3 className="text-2xl font-bold text-gray-900 flex items-center">
+                                <h3 className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                                     <span className="mr-3 text-3xl">🎓</span>
                                     Create New Course
                                 </h3>
                                 <button 
                                     onClick={() => setShowCreateCourseForm(false)}
-                                    className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
+                                    className={`p-2 ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} rounded-xl transition-colors`}
                                 >
-                                    <span className="text-2xl text-gray-500">✕</span>
+                                    <span className={`text-2xl ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>✕</span>
                                 </button>
                             </div>
-                            <p className="text-gray-600 mt-2">Fill in the details to create your new course</p>
+                            <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mt-2 transition-colors duration-300`}>Fill in the details to create your new course</p>
                         </div>
-
+    
                         <form onSubmit={handleCreateCourse} className="p-6 space-y-6">
                             {/* Course Title */}
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                <label className={`block text-sm font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} mb-2 transition-colors duration-300`}>
                                     Course Title *
                                 </label>
                                 <input
@@ -2733,14 +3302,14 @@ const Dashboard = () => {
                                     required
                                     value={newCourseData.title}
                                     onChange={(e) => setNewCourseData({...newCourseData, title: e.target.value})}
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                    className={`w-full px-4 py-3 border ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white text-gray-900'} rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
                                     placeholder="e.g., Introduction to Data Science"
                                 />
                             </div>
-
+    
                             {/* Course Description */}
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                <label className={`block text-sm font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} mb-2 transition-colors duration-300`}>
                                     Course Description *
                                 </label>
                                 <textarea
@@ -2748,22 +3317,22 @@ const Dashboard = () => {
                                     rows="4"
                                     value={newCourseData.description}
                                     onChange={(e) => setNewCourseData({...newCourseData, description: e.target.value})}
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                                    className={`w-full px-4 py-3 border ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white text-gray-900'} rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none`}
                                     placeholder="Describe what students will learn in this course..."
                                 />
                             </div>
-
+    
                             {/* Category and Level */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                    <label className={`block text-sm font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} mb-2 transition-colors duration-300`}>
                                         Category *
                                     </label>
                                     <select
                                         required
                                         value={newCourseData.category}
                                         onChange={(e) => setNewCourseData({...newCourseData, category: e.target.value})}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
+                                        className={`w-full px-4 py-3 border ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white text-gray-900'} rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
                                     >
                                         <option value="">Select Category</option>
                                         <option value="programming">Programming</option>
@@ -2776,16 +3345,16 @@ const Dashboard = () => {
                                         <option value="other">Other</option>
                                     </select>
                                 </div>
-
+    
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                    <label className={`block text-sm font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} mb-2 transition-colors duration-300`}>
                                         Difficulty Level *
                                     </label>
                                     <select
                                         required
                                         value={newCourseData.level}
                                         onChange={(e) => setNewCourseData({...newCourseData, level: e.target.value})}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
+                                        className={`w-full px-4 py-3 border ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white text-gray-900'} rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
                                     >
                                         <option value="beginner">Beginner</option>
                                         <option value="intermediate">Intermediate</option>
@@ -2793,11 +3362,11 @@ const Dashboard = () => {
                                     </select>
                                 </div>
                             </div>
-
+    
                             {/* Duration and Max Students */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                    <label className={`block text-sm font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} mb-2 transition-colors duration-300`}>
                                         Duration (weeks)
                                     </label>
                                     <input
@@ -2805,13 +3374,13 @@ const Dashboard = () => {
                                         min="1"
                                         value={newCourseData.duration}
                                         onChange={(e) => setNewCourseData({...newCourseData, duration: e.target.value})}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                        className={`w-full px-4 py-3 border ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white text-gray-900'} rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
                                         placeholder="e.g., 12"
                                     />
                                 </div>
-
+    
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                    <label className={`block text-sm font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} mb-2 transition-colors duration-300`}>
                                         Max Students
                                     </label>
                                     <input
@@ -2819,16 +3388,16 @@ const Dashboard = () => {
                                         min="1"
                                         value={newCourseData.maxStudents}
                                         onChange={(e) => setNewCourseData({...newCourseData, maxStudents: e.target.value})}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                        className={`w-full px-4 py-3 border ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white text-gray-900'} rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
                                         placeholder="e.g., 50"
                                     />
                                 </div>
                             </div>
-
+    
                             {/* Price and Tags */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                    <label className={`block text-sm font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} mb-2 transition-colors duration-300`}>
                                         Price ($)
                                     </label>
                                     <input
@@ -2837,45 +3406,45 @@ const Dashboard = () => {
                                         step="0.01"
                                         value={newCourseData.price}
                                         onChange={(e) => setNewCourseData({...newCourseData, price: e.target.value})}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                        className={`w-full px-4 py-3 border ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white text-gray-900'} rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
                                         placeholder="0.00"
                                     />
                                 </div>
-
+    
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                    <label className={`block text-sm font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} mb-2 transition-colors duration-300`}>
                                         Tags
                                     </label>
                                     <input
                                         type="text"
                                         value={newCourseData.tags}
                                         onChange={(e) => setNewCourseData({...newCourseData, tags: e.target.value})}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                        className={`w-full px-4 py-3 border ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white text-gray-900'} rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
                                         placeholder="e.g., python, data, statistics (comma separated)"
                                     />
                                 </div>
                             </div>
-
+    
                             {/* Syllabus */}
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                <label className={`block text-sm font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} mb-2 transition-colors duration-300`}>
                                     Course Syllabus
                                 </label>
                                 <textarea
                                     rows="6"
                                     value={newCourseData.syllabus}
                                     onChange={(e) => setNewCourseData({...newCourseData, syllabus: e.target.value})}
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                                    className={`w-full px-4 py-3 border ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white text-gray-900'} rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none`}
                                     placeholder="Week 1: Introduction to concepts&#10;Week 2: Core fundamentals&#10;Week 3: Practical applications..."
                                 />
                             </div>
-
+    
                             {/* Action Buttons */}
-                            <div className="flex space-x-4 pt-6 border-t border-gray-200">
+                            <div className={`flex space-x-4 pt-6 border-t ${isDarkMode ? 'border-gray-600' : 'border-gray-200'} transition-colors duration-300`}>
                                 <button
                                     type="button"
                                     onClick={() => setShowCreateCourseForm(false)}
-                                    className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium"
+                                    className={`flex-1 px-6 py-3 border ${isDarkMode ? 'border-gray-600 text-gray-300 hover:bg-gray-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'} rounded-xl transition-colors font-medium`}
                                 >
                                     Cancel
                                 </button>
@@ -2893,7 +3462,7 @@ const Dashboard = () => {
     
             {/* Course Statistics Overview */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
+                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
                     <div className="bg-gradient-to-br from-blue-500 to-cyan-600 p-6 text-white">
                         <div className="flex items-center justify-between">
                             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -2905,15 +3474,15 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="p-4 bg-gradient-to-r from-blue-50 to-cyan-50">
+                    <div className={`p-4 bg-gradient-to-r ${isDarkMode ? 'from-blue-900/30 to-cyan-900/30' : 'from-blue-50 to-cyan-50'} transition-colors duration-300`}>
                         <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-600">This semester</span>
+                            <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>This semester</span>
                             <span className="font-semibold text-green-600">+1 new</span>
                         </div>
                     </div>
                 </div>
     
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
+                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
                     <div className="bg-gradient-to-br from-emerald-500 to-teal-600 p-6 text-white">
                         <div className="flex items-center justify-between">
                             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -2925,15 +3494,15 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="p-4 bg-gradient-to-r from-emerald-50 to-teal-50">
+                    <div className={`p-4 bg-gradient-to-r ${isDarkMode ? 'from-emerald-900/30 to-teal-900/30' : 'from-emerald-50 to-teal-50'} transition-colors duration-300`}>
                         <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-600">Enrolled</span>
+                            <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>Enrolled</span>
                             <span className="font-semibold text-emerald-600">+12 this week</span>
                         </div>
                     </div>
                 </div>
     
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
+                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
                     <div className="bg-gradient-to-br from-orange-500 to-red-600 p-6 text-white">
                         <div className="flex items-center justify-between">
                             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -2945,15 +3514,15 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="p-4 bg-gradient-to-r from-orange-50 to-red-50">
+                    <div className={`p-4 bg-gradient-to-r ${isDarkMode ? 'from-orange-900/30 to-red-900/30' : 'from-orange-50 to-red-50'} transition-colors duration-300`}>
                         <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-600">Assignments</span>
+                            <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>Assignments</span>
                             <span className="font-semibold text-red-600">2 overdue</span>
                         </div>
                     </div>
                 </div>
     
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
+                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
                     <div className="bg-gradient-to-br from-purple-500 to-pink-600 p-6 text-white">
                         <div className="flex items-center justify-between">
                             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -2965,9 +3534,9 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50">
+                    <div className={`p-4 bg-gradient-to-r ${isDarkMode ? 'from-purple-900/30 to-pink-900/30' : 'from-purple-50 to-pink-50'} transition-colors duration-300`}>
                         <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-600">Student feedback</span>
+                            <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>Student feedback</span>
                             <span className="font-semibold text-purple-600">Excellent</span>
                         </div>
                     </div>
@@ -2975,19 +3544,19 @@ const Dashboard = () => {
             </div>
     
             {/* Active Courses Grid */}
-            <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-                    <h3 className="text-xl font-bold text-gray-900 flex items-center">
+            <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+                <div className={`p-6 border-b ${isDarkMode ? 'border-gray-600 bg-gradient-to-r from-blue-900/50 to-indigo-900/50' : 'border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50'} transition-colors duration-300`}>
+                    <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                         <span className="mr-3 text-2xl">🎯</span>
                         Active Courses
                     </h3>
-                    <p className="text-gray-600 mt-1">Manage and monitor your ongoing courses</p>
+                    <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mt-1 transition-colors duration-300`}>Manage and monitor your ongoing courses</p>
                 </div>
                 <div className="p-6">
                     <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                         {/* Data Science Course */}
-                        <div className="group bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200 hover:shadow-xl transition-all duration-300 relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-200/30 to-indigo-200/30 rounded-full -translate-y-16 translate-x-16"></div>
+                        <div className={`group bg-gradient-to-br ${isDarkMode ? 'from-blue-900/50 to-indigo-900/50 border-blue-700' : 'from-blue-50 to-indigo-50 border-blue-200'} rounded-2xl p-6 border hover:shadow-xl transition-all duration-300 relative overflow-hidden`}>
+                            <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${isDarkMode ? 'from-blue-700/30 to-indigo-700/30' : 'from-blue-200/30 to-indigo-200/30'} rounded-full -translate-y-16 translate-x-16`}></div>
                             
                             <div className="relative z-10">
                                 <div className="flex items-start justify-between mb-4">
@@ -2999,44 +3568,44 @@ const Dashboard = () => {
                                             <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                                 Active
                                             </span>
-                                            <div className="text-xs text-gray-500 mt-1">Fall 2024</div>
+                                            <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mt-1 transition-colors duration-300`}>Fall 2024</div>
                                         </div>
                                     </div>
-                                    <button className="p-2 text-gray-400 hover:text-blue-600 transition-colors">
+                                    <button className={`p-2 ${isDarkMode ? 'text-gray-400 hover:text-blue-400' : 'text-gray-400 hover:text-blue-600'} transition-colors`}>
                                         <span className="text-xl">⚙️</span>
                                     </button>
                                 </div>
     
-                                <h4 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-700 transition-colors">
+                                <h4 className={`text-xl font-bold ${isDarkMode ? 'text-white group-hover:text-blue-300' : 'text-gray-900 group-hover:text-blue-700'} mb-2 transition-colors`}>
                                     Data Science 101
                                 </h4>
-                                <p className="text-gray-600 text-sm mb-4">
+                                <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} text-sm mb-4 transition-colors duration-300`}>
                                     Introduction to data analysis, visualization, and statistical thinking
                                 </p>
     
                                 {/* Course Stats */}
                                 <div className="grid grid-cols-3 gap-4 mb-6">
-                                    <div className="text-center p-3 bg-white/60 rounded-xl">
+                                    <div className={`text-center p-3 ${isDarkMode ? 'bg-gray-800/60' : 'bg-white/60'} rounded-xl transition-colors duration-300`}>
                                         <div className="text-2xl font-bold text-blue-600">45</div>
-                                        <div className="text-xs text-gray-600 font-medium">Students</div>
+                                        <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} font-medium transition-colors duration-300`}>Students</div>
                                     </div>
-                                    <div className="text-center p-3 bg-white/60 rounded-xl">
+                                    <div className={`text-center p-3 ${isDarkMode ? 'bg-gray-800/60' : 'bg-white/60'} rounded-xl transition-colors duration-300`}>
                                         <div className="text-2xl font-bold text-green-600">12</div>
-                                        <div className="text-xs text-gray-600 font-medium">Lessons</div>
+                                        <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} font-medium transition-colors duration-300`}>Lessons</div>
                                     </div>
-                                    <div className="text-center p-3 bg-white/60 rounded-xl">
+                                    <div className={`text-center p-3 ${isDarkMode ? 'bg-gray-800/60' : 'bg-white/60'} rounded-xl transition-colors duration-300`}>
                                         <div className="text-2xl font-bold text-orange-600">89%</div>
-                                        <div className="text-xs text-gray-600 font-medium">Completion</div>
+                                        <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} font-medium transition-colors duration-300`}>Completion</div>
                                     </div>
                                 </div>
     
                                 {/* Progress Bar */}
                                 <div className="mb-4">
                                     <div className="flex items-center justify-between text-sm mb-2">
-                                        <span className="text-gray-600">Course Progress</span>
+                                        <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>Course Progress</span>
                                         <span className="font-semibold text-blue-600">89%</span>
                                     </div>
-                                    <div className="w-full bg-gray-200 rounded-full h-3">
+                                    <div className={`w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full h-3 transition-colors duration-300`}>
                                         <div className="bg-gradient-to-r from-blue-500 to-indigo-600 h-3 rounded-full transition-all duration-1000" style={{width: '89%'}}></div>
                                     </div>
                                 </div>
@@ -3047,7 +3616,7 @@ const Dashboard = () => {
                                         <span className="mr-2">📋</span>
                                         Manage Course
                                     </button>
-                                    <button className="inline-flex items-center px-3 py-2 border border-blue-300 text-blue-700 rounded-lg hover:bg-blue-50 transition-colors text-sm font-medium">
+                                    <button className={`inline-flex items-center px-3 py-2 border ${isDarkMode ? 'border-blue-500 text-blue-400 hover:bg-blue-900/50' : 'border-blue-300 text-blue-700 hover:bg-blue-50'} rounded-lg transition-colors text-sm font-medium`}>
                                         <span className="mr-1">📈</span>
                                         Analytics
                                     </button>
@@ -3056,8 +3625,8 @@ const Dashboard = () => {
                         </div>
     
                         {/* Machine Learning Course */}
-                        <div className="group bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-200 hover:shadow-xl transition-all duration-300 relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-200/30 to-emerald-200/30 rounded-full -translate-y-16 translate-x-16"></div>
+                        <div className={`group bg-gradient-to-br ${isDarkMode ? 'from-green-900/50 to-emerald-900/50 border-green-700' : 'from-green-50 to-emerald-50 border-green-200'} rounded-2xl p-6 border hover:shadow-xl transition-all duration-300 relative overflow-hidden`}>
+                            <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${isDarkMode ? 'from-green-700/30 to-emerald-700/30' : 'from-green-200/30 to-emerald-200/30'} rounded-full -translate-y-16 translate-x-16`}></div>
                             
                             <div className="relative z-10">
                                 <div className="flex items-start justify-between mb-4">
@@ -3069,44 +3638,44 @@ const Dashboard = () => {
                                             <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                                 Active
                                             </span>
-                                            <div className="text-xs text-gray-500 mt-1">Fall 2024</div>
+                                            <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mt-1 transition-colors duration-300`}>Fall 2024</div>
                                         </div>
                                     </div>
-                                    <button className="p-2 text-gray-400 hover:text-green-600 transition-colors">
+                                    <button className={`p-2 ${isDarkMode ? 'text-gray-400 hover:text-green-400' : 'text-gray-400 hover:text-green-600'} transition-colors`}>
                                         <span className="text-xl">⚙️</span>
                                     </button>
                                 </div>
     
-                                <h4 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-green-700 transition-colors">
+                                <h4 className={`text-xl font-bold ${isDarkMode ? 'text-white group-hover:text-green-300' : 'text-gray-900 group-hover:text-green-700'} mb-2 transition-colors`}>
                                     Machine Learning Basics
                                 </h4>
-                                <p className="text-gray-600 text-sm mb-4">
+                                <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} text-sm mb-4 transition-colors duration-300`}>
                                     Fundamental concepts of ML algorithms and practical applications
                                 </p>
     
                                 {/* Course Stats */}
                                 <div className="grid grid-cols-3 gap-4 mb-6">
-                                    <div className="text-center p-3 bg-white/60 rounded-xl">
+                                    <div className={`text-center p-3 ${isDarkMode ? 'bg-gray-800/60' : 'bg-white/60'} rounded-xl transition-colors duration-300`}>
                                         <div className="text-2xl font-bold text-green-600">38</div>
-                                        <div className="text-xs text-gray-600 font-medium">Students</div>
+                                        <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} font-medium transition-colors duration-300`}>Students</div>
                                     </div>
-                                    <div className="text-center p-3 bg-white/60 rounded-xl">
+                                    <div className={`text-center p-3 ${isDarkMode ? 'bg-gray-800/60' : 'bg-white/60'} rounded-xl transition-colors duration-300`}>
                                         <div className="text-2xl font-bold text-blue-600">16</div>
-                                        <div className="text-xs text-gray-600 font-medium">Lessons</div>
+                                        <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} font-medium transition-colors duration-300`}>Lessons</div>
                                     </div>
-                                    <div className="text-center p-3 bg-white/60 rounded-xl">
+                                    <div className={`text-center p-3 ${isDarkMode ? 'bg-gray-800/60' : 'bg-white/60'} rounded-xl transition-colors duration-300`}>
                                         <div className="text-2xl font-bold text-yellow-600">71%</div>
-                                        <div className="text-xs text-gray-600 font-medium">Completion</div>
+                                        <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} font-medium transition-colors duration-300`}>Completion</div>
                                     </div>
                                 </div>
     
                                 {/* Progress Bar */}
                                 <div className="mb-4">
                                     <div className="flex items-center justify-between text-sm mb-2">
-                                        <span className="text-gray-600">Course Progress</span>
+                                        <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>Course Progress</span>
                                         <span className="font-semibold text-green-600">71%</span>
                                     </div>
-                                    <div className="w-full bg-gray-200 rounded-full h-3">
+                                    <div className={`w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full h-3 transition-colors duration-300`}>
                                         <div className="bg-gradient-to-r from-green-500 to-emerald-600 h-3 rounded-full transition-all duration-1000" style={{width: '71%'}}></div>
                                     </div>
                                 </div>
@@ -3117,7 +3686,7 @@ const Dashboard = () => {
                                         <span className="mr-2">📋</span>
                                         Manage Course
                                     </button>
-                                    <button className="inline-flex items-center px-3 py-2 border border-green-300 text-green-700 rounded-lg hover:bg-green-50 transition-colors text-sm font-medium">
+                                    <button className={`inline-flex items-center px-3 py-2 border ${isDarkMode ? 'border-green-500 text-green-400 hover:bg-green-900/50' : 'border-green-300 text-green-700 hover:bg-green-50'} rounded-lg transition-colors text-sm font-medium`}>
                                         <span className="mr-1">📈</span>
                                         Analytics
                                     </button>
@@ -3126,8 +3695,8 @@ const Dashboard = () => {
                         </div>
     
                         {/* Python Programming Course - Draft */}
-                        <div className="group bg-gradient-to-br from-orange-50 to-yellow-50 rounded-2xl p-6 border border-orange-200 hover:shadow-xl transition-all duration-300 relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-200/30 to-yellow-200/30 rounded-full -translate-y-16 translate-x-16"></div>
+                        <div className={`group bg-gradient-to-br ${isDarkMode ? 'from-orange-900/50 to-yellow-900/50 border-orange-700' : 'from-orange-50 to-yellow-50 border-orange-200'} rounded-2xl p-6 border hover:shadow-xl transition-all duration-300 relative overflow-hidden`}>
+                            <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${isDarkMode ? 'from-orange-700/30 to-yellow-700/30' : 'from-orange-200/30 to-yellow-200/30'} rounded-full -translate-y-16 translate-x-16`}></div>
                             
                             <div className="relative z-10">
                                 <div className="flex items-start justify-between mb-4">
@@ -3139,44 +3708,44 @@ const Dashboard = () => {
                                             <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
                                                 Draft
                                             </span>
-                                            <div className="text-xs text-gray-500 mt-1">Spring 2025</div>
+                                            <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mt-1 transition-colors duration-300`}>Spring 2025</div>
                                         </div>
                                     </div>
-                                    <button className="p-2 text-gray-400 hover:text-orange-600 transition-colors">
+                                    <button className={`p-2 ${isDarkMode ? 'text-gray-400 hover:text-orange-400' : 'text-gray-400 hover:text-orange-600'} transition-colors`}>
                                         <span className="text-xl">⚙️</span>
                                     </button>
                                 </div>
     
-                                <h4 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-orange-700 transition-colors">
+                                <h4 className={`text-xl font-bold ${isDarkMode ? 'text-white group-hover:text-orange-300' : 'text-gray-900 group-hover:text-orange-700'} mb-2 transition-colors`}>
                                     Advanced Python Programming
                                 </h4>
-                                <p className="text-gray-600 text-sm mb-4">
+                                <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} text-sm mb-4 transition-colors duration-300`}>
                                     Deep dive into Python frameworks, libraries, and advanced concepts
                                 </p>
     
                                 {/* Course Stats */}
                                 <div className="grid grid-cols-3 gap-4 mb-6">
-                                    <div className="text-center p-3 bg-white/60 rounded-xl">
-                                        <div className="text-2xl font-bold text-gray-400">0</div>
-                                        <div className="text-xs text-gray-600 font-medium">Students</div>
+                                    <div className={`text-center p-3 ${isDarkMode ? 'bg-gray-800/60' : 'bg-white/60'} rounded-xl transition-colors duration-300`}>
+                                        <div className={`text-2xl font-bold ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>0</div>
+                                        <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} font-medium transition-colors duration-300`}>Students</div>
                                     </div>
-                                    <div className="text-center p-3 bg-white/60 rounded-xl">
+                                    <div className={`text-center p-3 ${isDarkMode ? 'bg-gray-800/60' : 'bg-white/60'} rounded-xl transition-colors duration-300`}>
                                         <div className="text-2xl font-bold text-orange-600">8</div>
-                                        <div className="text-xs text-gray-600 font-medium">Lessons</div>
+                                        <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} font-medium transition-colors duration-300`}>Lessons</div>
                                     </div>
-                                    <div className="text-center p-3 bg-white/60 rounded-xl">
+                                    <div className={`text-center p-3 ${isDarkMode ? 'bg-gray-800/60' : 'bg-white/60'} rounded-xl transition-colors duration-300`}>
                                         <div className="text-2xl font-bold text-yellow-600">45%</div>
-                                        <div className="text-xs text-gray-600 font-medium">Complete</div>
+                                        <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} font-medium transition-colors duration-300`}>Complete</div>
                                     </div>
                                 </div>
     
                                 {/* Progress Bar */}
                                 <div className="mb-4">
                                     <div className="flex items-center justify-between text-sm mb-2">
-                                        <span className="text-gray-600">Development Progress</span>
+                                        <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>Development Progress</span>
                                         <span className="font-semibold text-orange-600">45%</span>
                                     </div>
-                                    <div className="w-full bg-gray-200 rounded-full h-3">
+                                    <div className={`w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full h-3 transition-colors duration-300`}>
                                         <div className="bg-gradient-to-r from-orange-500 to-yellow-600 h-3 rounded-full transition-all duration-1000" style={{width: '45%'}}></div>
                                     </div>
                                 </div>
@@ -3187,7 +3756,7 @@ const Dashboard = () => {
                                         <span className="mr-2">🔨</span>
                                         Continue Building
                                     </button>
-                                    <button className="inline-flex items-center px-3 py-2 border border-orange-300 text-orange-700 rounded-lg hover:bg-orange-50 transition-colors text-sm font-medium">
+                                    <button className={`inline-flex items-center px-3 py-2 border ${isDarkMode ? 'border-orange-500 text-orange-400 hover:bg-orange-900/50' : 'border-orange-300 text-orange-700 hover:bg-orange-50'} rounded-lg transition-colors text-sm font-medium`}>
                                         <span className="mr-1">👁️</span>
                                         Preview
                                     </button>
@@ -3199,18 +3768,18 @@ const Dashboard = () => {
             </div>
     
             {/* Assignments Awaiting Review */}
-            <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-red-50 to-orange-50">
-                    <h3 className="text-xl font-bold text-gray-900 flex items-center">
+            <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+                <div className={`p-6 border-b ${isDarkMode ? 'border-gray-600 bg-gradient-to-r from-red-900/50 to-orange-900/50' : 'border-gray-200 bg-gradient-to-r from-red-50 to-orange-50'} transition-colors duration-300`}>
+                    <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                         <span className="mr-3 text-2xl">📝</span>
                         Assignments Awaiting Review
                     </h3>
-                    <p className="text-gray-600 mt-1">Grade pending assignments and provide feedback</p>
+                    <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mt-1 transition-colors duration-300`}>Grade pending assignments and provide feedback</p>
                 </div>
                 <div className="p-6">
                     <div className="space-y-4">
                         {/* Urgent Assignment */}
-                        <div className="flex items-center space-x-4 p-6 bg-gradient-to-r from-red-50 to-pink-50 rounded-2xl border border-red-200 hover:shadow-lg transition-all duration-300 group">
+                        <div className={`flex items-center space-x-4 p-6 bg-gradient-to-r ${isDarkMode ? 'from-red-900/50 to-pink-900/50 border-red-700' : 'from-red-50 to-pink-50 border-red-200'} rounded-2xl border hover:shadow-lg transition-all duration-300 group`}>
                             <div className="relative">
                                 <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-pink-600 rounded-2xl flex items-center justify-center text-white text-2xl group-hover:scale-110 transition-transform">
                                     📊
@@ -3221,18 +3790,18 @@ const Dashboard = () => {
                             </div>
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center space-x-3 mb-2">
-                                    <h4 className="text-lg font-bold text-gray-900">Data Visualization Project</h4>
+                                    <h4 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>Data Visualization Project</h4>
                                     <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
                                         ⚠️ Overdue
                                     </span>
                                 </div>
-                                <p className="text-gray-600 mb-2">Data Science 101 • Due: 2 days ago</p>
+                                <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mb-2 transition-colors duration-300`}>Data Science 101 • Due: 2 days ago</p>
                                 <div className="flex items-center space-x-4 text-sm">
-                                    <span className="flex items-center text-gray-500">
+                                    <span className={`flex items-center ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
                                         <span className="mr-1">📄</span>
                                         23 submissions
                                     </span>
-                                    <span className="flex items-center text-gray-500">
+                                    <span className={`flex items-center ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
                                         <span className="mr-1">⏰</span>
                                         Average: 4.2 hours
                                     </span>
@@ -3243,7 +3812,7 @@ const Dashboard = () => {
                                     <span className="mr-2">🚀</span>
                                     Start Grading
                                 </button>
-                                <button className="inline-flex items-center px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                                <button className={`inline-flex items-center px-3 py-2 border ${isDarkMode ? 'border-gray-600 text-gray-300 hover:bg-gray-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'} rounded-lg transition-colors`}>
                                     <span className="mr-1">👁️</span>
                                     Preview
                                 </button>
@@ -3251,24 +3820,24 @@ const Dashboard = () => {
                         </div>
     
                         {/* Regular Assignment */}
-                        <div className="flex items-center space-x-4 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-200 hover:shadow-lg transition-all duration-300 group">
+                        <div className={`flex items-center space-x-4 p-6 bg-gradient-to-r ${isDarkMode ? 'from-blue-900/50 to-indigo-900/50 border-blue-700' : 'from-blue-50 to-indigo-50 border-blue-200'} rounded-2xl border hover:shadow-lg transition-all duration-300 group`}>
                             <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center text-white text-2xl group-hover:scale-110 transition-transform">
                                 🤖
                             </div>
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center space-x-3 mb-2">
-                                    <h4 className="text-lg font-bold text-gray-900">ML Algorithm Quiz</h4>
+                                    <h4 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>ML Algorithm Quiz</h4>
                                     <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                         📅 Due Tomorrow
                                     </span>
                                 </div>
-                                <p className="text-gray-600 mb-2">Machine Learning Basics • Due: Tomorrow</p>
+                                <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mb-2 transition-colors duration-300`}>Machine Learning Basics • Due: Tomorrow</p>
                                 <div className="flex items-center space-x-4 text-sm">
-                                    <span className="flex items-center text-gray-500">
+                                    <span className={`flex items-center ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
                                         <span className="mr-1">📄</span>
                                         31 submissions
                                     </span>
-                                    <span className="flex items-center text-gray-500">
+                                    <span className={`flex items-center ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
                                         <span className="mr-1">⏰</span>
                                         Average: 2.8 hours
                                     </span>
@@ -3279,7 +3848,7 @@ const Dashboard = () => {
                                     <span className="mr-2">📝</span>
                                     Review Answers
                                 </button>
-                                <button className="inline-flex items-center px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                                <button className={`inline-flex items-center px-3 py-2 border ${isDarkMode ? 'border-gray-600 text-gray-300 hover:bg-gray-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'} rounded-lg transition-colors`}>
                                     <span className="mr-1">📊</span>
                                     Analytics
                                 </button>
@@ -3287,24 +3856,24 @@ const Dashboard = () => {
                         </div>
     
                         {/* Additional Assignment */}
-                        <div className="flex items-center space-x-4 p-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl border border-green-200 hover:shadow-lg transition-all duration-300 group">
+                        <div className={`flex items-center space-x-4 p-6 bg-gradient-to-r ${isDarkMode ? 'from-green-900/50 to-emerald-900/50 border-green-700' : 'from-green-50 to-emerald-50 border-green-200'} rounded-2xl border hover:shadow-lg transition-all duration-300 group`}>
                             <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center text-white text-2xl group-hover:scale-110 transition-transform">
                                 📈
                             </div>
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center space-x-3 mb-2">
-                                    <h4 className="text-lg font-bold text-gray-900">Statistical Analysis Report</h4>
+                                    <h4 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>Statistical Analysis Report</h4>
                                     <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                         ✅ On Time
                                     </span>
                                 </div>
-                                <p className="text-gray-600 mb-2">Data Science 101 • Due: Next week</p>
+                                <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mb-2 transition-colors duration-300`}>Data Science 101 • Due: Next week</p>
                                 <div className="flex items-center space-x-4 text-sm">
-                                    <span className="flex items-center text-gray-500">
+                                    <span className={`flex items-center ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
                                         <span className="mr-1">📄</span>
                                         18 submissions
                                     </span>
-                                    <span className="flex items-center text-gray-500">
+                                    <span className={`flex items-center ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
                                         <span className="mr-1">⏰</span>
                                         Average: 6.1 hours
                                     </span>
@@ -3315,7 +3884,7 @@ const Dashboard = () => {
                                     <span className="mr-2">📝</span>
                                     Start Review
                                 </button>
-                                <button className="inline-flex items-center px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                                <button className={`inline-flex items-center px-3 py-2 border ${isDarkMode ? 'border-gray-600 text-gray-300 hover:bg-gray-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'} rounded-lg transition-colors`}>
                                     <span className="mr-1">⚙️</span>
                                     Settings
                                 </button>
@@ -3324,27 +3893,27 @@ const Dashboard = () => {
                     </div>
     
                     {/* Quick Actions */}
-                    <div className="mt-8 p-6 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl">
-                        <h4 className="font-semibold text-gray-900 mb-4 flex items-center">
+                    <div className={`mt-8 p-6 bg-gradient-to-r ${isDarkMode ? 'from-gray-800 to-gray-700' : 'from-gray-50 to-gray-100'} rounded-xl transition-colors duration-300`}>
+                        <h4 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-4 flex items-center transition-colors duration-300`}>
                             <span className="mr-2">⚡</span>
                             Quick Actions
                         </h4>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                            <button className="flex flex-col items-center p-4 bg-white rounded-xl border border-gray-200 hover:bg-blue-50 hover:border-blue-300 transition-all group">
+                            <button className={`flex flex-col items-center p-4 ${isDarkMode ? 'bg-gray-700 border-gray-600 hover:bg-blue-900/50 hover:border-blue-500' : 'bg-white border-gray-200 hover:bg-blue-50 hover:border-blue-300'} rounded-xl border transition-all group`}>
                                 <span className="text-2xl mb-2 group-hover:scale-110 transition-transform">📝</span>
-                                <span className="text-sm font-medium text-gray-700 group-hover:text-blue-700">Create Assignment</span>
+                                <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-300 group-hover:text-blue-400' : 'text-gray-700 group-hover:text-blue-700'} transition-colors`}>Create Assignment</span>
                             </button>
-                            <button className="flex flex-col items-center p-4 bg-white rounded-xl border border-gray-200 hover:bg-green-50 hover:border-green-300 transition-all group">
+                            <button className={`flex flex-col items-center p-4 ${isDarkMode ? 'bg-gray-700 border-gray-600 hover:bg-green-900/50 hover:border-green-500' : 'bg-white border-gray-200 hover:bg-green-50 hover:border-green-300'} rounded-xl border transition-all group`}>
                                 <span className="text-2xl mb-2 group-hover:scale-110 transition-transform">📊</span>
-                                <span className="text-sm font-medium text-gray-700 group-hover:text-green-700">Grade Book</span>
+                                <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-300 group-hover:text-green-400' : 'text-gray-700 group-hover:text-green-700'} transition-colors`}>Grade Book</span>
                             </button>
-                            <button className="flex flex-col items-center p-4 bg-white rounded-xl border border-gray-200 hover:bg-purple-50 hover:border-purple-300 transition-all group">
+                            <button className={`flex flex-col items-center p-4 ${isDarkMode ? 'bg-gray-700 border-gray-600 hover:bg-purple-900/50 hover:border-purple-500' : 'bg-white border-gray-200 hover:bg-purple-50 hover:border-purple-300'} rounded-xl border transition-all group`}>
                                 <span className="text-2xl mb-2 group-hover:scale-110 transition-transform">📢</span>
-                                <span className="text-sm font-medium text-gray-700 group-hover:text-purple-700">Announcement</span>
+                                <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-300 group-hover:text-purple-400' : 'text-gray-700 group-hover:text-purple-700'} transition-colors`}>Announcement</span>
                             </button>
-                            <button className="flex flex-col items-center p-4 bg-white rounded-xl border border-gray-200 hover:bg-orange-50 hover:border-orange-300 transition-all group">
+                            <button className={`flex flex-col items-center p-4 ${isDarkMode ? 'bg-gray-700 border-gray-600 hover:bg-orange-900/50 hover:border-orange-500' : 'bg-white border-gray-200 hover:bg-orange-50 hover:border-orange-300'} rounded-xl border transition-all group`}>
                                 <span className="text-2xl mb-2 group-hover:scale-110 transition-transform">📈</span>
-                                <span className="text-sm font-medium text-gray-700 group-hover:text-orange-700">Analytics</span>
+                                <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-300 group-hover:text-orange-400' : 'text-gray-700 group-hover:text-orange-700'} transition-colors`}>Analytics</span>
                             </button>
                         </div>
                     </div>
@@ -3352,442 +3921,525 @@ const Dashboard = () => {
             </div>
         </div>
     );
-    
-    const renderTeacherAnalytics = () => (
-        <div className="space-y-8">
-            {/* Header */}
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                <div className="space-y-2">
-                    <h2 className="text-3xl font-bold text-gray-900 flex items-center">
-                        <span className="mr-3 text-4xl">📈</span>
-                        Course Analytics
-                    </h2>
-                    <p className="text-gray-600 text-lg">Comprehensive insights into student performance and engagement</p>
-                </div>
-                
-                <div className="flex items-center space-x-3">
-                    <select className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white">
-                        <option>Last 7 days</option>
-                        <option>Last 30 days</option>
-                        <option>This semester</option>
-                        <option>All time</option>
-                    </select>
-                    <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg">
-                        <span className="mr-2">📄</span>
-                        Export Report
-                    </button>
-                </div>
-            </div>
-    
-            {/* Key Metrics Dashboard */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
-                    <div className="bg-gradient-to-br from-blue-500 to-cyan-600 p-6 text-white">
-                        <div className="flex items-center justify-between">
-                            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <span className="text-2xl">📊</span>
-                            </div>
-                            <div className="text-right">
-                                <div className="text-3xl font-bold">85.4%</div>
-                                <div className="text-blue-100 text-sm font-medium">Avg Performance</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="p-4 bg-gradient-to-r from-blue-50 to-cyan-50">
-                        <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-600">Improvement</span>
-                            <span className="font-semibold text-green-600 flex items-center">
-                                <span className="mr-1">↗</span>
-                                +3.2%
-                            </span>
+
+    const renderTeacherAnalytics = () => {
+        if (!Bar || !Line || !Doughnut) {
+            return (
+                <div className={`space-y-8 ${isDarkMode ? 'dark' : ''}`}>
+                    <div className={`${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'} p-8 rounded-2xl text-center`}>
+                        <h3 className="text-xl font-bold mb-4">📊 Analytics Dashboard</h3>
+                        <p className="text-gray-500">Chart components are loading...</p>
+                        <div className="mt-4">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
                         </div>
                     </div>
                 </div>
-    
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
-                    <div className="bg-gradient-to-br from-emerald-500 to-teal-600 p-6 text-white">
-                        <div className="flex items-center justify-between">
-                            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <span className="text-2xl">🎯</span>
-                            </div>
-                            <div className="text-right">
-                                <div className="text-3xl font-bold">92%</div>
-                                <div className="text-emerald-100 text-sm font-medium">Engagement Rate</div>
-                            </div>
-                        </div>
+            );
+        }
+
+        // Performance Trends Chart Data
+        const performanceData = {
+            labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'],
+            datasets: [
+                {
+                    label: 'Class Average (%)',
+                    data: [78, 82, 85, 81, 87],
+                    backgroundColor: isDarkMode 
+                        ? 'rgba(59, 130, 246, 0.8)' 
+                        : 'rgba(59, 130, 246, 0.6)',
+                    borderColor: isDarkMode 
+                        ? 'rgba(59, 130, 246, 1)' 
+                        : 'rgba(59, 130, 246, 0.8)',
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    borderSkipped: false,
+                },
+                {
+                    label: 'Engagement (%)',
+                    data: [75, 80, 88, 79, 92],
+                    backgroundColor: isDarkMode 
+                        ? 'rgba(16, 185, 129, 0.8)' 
+                        : 'rgba(16, 185, 129, 0.6)',
+                    borderColor: isDarkMode 
+                        ? 'rgba(16, 185, 129, 1)' 
+                        : 'rgba(16, 185, 129, 0.8)',
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    borderSkipped: false,
+                }
+            ]
+        };
+
+        // Engagement by Time Chart Data
+        const engagementTimeData = {
+            labels: ['9:00 AM', '11:00 AM', '2:00 PM', '4:00 PM', '7:00 PM'],
+            datasets: [
+                {
+                    label: 'Engagement Level (%)',
+                    data: [95, 70, 90, 45, 75],
+                    backgroundColor: [
+                        isDarkMode ? 'rgba(16, 185, 129, 0.8)' : 'rgba(16, 185, 129, 0.6)',
+                        isDarkMode ? 'rgba(245, 158, 11, 0.8)' : 'rgba(245, 158, 11, 0.6)',
+                        isDarkMode ? 'rgba(16, 185, 129, 0.8)' : 'rgba(16, 185, 129, 0.6)',
+                        isDarkMode ? 'rgba(239, 68, 68, 0.8)' : 'rgba(239, 68, 68, 0.6)',
+                        isDarkMode ? 'rgba(245, 158, 11, 0.8)' : 'rgba(245, 158, 11, 0.6)',
+                    ],
+                    borderColor: [
+                        'rgba(16, 185, 129, 1)',
+                        'rgba(245, 158, 11, 1)',
+                        'rgba(16, 185, 129, 1)',
+                        'rgba(239, 68, 68, 1)',
+                        'rgba(245, 158, 11, 1)',
+                    ],
+                    borderWidth: 2,
+                    borderRadius: 8,
+                }
+            ]
+        };
+
+        // Assignment Completion Doughnut Chart Data
+        const assignmentCompletionData = {
+            labels: ['Completed', 'In Progress', 'Not Started'],
+            datasets: [
+                {
+                    data: [86.5, 8.2, 5.3],
+                    backgroundColor: [
+                        isDarkMode ? 'rgba(16, 185, 129, 0.8)' : 'rgba(16, 185, 129, 0.6)',
+                        isDarkMode ? 'rgba(245, 158, 11, 0.8)' : 'rgba(245, 158, 11, 0.6)',
+                        isDarkMode ? 'rgba(239, 68, 68, 0.8)' : 'rgba(239, 68, 68, 0.6)',
+                    ],
+                    borderColor: [
+                        'rgba(16, 185, 129, 1)',
+                        'rgba(245, 158, 11, 1)',
+                        'rgba(239, 68, 68, 1)',
+                    ],
+                    borderWidth: 2,
+                }
+            ]
+        };
+
+        // Chart Options
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        color: isDarkMode ? '#E5E7EB' : '#374151',
+                        font: {
+                            size: 12,
+                            weight: '500'
+                        }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: isDarkMode ? '#1F2937' : '#FFFFFF',
+                    titleColor: isDarkMode ? '#F9FAFB' : '#111827',
+                    bodyColor: isDarkMode ? '#E5E7EB' : '#374151',
+                    borderColor: isDarkMode ? '#374151' : '#E5E7EB',
+                    borderWidth: 1,
+                    cornerRadius: 8,
+                    displayColors: true,
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        color: isDarkMode ? '#374151' : '#F3F4F6',
+                        borderColor: isDarkMode ? '#4B5563' : '#E5E7EB',
+                    },
+                    ticks: {
+                        color: isDarkMode ? '#D1D5DB' : '#6B7280',
+                        font: {
+                            size: 11
+                        }
+                    }
+                },
+                y: {
+                    grid: {
+                        color: isDarkMode ? '#374151' : '#F3F4F6',
+                        borderColor: isDarkMode ? '#4B5563' : '#E5E7EB',
+                    },
+                    ticks: {
+                        color: isDarkMode ? '#D1D5DB' : '#6B7280',
+                        font: {
+                            size: 11
+                        }
+                    }
+                }
+            }
+        };
+
+        const doughnutOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: isDarkMode ? '#E5E7EB' : '#374151',
+                        font: {
+                            size: 12,
+                            weight: '500'
+                        },
+                        padding: 20,
+                        usePointStyle: true,
+                        pointStyle: 'circle'
+                    }
+                },
+                tooltip: {
+                    backgroundColor: isDarkMode ? '#1F2937' : '#FFFFFF',
+                    titleColor: isDarkMode ? '#F9FAFB' : '#111827',
+                    bodyColor: isDarkMode ? '#E5E7EB' : '#374151',
+                    borderColor: isDarkMode ? '#374151' : '#E5E7EB',
+                    borderWidth: 1,
+                    cornerRadius: 8,
+                    callbacks: {
+                        label: function(context) {
+                            return context.label + ': ' + context.parsed + '%';
+                        }
+                    }
+                }
+            },
+            cutout: '60%',
+        };
+
+        return (
+            <div className={`space-y-8 ${isDarkMode ? 'dark' : ''}`}>
+                {/* Header */}
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                    <div className="space-y-2">
+                        <h2 className={`text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
+                            <span className="mr-3 text-4xl">📈</span>
+                            Course Analytics
+                        </h2>
+                        <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} text-lg transition-colors duration-300`}>Comprehensive insights into student performance and engagement</p>
                     </div>
-                    <div className="p-4 bg-gradient-to-r from-emerald-50 to-teal-50">
-                        <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-600">Active learners</span>
-                            <span className="font-semibold text-emerald-600">143/156</span>
-                        </div>
+                    
+                    <div className="flex items-center space-x-3">
+                        <select className={`px-4 py-2 border ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white text-gray-900'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}>
+                            <option>Last 7 days</option>
+                            <option>Last 30 days</option>
+                            <option>This semester</option>
+                            <option>All time</option>
+                        </select>
+                        <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg">
+                            <span className="mr-2">📄</span>
+                            Export Report
+                        </button>
                     </div>
                 </div>
-    
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
-                    <div className="bg-gradient-to-br from-orange-500 to-red-600 p-6 text-white">
-                        <div className="flex items-center justify-between">
-                            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <span className="text-2xl">⏱️</span>
-                            </div>
-                            <div className="text-right">
-                                <div className="text-3xl font-bold">4.2h</div>
-                                <div className="text-orange-100 text-sm font-medium">Avg Study Time</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="p-4 bg-gradient-to-r from-orange-50 to-red-50">
-                        <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-600">Per week</span>
-                            <span className="font-semibold text-orange-600">Goal: 6h</span>
-                        </div>
-                    </div>
-                </div>
-    
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
-                    <div className="bg-gradient-to-br from-purple-500 to-pink-600 p-6 text-white">
-                        <div className="flex items-center justify-between">
-                            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <span className="text-2xl">✅</span>
-                            </div>
-                            <div className="text-right">
-                                <div className="text-3xl font-bold">94%</div>
-                                <div className="text-purple-100 text-sm font-medium">Completion Rate</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50">
-                        <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-600">Assignments</span>
-                            <span className="font-semibold text-purple-600">On track</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-    
-            {/* Main Analytics Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Student Performance Trends */}
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                    <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-                        <h3 className="text-xl font-bold text-gray-900 flex items-center">
-                            <span className="mr-3 text-2xl">📈</span>
-                            Performance Trends
-                        </h3>
-                        <p className="text-gray-600 mt-1">Weekly student performance overview</p>
-                    </div>
-                    <div className="p-6">
-                        <div className="space-y-6">
-                            {/* Chart Visualization */}
-                            <div className="relative h-64 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6">
-                                <div className="flex items-end justify-between h-full space-x-3">
-                                    {[
-                                        { week: 'Week 1', height: '60%', value: '78%', color: 'bg-blue-500', trend: 'baseline' },
-                                        { week: 'Week 2', height: '75%', value: '82%', color: 'bg-green-500', trend: 'up' },
-                                        { week: 'Week 3', height: '80%', value: '85%', color: 'bg-emerald-500', trend: 'up' },
-                                        { week: 'Week 4', height: '70%', value: '81%', color: 'bg-yellow-500', trend: 'down' },
-                                        { week: 'Week 5', height: '85%', value: '87%', color: 'bg-purple-500', trend: 'up' }
-                                    ].map((bar, index) => (
-                                        <div key={index} className="flex-1 flex flex-col items-center">
-                                            <div className="relative group mb-2">
-                                                <div 
-                                                    className={`w-full ${bar.color} rounded-t-lg transition-all duration-1000 ease-out hover:opacity-80 cursor-pointer`}
-                                                    style={{ height: bar.height }}
-                                                ></div>
-                                                <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                                                    {bar.value} average
-                                                </div>
-                                                {/* Trend indicator */}
-                                                <div className="absolute -top-3 -right-1">
-                                                    {bar.trend === 'up' && <span className="text-green-500 text-xs">↗</span>}
-                                                    {bar.trend === 'down' && <span className="text-red-500 text-xs">↘</span>}
-                                                </div>
-                                            </div>
-                                            <div className="text-xs text-gray-600 font-medium text-center">{bar.week}</div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                            
-                            {/* Performance Insights */}
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="bg-green-50 rounded-xl p-4 border border-green-200">
-                                    <div className="flex items-center space-x-2 mb-2">
-                                        <span className="text-green-600 text-xl">🏆</span>
-                                        <span className="text-sm font-semibold text-green-800">Best Performing</span>
-                                    </div>
-                                    <div className="text-2xl font-bold text-green-900">Week 5</div>
-                                    <div className="text-xs text-green-600">87% class average</div>
-                                </div>
-                                <div className="bg-orange-50 rounded-xl p-4 border border-orange-200">
-                                    <div className="flex items-center space-x-2 mb-2">
-                                        <span className="text-orange-600 text-xl">🎯</span>
-                                        <span className="text-sm font-semibold text-orange-800">Improvement Area</span>
-                                    </div>
-                                    <div className="text-sm font-bold text-orange-900">Consistency</div>
-                                    <div className="text-xs text-orange-600">Week 4 dip noted</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-    
-                {/* Engagement by Time */}
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                    <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-green-50 to-emerald-50">
-                        <h3 className="text-xl font-bold text-gray-900 flex items-center">
-                            <span className="mr-3 text-2xl">⏰</span>
-                            Engagement by Time
-                        </h3>
-                        <p className="text-gray-600 mt-1">Student activity patterns throughout the day</p>
-                    </div>
-                    <div className="p-6">
-                        <div className="space-y-4">
-                            {[
-                                { time: '9:00 AM', level: 'High', percentage: 95, color: 'bg-green-500', emoji: '🔥' },
-                                { time: '11:00 AM', level: 'Medium', percentage: 70, color: 'bg-yellow-500', emoji: '📚' },
-                                { time: '2:00 PM', level: 'High', percentage: 90, color: 'bg-green-500', emoji: '🔥' },
-                                { time: '4:00 PM', level: 'Low', percentage: 45, color: 'bg-red-500', emoji: '😴' },
-                                { time: '7:00 PM', level: 'Medium', percentage: 75, color: 'bg-yellow-500', emoji: '📚' }
-                            ].map((pattern, index) => (
-                                <div key={index} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
-                                    <div className="w-20 text-sm font-medium text-gray-700">{pattern.time}</div>
-                                    <span className="text-lg">{pattern.emoji}</span>
-                                    <div className="flex-1 bg-gray-200 rounded-full h-4 relative overflow-hidden">
-                                        <div 
-                                            className={`${pattern.color} h-4 rounded-full transition-all duration-1000 relative`}
-                                            style={{ width: `${pattern.percentage}%` }}
-                                        >
-                                            <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/20"></div>
-                                        </div>
-                                    </div>
-                                    <div className="w-16 text-sm font-medium text-gray-700 text-right">{pattern.level}</div>
-                                    <div className="w-12 text-sm font-bold text-gray-900 text-right">{pattern.percentage}%</div>
-                                </div>
-                            ))}
-                        </div>
-                        
-                        <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
-                            <div className="flex items-center space-x-3">
-                                <span className="text-blue-600 text-2xl">💡</span>
-                                <div>
-                                    <h4 className="font-semibold text-blue-900">Teaching Tip</h4>
-                                    <p className="text-sm text-blue-700">Schedule important topics during 9 AM and 2 PM when engagement is highest!</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-    
-                {/* Top Performing Students */}
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                    <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-yellow-50 to-orange-50">
-                        <h3 className="text-xl font-bold text-gray-900 flex items-center">
-                            <span className="mr-3 text-2xl">🏆</span>
-                            Top Performing Students
-                        </h3>
-                        <p className="text-gray-600 mt-1">Leaderboard of highest achievers</p>
-                    </div>
-                    <div className="p-6">
-                        <div className="space-y-4">
-                            {[
-                                { rank: 1, name: 'Alice Johnson', score: '95.2%', trend: '+2.1%', avatar: 'AJ', color: 'bg-yellow-500' },
-                                { rank: 2, name: 'Bob Smith', score: '92.8%', trend: '+1.5%', avatar: 'BS', color: 'bg-gray-400' },
-                                { rank: 3, name: 'Carol Davis', score: '90.1%', trend: '+0.8%', avatar: 'CD', color: 'bg-orange-500' },
-                                { rank: 4, name: 'David Wilson', score: '88.9%', trend: '-0.3%', avatar: 'DW', color: 'bg-blue-500' },
-                                { rank: 5, name: 'Emma Brown', score: '87.6%', trend: '+1.2%', avatar: 'EB', color: 'bg-purple-500' }
-                            ].map((student, index) => (
-                                <div key={index} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors group">
-                                    <div className="flex items-center space-x-3">
-                                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm ${
-                                            student.rank === 1 ? 'bg-yellow-500' :
-                                            student.rank === 2 ? 'bg-gray-400' :
-                                            student.rank === 3 ? 'bg-orange-500' : 'bg-blue-500'
-                                        }`}>
-                                            {student.rank}
-                                        </div>
-                                        <div className={`w-10 h-10 ${student.color} rounded-xl flex items-center justify-center text-white font-semibold text-sm group-hover:scale-110 transition-transform`}>
-                                            {student.avatar}
-                                        </div>
-                                    </div>
-                                    <div className="flex-1">
-                                        <div className="font-semibold text-gray-900">{student.name}</div>
-                                        <div className="text-sm text-gray-500">Current average</div>
-                                    </div>
-                                    <div className="text-right">
-                                        <div className="text-xl font-bold text-gray-900">{student.score}</div>
-                                        <div className={`text-sm font-medium ${
-                                            student.trend.startsWith('+') ? 'text-green-600' : 'text-red-600'
-                                        }`}>
-                                            {student.trend}
-                                        </div>
-                                    </div>
-                                    <button className="opacity-0 group-hover:opacity-100 transition-opacity p-2 text-gray-400 hover:text-blue-600">
-                                        <span className="text-lg">→</span>
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-    
-                        <div className="mt-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200">
+
+                {/* Key Metrics Dashboard */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
+                        <div className="bg-gradient-to-br from-blue-500 to-cyan-600 p-6 text-white">
                             <div className="flex items-center justify-between">
-                                <div>
-                                    <h4 className="font-semibold text-green-900">Class Average</h4>
-                                    <p className="text-sm text-green-700">Overall performance metrics</p>
+                                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <span className="text-2xl">📊</span>
                                 </div>
                                 <div className="text-right">
-                                    <div className="text-2xl font-bold text-green-900">85.4%</div>
-                                    <div className="text-sm text-green-600">+3.2% this month</div>
+                                    <div className="text-3xl font-bold">85.4%</div>
+                                    <div className="text-blue-100 text-sm font-medium">Avg Performance</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className={`p-4 bg-gradient-to-r ${isDarkMode ? 'from-blue-900/30 to-cyan-900/30' : 'from-blue-50 to-cyan-50'} transition-colors duration-300`}>
+                            <div className="flex items-center justify-between text-sm">
+                                <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>Improvement</span>
+                                <span className="font-semibold text-green-600 flex items-center">
+                                    <span className="mr-1">↗</span>
+                                    +3.2%
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
+                        <div className="bg-gradient-to-br from-emerald-500 to-teal-600 p-6 text-white">
+                            <div className="flex items-center justify-between">
+                                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <span className="text-2xl">🎯</span>
+                                </div>
+                                <div className="text-right">
+                                    <div className="text-3xl font-bold">92%</div>
+                                    <div className="text-emerald-100 text-sm font-medium">Engagement Rate</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className={`p-4 bg-gradient-to-r ${isDarkMode ? 'from-emerald-900/30 to-teal-900/30' : 'from-emerald-50 to-teal-50'} transition-colors duration-300`}>
+                            <div className="flex items-center justify-between text-sm">
+                                <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>Active learners</span>
+                                <span className="font-semibold text-emerald-600">143/156</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
+                        <div className="bg-gradient-to-br from-orange-500 to-red-600 p-6 text-white">
+                            <div className="flex items-center justify-between">
+                                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <span className="text-2xl">⏱️</span>
+                                </div>
+                                <div className="text-right">
+                                    <div className="text-3xl font-bold">4.2h</div>
+                                    <div className="text-orange-100 text-sm font-medium">Avg Study Time</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className={`p-4 bg-gradient-to-r ${isDarkMode ? 'from-orange-900/30 to-red-900/30' : 'from-orange-50 to-red-50'} transition-colors duration-300`}>
+                            <div className="flex items-center justify-between text-sm">
+                                <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>Per week</span>
+                                <span className="font-semibold text-orange-600">Goal: 6h</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
+                        <div className="bg-gradient-to-br from-purple-500 to-pink-600 p-6 text-white">
+                            <div className="flex items-center justify-between">
+                                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <span className="text-2xl">✅</span>
+                                </div>
+                                <div className="text-right">
+                                    <div className="text-3xl font-bold">94%</div>
+                                    <div className="text-purple-100 text-sm font-medium">Completion Rate</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className={`p-4 bg-gradient-to-r ${isDarkMode ? 'from-purple-900/30 to-pink-900/30' : 'from-purple-50 to-pink-50'} transition-colors duration-300`}>
+                            <div className="flex items-center justify-between text-sm">
+                                <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>Assignments</span>
+                                <span className="font-semibold text-purple-600">On track</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Main Analytics Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    {/* Student Performance Trends */}
+                    <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+                        <div className={`p-6 border-b ${isDarkMode ? 'border-gray-600 bg-gradient-to-r from-blue-900/50 to-indigo-900/50' : 'border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50'} transition-colors duration-300`}>
+                            <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
+                                <span className="mr-3 text-2xl">📈</span>
+                                Performance Trends
+                            </h3>
+                            <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mt-1 transition-colors duration-300`}>Weekly student performance overview</p>
+                        </div>
+                        <div className="p-6">
+                            <div className="space-y-6">
+                                {/* Chart.js Chart */}
+                                <div className="h-80">
+                                    <Bar data={performanceData} options={chartOptions} />
+                                </div>
+                                
+                                {/* Performance Insights */}
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className={`bg-gradient-to-br ${isDarkMode ? 'from-green-900/50 to-emerald-900/50 border-green-700' : 'from-green-50 to-emerald-50 border-green-200'} rounded-xl p-4 border transition-colors duration-300`}>
+                                        <div className="flex items-center space-x-2 mb-2">
+                                            <span className="text-green-600 text-xl">🏆</span>
+                                            <span className={`text-sm font-semibold ${isDarkMode ? 'text-green-300' : 'text-green-800'} transition-colors duration-300`}>Best Performing</span>
+                                        </div>
+                                        <div className={`text-2xl font-bold ${isDarkMode ? 'text-green-200' : 'text-green-900'} transition-colors duration-300`}>Week 5</div>
+                                        <div className="text-xs text-green-600">87% class average</div>
+                                    </div>
+                                    <div className={`bg-gradient-to-br ${isDarkMode ? 'from-orange-900/50 to-red-900/50 border-orange-700' : 'from-orange-50 to-red-50 border-orange-200'} rounded-xl p-4 border transition-colors duration-300`}>
+                                        <div className="flex items-center space-x-2 mb-2">
+                                            <span className="text-orange-600 text-xl">🎯</span>
+                                            <span className={`text-sm font-semibold ${isDarkMode ? 'text-orange-300' : 'text-orange-800'} transition-colors duration-300`}>Improvement Area</span>
+                                        </div>
+                                        <div className={`text-sm font-bold ${isDarkMode ? 'text-orange-200' : 'text-orange-900'} transition-colors duration-300`}>Consistency</div>
+                                        <div className="text-xs text-orange-600">Week 4 dip noted</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Engagement by Time */}
+                    <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+                        <div className={`p-6 border-b ${isDarkMode ? 'border-gray-600 bg-gradient-to-r from-green-900/50 to-emerald-900/50' : 'border-gray-200 bg-gradient-to-r from-green-50 to-emerald-50'} transition-colors duration-300`}>
+                            <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
+                                <span className="mr-3 text-2xl">⏰</span>
+                                Engagement by Time
+                            </h3>
+                            <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mt-1 transition-colors duration-300`}>Student activity patterns throughout the day</p>
+                        </div>
+                        <div className="p-6">
+                            <div className="space-y-6">
+                                {/* Chart.js Chart */}
+                                <div className="h-80">
+                                    <Bar data={engagementTimeData} options={chartOptions} />
+                                </div>
+                                
+                                <div className={`p-4 bg-gradient-to-r ${isDarkMode ? 'from-blue-900/50 to-indigo-900/50 border-blue-700' : 'from-blue-50 to-indigo-50 border-blue-200'} rounded-xl border transition-colors duration-300`}>
+                                    <div className="flex items-center space-x-3">
+                                        <span className="text-blue-600 text-2xl">💡</span>
+                                        <div>
+                                            <h4 className={`font-semibold ${isDarkMode ? 'text-blue-300' : 'text-blue-900'} transition-colors duration-300`}>Teaching Tip</h4>
+                                            <p className={`text-sm ${isDarkMode ? 'text-blue-400' : 'text-blue-700'} transition-colors duration-300`}>Schedule important topics during 9 AM and 2 PM when engagement is highest!</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Assignment Completion Rates */}
+                    <div className={`lg:col-span-2 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+                        <div className={`p-6 border-b ${isDarkMode ? 'border-gray-600 bg-gradient-to-r from-purple-900/50 to-pink-900/50' : 'border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50'} transition-colors duration-300`}>
+                            <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
+                                <span className="mr-3 text-2xl">📋</span>
+                                Assignment Completion Analytics
+                            </h3>
+                            <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mt-1 transition-colors duration-300`}>Detailed breakdown of assignment submission and completion rates</p>
+                        </div>
+                        <div className="p-6">
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                                {/* Doughnut Chart */}
+                                <div className="lg:col-span-1">
+                                    <div className="h-80">
+                                        <Doughnut data={assignmentCompletionData} options={doughnutOptions} />
+                                    </div>
+                                </div>
+
+                                {/* Individual Assignment Progress */}
+                                <div className="lg:col-span-2 space-y-4">
+                                    {[
+                                        { name: 'Data Visualization Project', completion: 95, submissions: 43, total: 45, color: 'bg-green-500', status: 'excellent' },
+                                        { name: 'Python Quiz #3', completion: 87, submissions: 39, total: 45, color: 'bg-blue-500', status: 'good' },
+                                        { name: 'ML Essay Assignment', completion: 73, submissions: 33, total: 45, color: 'bg-orange-500', status: 'needs attention' },
+                                        { name: 'Statistical Analysis Lab', completion: 91, submissions: 41, total: 45, color: 'bg-purple-500', status: 'good' }
+                                    ].map((assignment, index) => (
+                                        <div key={index} className="space-y-3">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center space-x-3">
+                                                    <div className={`w-10 h-10 ${assignment.color} rounded-xl flex items-center justify-center text-white font-semibold text-sm`}>
+                                                        {assignment.name.charAt(0)}
+                                                    </div>
+                                                    <div>
+                                                        <h4 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>{assignment.name}</h4>
+                                                        <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>{assignment.submissions}/{assignment.total} submitted</div>
+                                                    </div>
+                                                </div>
+                                                <div className="text-right">
+                                                    <div className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>{assignment.completion}%</div>
+                                                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                                                        assignment.status === 'excellent' ? 'bg-green-100 text-green-800' :
+                                                        assignment.status === 'good' ? 'bg-blue-100 text-blue-800' : 'bg-orange-100 text-orange-800'
+                                                    }`}>
+                                                        {assignment.status === 'excellent' ? '🌟 Excellent' :
+                                                            assignment.status === 'good' ? '👍 Good' : '⚠️ Needs Attention'}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div className={`w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} rounded-full h-3 transition-colors duration-300`}>
+                                                <div 
+                                                    className={`${assignment.color} h-3 rounded-full transition-all duration-1000 ease-out relative overflow-hidden`}
+                                                    style={{ width: `${assignment.completion}%` }}
+                                                >
+                                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/20"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+
+                                    <div className={`mt-6 p-4 bg-gradient-to-r ${isDarkMode ? 'from-gray-800 to-gray-700' : 'from-gray-50 to-gray-100'} rounded-xl transition-colors duration-300`}>
+                                        <div className="flex items-center justify-between">
+                                            <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>Overall Completion Rate</span>
+                                            <span className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>86.5%</span>
+                                        </div>
+                                        <div className={`mt-2 text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
+                                            Above institutional average of 82%
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-    
-                {/* Assignment Completion Rates */}
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                    <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50">
-                        <h3 className="text-xl font-bold text-gray-900 flex items-center">
-                            <span className="mr-3 text-2xl">📋</span>
-                            Assignment Completion
+
+                {/* Analytics Summary */}
+                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+                    <div className={`p-6 border-b ${isDarkMode ? 'border-gray-600 bg-gradient-to-r from-indigo-900/50 to-purple-900/50' : 'border-gray-200 bg-gradient-to-r from-indigo-50 to-purple-50'} transition-colors duration-300`}>
+                        <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
+                            <span className="mr-3 text-2xl">📊</span>
+                            Analytics Summary & Recommendations
                         </h3>
-                        <p className="text-gray-600 mt-1">Track assignment submission and completion rates</p>
+                        <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mt-1 transition-colors duration-300`}>Key insights and actionable recommendations for your courses</p>
                     </div>
                     <div className="p-6">
-                        <div className="space-y-6">
-                            {[
-                                { name: 'Data Visualization Project', completion: 95, submissions: 43, total: 45, color: 'bg-green-500', status: 'excellent' },
-                                { name: 'Python Quiz #3', completion: 87, submissions: 39, total: 45, color: 'bg-blue-500', status: 'good' },
-                                { name: 'ML Essay Assignment', completion: 73, submissions: 33, total: 45, color: 'bg-orange-500', status: 'needs attention' },
-                                { name: 'Statistical Analysis Lab', completion: 91, submissions: 41, total: 45, color: 'bg-purple-500', status: 'good' }
-                            ].map((assignment, index) => (
-                                <div key={index} className="space-y-3">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center space-x-3">
-                                            <div className={`w-10 h-10 ${assignment.color} rounded-xl flex items-center justify-center text-white font-semibold text-sm`}>
-                                                {assignment.name.charAt(0)}
-                                            </div>
-                                            <div>
-                                                <h4 className="font-semibold text-gray-900">{assignment.name}</h4>
-                                                <div className="text-sm text-gray-500">{assignment.submissions}/{assignment.total} submitted</div>
-                                            </div>
-                                        </div>
-                                        <div className="text-right">
-                                            <div className="text-xl font-bold text-gray-900">{assignment.completion}%</div>
-                                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                                                assignment.status === 'excellent' ? 'bg-green-100 text-green-800' :
-                                                assignment.status === 'good' ? 'bg-blue-100 text-blue-800' : 'bg-orange-100 text-orange-800'
-                                            }`}>
-                                                {assignment.status === 'excellent' ? '🌟 Excellent' :
-                                                    assignment.status === 'good' ? '👍 Good' : '⚠️ Needs Attention'}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className="w-full bg-gray-200 rounded-full h-3">
-                                        <div 
-                                            className={`${assignment.color} h-3 rounded-full transition-all duration-1000 ease-out relative overflow-hidden`}
-                                            style={{ width: `${assignment.completion}%` }}
-                                        >
-                                            <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/20"></div>
-                                        </div>
-                                    </div>
-                                    <div className="flex justify-between text-xs text-gray-500">
-                                        <span>0%</span>
-                                        <span>50%</span>
-                                        <span>100%</span>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className={`bg-gradient-to-br ${isDarkMode ? 'from-green-900/50 to-emerald-900/50 border-green-700' : 'from-green-50 to-emerald-50 border-green-200'} rounded-xl p-6 border transition-colors duration-300`}>
+                                <div className="flex items-center space-x-3 mb-4">
+                                    <span className="text-green-600 text-3xl">🎯</span>
+                                    <div>
+                                        <h4 className={`font-bold ${isDarkMode ? 'text-green-300' : 'text-green-900'} transition-colors duration-300`}>Strengths</h4>
+                                        <p className={`text-sm ${isDarkMode ? 'text-green-400' : 'text-green-700'} transition-colors duration-300`}>What's working well</p>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
-    
-                        <div className="mt-6 p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl">
-                            <div className="flex items-center justify-between">
-                                <span className="text-sm font-medium text-gray-700">Overall Completion Rate</span>
-                                <span className="text-lg font-bold text-gray-900">86.5%</span>
+                                <ul className={`space-y-2 text-sm ${isDarkMode ? 'text-green-300' : 'text-green-800'} transition-colors duration-300`}>
+                                    <li className="flex items-center"><span className="mr-2">✅</span>High engagement during morning sessions</li>
+                                    <li className="flex items-center"><span className="mr-2">✅</span>Excellent assignment completion rates</li>
+                                    <li className="flex items-center"><span className="mr-2">✅</span>Strong student performance trends</li>
+                                    <li className="flex items-center"><span className="mr-2">✅</span>Above-average completion metrics</li>
+                                </ul>
                             </div>
-                            <div className="mt-2 text-xs text-gray-500">
-                                Above institutional average of 82%
+
+                            <div className={`bg-gradient-to-br ${isDarkMode ? 'from-orange-900/50 to-yellow-900/50 border-orange-700' : 'from-orange-50 to-yellow-50 border-orange-200'} rounded-xl p-6 border transition-colors duration-300`}>
+                                <div className="flex items-center space-x-3 mb-4">
+                                    <span className="text-orange-600 text-3xl">⚠️</span>
+                                    <div>
+                                        <h4 className={`font-bold ${isDarkMode ? 'text-orange-300' : 'text-orange-900'} transition-colors duration-300`}>Areas to Improve</h4>
+                                        <p className={`text-sm ${isDarkMode ? 'text-orange-400' : 'text-orange-700'} transition-colors duration-300`}>Focus areas</p>
+                                    </div>
+                                </div>
+                                <ul className={`space-y-2 text-sm ${isDarkMode ? 'text-orange-300' : 'text-orange-800'} transition-colors duration-300`}>
+                                    <li className="flex items-center"><span className="mr-2">📈</span>Afternoon engagement drops significantly</li>
+                                    <li className="flex items-center"><span className="mr-2">📈</span>Some students need extra support</li>
+                                    <li className="flex items-center"><span className="mr-2">📈</span>ML topics require simplification</li>
+                                    <li className="flex items-center"><span className="mr-2">📈</span>Week 4 performance consistency</li>
+                                </ul>
+                            </div>
+
+                            <div className={`bg-gradient-to-br ${isDarkMode ? 'from-blue-900/50 to-indigo-900/50 border-blue-700' : 'from-blue-50 to-indigo-50 border-blue-200'} rounded-xl p-6 border transition-colors duration-300`}>
+                                <div className="flex items-center space-x-3 mb-4">
+                                    <span className="text-blue-600 text-3xl">💡</span>
+                                    <div>
+                                        <h4 className={`font-bold ${isDarkMode ? 'text-blue-300' : 'text-blue-900'} transition-colors duration-300`}>Recommendations</h4>
+                                        <p className={`text-sm ${isDarkMode ? 'text-blue-400' : 'text-blue-700'} transition-colors duration-300`}>Action items</p>
+                                    </div>
+                                </div>
+                                <ul className={`space-y-2 text-sm ${isDarkMode ? 'text-blue-300' : 'text-blue-800'} transition-colors duration-300`}>
+                                    <li className="flex items-center"><span className="mr-2">🚀</span>Schedule complex topics in AM</li>
+                                    <li className="flex items-center"><span className="mr-2">🚀</span>Add interactive ML examples</li>
+                                    <li className="flex items-center"><span className="mr-2">🚀</span>Offer additional office hours</li>
+                                    <li className="flex items-center"><span className="mr-2">🚀</span>Implement peer learning sessions</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-    
-            {/* Detailed Analytics Summary */}
-            <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-indigo-50 to-purple-50">
-                    <h3 className="text-xl font-bold text-gray-900 flex items-center">
-                        <span className="mr-3 text-2xl">📊</span>
-                        Analytics Summary
-                    </h3>
-                    <p className="text-gray-600 mt-1">Key insights and recommendations</p>
-                </div>
-                <div className="p-6">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200">
-                            <div className="flex items-center space-x-3 mb-4">
-                                <span className="text-green-600 text-3xl">🎯</span>
-                                <div>
-                                    <h4 className="font-bold text-green-900">Strengths</h4>
-                                    <p className="text-sm text-green-700">What's working well</p>
-                                </div>
-                            </div>
-                            <ul className="space-y-2 text-sm text-green-800">
-                                <li className="flex items-center"><span className="mr-2">✅</span>High engagement during morning sessions</li>
-                                <li className="flex items-center"><span className="mr-2">✅</span>Excellent assignment completion rates</li>
-                                <li className="flex items-center"><span className="mr-2">✅</span>Strong student performance trends</li>
-                            </ul>
-                        </div>
-    
-                        <div className="bg-gradient-to-br from-orange-50 to-yellow-50 rounded-xl p-6 border border-orange-200">
-                            <div className="flex items-center space-x-3 mb-4">
-                                <span className="text-orange-600 text-3xl">⚠️</span>
-                                <div>
-                                    <h4 className="font-bold text-orange-900">Areas to Improve</h4>
-                                    <p className="text-sm text-orange-700">Focus areas</p>
-                                </div>
-                            </div>
-                            <ul className="space-y-2 text-sm text-orange-800">
-                                <li className="flex items-center"><span className="mr-2">📈</span>Afternoon engagement drops</li>
-                                <li className="flex items-center"><span className="mr-2">📈</span>Some students need extra support</li>
-                                <li className="flex items-center"><span className="mr-2">📈</span>ML topics need simplification</li>
-                            </ul>
-                        </div>
-    
-                        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
-                            <div className="flex items-center space-x-3 mb-4">
-                                <span className="text-blue-600 text-3xl">💡</span>
-                                <div>
-                                    <h4 className="font-bold text-blue-900">Recommendations</h4>
-                                    <p className="text-sm text-blue-700">Action items</p>
-                                </div>
-                            </div>
-                            <ul className="space-y-2 text-sm text-blue-800">
-                                <li className="flex items-center"><span className="mr-2">🚀</span>Schedule key topics in AM</li>
-                                <li className="flex items-center"><span className="mr-2">🚀</span>Add interactive ML examples</li>
-                                <li className="flex items-center"><span className="mr-2">🚀</span>Offer additional office hours</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-    
+        );
+    };
+
     const renderTeacherMessages = () => (
-        <div className="space-y-8">
+        <div className={`space-y-8 ${isDarkMode ? 'dark' : ''}`}>
             {/* Header */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div className="space-y-2">
-                    <h2 className="text-3xl font-bold text-gray-900 flex items-center">
+                    <h2 className={`text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                         <span className="mr-3 text-4xl">💬</span>
                         Messages & Communications
                     </h2>
-                    <p className="text-gray-600 text-lg">Connect with students and manage course communications</p>
+                    <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} text-lg transition-colors duration-300`}>Connect with students and manage course communications</p>
                 </div>
                 
                 <div className="flex space-x-3">
-                    <button className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                    <button className={`inline-flex items-center px-4 py-2 border ${isDarkMode ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'} text-sm font-medium rounded-lg transition-colors`}>
                         <span className="mr-2">📊</span>
                         Analytics
                     </button>
@@ -3800,7 +4452,7 @@ const Dashboard = () => {
     
             {/* Communication Statistics */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
+                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
                     <div className="bg-gradient-to-br from-blue-500 to-indigo-600 p-6 text-white">
                         <div className="flex items-center justify-between">
                             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -3812,15 +4464,15 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50">
+                    <div className={`p-4 bg-gradient-to-r ${isDarkMode ? 'from-blue-900/30 to-indigo-900/30' : 'from-blue-50 to-indigo-50'} transition-colors duration-300`}>
                         <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-600">Today</span>
+                            <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>Today</span>
                             <span className="font-semibold text-red-600">5 urgent</span>
                         </div>
                     </div>
                 </div>
     
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
+                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
                     <div className="bg-gradient-to-br from-green-500 to-emerald-600 p-6 text-white">
                         <div className="flex items-center justify-between">
                             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -3832,15 +4484,15 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50">
+                    <div className={`p-4 bg-gradient-to-r ${isDarkMode ? 'from-green-900/30 to-emerald-900/30' : 'from-green-50 to-emerald-50'} transition-colors duration-300`}>
                         <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-600">This week</span>
+                            <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>This week</span>
                             <span className="font-semibold text-green-600">92% answered</span>
                         </div>
                     </div>
                 </div>
     
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
+                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
                     <div className="bg-gradient-to-br from-purple-500 to-pink-600 p-6 text-white">
                         <div className="flex items-center justify-between">
                             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -3852,15 +4504,15 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50">
+                    <div className={`p-4 bg-gradient-to-r ${isDarkMode ? 'from-purple-900/30 to-pink-900/30' : 'from-purple-50 to-pink-50'} transition-colors duration-300`}>
                         <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-600">This month</span>
+                            <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>This month</span>
                             <span className="font-semibold text-purple-600">86% read</span>
                         </div>
                     </div>
                 </div>
     
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
+                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
                     <div className="bg-gradient-to-br from-orange-500 to-red-600 p-6 text-white">
                         <div className="flex items-center justify-between">
                             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -3872,9 +4524,9 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="p-4 bg-gradient-to-r from-orange-50 to-red-50">
+                    <div className={`p-4 bg-gradient-to-r ${isDarkMode ? 'from-orange-900/30 to-red-900/30' : 'from-orange-50 to-red-50'} transition-colors duration-300`}>
                         <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-600">Response time</span>
+                            <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>Response time</span>
                             <span className="font-semibold text-green-600">Excellent</span>
                         </div>
                     </div>
@@ -3885,9 +4537,9 @@ const Dashboard = () => {
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                 {/* Sidebar Filters */}
                 <div className="lg:col-span-1 space-y-6">
-                    <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                        <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-                            <h3 className="text-lg font-bold text-gray-900 flex items-center">
+                    <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+                        <div className={`p-6 border-b ${isDarkMode ? 'border-gray-600 bg-gradient-to-r from-blue-900/50 to-indigo-900/50' : 'border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50'} transition-colors duration-300`}>
+                            <h3 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                                 <span className="mr-2 text-xl">🔍</span>
                                 Message Filters
                             </h3>
@@ -3895,19 +4547,21 @@ const Dashboard = () => {
                         <div className="p-6">
                             <div className="space-y-3">
                                 {[
-                                    { label: 'All Messages', count: 156, active: true, color: 'text-blue-600 bg-blue-50' },
-                                    { label: 'Unread', count: 23, active: false, color: 'text-red-600 bg-red-50' },
-                                    { label: 'Student Questions', count: 47, active: false, color: 'text-green-600 bg-green-50' },
-                                    { label: 'Announcements', count: 8, active: false, color: 'text-purple-600 bg-purple-50' },
-                                    { label: 'Urgent', count: 5, active: false, color: 'text-orange-600 bg-orange-50' }
+                                    { label: 'All Messages', count: 156, active: true, color: isDarkMode ? 'text-blue-400 bg-blue-900/50' : 'text-blue-600 bg-blue-50' },
+                                    { label: 'Unread', count: 23, active: false, color: isDarkMode ? 'text-red-400 bg-red-900/50' : 'text-red-600 bg-red-50' },
+                                    { label: 'Student Questions', count: 47, active: false, color: isDarkMode ? 'text-green-400 bg-green-900/50' : 'text-green-600 bg-green-50' },
+                                    { label: 'Announcements', count: 8, active: false, color: isDarkMode ? 'text-purple-400 bg-purple-900/50' : 'text-purple-600 bg-purple-50' },
+                                    { label: 'Urgent', count: 5, active: false, color: isDarkMode ? 'text-orange-400 bg-orange-900/50' : 'text-orange-600 bg-orange-50' }
                                 ].map((filter, index) => (
                                     <button key={index} className={`w-full flex items-center justify-between p-3 rounded-xl border transition-all hover:shadow-md ${
-                                        filter.active ? 'border-blue-300 bg-blue-50' : 'border-gray-200 hover:bg-gray-50'
+                                        filter.active 
+                                            ? (isDarkMode ? 'border-blue-600 bg-blue-900/30' : 'border-blue-300 bg-blue-50') 
+                                            : (isDarkMode ? 'border-gray-600 hover:bg-gray-700' : 'border-gray-200 hover:bg-gray-50')
                                     }`}>
-                                        <span className={`font-medium ${filter.active ? 'text-blue-700' : 'text-gray-700'}`}>
+                                        <span className={`font-medium ${filter.active ? (isDarkMode ? 'text-blue-400' : 'text-blue-700') : (isDarkMode ? 'text-gray-300' : 'text-gray-700')} transition-colors duration-300`}>
                                             {filter.label}
                                         </span>
-                                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${filter.color}`}>
+                                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${filter.color} transition-colors duration-300`}>
                                             {filter.count}
                                         </span>
                                     </button>
@@ -3917,9 +4571,9 @@ const Dashboard = () => {
                     </div>
     
                     {/* Quick Actions */}
-                    <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                        <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-green-50 to-emerald-50">
-                            <h3 className="text-lg font-bold text-gray-900 flex items-center">
+                    <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+                        <div className={`p-6 border-b ${isDarkMode ? 'border-gray-600 bg-gradient-to-r from-green-900/50 to-emerald-900/50' : 'border-gray-200 bg-gradient-to-r from-green-50 to-emerald-50'} transition-colors duration-300`}>
+                            <h3 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                                 <span className="mr-2 text-xl">⚡</span>
                                 Quick Actions
                             </h3>
@@ -3927,10 +4581,10 @@ const Dashboard = () => {
                         <div className="p-6">
                             <div className="space-y-3">
                                 {[
-                                    { icon: '📢', label: 'Send Announcement', color: 'bg-blue-50 border-blue-200 hover:bg-blue-100 text-blue-700' },
-                                    { icon: '📅', label: 'Schedule Reminder', color: 'bg-green-50 border-green-200 hover:bg-green-100 text-green-700' },
-                                    { icon: '🎯', label: 'Grade Notification', color: 'bg-purple-50 border-purple-200 hover:bg-purple-100 text-purple-700' },
-                                    { icon: '📚', label: 'Share Resources', color: 'bg-orange-50 border-orange-200 hover:bg-orange-100 text-orange-700' }
+                                    { icon: '📢', label: 'Send Announcement', color: isDarkMode ? 'bg-gray-700 border-gray-600 hover:bg-blue-900/50 hover:border-blue-500 text-blue-400' : 'bg-blue-50 border-blue-200 hover:bg-blue-100 text-blue-700' },
+                                    { icon: '📅', label: 'Schedule Reminder', color: isDarkMode ? 'bg-gray-700 border-gray-600 hover:bg-green-900/50 hover:border-green-500 text-green-400' : 'bg-green-50 border-green-200 hover:bg-green-100 text-green-700' },
+                                    { icon: '🎯', label: 'Grade Notification', color: isDarkMode ? 'bg-gray-700 border-gray-600 hover:bg-purple-900/50 hover:border-purple-500 text-purple-400' : 'bg-purple-50 border-purple-200 hover:bg-purple-100 text-purple-700' },
+                                    { icon: '📚', label: 'Share Resources', color: isDarkMode ? 'bg-gray-700 border-gray-600 hover:bg-orange-900/50 hover:border-orange-500 text-orange-400' : 'bg-orange-50 border-orange-200 hover:bg-orange-100 text-orange-700' }
                                 ].map((action, index) => (
                                     <button key={index} className={`w-full flex items-center space-x-3 p-3 rounded-xl border transition-all group ${action.color}`}>
                                         <span className="text-xl group-hover:scale-110 transition-transform">{action.icon}</span>
@@ -3944,45 +4598,45 @@ const Dashboard = () => {
     
                 {/* Messages List */}
                 <div className="lg:col-span-3">
-                    <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                        <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
+                    <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+                        <div className={`p-6 border-b ${isDarkMode ? 'border-gray-600 bg-gradient-to-r from-gray-800 to-gray-700' : 'border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100'} transition-colors duration-300`}>
                             <div className="flex items-center justify-between">
-                                <h3 className="text-lg font-bold text-gray-900">Recent Messages</h3>
+                                <h3 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>Recent Messages</h3>
                                 <div className="flex items-center space-x-2">
                                     <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-                                    <span className="text-sm text-gray-500 font-medium">Live Updates</span>
+                                    <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} font-medium transition-colors duration-300`}>Live Updates</span>
                                 </div>
                             </div>
                         </div>
                         <div className="max-h-96 overflow-y-auto">
-                            <div className="divide-y divide-gray-200">
+                            <div className={`divide-y ${isDarkMode ? 'divide-gray-600' : 'divide-gray-200'} transition-colors duration-300`}>
                                 {/* Urgent Message */}
-                                <div className="p-6 bg-gradient-to-r from-red-50 to-pink-50 border-l-4 border-red-500 hover:bg-red-100 transition-colors cursor-pointer group">
+                                <div className={`p-6 bg-gradient-to-r ${isDarkMode ? 'from-red-900/50 to-pink-900/50' : 'from-red-50 to-pink-50'} border-l-4 border-red-500 ${isDarkMode ? 'hover:bg-red-900/60' : 'hover:bg-red-100'} transition-colors cursor-pointer group`}>
                                     <div className="flex items-start space-x-4">
                                         <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-pink-600 rounded-xl flex items-center justify-center text-white font-semibold group-hover:scale-110 transition-transform">
                                             JS
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center space-x-3 mb-2">
-                                                <span className="font-semibold text-gray-900">John Smith</span>
+                                                <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>John Smith</span>
                                                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
                                                     🚨 Urgent
                                                 </span>
-                                                <span className="text-sm text-gray-500">2 hours ago</span>
+                                                <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>2 hours ago</span>
                                             </div>
                                             <div className="flex items-center space-x-2 mb-2">
                                                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                                     Data Science 101
                                                 </span>
                                             </div>
-                                            <p className="text-gray-700 font-medium mb-1">Question about regression analysis assignment</p>
-                                            <p className="text-sm text-gray-600">I'm having trouble understanding the difference between linear and logistic regression. Could you please provide some clarification before the deadline tomorrow?</p>
+                                            <p className={`${isDarkMode ? 'text-gray-200' : 'text-gray-700'} font-medium mb-1 transition-colors duration-300`}>Question about regression analysis assignment</p>
+                                            <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>I'm having trouble understanding the difference between linear and logistic regression. Could you please provide some clarification before the deadline tomorrow?</p>
                                             <div className="flex items-center space-x-4 mt-3">
                                                 <button className="inline-flex items-center px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium">
                                                     <span className="mr-1">⚡</span>
                                                     Reply Now
                                                 </button>
-                                                <button className="inline-flex items-center px-3 py-1 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
+                                                <button className={`inline-flex items-center px-3 py-1 border ${isDarkMode ? 'border-gray-600 text-gray-300 hover:bg-gray-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'} rounded-lg transition-colors text-sm`}>
                                                     <span className="mr-1">📞</span>
                                                     Schedule Call
                                                 </button>
@@ -3992,29 +4646,29 @@ const Dashboard = () => {
                                 </div>
     
                                 {/* Regular Message */}
-                                <div className="p-6 hover:bg-gray-50 transition-colors cursor-pointer group">
+                                <div className={`p-6 ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'} transition-colors cursor-pointer group`}>
                                     <div className="flex items-start space-x-4">
                                         <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center text-white font-semibold group-hover:scale-110 transition-transform">
                                             MJ
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center space-x-3 mb-2">
-                                                <span className="font-semibold text-gray-900">Mary Johnson</span>
-                                                <span className="text-sm text-gray-500">5 hours ago</span>
+                                                <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>Mary Johnson</span>
+                                                <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>5 hours ago</span>
                                             </div>
                                             <div className="flex items-center space-x-2 mb-2">
                                                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                                     Machine Learning Basics
                                                 </span>
                                             </div>
-                                            <p className="text-gray-700 font-medium mb-1">Thank you for the detailed feedback</p>
-                                            <p className="text-sm text-gray-600">Your comments on my neural network project were very helpful. I've implemented the suggested improvements and would love to get your thoughts...</p>
+                                            <p className={`${isDarkMode ? 'text-gray-200' : 'text-gray-700'} font-medium mb-1 transition-colors duration-300`}>Thank you for the detailed feedback</p>
+                                            <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>Your comments on my neural network project were very helpful. I've implemented the suggested improvements and would love to get your thoughts...</p>
                                             <div className="flex items-center space-x-4 mt-3">
                                                 <button className="inline-flex items-center px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
                                                     <span className="mr-1">💬</span>
                                                     Reply
                                                 </button>
-                                                <button className="inline-flex items-center px-3 py-1 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
+                                                <button className={`inline-flex items-center px-3 py-1 border ${isDarkMode ? 'border-gray-600 text-gray-300 hover:bg-gray-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'} rounded-lg transition-colors text-sm`}>
                                                     <span className="mr-1">👁️</span>
                                                     View Project
                                                 </button>
@@ -4024,21 +4678,21 @@ const Dashboard = () => {
                                 </div>
     
                                 {/* System Message */}
-                                <div className="p-6 hover:bg-gray-50 transition-colors cursor-pointer group">
+                                <div className={`p-6 ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'} transition-colors cursor-pointer group`}>
                                     <div className="flex items-start space-x-4">
                                         <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white font-semibold group-hover:scale-110 transition-transform">
                                             <span className="text-lg">🏫</span>
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center space-x-3 mb-2">
-                                                <span className="font-semibold text-gray-900">Admin Department</span>
+                                                <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>Admin Department</span>
                                                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                                     System
                                                 </span>
-                                                <span className="text-sm text-gray-500">1 day ago</span>
+                                                <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>1 day ago</span>
                                             </div>
-                                            <p className="text-gray-700 font-medium mb-1">Grade submission deadline reminder</p>
-                                            <p className="text-sm text-gray-600">Please remember that final grades for the current semester are due by Friday, June 15th at 11:59 PM...</p>
+                                            <p className={`${isDarkMode ? 'text-gray-200' : 'text-gray-700'} font-medium mb-1 transition-colors duration-300`}>Grade submission deadline reminder</p>
+                                            <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>Please remember that final grades for the current semester are due by Friday, June 15th at 11:59 PM...</p>
                                             <div className="flex items-center space-x-4 mt-3">
                                                 <button className="inline-flex items-center px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
                                                     <span className="mr-1">📋</span>
@@ -4050,29 +4704,29 @@ const Dashboard = () => {
                                 </div>
     
                                 {/* More messages... */}
-                                <div className="p-6 hover:bg-gray-50 transition-colors cursor-pointer group">
+                                <div className={`p-6 ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'} transition-colors cursor-pointer group`}>
                                     <div className="flex items-start space-x-4">
                                         <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center text-white font-semibold group-hover:scale-110 transition-transform">
                                             AL
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center space-x-3 mb-2">
-                                                <span className="font-semibold text-gray-900">Alice Lee</span>
-                                                <span className="text-sm text-gray-500">2 days ago</span>
+                                                <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>Alice Lee</span>
+                                                <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>2 days ago</span>
                                             </div>
                                             <div className="flex items-center space-x-2 mb-2">
                                                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                                                     Python Programming
                                                 </span>
                                             </div>
-                                            <p className="text-gray-700 font-medium mb-1">Request for office hours</p>
-                                            <p className="text-sm text-gray-600">I would like to schedule some one-on-one time to discuss my final project proposal. When would be a good time for you?</p>
+                                            <p className={`${isDarkMode ? 'text-gray-200' : 'text-gray-700'} font-medium mb-1 transition-colors duration-300`}>Request for office hours</p>
+                                            <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>I would like to schedule some one-on-one time to discuss my final project proposal. When would be a good time for you?</p>
                                             <div className="flex items-center space-x-4 mt-3">
                                                 <button className="inline-flex items-center px-3 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium">
                                                     <span className="mr-1">📅</span>
                                                     Schedule Meeting
                                                 </button>
-                                                <button className="inline-flex items-center px-3 py-1 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
+                                                <button className={`inline-flex items-center px-3 py-1 border ${isDarkMode ? 'border-gray-600 text-gray-300 hover:bg-gray-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'} rounded-lg transition-colors text-sm`}>
                                                     <span className="mr-1">💬</span>
                                                     Reply
                                                 </button>
@@ -4085,13 +4739,13 @@ const Dashboard = () => {
                     </div>
     
                     {/* Quick Announcement Templates */}
-                    <div className="mt-8 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                        <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50">
-                            <h3 className="text-lg font-bold text-gray-900 flex items-center">
+                    <div className={`mt-8 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+                        <div className={`p-6 border-b ${isDarkMode ? 'border-gray-600 bg-gradient-to-r from-purple-900/50 to-pink-900/50' : 'border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50'} transition-colors duration-300`}>
+                            <h3 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                                 <span className="mr-2 text-xl">📢</span>
                                 Quick Announcement Templates
                             </h3>
-                            <p className="text-sm text-gray-600 mt-1">Send common announcements with one click</p>
+                            <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mt-1 transition-colors duration-300`}>Send common announcements with one click</p>
                         </div>
                         <div className="p-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -4100,25 +4754,25 @@ const Dashboard = () => {
                                         title: 'Assignment Reminder', 
                                         desc: 'Remind students about upcoming deadlines',
                                         icon: '⏰',
-                                        color: 'bg-orange-50 border-orange-200 hover:bg-orange-100 text-orange-700'
+                                        color: isDarkMode ? 'bg-gray-700 border-gray-600 hover:bg-orange-900/50 hover:border-orange-500 text-orange-400' : 'bg-orange-50 border-orange-200 hover:bg-orange-100 text-orange-700'
                                     },
                                     { 
                                         title: 'Study Resources', 
                                         desc: 'Share additional learning materials',
                                         icon: '📚',
-                                        color: 'bg-blue-50 border-blue-200 hover:bg-blue-100 text-blue-700'
+                                        color: isDarkMode ? 'bg-gray-700 border-gray-600 hover:bg-blue-900/50 hover:border-blue-500 text-blue-400' : 'bg-blue-50 border-blue-200 hover:bg-blue-100 text-blue-700'
                                     },
                                     { 
                                         title: 'Class Schedule Change', 
                                         desc: 'Notify about schedule modifications',
                                         icon: '📅',
-                                        color: 'bg-purple-50 border-purple-200 hover:bg-purple-100 text-purple-700'
+                                        color: isDarkMode ? 'bg-gray-700 border-gray-600 hover:bg-purple-900/50 hover:border-purple-500 text-purple-400' : 'bg-purple-50 border-purple-200 hover:bg-purple-100 text-purple-700'
                                     },
                                     { 
                                         title: 'Congratulate Top Performers', 
                                         desc: 'Celebrate student achievements',
                                         icon: '🏆',
-                                        color: 'bg-green-50 border-green-200 hover:bg-green-100 text-green-700'
+                                        color: isDarkMode ? 'bg-gray-700 border-gray-600 hover:bg-green-900/50 hover:border-green-500 text-green-400' : 'bg-green-50 border-green-200 hover:bg-green-100 text-green-700'
                                     }
                                 ].map((template, index) => (
                                     <button key={index} className={`flex items-start space-x-4 p-4 rounded-xl border transition-all group ${template.color}`}>
@@ -4138,19 +4792,19 @@ const Dashboard = () => {
     );
     
     const renderTeacherSettings = () => (
-        <div className="space-y-8">
+        <div className={`space-y-8 ${isDarkMode ? 'dark' : ''}`}>
             {/* Header */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div className="space-y-2">
-                    <h2 className="text-3xl font-bold text-gray-900 flex items-center">
+                    <h2 className={`text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                         <span className="mr-3 text-4xl">⚙️</span>
                         Teacher Settings
                     </h2>
-                    <p className="text-gray-600 text-lg">Customize your teaching experience and preferences</p>
+                    <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} text-lg transition-colors duration-300`}>Customize your teaching experience and preferences</p>
                 </div>
                 
                 <div className="flex space-x-3">
-                    <button className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                    <button className={`inline-flex items-center px-4 py-2 border ${isDarkMode ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'} text-sm font-medium rounded-lg transition-colors`}>
                         <span className="mr-2">🔄</span>
                         Reset to Defaults
                     </button>
@@ -4161,385 +4815,337 @@ const Dashboard = () => {
                 </div>
             </div>
     
-            {/* Settings Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Grading Preferences */}
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                    <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-                        <h3 className="text-xl font-bold text-gray-900 flex items-center">
-                            <span className="mr-3 text-2xl">📊</span>
-                            Grading Preferences
-                        </h3>
-                        <p className="text-sm text-gray-600 mt-1">Configure your grading system and policies</p>
-                    </div>
-                    <div className="p-6 space-y-6">
-                        <div className="space-y-3">
-                            <label className="block text-sm font-medium text-gray-700">Default Grading Scale</label>
-                            <select className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white">
-                                <option>A-F Letter Grades</option>
-                                <option>0-100 Percentage</option>
-                                <option>1-10 Scale</option>
-                                <option>Pass/Fail</option>
-                            </select>
-                            <div className="text-xs text-gray-500">This will be the default for new assignments</div>
-                        </div>
-    
-                        <div className="space-y-3">
-                            <label className="block text-sm font-medium text-gray-700">Late Submission Penalty</label>
-                            <div className="flex items-center space-x-3">
-                                <input
-                                    type="number"
-                                    defaultValue="10"
-                                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                    placeholder="10"
-                                />
-                                <span className="text-sm text-gray-500 font-medium">% per day late</span>
-                            </div>
-                            <div className="text-xs text-gray-500">Applied automatically to late submissions</div>
-                        </div>
-    
-                        <div className="space-y-3">
-                            <label className="block text-sm font-medium text-gray-700">Grade Release Settings</label>
-                            <div className="space-y-3">
-                                <div className="flex items-center space-x-3">
-                                    <input 
-                                        type="checkbox" 
-                                        defaultChecked 
-                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                    />
-                                    <span className="text-sm text-gray-700">Auto-release grades to students</span>
-                                </div>
-                                <div className="flex items-center space-x-3">
-                                    <input 
-                                        type="checkbox" 
-                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                    />
-                                    <span className="text-sm text-gray-700">Require manual approval before release</span>
-                                </div>
-                                <div className="flex items-center space-x-3">
-                                    <input 
-                                        type="checkbox" 
-                                        defaultChecked 
-                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                    />
-                                    <span className="text-sm text-gray-700">Send email notifications for new grades</span>
-                                </div>
-                            </div>
-                        </div>
-    
-                        <div className="space-y-3">
-                            <label className="block text-sm font-medium text-gray-700">Rubric Preferences</label>
-                            <div className="grid grid-cols-1 gap-2">
-                                {['Detailed Rubrics', 'Point-based Scoring', 'Holistic Assessment', 'Peer Review Integration'].map((rubric, index) => (
-                                    <label key={index} className="flex items-center space-x-2 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
-                                        <input 
-                                            type="radio" 
-                                            name="rubric" 
-                                            defaultChecked={rubric === 'Detailed Rubrics'}
-                                            className="h-4 w-4 text-blue-600 focus:ring-blue-500"
-                                        />
-                                        <span className="text-sm text-gray-700">{rubric}</span>
-                                    </label>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-    
-                {/* Notification Settings */}
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                    <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-green-50 to-emerald-50">
-                        <h3 className="text-xl font-bold text-gray-900 flex items-center">
-                            <span className="mr-3 text-2xl">🔔</span>
-                            Notification Settings
-                        </h3>
-                        <p className="text-sm text-gray-600 mt-1">Control when and how you receive updates</p>
-                    </div>
-                    <div className="p-6 space-y-6">
-                        {[
-                            {
-                                title: 'New Student Messages',
-                                desc: 'Get notified when students send you messages',
-                                checked: true
-                            },
-                            {
-                                title: 'Assignment Submissions',
-                                desc: 'Alert when students submit assignments',
-                                checked: true
-                            },
-                            {
-                                title: 'Grading Deadlines',
-                                desc: 'Remind me about upcoming grading deadlines',
-                                checked: false
-                            },
-                            {
-                                title: 'Student Questions in Forums',
-                                desc: 'Notify when students post in course forums',
-                                checked: true
-                            },
-                            {
-                                title: 'Course Analytics Reports',
-                                desc: 'Weekly performance and engagement summaries',
-                                checked: false
-                            },
-                            {
-                                title: 'System Announcements',
-                                desc: 'Important updates from administration',
-                                checked: true
-                            }
-                        ].map((setting, index) => (
-                            <div key={index} className="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                                <input 
-                                    type="checkbox" 
-                                    defaultChecked={setting.checked}
-                                    className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                />
-                                <div className="flex-1">
-                                    <div className="font-medium text-gray-900">{setting.title}</div>
-                                    <div className="text-sm text-gray-600 mt-1">{setting.desc}</div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-    
-                {/* Class Management */}
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                    <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50">
-                        <h3 className="text-xl font-bold text-gray-900 flex items-center">
-                            <span className="mr-3 text-2xl">👥</span>
-                            Class Management
-                        </h3>
-                        <p className="text-sm text-gray-600 mt-1">Configure classroom policies and defaults</p>
-                    </div>
-                    <div className="p-6 space-y-6">
-                        <div className="space-y-3">
-                            <label className="block text-sm font-medium text-gray-700">Default Class Size Limit</label>
-                            <div className="flex items-center space-x-3">
-                                <input
-                                    type="number"
-                                    defaultValue="50"
-                                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                    placeholder="50"
-                                />
-                                <span className="text-sm text-gray-500 font-medium">students per class</span>
-                            </div>
-                            <div className="text-xs text-gray-500">Applied to new courses you create</div>
-                        </div>
-    
-                        <div className="space-y-4">
-                            <h4 className="font-semibold text-gray-900">Student Permissions</h4>
-                            {[
-                                {
-                                    title: 'Allow Student Collaboration',
-                                    desc: 'Students can work together on assignments',
-                                    checked: true
-                                },
-                                {
-                                    title: 'Enable Peer Reviews',
-                                    desc: 'Students can review each other\'s work',
-                                    checked: false
-                                },
-                                {
-                                    title: 'Discussion Forum Access',
-                                    desc: 'Students can create forum topics',
-                                    checked: true
-                                },
-                                {
-                                    title: 'File Sharing Between Students',
-                                    desc: 'Allow students to share files with classmates',
-                                    checked: false
-                                }
-                            ].map((permission, index) => (
-                                <div key={index} className="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                                    <input 
-                                        type="checkbox" 
-                                        defaultChecked={permission.checked}
-                                        className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                    />
-                                    <div className="flex-1">
-                                        <div className="font-medium text-gray-900">{permission.title}</div>
-                                        <div className="text-sm text-gray-600 mt-1">{permission.desc}</div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-    
-                        <div className="space-y-3">
-                            <label className="block text-sm font-medium text-gray-700">Attendance Tracking</label>
-                            <div className="space-y-3">
-                                <div className="flex items-center space-x-3">
-                                    <input 
-                                        type="checkbox" 
-                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                    />
-                                    <span className="text-sm text-gray-700">Automatic attendance tracking</span>
-                                </div>
-                                <div className="flex items-center space-x-3">
-                                    <input 
-                                        type="checkbox" 
-                                        defaultChecked 
-                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                    />
-                                    <span className="text-sm text-gray-700">Track student login times</span>
-                                </div>
-                                <div className="flex items-center space-x-3">
-                                    <input 
-                                        type="checkbox" 
-                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                    />
-                                    <span className="text-sm text-gray-700">Send attendance reports to admin</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-    
-                {/* Dashboard Customization */}
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                    <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-orange-50 to-yellow-50">
-                        <h3 className="text-xl font-bold text-gray-900 flex items-center">
-                            <span className="mr-3 text-2xl">🎨</span>
-                            Dashboard Customization
-                        </h3>
-                        <p className="text-sm text-gray-600 mt-1">Personalize your teaching dashboard</p>
-                    </div>
-                    <div className="p-6 space-y-6">
-                        <div className="space-y-3">
-                            <label className="block text-sm font-medium text-gray-700">Dashboard Theme</label>
-                            <div className="grid grid-cols-3 gap-3">
-                                {[
-                                    { name: 'Light', icon: '☀️', active: true },
-                                    { name: 'Dark', icon: '🌙', active: false },
-                                    { name: 'Auto', icon: '🔄', active: false }
-                                ].map((theme, index) => (
-                                    <label key={index} className={`flex flex-col items-center p-4 border-2 rounded-xl cursor-pointer transition-all ${
-                                        theme.active ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
-                                    }`}>
-                                        <input 
-                                            type="radio" 
-                                            name="theme" 
-                                            defaultChecked={theme.active}
-                                            className="sr-only"
-                                        />
-                                        <span className="text-2xl mb-2">{theme.icon}</span>
-                                        <span className="text-sm font-medium text-gray-700">{theme.name}</span>
-                                    </label>
-                                ))}
-                            </div>
-                        </div>
-    
-                        <div className="space-y-4">
-                            <h4 className="font-semibold text-gray-900">Dashboard Widgets</h4>
-                            {[
-                                {
-                                    title: 'Show Real-time Engagement Metrics',
-                                    desc: 'Display live student engagement data',
-                                    checked: true
-                                },
-                                {
-                                    title: 'Quick Actions Sidebar',
-                                    desc: 'Show quick teaching tools in sidebar',
-                                    checked: true
-                                },
-                                {
-                                    title: 'Student Performance Graphs',
-                                    desc: 'Display performance charts on overview',
-                                    checked: false
-                                },
-                                {
-                                    title: 'Upcoming Deadlines Widget',
-                                    desc: 'Show assignment and grading deadlines',
-                                    checked: true
-                                }
-                            ].map((widget, index) => (
-                                <div key={index} className="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                                    <input 
-                                        type="checkbox" 
-                                        defaultChecked={widget.checked}
-                                        className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                    />
-                                    <div className="flex-1">
-                                        <div className="font-medium text-gray-900">{widget.title}</div>
-                                        <div className="text-sm text-gray-600 mt-1">{widget.desc}</div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-    
-                        <div className="space-y-3">
-                            <label className="block text-sm font-medium text-gray-700">Default Course View</label>
-                            <select className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white">
-                                <option>Grid View</option>
-                                <option>List View</option>
-                                <option>Card View</option>
-                                <option>Compact View</option>
-                            </select>
-                            <div className="text-xs text-gray-500">How courses are displayed on your dashboard</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-    
-            {/* Teaching Tools & Integrations */}
-            <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-indigo-50 to-purple-50">
-                    <h3 className="text-xl font-bold text-gray-900 flex items-center">
-                        <span className="mr-3 text-2xl">🛠️</span>
-                        Teaching Tools & Integrations
+            {/* Settings Container */}
+            <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+                {/* Account Section */}
+                <div className={`p-8 border-b ${isDarkMode ? 'border-gray-600' : 'border-gray-200'} transition-colors duration-300`}>
+                    <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center mb-6 transition-colors duration-300`}>
+                        <span className="mr-3 text-2xl">👤</span>
+                        Account Information
                     </h3>
-                    <p className="text-sm text-gray-600 mt-1">Configure external tools and teaching preferences</p>
-                </div>
-                <div className="p-6">
+                    
+                    <div className="flex items-center space-x-6 mb-8">
+                        <div className="relative">
+                            <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-3xl font-bold">
+                                {user?.name ? user.name.charAt(0).toUpperCase() : 'T'}
+                            </div>
+                            <button className="absolute -bottom-1 -right-1 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors">
+                                <span className="text-sm">📷</span>
+                            </button>
+                        </div>
+                        <div className="flex-1">
+                            <h4 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>
+                                {user?.name || "Dr. Sarah Wilson"}
+                            </h4>
+                            <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
+                                {user?.email || "sarah.wilson@university.edu"}
+                            </p>
+                            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 mt-2">
+                                👨‍🏫 Teacher
+                            </span>
+                        </div>
+                    </div>
+    
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-4">
-                            <h4 className="font-semibold text-gray-900">Assignment Tools</h4>
-                            {[
-                                { title: 'Enable plagiarism detection', checked: true },
-                                { title: 'Auto-generate assignment codes', checked: false },
-                                { title: 'Anonymous grading option', checked: true },
-                                { title: 'Bulk download submissions', checked: true }
-                            ].map((tool, index) => (
-                                <div key={index} className="flex items-center space-x-3">
-                                    <input 
-                                        type="checkbox" 
-                                        defaultChecked={tool.checked}
-                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                    />
-                                    <span className="text-sm text-gray-700">{tool.title}</span>
-                                </div>
-                            ))}
+                        <div className="space-y-2">
+                            <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} transition-colors duration-300`}>
+                                Full Name
+                            </label>
+                            <input
+                                type="text"
+                                defaultValue={user?.name || "Dr. Sarah Wilson"}
+                                className={`w-full px-4 py-3 border ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white placeholder-gray-400' : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
+                                placeholder="Enter your full name"
+                            />
                         </div>
                         
-                        <div className="space-y-4">
-                            <h4 className="font-semibold text-gray-900">Communication Tools</h4>
-                            {[
-                                { title: 'Enable video conferencing integration', checked: true },
-                                { title: 'Allow voice messages in chat', checked: false },
-                                { title: 'Auto-translate messages', checked: false },
-                                { title: 'Smart reply suggestions', checked: true }
-                            ].map((tool, index) => (
-                                <div key={index} className="flex items-center space-x-3">
-                                    <input 
-                                        type="checkbox" 
-                                        defaultChecked={tool.checked}
-                                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                    />
-                                    <span className="text-sm text-gray-700">{tool.title}</span>
+                        <div className="space-y-2">
+                            <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} transition-colors duration-300`}>
+                                Email Address
+                            </label>
+                            <input
+                                type="email"
+                                defaultValue={user?.email || "sarah.wilson@university.edu"}
+                                className={`w-full px-4 py-3 border ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white placeholder-gray-400' : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
+                                placeholder="Enter your email"
+                            />
+                        </div>
+                        
+                        <div className="space-y-2">
+                            <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} transition-colors duration-300`}>
+                                Employee ID
+                            </label>
+                            <input
+                                type="text"
+                                defaultValue="EMP-2024-001"
+                                readOnly
+                                className={`w-full px-4 py-3 border ${isDarkMode ? 'border-gray-600 bg-gray-600 text-gray-300' : 'border-gray-300 bg-gray-100 text-gray-600'} rounded-lg transition-all cursor-not-allowed`}
+                            />
+                        </div>
+                        
+                        <div className="space-y-2">
+                            <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} transition-colors duration-300`}>
+                                Department
+                            </label>
+                            <select className={`w-full px-4 py-3 border ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white text-gray-900'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}>
+                                <option>Computer Science</option>
+                                <option>Mathematics</option>
+                                <option>Data Science</option>
+                                <option>Engineering</option>
+                                <option>Business</option>
+                            </select>
+                        </div>
+                        
+                        <div className="md:col-span-2 space-y-2">
+                            <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} transition-colors duration-300`}>
+                                Bio/Description
+                            </label>
+                            <textarea
+                                rows="4"
+                                defaultValue="Dr. Sarah Wilson is a Computer Science professor with over 10 years of experience in data science and machine learning education."
+                                className={`w-full px-4 py-3 border ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white placeholder-gray-400' : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none`}
+                                placeholder="Tell students about yourself..."
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <div className={`p-8 border-b ${isDarkMode ? 'border-gray-600' : 'border-gray-200'} transition-colors duration-300`}>
+                    <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center mb-6 transition-colors duration-300`}>
+                        <span className="mr-3 text-2xl">🌐</span>
+                        Language Settings
+                    </h3>
+                    
+                    <div className={`p-6 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'} rounded-xl transition-colors duration-300`}>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-4">
+                                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center text-white text-xl">
+                                    🗣️
                                 </div>
-                            ))}
+                                <div>
+                                    <h4 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>
+                                        Interface Language
+                                    </h4>
+                                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
+                                        Choose your preferred language
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div className="flex items-center space-x-3">
+                                <span className={`text-sm font-medium transition-colors duration-300 ${
+                                    currentLanguage === 'en' 
+                                        ? isDarkMode ? 'text-white' : 'text-gray-900'
+                                        : isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                                }`}>
+                                    🇺🇸 English
+                                </span>
+                                <button
+                                    onClick={() => {
+                                        const newLanguage = currentLanguage === 'en' ? 'ja' : 'en';
+                                        handleLanguageToggle(newLanguage);
+                                    }}
+                                    className={`relative inline-flex h-8 w-16 items-center rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${
+                                        currentLanguage === 'ja' ? 'bg-purple-600' : 'bg-gray-300'
+                                    }`}
+                                >
+                                    <span
+                                        className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform duration-300 ${
+                                            currentLanguage === 'ja' ? 'translate-x-9' : 'translate-x-1'
+                                        }`}
+                                    />
+                                </button>
+                                <span className={`text-sm font-medium transition-colors duration-300 ${
+                                    currentLanguage === 'ja' 
+                                        ? isDarkMode ? 'text-white' : 'text-gray-900'
+                                        : isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                                }`}>
+                                    🇯🇵 Japanese
+                                </span>
+                            </div>
+                        </div>
+                        
+                        {/* Language Change Feedback */}
+                        {currentLanguage !== 'en' && (
+                            <div className={`mt-4 p-4 ${
+                                isDarkMode 
+                                    ? 'bg-gradient-to-r from-green-900/50 to-emerald-900/50 border-green-700' 
+                                    : 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-200'
+                            } rounded-xl border transition-all duration-300`}>
+                                <div className="flex items-center space-x-3">
+                                    <span className="text-green-600 text-2xl">✅</span>
+                                    <div>
+                                        <h4 className={`font-semibold ${
+                                            isDarkMode ? 'text-green-300' : 'text-green-900'
+                                        } transition-colors duration-300`}>Language Changed</h4>
+                                        <p className={`text-sm ${
+                                            isDarkMode ? 'text-green-400' : 'text-green-700'
+                                        } transition-colors duration-300`}>
+                                            Interface language has been updated to {currentLanguage === 'ja' ? 'Japanese (日本語)' : 'English'}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                
+                        <div className={`mt-4 p-4 ${
+                            isDarkMode 
+                                ? 'bg-gradient-to-r from-blue-900/50 to-indigo-900/50 border-blue-700' 
+                                : 'bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200'
+                        } rounded-xl border transition-colors duration-300`}>
+                            <div className="flex items-center space-x-3">
+                                <span className="text-blue-600 text-2xl">💡</span>
+                                <div>
+                                    <h4 className={`font-semibold ${
+                                        isDarkMode ? 'text-blue-300' : 'text-blue-900'
+                                    } transition-colors duration-300`}>Language Note</h4>
+                                    <p className={`text-sm ${
+                                        isDarkMode ? 'text-blue-400' : 'text-blue-700'
+                                    } transition-colors duration-300`}>
+                                        Changing language will apply to the interface. Course content language may vary.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+                {/* Dark Mode Toggle Section */}
+                <div className={`p-8 border-b ${isDarkMode ? 'border-gray-600' : 'border-gray-200'} transition-colors duration-300`}>
+                    <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center mb-6 transition-colors duration-300`}>
+                        <span className="mr-3 text-2xl">🎨</span>
+                        Display Settings
+                    </h3>
+                    
+                    <div className={`p-6 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'} rounded-xl transition-colors duration-300`}>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-4">
+                                <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center text-white text-xl">
+                                    {isDarkMode ? '🌙' : '☀️'}
+                                </div>
+                                <div>
+                                    <h4 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>
+                                        Dark Mode
+                                    </h4>
+                                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
+                                        Switch between light and dark themes
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div className="flex items-center space-x-3">
+                                <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
+                                    ☀️ Light
+                                </span>
+                                <button
+                                    onClick={toggleDarkMode}
+                                    className={`relative inline-flex h-8 w-16 items-center rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                                        isDarkMode ? 'bg-blue-600' : 'bg-gray-300'
+                                    }`}
+                                >
+                                    <span
+                                        className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform duration-300 ${
+                                            isDarkMode ? 'translate-x-9' : 'translate-x-1'
+                                        }`}
+                                    />
+                                </button>
+                                <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
+                                    🌙 Dark
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+                {/* Additional Settings */}
+                <div className="p-8">
+                    <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center mb-6 transition-colors duration-300`}>
+                        <span className="mr-3 text-2xl">🛠️</span>
+                        Teaching Preferences
+                    </h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Grading Preferences */}
+                        <div className={`p-6 ${isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'} rounded-xl border transition-colors duration-300`}>
+                            <h4 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-4 transition-colors duration-300`}>
+                                Grading System
+                            </h4>
+                            <div className="space-y-3">
+                                <div className="space-y-2">
+                                    <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} transition-colors duration-300`}>
+                                        Default Grading Scale
+                                    </label>
+                                    <select className={`w-full px-4 py-2 border ${isDarkMode ? 'border-gray-600 bg-gray-800 text-white' : 'border-gray-300 bg-white text-gray-900'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}>
+                                        <option>A-F Letter Grades</option>
+                                        <option>0-100 Percentage</option>
+                                        <option>1-10 Scale</option>
+                                        <option>Pass/Fail</option>
+                                    </select>
+                                </div>
+                                
+                                <div className="space-y-2">
+                                    <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} transition-colors duration-300`}>
+                                        Late Penalty (% per day)
+                                    </label>
+                                    <input
+                                        type="number"
+                                        defaultValue="10"
+                                        className={`w-full px-4 py-2 border ${isDarkMode ? 'border-gray-600 bg-gray-800 text-white' : 'border-gray-300 bg-white text-gray-900'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+    
+                        {/* Notification Preferences */}
+                        <div className={`p-6 ${isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'} rounded-xl border transition-colors duration-300`}>
+                            <h4 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-4 transition-colors duration-300`}>
+                                Notifications
+                            </h4>
+                            <div className="space-y-4">
+                                {[
+                                    'Student Messages',
+                                    'Assignment Submissions',
+                                    'Grading Deadlines',
+                                    'System Updates'
+                                ].map((notification, index) => (
+                                    <div key={index} className="flex items-center justify-between">
+                                        <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
+                                            {notification}
+                                        </span>
+                                        <button
+                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${
+                                                index % 2 === 0 ? 'bg-blue-600' : 'bg-gray-300'
+                                            }`}
+                                        >
+                                            <span
+                                                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-300 ${
+                                                    index % 2 === 0 ? 'translate-x-6' : 'translate-x-1'
+                                                }`}
+                                            />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
     
-                    <div className="mt-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
-                        <div className="flex items-center space-x-3">
-                            <span className="text-blue-600 text-2xl">🚀</span>
-                            <div>
-                                <h4 className="font-semibold text-blue-900">Pro Teaching Features</h4>
-                                <p className="text-sm text-blue-700">Upgrade to unlock advanced analytics, AI-powered insights, and automated grading tools.</p>
+                    {/* Security Section */}
+                    <div className={`mt-8 p-6 bg-gradient-to-r ${isDarkMode ? 'from-orange-900/50 to-red-900/50 border-orange-700' : 'from-orange-50 to-red-50 border-orange-200'} rounded-xl border transition-colors duration-300`}>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-3">
+                                <span className="text-orange-600 text-2xl">🔐</span>
+                                <div>
+                                    <h4 className={`font-semibold ${isDarkMode ? 'text-orange-300' : 'text-orange-900'} transition-colors duration-300`}>
+                                        Account Security
+                                    </h4>
+                                    <p className={`text-sm ${isDarkMode ? 'text-orange-400' : 'text-orange-700'} transition-colors duration-300`}>
+                                        Password last changed 45 days ago
+                                    </p>
+                                </div>
                             </div>
-                            <button className="ml-auto inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
-                                Learn More
+                            <button className="inline-flex items-center px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm font-medium">
+                                <span className="mr-2">🔑</span>
+                                Change Password
                             </button>
                         </div>
                     </div>
@@ -4551,7 +5157,7 @@ const Dashboard = () => {
     // Admin Dashboard Components
     const renderAdminOverview = () => (
         <div className="space-y-8">
-            {/* System Health Header */}
+            {/* System Health Header - Enhanced Dark Mode */}
             <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 rounded-3xl shadow-2xl overflow-hidden">
                 <div className="relative p-8">
                     {/* Background Pattern */}
@@ -4701,9 +5307,9 @@ const Dashboard = () => {
                 </div>
             </div>
     
-            {/* Key Metrics Dashboard */}
+            {/* Key Metrics Dashboard - Dark Mode */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
+                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
                     <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-6 text-white">
                         <div className="flex items-center justify-between">
                             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -4715,24 +5321,24 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="p-6">
+                    <div className={`p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} transition-colors duration-300`}>
                         <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-600">Pending approval</span>
+                            <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>Pending approval</span>
                             <span className="font-semibold text-orange-600">{pendingUsers.length}</span>
                         </div>
-                        <div className="mt-4 bg-gray-200 rounded-full h-2">
+                        <div className={`mt-4 rounded-full h-2 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} transition-colors duration-300`}>
                             <div 
                                 className="bg-blue-500 h-2 rounded-full transition-all duration-1000"
                                 style={{ width: `${(allUsers.filter(u => u.isApproved).length / allUsers.length) * 100}%` }}
                             ></div>
                         </div>
-                        <div className="mt-2 text-xs text-gray-500">
+                        <div className={`mt-2 text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-500'} transition-colors duration-300`}>
                             {Math.round((allUsers.filter(u => u.isApproved).length / allUsers.length) * 100)}% approved
                         </div>
                     </div>
                 </div>
     
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
+                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
                     <div className="bg-gradient-to-br from-green-500 to-green-600 p-6 text-white">
                         <div className="flex items-center justify-between">
                             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -4744,24 +5350,24 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="p-6">
+                    <div className={`p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} transition-colors duration-300`}>
                         <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-600">Pending review</span>
+                            <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>Pending review</span>
                             <span className="font-semibold text-orange-600">{dashboardData.admin.pendingApplications || 0}</span>
                         </div>
-                        <div className="mt-4 bg-gray-200 rounded-full h-2">
+                        <div className={`mt-4 rounded-full h-2 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} transition-colors duration-300`}>
                             <div 
                                 className="bg-green-500 h-2 rounded-full transition-all duration-1000"
                                 style={{ width: `${applicationSubmissions.length > 0 ? ((applicationSubmissions.filter(app => app.status === 'approved').length / applicationSubmissions.length) * 100) : 0}%` }}
                             ></div>
                         </div>
-                        <div className="mt-2 text-xs text-gray-500">
+                        <div className={`mt-2 text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-500'} transition-colors duration-300`}>
                             {applicationSubmissions.filter(app => app.status === 'approved').length} approved
                         </div>
                     </div>
                 </div>
     
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
+                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
                     <div className="bg-gradient-to-br from-orange-500 to-orange-600 p-6 text-white">
                         <div className="flex items-center justify-between">
                             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -4773,24 +5379,24 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="p-6">
+                    <div className={`p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} transition-colors duration-300`}>
                         <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-600">Needs response</span>
+                            <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>Needs response</span>
                             <span className="font-semibold text-red-600">{dashboardData.admin.pendingContacts || 0}</span>
                         </div>
-                        <div className="mt-4 bg-gray-200 rounded-full h-2">
+                        <div className={`mt-4 rounded-full h-2 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} transition-colors duration-300`}>
                             <div 
                                 className="bg-orange-500 h-2 rounded-full transition-all duration-1000"
                                 style={{ width: `${contactSubmissions.length > 0 ? ((contactSubmissions.filter(contact => contact.status === 'resolved').length / contactSubmissions.length) * 100) : 0}%` }}
                             ></div>
                         </div>
-                        <div className="mt-2 text-xs text-gray-500">
+                        <div className={`mt-2 text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-500'} transition-colors duration-300`}>
                             {contactSubmissions.filter(contact => contact.status === 'resolved').length} resolved
                         </div>
                     </div>
                 </div>
     
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
+                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
                     <div className="bg-gradient-to-br from-purple-500 to-purple-600 p-6 text-white">
                         <div className="flex items-center justify-between">
                             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -4802,42 +5408,44 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="p-6">
+                    <div className={`p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} transition-colors duration-300`}>
                         <div className="flex items-center justify-between text-sm">
-                            <span className="text-gray-600">Last 30 days</span>
+                            <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>Last 30 days</span>
                             <span className="font-semibold text-green-600">Excellent</span>
                         </div>
-                        <div className="mt-4 bg-gray-200 rounded-full h-2">
+                        <div className={`mt-4 rounded-full h-2 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} transition-colors duration-300`}>
                             <div className="bg-purple-500 h-2 rounded-full transition-all duration-1000" style={{ width: '99.9%' }}></div>
                         </div>
-                        <div className="mt-2 text-xs text-gray-500">
+                        <div className={`mt-2 text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-500'} transition-colors duration-300`}>
                             43.2 minutes downtime
                         </div>
                     </div>
                 </div>
             </div>
     
-            {/* Main Content Grid */}
+            {/* Main Content Grid - Dark Mode */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* User Role Distribution */}
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                    <div className="p-6 border-b border-gray-200">
-                        <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                {/* User Role Distribution - Dark Mode */}
+                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+                    <div className={`p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
+                        <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                             <span className="mr-2">📊</span>
                             User Distribution
                         </h3>
-                        <p className="text-sm text-gray-600 mt-1">Platform user breakdown by role</p>
+                        <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mt-1 transition-colors duration-300`}>Platform user breakdown by role</p>
                     </div>
                     <div className="p-6">
                         <div className="space-y-4">
-                            <div className="flex items-center justify-between p-4 bg-blue-50 rounded-xl border border-blue-200">
+                            <div className={`flex items-center justify-between p-4 rounded-xl border transition-colors ${
+                                isDarkMode ? 'bg-blue-900/20 border-blue-700/50' : 'bg-blue-50 border-blue-200'
+                            }`}>
                                 <div className="flex items-center space-x-3">
                                     <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
                                         <span className="text-white text-sm font-bold">👨‍🎓</span>
                                     </div>
                                     <div>
-                                        <div className="font-semibold text-gray-900">Students</div>
-                                        <div className="text-sm text-gray-600">Active learners</div>
+                                        <div className={`font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>Students</div>
+                                        <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>Active learners</div>
                                     </div>
                                 </div>
                                 <div className="text-right">
@@ -4848,14 +5456,16 @@ const Dashboard = () => {
                                 </div>
                             </div>
     
-                            <div className="flex items-center justify-between p-4 bg-green-50 rounded-xl border border-green-200">
+                            <div className={`flex items-center justify-between p-4 rounded-xl border transition-colors ${
+                                isDarkMode ? 'bg-green-900/20 border-green-700/50' : 'bg-green-50 border-green-200'
+                            }`}>
                                 <div className="flex items-center space-x-3">
                                     <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
                                         <span className="text-white text-sm font-bold">👨‍🏫</span>
                                     </div>
                                     <div>
-                                        <div className="font-semibold text-gray-900">Teachers</div>
-                                        <div className="text-sm text-gray-600">Course instructors</div>
+                                        <div className={`font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>Teachers</div>
+                                        <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>Course instructors</div>
                                     </div>
                                 </div>
                                 <div className="text-right">
@@ -4866,14 +5476,16 @@ const Dashboard = () => {
                                 </div>
                             </div>
     
-                            <div className="flex items-center justify-between p-4 bg-purple-50 rounded-xl border border-purple-200">
+                            <div className={`flex items-center justify-between p-4 rounded-xl border transition-colors ${
+                                isDarkMode ? 'bg-purple-900/20 border-purple-700/50' : 'bg-purple-50 border-purple-200'
+                            }`}>
                                 <div className="flex items-center space-x-3">
                                     <div className="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
                                         <span className="text-white text-sm font-bold">👨‍💼</span>
                                     </div>
                                     <div>
-                                        <div className="font-semibold text-gray-900">Administrators</div>
-                                        <div className="text-sm text-gray-600">System managers</div>
+                                        <div className={`font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>Administrators</div>
+                                        <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>System managers</div>
                                     </div>
                                 </div>
                                 <div className="text-right">
@@ -4885,40 +5497,46 @@ const Dashboard = () => {
                             </div>
                         </div>
     
-                        <div className="mt-6 p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl">
+                        <div className={`mt-6 p-4 rounded-xl transition-colors ${
+                            isDarkMode ? 'bg-gradient-to-r from-gray-700 to-gray-600' : 'bg-gradient-to-r from-gray-50 to-gray-100'
+                        }`}>
                             <div className="flex items-center justify-between">
-                                <span className="text-sm font-medium text-gray-700">Total Active Users</span>
-                                <span className="text-lg font-bold text-gray-900">{allUsers.filter(u => u.isApproved).length}</span>
+                                <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>Total Active Users</span>
+                                <span className={`text-lg font-bold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>{allUsers.filter(u => u.isApproved).length}</span>
                             </div>
-                            <div className="mt-2 text-xs text-gray-500">
+                            <div className={`mt-2 text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
                                 Growth rate: +{Math.floor(Math.random() * 15) + 5}% this month
                             </div>
                         </div>
                     </div>
                 </div>
     
-                {/* Recent Activity Feed */}
-                <div className="lg:col-span-2 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                    <div className="p-6 border-b border-gray-200">
+                {/* Recent Activity Feed - Dark Mode */}
+                <div className={`lg:col-span-2 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+                    <div className={`p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
                         <div className="flex items-center justify-between">
                             <div>
-                                <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                                <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                                     <span className="mr-2">⚡</span>
                                     Real-time Activity
                                 </h3>
-                                <p className="text-sm text-gray-600 mt-1">Live system events and user actions</p>
+                                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mt-1 transition-colors duration-300`}>Live system events and user actions</p>
                             </div>
                             <div className="flex items-center space-x-2">
                                 <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                                <span className="text-sm text-gray-500">Live</span>
+                                <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>Live</span>
                             </div>
                         </div>
                     </div>
                     <div className="p-6">
                         <div className="space-y-4">
-                            {/* Pending User Approvals */}
+                            {/* Pending User Approvals - Dark Mode */}
                             {pendingUsers.length > 0 && pendingUsers.slice(0, 3).map(user => (
-                                <div key={user._id} className="flex items-start space-x-4 p-4 bg-orange-25 border border-orange-200 rounded-xl hover:bg-orange-50 transition-colors">
+                                <div key={user._id} className={`flex items-start space-x-4 p-4 border rounded-xl transition-colors ${
+                                    isDarkMode 
+                                        ? 'bg-orange-900/20 border-orange-700/50 hover:bg-orange-900/30' 
+                                        : 'bg-orange-25 border-orange-200 hover:bg-orange-50'
+                                }`}>
                                     <div className="relative">
                                         <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-red-500 rounded-xl flex items-center justify-center text-white font-semibold">
                                             {user.firstName?.charAt(0)}{user.lastName?.charAt(0)}
@@ -4929,25 +5547,33 @@ const Dashboard = () => {
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center justify-between">
-                                            <h4 className="text-sm font-semibold text-gray-900">
+                                            <h4 className={`text-sm font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>
                                                 New {user.role} registration
                                             </h4>
-                                            <span className="text-xs text-gray-500">
+                                            <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
                                                 {new Date(user.createdAt || Date.now()).toLocaleDateString()}
                                             </span>
                                         </div>
-                                        <p className="text-sm text-gray-600">
+                                        <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>
                                             {user.firstName} {user.lastName} ({user.email}) awaiting approval
                                         </p>
                                         <div className="flex space-x-2 mt-3">
                                             <button 
-                                                className="inline-flex items-center px-3 py-1 rounded-lg text-xs font-medium text-green-700 bg-green-100 hover:bg-green-200 transition-colors"
+                                                className={`inline-flex items-center px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
+                                                    isDarkMode 
+                                                        ? 'text-green-300 bg-green-900/50 hover:bg-green-900/70 border border-green-700/50' 
+                                                        : 'text-green-700 bg-green-100 hover:bg-green-200'
+                                                }`}
                                                 onClick={() => handleUserApproval(user._id, true)}
                                             >
                                                 ✅ Approve
                                             </button>
                                             <button 
-                                                className="inline-flex items-center px-3 py-1 rounded-lg text-xs font-medium text-red-700 bg-red-100 hover:bg-red-200 transition-colors"
+                                                className={`inline-flex items-center px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
+                                                    isDarkMode 
+                                                        ? 'text-red-300 bg-red-900/50 hover:bg-red-900/70 border border-red-700/50' 
+                                                        : 'text-red-700 bg-red-100 hover:bg-red-200'
+                                                }`}
                                                 onClick={() => handleUserApproval(user._id, false)}
                                             >
                                                 ❌ Reject
@@ -4957,31 +5583,43 @@ const Dashboard = () => {
                                 </div>
                             ))}
     
-                            {/* Recent Contact Messages */}
+                            {/* Recent Contact Messages - Dark Mode */}
                             {contactSubmissions.length > 0 && contactSubmissions.filter(c => c.status === 'pending').slice(0, 2).map(contact => (
-                                <div key={contact._id} className="flex items-start space-x-4 p-4 bg-blue-25 border border-blue-200 rounded-xl hover:bg-blue-50 transition-colors">
+                                <div key={contact._id} className={`flex items-start space-x-4 p-4 border rounded-xl transition-colors ${
+                                    isDarkMode 
+                                        ? 'bg-blue-900/20 border-blue-700/50 hover:bg-blue-900/30' 
+                                        : 'bg-blue-25 border-blue-200 hover:bg-blue-50'
+                                }`}>
                                     <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-xl flex items-center justify-center text-white font-semibold">
                                         {contact.name?.charAt(0).toUpperCase()}
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center justify-between">
-                                            <h4 className="text-sm font-semibold text-gray-900">New contact message</h4>
-                                            <span className="text-xs text-gray-500">
+                                            <h4 className={`text-sm font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>New contact message</h4>
+                                            <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
                                                 {new Date(contact.createdAt || Date.now()).toLocaleDateString()}
                                             </span>
                                         </div>
-                                        <p className="text-sm text-gray-600">
+                                        <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>
                                             {contact.name} - {contact.subject}
                                         </p>
                                         <div className="flex space-x-2 mt-3">
                                             <button 
-                                                className="inline-flex items-center px-3 py-1 rounded-lg text-xs font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 transition-colors"
+                                                className={`inline-flex items-center px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
+                                                    isDarkMode 
+                                                        ? 'text-blue-300 bg-blue-900/50 hover:bg-blue-900/70 border border-blue-700/50' 
+                                                        : 'text-blue-700 bg-blue-100 hover:bg-blue-200'
+                                                }`}
                                                 onClick={() => handleContactAction(contact._id, 'approved')}
                                             >
                                                 🔥 Priority
                                             </button>
                                             <button 
-                                                className="inline-flex items-center px-3 py-1 rounded-lg text-xs font-medium text-green-700 bg-green-100 hover:bg-green-200 transition-colors"
+                                                className={`inline-flex items-center px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
+                                                    isDarkMode 
+                                                        ? 'text-green-300 bg-green-900/50 hover:bg-green-900/70 border border-green-700/50' 
+                                                        : 'text-green-700 bg-green-100 hover:bg-green-200'
+                                                }`}
                                                 onClick={() => handleContactAction(contact._id, 'resolved')}
                                             >
                                                 ✅ Resolve
@@ -4991,59 +5629,97 @@ const Dashboard = () => {
                                 </div>
                             ))}
     
-                            {/* System Events */}
-                            <div className="flex items-start space-x-4 p-4 bg-green-25 border border-green-200 rounded-xl">
+                            {/* System Events - Dark Mode */}
+                            <div className={`flex items-start space-x-4 p-4 border rounded-xl transition-colors ${
+                                isDarkMode 
+                                    ? 'bg-green-900/20 border-green-700/50' 
+                                    : 'bg-green-25 border-green-200'
+                            }`}>
                                 <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center text-white">
                                     <span className="text-lg">🛡️</span>
                                 </div>
                                 <div className="flex-1">
                                     <div className="flex items-center justify-between">
-                                        <h4 className="text-sm font-semibold text-gray-900">Security scan completed</h4>
-                                        <span className="text-xs text-gray-500">5 minutes ago</span>
+                                        <h4 className={`text-sm font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>Security scan completed</h4>
+                                        <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>5 minutes ago</span>
                                     </div>
-                                    <p className="text-sm text-gray-600">No threats detected. All systems secure.</p>
-                                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 mt-2">
+                                    <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>No threats detected. All systems secure.</p>
+                                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium mt-2 transition-colors ${
+                                        isDarkMode ? 'bg-green-900/50 text-green-300 border border-green-700/50' : 'bg-green-100 text-green-800'
+                                    }`}>
                                         ✅ All Clear
                                     </span>
                                 </div>
                             </div>
     
-                            <div className="flex items-start space-x-4 p-4 bg-purple-25 border border-purple-200 rounded-xl">
+                            <div className={`flex items-start space-x-4 p-4 border rounded-xl transition-colors ${
+                                isDarkMode 
+                                    ? 'bg-purple-900/20 border-purple-700/50' 
+                                    : 'bg-purple-25 border-purple-200'
+                            }`}>
                                 <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-500 rounded-xl flex items-center justify-center text-white">
                                     <span className="text-lg">💾</span>
                                 </div>
                                 <div className="flex-1">
                                     <div className="flex items-center justify-between">
-                                        <h4 className="text-sm font-semibold text-gray-900">Database backup completed</h4>
-                                        <span className="text-xs text-gray-500">1 hour ago</span>
+                                        <h4 className={`text-sm font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>Database backup completed</h4>
+                                        <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>1 hour ago</span>
                                     </div>
-                                    <p className="text-sm text-gray-600">Daily backup successful. 2.4GB archived.</p>
-                                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 mt-2">
+                                    <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>Daily backup successful. 2.4GB archived.</p>
+                                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium mt-2 transition-colors ${
+                                        isDarkMode ? 'bg-purple-900/50 text-purple-300 border border-purple-700/50' : 'bg-purple-100 text-purple-800'
+                                    }`}>
                                         📊 Automated
                                     </span>
                                 </div>
                             </div>
                         </div>
     
-                        {/* Quick Actions */}
-                        <div className="mt-8 p-6 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl">
-                            <h4 className="text-sm font-semibold text-gray-900 mb-4">Quick Administration</h4>
+                        {/* Quick Actions - Dark Mode */}
+                        <div className={`mt-8 p-6 rounded-xl transition-colors ${
+                            isDarkMode ? 'bg-gradient-to-r from-gray-700 to-gray-600' : 'bg-gradient-to-r from-gray-50 to-gray-100'
+                        }`}>
+                            <h4 className={`text-sm font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-900'} mb-4 transition-colors duration-300`}>Quick Administration</h4>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                <button className="flex flex-col items-center p-3 bg-white rounded-lg border border-gray-200 hover:bg-blue-50 hover:border-blue-300 transition-all group">
+                                <button className={`flex flex-col items-center p-3 rounded-lg border transition-all group ${
+                                    isDarkMode 
+                                        ? 'bg-gray-800 border-gray-600 hover:bg-blue-900/30 hover:border-blue-700/50' 
+                                        : 'bg-white border-gray-200 hover:bg-blue-50 hover:border-blue-300'
+                                }`}>
                                     <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">👥</span>
-                                    <span className="text-xs font-medium text-gray-700 group-hover:text-blue-700">Manage Users</span>
+                                    <span className={`text-xs font-medium transition-colors ${
+                                        isDarkMode ? 'text-gray-300 group-hover:text-blue-300' : 'text-gray-700 group-hover:text-blue-700'
+                                    }`}>Manage Users</span>
                                 </button>
-                                <button className="flex flex-col items-center p-3 bg-white rounded-lg border border-gray-200 hover:bg-green-50 hover:border-green-300 transition-all group">
+                                <button className={`flex flex-col items-center p-3 rounded-lg border transition-all group ${
+                                    isDarkMode 
+                                        ? 'bg-gray-800 border-gray-600 hover:bg-green-900/30 hover:border-green-700/50' 
+                                        : 'bg-white border-gray-200 hover:bg-green-50 hover:border-green-300'
+                                }`}>
                                     <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">📋</span>
-                                    <span className="text-xs font-medium text-gray-700 group-hover:text-green-700">Applications</span>
+                                    <span className={`text-xs font-medium transition-colors ${
+                                        isDarkMode ? 'text-gray-300 group-hover:text-green-300' : 'text-gray-700 group-hover:text-green-700'
+                                    }`}>Applications</span>
                                 </button>
-                                <button className="flex flex-col items-center p-3 bg-white rounded-lg border border-gray-200 hover:bg-orange-50 hover:border-orange-300 transition-all group">
+                                <button className={`flex flex-col items-center p-3 rounded-lg border transition-all group ${
+                                    isDarkMode 
+                                        ? 'bg-gray-800 border-gray-600 hover:bg-orange-900/30 hover:border-orange-700/50' 
+                                        : 'bg-white border-gray-200 hover:bg-orange-50 hover:border-orange-300'
+                                }`}>
                                     <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">📧</span>
-                                    <span className="text-xs font-medium text-gray-700 group-hover:text-orange-700">Messages</span>
+                                    <span className={`text-xs font-medium transition-colors ${
+                                        isDarkMode ? 'text-gray-300 group-hover:text-orange-300' : 'text-gray-700 group-hover:text-orange-700'
+                                    }`}>Messages</span>
                                 </button>
-                                <button className="flex flex-col items-center p-3 bg-white rounded-lg border border-gray-200 hover:bg-purple-50 hover:border-purple-300 transition-all group">
+                                <button className={`flex flex-col items-center p-3 rounded-lg border transition-all group ${
+                                    isDarkMode 
+                                        ? 'bg-gray-800 border-gray-600 hover:bg-purple-900/30 hover:border-purple-700/50' 
+                                        : 'bg-white border-gray-200 hover:bg-purple-50 hover:border-purple-300'
+                                }`}>
                                     <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">⚙️</span>
-                                    <span className="text-xs font-medium text-gray-700 group-hover:text-purple-700">Settings</span>
+                                    <span className={`text-xs font-medium transition-colors ${
+                                        isDarkMode ? 'text-gray-300 group-hover:text-purple-300' : 'text-gray-700 group-hover:text-purple-700'
+                                    }`}>Settings</span>
                                 </button>
                             </div>
                         </div>
@@ -5051,21 +5727,23 @@ const Dashboard = () => {
                 </div>
             </div>
     
-            {/* System Alerts & Notifications */}
+            {/* System Alerts & Notifications - Dark Mode */}
             {dashboardData.admin.recentAlerts && dashboardData.admin.recentAlerts.length > 0 && (
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                    <div className="p-6 border-b border-gray-200">
-                        <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+                    <div className={`p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
+                        <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                             <span className="mr-2">🚨</span>
                             System Alerts
                         </h3>
-                        <p className="text-sm text-gray-600 mt-1">Recent system notifications and alerts</p>
+                        <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mt-1 transition-colors duration-300`}>Recent system notifications and alerts</p>
                     </div>
                     <div className="p-6">
                         <div className="space-y-3">
                             {dashboardData.admin.recentAlerts.map((alert, index) => (
-                                <div key={index} className={`flex items-start space-x-4 p-4 rounded-xl border ${
-                                    alert.type === 'warning' ? 'bg-yellow-25 border-yellow-200' : 'bg-blue-25 border-blue-200'
+                                <div key={index} className={`flex items-start space-x-4 p-4 rounded-xl border transition-colors ${
+                                    alert.type === 'warning' 
+                                        ? (isDarkMode ? 'bg-yellow-900/20 border-yellow-700/50' : 'bg-yellow-25 border-yellow-200')
+                                        : (isDarkMode ? 'bg-blue-900/20 border-blue-700/50' : 'bg-blue-25 border-blue-200')
                                 }`}>
                                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
                                         alert.type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
@@ -5075,10 +5753,10 @@ const Dashboard = () => {
                                         </span>
                                     </div>
                                     <div className="flex-1">
-                                        <p className="text-sm font-medium text-gray-900">{alert.message}</p>
-                                        <p className="text-xs text-gray-500 mt-1">{alert.time}</p>
+                                        <p className={`text-sm font-medium ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>{alert.message}</p>
+                                        <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mt-1 transition-colors duration-300`}>{alert.time}</p>
                                     </div>
-                                    <button className="text-gray-400 hover:text-gray-600 transition-colors">
+                                    <button className={`transition-colors ${isDarkMode ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'}`}>
                                         <span className="text-lg">✕</span>
                                     </button>
                                 </div>
@@ -5095,23 +5773,23 @@ const Dashboard = () => {
             {/* Header */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div className="space-y-2">
-                    <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+                    <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                         <span className="mr-2">👥</span>
                         User Management
                     </h2>
                     <div className="flex flex-wrap gap-4 text-sm">
-                        <span className="text-gray-600">
-                            <span className="font-semibold text-gray-900">{allUsers.length}</span> Total Users
+                        <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
+                            <span className={`font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>{allUsers.length}</span> Total Users
                         </span>
-                        <span className="text-gray-600">
+                        <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
                             <span className="font-semibold text-orange-600">{pendingUsers.length}</span> Pending
                         </span>
-                        <span className="text-gray-600">
+                        <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
                             <span className="font-semibold text-green-600">{allUsers.filter(u => u.isApproved).length}</span> Approved
                         </span>
                     </div>
                 </div>
-
+    
                 <div className="flex flex-col sm:flex-row gap-3">
                     <div className="flex flex-col sm:flex-row gap-2">
                         <input 
@@ -5119,12 +5797,20 @@ const Dashboard = () => {
                             placeholder="🔍 Search users..." 
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            className={`px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                isDarkMode 
+                                    ? 'border-gray-600 bg-gray-800 text-gray-100 placeholder-gray-400' 
+                                    : 'border-gray-300 bg-white text-gray-900'
+                            }`}
                         />
                         <select 
                             value={selectedRole}
                             onChange={(e) => setSelectedRole(e.target.value)}
-                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            className={`px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                isDarkMode 
+                                    ? 'border-gray-600 bg-gray-800 text-gray-100' 
+                                    : 'border-gray-300 bg-white text-gray-900'
+                            }`}
                         >
                             <option value="">All Roles</option>
                             <option value="student">Students</option>
@@ -5134,7 +5820,11 @@ const Dashboard = () => {
                         <select 
                             value={selectedStatus}
                             onChange={(e) => setSelectedStatus(e.target.value)}
-                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            className={`px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                isDarkMode 
+                                    ? 'border-gray-600 bg-gray-800 text-gray-100' 
+                                    : 'border-gray-300 bg-white text-gray-900'
+                            }`}
                         >
                             <option value="">All Status</option>
                             <option value="approved">Approved</option>
@@ -5149,76 +5839,96 @@ const Dashboard = () => {
                     </button>
                 </div>
             </div>
-
-            {/* Create User Modal */}
+    
+            {/* Create User Modal - Dark Mode */}
             {showCreateUserForm && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
-                    <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 w-full max-w-2xl mx-4">
-                        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-                            <h3 className="text-xl font-semibold text-gray-900 flex items-center">
+                    <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-2xl border w-full max-w-2xl mx-4 transition-colors duration-300`}>
+                        <div className={`flex items-center justify-between p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
+                            <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                                 <span className="mr-2">✨</span>
                                 Create New User
                             </h3>
                             <button 
-                                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                                className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
                                 onClick={() => setShowCreateUserForm(false)}
                             >
-                                <span className="text-gray-400 hover:text-gray-600 text-xl">✕</span>
+                                <span className={`${isDarkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-400 hover:text-gray-600'} text-xl transition-colors`}>✕</span>
                             </button>
                         </div>
                         <div className="p-6">
                             <form onSubmit={handleCreateUser} className="space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <label className="text-sm font-medium text-gray-700">First Name</label>
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>First Name</label>
                                         <input
                                             type="text"
                                             placeholder="Enter first name"
                                             value={newUserData.firstName}
                                             onChange={(e) => setNewUserData({...newUserData, firstName: e.target.value})}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                                isDarkMode 
+                                                    ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+                                                    : 'border-gray-300 bg-white text-gray-900'
+                                            }`}
                                             required
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-sm font-medium text-gray-700">Last Name</label>
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>Last Name</label>
                                         <input
                                             type="text"
                                             placeholder="Enter last name"
                                             value={newUserData.lastName}
                                             onChange={(e) => setNewUserData({...newUserData, lastName: e.target.value})}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                                isDarkMode 
+                                                    ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+                                                    : 'border-gray-300 bg-white text-gray-900'
+                                            }`}
                                             required
                                         />
                                     </div>
                                     <div className="md:col-span-2 space-y-2">
-                                        <label className="text-sm font-medium text-gray-700">Email Address</label>
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>Email Address</label>
                                         <input
                                             type="email"
                                             placeholder="Enter email address"
                                             value={newUserData.email}
                                             onChange={(e) => setNewUserData({...newUserData, email: e.target.value})}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                                isDarkMode 
+                                                    ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+                                                    : 'border-gray-300 bg-white text-gray-900'
+                                            }`}
                                             required
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-sm font-medium text-gray-700">Password</label>
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>Password</label>
                                         <input
                                             type="password"
                                             placeholder="Enter password"
                                             value={newUserData.password}
                                             onChange={(e) => setNewUserData({...newUserData, password: e.target.value})}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                                isDarkMode 
+                                                    ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+                                                    : 'border-gray-300 bg-white text-gray-900'
+                                            }`}
                                             required
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-sm font-medium text-gray-700">Role</label>
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>Role</label>
                                         <select
                                             value={newUserData.role}
                                             onChange={(e) => setNewUserData({...newUserData, role: e.target.value})}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                                isDarkMode 
+                                                    ? 'border-gray-600 bg-gray-700 text-gray-100' 
+                                                    : 'border-gray-300 bg-white text-gray-900'
+                                            }`}
                                         >
                                             <option value="student">👨‍🎓 Student</option>
                                             <option value="teacher">👨‍🏫 Teacher</option>
@@ -5226,10 +5936,14 @@ const Dashboard = () => {
                                         </select>
                                     </div>
                                 </div>
-                                <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+                                <div className={`flex justify-end space-x-3 pt-4 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
                                     <button 
                                         type="button" 
-                                        className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+                                        className={`px-4 py-2 border rounded-lg transition-colors ${
+                                            isDarkMode 
+                                                ? 'border-gray-600 text-gray-300 bg-gray-700 hover:bg-gray-600' 
+                                                : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                                        }`}
                                         onClick={() => setShowCreateUserForm(false)}
                                     >
                                         Cancel
@@ -5246,205 +5960,51 @@ const Dashboard = () => {
                     </div>
                 </div>
             )}
-
-            {/* Edit User Modal */}
-            {showEditUserForm && (
-                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
-                    <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 w-full max-w-2xl mx-4">
-                        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-                            <h3 className="text-xl font-semibold text-gray-900 flex items-center">
-                                <span className="mr-2">📝</span>
-                                Edit User
-                            </h3>
-                            <button 
-                                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                                onClick={() => {
-                                    setShowEditUserForm(false);
-                                    setEditingUser(null);
-                                    setNewUserData({
-                                        firstName: '',
-                                        lastName: '',
-                                        email: '',
-                                        password: '',
-                                        role: 'student'
-                                    });
-                                }}
-                            >
-                                <span className="text-gray-400 hover:text-gray-600 text-xl">✕</span>
-                            </button>
-                        </div>
-                        <div className="p-6">
-                            <form onSubmit={handleUpdateUser} className="space-y-6">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-medium text-gray-700">First Name</label>
-                                        <input
-                                            type="text"
-                                            placeholder="Enter first name"
-                                            value={newUserData.firstName}
-                                            onChange={(e) => setNewUserData({...newUserData, firstName: e.target.value})}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                            required
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-medium text-gray-700">Last Name</label>
-                                        <input
-                                            type="text"
-                                            placeholder="Enter last name"
-                                            value={newUserData.lastName}
-                                            onChange={(e) => setNewUserData({...newUserData, lastName: e.target.value})}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                            required
-                                        />
-                                    </div>
-                                    <div className="md:col-span-2 space-y-2">
-                                        <label className="text-sm font-medium text-gray-700">Email Address</label>
-                                        <input
-                                            type="email"
-                                            placeholder="Enter email address"
-                                            value={newUserData.email}
-                                            onChange={(e) => setNewUserData({...newUserData, email: e.target.value})}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                            required
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-medium text-gray-700">Password</label>
-                                        <input
-                                            type="password"
-                                            placeholder="Leave blank to keep current password"
-                                            value={newUserData.password}
-                                            onChange={(e) => setNewUserData({...newUserData, password: e.target.value})}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                        />
-                                        <div className="text-xs text-gray-500">Leave blank to keep current password</div>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-medium text-gray-700">Role</label>
-                                        <select
-                                            value={newUserData.role}
-                                            onChange={(e) => setNewUserData({...newUserData, role: e.target.value})}
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                        >
-                                            <option value="student">👨‍🎓 Student</option>
-                                            <option value="teacher">👨‍🏫 Teacher</option>
-                                            <option value="admin">👨‍💼 Admin</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
-                                    <button 
-                                        type="button" 
-                                        className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
-                                        onClick={() => {
-                                            setShowEditUserForm(false);
-                                            setEditingUser(null);
-                                            setNewUserData({
-                                                firstName: '',
-                                                lastName: '',
-                                                email: '',
-                                                password: '',
-                                                role: 'student'
-                                            });
-                                        }}
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button 
-                                        type="submit" 
-                                        className="px-4 py-2 border border-transparent rounded-lg text-white bg-green-600 hover:bg-green-700 transition-colors"
-                                    >
-                                        💾 Update User
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Delete Confirmation Modal */}
-            {showDeleteConfirm && (
-                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
-                    <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 w-full max-w-md mx-4">
-                        <div className="p-6">
-                            <div className="flex items-center justify-center w-12 h-12 mx-auto mb-4 bg-red-100 rounded-full">
-                                <span className="text-2xl">⚠️</span>
-                            </div>
-                            <h3 className="text-lg font-semibold text-gray-900 text-center mb-2">
-                                Delete User
-                            </h3>
-                            <p className="text-gray-600 text-center mb-6">
-                                Are you sure you want to delete <strong>{userToDelete?.firstName} {userToDelete?.lastName}</strong>? 
-                                This action cannot be undone.
-                            </p>
-                            <div className="flex justify-center space-x-3">
-                                <button 
-                                    className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
-                                    onClick={() => {
-                                        setShowDeleteConfirm(false);
-                                        setUserToDelete(null);
-                                    }}
-                                >
-                                    Cancel
-                                </button>
-                                <button 
-                                    className="px-4 py-2 border border-transparent rounded-lg text-white bg-red-600 hover:bg-red-700 transition-colors"
-                                    onClick={confirmDeleteUser}
-                                >
-                                    🗑️ Delete User
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Users Table */}
-            <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+    
+            {/* Users Table - Dark Mode */}
+            <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
                 <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead className={`${isDarkMode ? 'bg-gradient-to-r from-gray-800 to-gray-700' : 'bg-gradient-to-r from-gray-50 to-gray-100'} transition-colors duration-300`}>
                             <tr>
-                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
                                     <div className="flex items-center space-x-1">
                                         <span>👤 User</span>
-                                        <span className="text-gray-400">↕️</span>
+                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
                                     </div>
                                 </th>
-                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
                                     <div className="flex items-center space-x-1">
                                         <span>📧 Contact</span>
-                                        <span className="text-gray-400">↕️</span>
+                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
                                     </div>
                                 </th>
-                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
                                     <div className="flex items-center space-x-1">
                                         <span>🎭 Role</span>
-                                        <span className="text-gray-400">↕️</span>
+                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
                                     </div>
                                 </th>
-                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
                                     <div className="flex items-center space-x-1">
                                         <span>📊 Status</span>
-                                        <span className="text-gray-400">↕️</span>
+                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
                                     </div>
                                 </th>
-                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
                                     <div className="flex items-center space-x-1">
                                         <span>📅 Joined</span>
-                                        <span className="text-gray-400">↕️</span>
+                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
                                     </div>
                                 </th>
-                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
                                     ⚡ Actions
                                 </th>
                             </tr>
                         </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
+                        <tbody className={`${isDarkMode ? 'bg-gray-800 divide-gray-700' : 'bg-white divide-gray-200'} transition-colors duration-300`}>
                             {getFilteredUsers().map((user, index) => (
-                                <tr key={user._id} className={`hover:bg-gray-50 transition-colors ${!user.isApproved ? 'bg-orange-25 border-l-4 border-orange-400' : ''}`}>
+                                <tr key={user._id} className={`${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'} transition-colors duration-200 ${!user.isApproved ? (isDarkMode ? 'bg-orange-900/30 border-l-4 border-orange-500' : 'bg-orange-25 border-l-4 border-orange-400') : ''}`}>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center space-x-4">
                                             <div className="relative">
@@ -5455,15 +6015,15 @@ const Dashboard = () => {
                                                 }`}>
                                                     {user.firstName?.charAt(0)}{user.lastName?.charAt(0)}
                                                 </div>
-                                                <div className={`absolute -bottom-1 -right-1 h-4 w-4 border-2 border-white rounded-full ${
+                                                <div className={`absolute -bottom-1 -right-1 h-4 w-4 border-2 ${isDarkMode ? 'border-gray-800' : 'border-white'} rounded-full ${
                                                     user.isApproved ? 'bg-green-400' : 'bg-orange-400'
-                                                }`}></div>
+                                                } transition-colors duration-300`}></div>
                                             </div>
                                             <div className="space-y-1">
-                                                <div className="text-sm font-semibold text-gray-900">
+                                                <div className={`text-sm font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>
                                                     {user.firstName} {user.lastName}
                                                 </div>
-                                                <div className="text-xs text-gray-500">
+                                                <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
                                                     ID: {user._id.slice(-8)}
                                                 </div>
                                             </div>
@@ -5471,17 +6031,17 @@ const Dashboard = () => {
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="space-y-1">
-                                            <div className="text-sm text-gray-900">{user.email}</div>
+                                            <div className={`text-sm ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>{user.email}</div>
                                             {user.phone && (
-                                                <div className="text-xs text-gray-500">📱 {user.phone}</div>
+                                                <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>📱 {user.phone}</div>
                                             )}
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                                            user.role === 'admin' ? 'bg-purple-100 text-purple-800' :
-                                            user.role === 'teacher' ? 'bg-green-100 text-green-800' :
-                                            'bg-blue-100 text-blue-800'
+                                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium transition-colors duration-300 ${
+                                            user.role === 'admin' ? (isDarkMode ? 'bg-purple-900/50 text-purple-300 border border-purple-700/50' : 'bg-purple-100 text-purple-800') :
+                                            user.role === 'teacher' ? (isDarkMode ? 'bg-green-900/50 text-green-300 border border-green-700/50' : 'bg-green-100 text-green-800') :
+                                            (isDarkMode ? 'bg-blue-900/50 text-blue-300 border border-blue-700/50' : 'bg-blue-100 text-blue-800')
                                         }`}>
                                             <span className="mr-1">
                                                 {user.role === 'admin' ? '👨‍💼' : 
@@ -5492,8 +6052,8 @@ const Dashboard = () => {
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="space-y-1">
-                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                                user.isApproved ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'
+                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors duration-300 ${
+                                                user.isApproved ? (isDarkMode ? 'bg-green-900/50 text-green-300 border border-green-700/50' : 'bg-green-100 text-green-800') : (isDarkMode ? 'bg-orange-900/50 text-orange-300 border border-orange-700/50' : 'bg-orange-100 text-orange-800')
                                             }`}>
                                                 <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
                                                     user.isApproved ? 'bg-green-400' : 'bg-orange-400'
@@ -5501,15 +6061,15 @@ const Dashboard = () => {
                                                 {user.isApproved ? 'Approved' : 'Pending'}
                                             </span>
                                             {!user.isApproved && (
-                                                <div className="text-xs text-orange-600 font-medium">
+                                                <div className={`text-xs font-medium ${isDarkMode ? 'text-orange-400' : 'text-orange-600'} transition-colors duration-300`}>
                                                     ⚠️ Needs Review
                                                 </div>
                                             )}
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <td className={`px-6 py-4 whitespace-nowrap text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
                                         <div className="space-y-1">
-                                            <div className="font-medium text-gray-900">
+                                            <div className={`font-medium ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>
                                                 {new Date(user.createdAt || Date.now()).toLocaleDateString()}
                                             </div>
                                             <div className="text-xs">
@@ -5525,14 +6085,14 @@ const Dashboard = () => {
                                             {!user.isApproved ? (
                                                 <>
                                                     <button 
-                                                        className="inline-flex items-center p-2 border border-transparent rounded-lg text-green-600 hover:bg-green-100 transition-colors"
+                                                        className={`inline-flex items-center p-2 border border-transparent rounded-lg text-green-600 ${isDarkMode ? 'hover:bg-green-900/30' : 'hover:bg-green-100'} transition-colors duration-200`}
                                                         onClick={() => handleUserApproval(user._id, true)}
                                                         title="Approve User"
                                                     >
                                                         ✅
                                                     </button>
                                                     <button 
-                                                        className="inline-flex items-center p-2 border border-transparent rounded-lg text-red-600 hover:bg-red-100 transition-colors"
+                                                        className={`inline-flex items-center p-2 border border-transparent rounded-lg text-red-600 ${isDarkMode ? 'hover:bg-red-900/30' : 'hover:bg-red-100'} transition-colors duration-200`}
                                                         onClick={() => handleUserApproval(user._id, false)}
                                                         title="Reject User"
                                                     >
@@ -5542,14 +6102,14 @@ const Dashboard = () => {
                                             ) : (
                                                 <>
                                                     <button 
-                                                        className="inline-flex items-center p-2 border border-transparent rounded-lg text-blue-600 hover:bg-blue-100 transition-colors"
+                                                        className={`inline-flex items-center p-2 border border-transparent rounded-lg text-blue-600 ${isDarkMode ? 'hover:bg-blue-900/30' : 'hover:bg-blue-100'} transition-colors duration-200`}
                                                         onClick={() => handleEditUser(user)}
                                                         title="Edit User"
                                                     >
                                                         📝
                                                     </button>
                                                     <button 
-                                                        className="inline-flex items-center p-2 border border-transparent rounded-lg text-red-600 hover:bg-red-100 transition-colors"
+                                                        className={`inline-flex items-center p-2 border border-transparent rounded-lg text-red-600 ${isDarkMode ? 'hover:bg-red-900/30' : 'hover:bg-red-100'} transition-colors duration-200`}
                                                         onClick={() => handleDeleteUser(user)}
                                                         title="Delete User"
                                                     >
@@ -5558,31 +6118,31 @@ const Dashboard = () => {
                                                 </>
                                             )}
                                             
-                                            {/* Dropdown Menu */}
+                                            {/* More Actions Dropdown */}
                                             <div className="relative group">
-                                                <button className="inline-flex items-center p-2 border border-transparent rounded-lg text-gray-600 hover:bg-gray-100 transition-colors">
+                                                <button className={`inline-flex items-center p-2 border border-transparent rounded-lg ${isDarkMode ? 'text-gray-400 hover:bg-gray-700/50' : 'text-gray-600 hover:bg-gray-100'} transition-colors duration-200`}>
                                                     ⋮
                                                 </button>
-                                                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                                                <div className={`absolute right-0 mt-2 w-48 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} rounded-lg shadow-lg border z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200`}>
                                                     <div className="py-1">
                                                         <button 
-                                                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                            className={`flex items-center w-full px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors duration-200`}
                                                             onClick={() => handleEditUser(user)}
                                                         >
                                                             <span className="mr-2">📝</span>
                                                             Edit User
                                                         </button>
-                                                        <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                        <button className={`flex items-center w-full px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors duration-200`}>
                                                             <span className="mr-2">📧</span>
                                                             Send Message
                                                         </button>
-                                                        <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                        <button className={`flex items-center w-full px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors duration-200`}>
                                                             <span className="mr-2">🔒</span>
                                                             Reset Password
                                                         </button>
-                                                        <hr className="my-1 border-gray-200" />
+                                                        <hr className={`my-1 ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`} />
                                                         <button 
-                                                            className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                                                            className={`flex items-center w-full px-4 py-2 text-sm text-red-600 ${isDarkMode ? 'hover:bg-red-900/30' : 'hover:bg-red-50'} transition-colors duration-200`}
                                                             onClick={() => handleDeleteUser(user)}
                                                         >
                                                             <span className="mr-2">🗑️</span>
@@ -5598,50 +6158,36 @@ const Dashboard = () => {
                         </tbody>
                     </table>
                 </div>
-
-                {/* Table Footer */}
-                <div className="bg-gray-50 px-6 py-3 flex items-center justify-between border-t border-gray-200">
-                    <div className="text-sm text-gray-700">
+    
+                {/* Table Footer with Dark Mode */}
+                <div className={`${isDarkMode ? 'bg-gray-750 border-gray-700' : 'bg-gray-50 border-gray-200'} px-6 py-3 flex items-center justify-between border-t transition-colors duration-300`}>
+                    <div className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
                         Showing {getFilteredUsers().length} of {allUsers.length} users
                         {(searchTerm || selectedRole || selectedStatus) && (
-                            <span className="ml-2 text-blue-600 font-medium">
+                            <span className={`ml-2 font-medium ${isDarkMode ? 'text-blue-400' : 'text-blue-600'} transition-colors duration-300`}>
                                 (filtered)
                             </span>
                         )}
                     </div>
                     <div className="flex items-center space-x-2">
-                        <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-500 bg-white hover:bg-gray-50 transition-colors" disabled>
+                        <button className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${
+                            isDarkMode 
+                                ? 'border-gray-600 text-gray-400 bg-gray-800 hover:bg-gray-700' 
+                                : 'border-gray-300 text-gray-500 bg-white hover:bg-gray-50'
+                        }`} disabled>
                             ← Previous
                         </button>
                         <div className="flex space-x-1">
-                            <button className="px-3 py-1 bg-blue-600 text-white rounded-lg text-sm">1</button>
-                            <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors">2</button>
-                            <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors">3</button>
+                            <button className={`px-3 py-1 rounded-lg text-sm text-white transition-colors duration-200 ${isDarkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-600 hover:bg-blue-700'}`}>1</button>
+                            <button className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${isDarkMode ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'}`}>2</button>
+                            <button className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${isDarkMode ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'}`}>3</button>
                         </div>
-                        <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                        <button className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${
+                            isDarkMode 
+                                ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' 
+                                : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                        }`}>
                             Next →
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            {/* Bulk Actions */}
-            <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-4">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                        <input type="checkbox" id="select-all-users" className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
-                        <label htmlFor="select-all-users" className="text-sm font-medium text-gray-700">Select All</label>
-                        <span className="text-sm text-gray-500">0 selected</span>
-                    </div>
-                    <div className="flex space-x-2">
-                        <button className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 transition-colors">
-                            ✅ Approve Selected
-                        </button>
-                        <button className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-white bg-red-600 hover:bg-red-700 transition-colors">
-                            ❌ Reject Selected
-                        </button>
-                        <button className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
-                            📤 Export Users
                         </button>
                     </div>
                 </div>
@@ -5649,27 +6195,26 @@ const Dashboard = () => {
         </div>
     );
 
-    // Updated renderApplicationManagement function
     const renderApplicationManagement = () => (
         <div className="space-y-8">
             {/* Header */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div className="space-y-2">
-                    <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+                    <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                         <span className="mr-2">📋</span>
                         Application Management
                     </h2>
                     <div className="flex flex-wrap gap-4 text-sm">
-                        <span className="text-gray-600">
-                            <span className="font-semibold text-gray-900">{applicationSubmissions.length}</span> Total Applications
+                        <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
+                            <span className={`font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>{applicationSubmissions.length}</span> Total Applications
                         </span>
-                        <span className="text-gray-600">
+                        <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
                             <span className="font-semibold text-orange-600">{applicationSubmissions.filter(app => app.status === 'pending').length}</span> Pending
                         </span>
-                        <span className="text-gray-600">
+                        <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
                             <span className="font-semibold text-green-600">{applicationSubmissions.filter(app => app.status === 'approved').length}</span> Approved
                         </span>
-                        <span className="text-gray-600">
+                        <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
                             <span className="font-semibold text-red-600">{applicationSubmissions.filter(app => app.status === 'rejected').length}</span> Rejected
                         </span>
                     </div>
@@ -5682,16 +6227,22 @@ const Dashboard = () => {
                             placeholder="🔍 Search applications..." 
                             value={searchTermApp}
                             onChange={(e) => setSearchTermApp(e.target.value)}
-                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            className={`px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                isDarkMode 
+                                    ? 'border-gray-600 bg-gray-800 text-gray-100 placeholder-gray-400' 
+                                    : 'border-gray-300 bg-white text-gray-900'
+                            }`}
                         />
-                        {/* // Find your application management render function and update the program dropdown: */}
                         <select 
                             value={selectedProgram} 
                             onChange={(e) => setSelectedProgram(e.target.value)}
-                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
+                            className={`px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                isDarkMode 
+                                    ? 'border-gray-600 bg-gray-800 text-gray-100' 
+                                    : 'border-gray-300 bg-white text-gray-900'
+                            }`}
                         >
                             <option value="">All Programs</option>
-                            {/* ✅ Update these to match the EXACT database values */}
                             <option value="webDevelopment">Web Development</option>
                             <option value="dataScience">Data Science and Analytics</option>
                             <option value="cybersecurity">Cybersecurity</option>
@@ -5701,7 +6252,11 @@ const Dashboard = () => {
                         <select 
                             value={selectedAppStatus}
                             onChange={(e) => setSelectedAppStatus(e.target.value)}
-                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            className={`px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                isDarkMode 
+                                    ? 'border-gray-600 bg-gray-800 text-gray-100' 
+                                    : 'border-gray-300 bg-white text-gray-900'
+                            }`}
                         >
                             <option value="">All Status</option>
                             <option value="pending">Pending</option>
@@ -5715,64 +6270,64 @@ const Dashboard = () => {
                     </button>
                 </div>
             </div>
-
+            
             {/* Table */}
-            <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+            <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
                 <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead className={`${isDarkMode ? 'bg-gradient-to-r from-gray-800 to-gray-700' : 'bg-gradient-to-r from-gray-50 to-gray-100'} transition-colors duration-300`}>
                             <tr>
-                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
                                     <div className="flex items-center space-x-1">
                                         <span>👤 Applicant</span>
-                                        <span className="text-gray-400">↕️</span>
+                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
                                     </div>
                                 </th>
-                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
                                     <div className="flex items-center space-x-1">
                                         <span>📧 Contact</span>
-                                        <span className="text-gray-400">↕️</span>
+                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
                                     </div>
                                 </th>
-                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
                                     <div className="flex items-center space-x-1">
                                         <span>🎓 Program</span>
-                                        <span className="text-gray-400">↕️</span>
+                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
                                     </div>
                                 </th>
-                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
                                     <div className="flex items-center space-x-1">
                                         <span>📊 Status</span>
-                                        <span className="text-gray-400">↕️</span>
+                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
                                     </div>
                                 </th>
-                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
                                     <div className="flex items-center space-x-1">
                                         <span>📅 Applied</span>
-                                        <span className="text-gray-400">↕️</span>
+                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
                                     </div>
                                 </th>
-                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
                                     ⚡ Actions
                                 </th>
                             </tr>
                         </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
+                        <tbody className={`${isDarkMode ? 'bg-gray-800 divide-gray-700' : 'bg-white divide-gray-200'} transition-colors duration-300`}>
                             {getFilteredApplications().map((application, index) => (
-                                <tr key={application._id} className={`hover:bg-gray-50 transition-colors ${application.status === 'pending' ? 'bg-orange-25 border-l-4 border-orange-400' : ''}`}>
+                                <tr key={application._id} className={`${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'} transition-colors duration-200 ${application.status === 'pending' ? (isDarkMode ? 'bg-orange-900/30 border-l-4 border-orange-500' : 'bg-orange-25 border-l-4 border-orange-400') : ''}`}>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center space-x-4">
                                             <div className="relative">
                                                 <div className="h-12 w-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-semibold">
                                                     {application.firstName?.charAt(0)}{application.lastName?.charAt(0)}
                                                 </div>
-                                                <div className="absolute -bottom-1 -right-1 h-4 w-4 bg-blue-400 border-2 border-white rounded-full"></div>
+                                                <div className={`absolute -bottom-1 -right-1 h-4 w-4 bg-blue-400 border-2 ${isDarkMode ? 'border-gray-800' : 'border-white'} rounded-full transition-colors duration-300`}></div>
                                             </div>
                                             <div className="space-y-1">
-                                                <div className="text-sm font-semibold text-gray-900">
+                                                <div className={`text-sm font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>
                                                     {application.firstName} {application.lastName}
                                                 </div>
-                                                <div className="text-xs text-gray-500">
+                                                <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
                                                     ID: {application._id.slice(-8)}
                                                 </div>
                                             </div>
@@ -5780,30 +6335,30 @@ const Dashboard = () => {
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="space-y-1">
-                                            <div className="text-sm text-gray-900">{application.email}</div>
+                                            <div className={`text-sm ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>{application.email}</div>
                                             {application.phone && (
-                                                <div className="text-xs text-gray-500">📱 {application.phone}</div>
+                                                <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>📱 {application.phone}</div>
                                             )}
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="space-y-1">
-                                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${isDarkMode ? 'bg-blue-900/50 text-blue-300 border border-blue-700/50' : 'bg-blue-100 text-blue-800'} transition-colors duration-300`}>
                                                 <span className="mr-1">🎓</span>
                                                 {application.program}
                                             </span>
-                                            <div className="text-xs text-gray-500">
+                                            <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
                                                 Start: {new Date(application.startDate).toLocaleDateString()}
                                             </div>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="space-y-1">
-                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                                application.status === 'pending' ? 'bg-orange-100 text-orange-800' : 
-                                                application.status === 'approved' ? 'bg-green-100 text-green-800' : 
-                                                application.status === 'under_review' ? 'bg-blue-100 text-blue-800' : 
-                                                'bg-red-100 text-red-800'
+                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors duration-300 ${
+                                                application.status === 'pending' ? (isDarkMode ? 'bg-orange-900/50 text-orange-300 border border-orange-700/50' : 'bg-orange-100 text-orange-800') : 
+                                                application.status === 'approved' ? (isDarkMode ? 'bg-green-900/50 text-green-300 border border-green-700/50' : 'bg-green-100 text-green-800') : 
+                                                application.status === 'under_review' ? (isDarkMode ? 'bg-blue-900/50 text-blue-300 border border-blue-700/50' : 'bg-blue-100 text-blue-800') : 
+                                                (isDarkMode ? 'bg-red-900/50 text-red-300 border border-red-700/50' : 'bg-red-100 text-red-800')
                                             }`}>
                                                 <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
                                                     application.status === 'pending' ? 'bg-orange-400' : 
@@ -5814,15 +6369,15 @@ const Dashboard = () => {
                                                 {application.status.replace('_', ' ').toUpperCase()}
                                             </span>
                                             {application.status === 'pending' && (
-                                                <div className="text-xs text-orange-600 font-medium">
+                                                <div className={`text-xs font-medium ${isDarkMode ? 'text-orange-400' : 'text-orange-600'} transition-colors duration-300`}>
                                                     ⚠️ Needs Review
                                                 </div>
                                             )}
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <td className={`px-6 py-4 whitespace-nowrap text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
                                         <div className="space-y-1">
-                                            <div className="font-medium text-gray-900">
+                                            <div className={`font-medium ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>
                                                 {new Date(application.createdAt || Date.now()).toLocaleDateString()}
                                             </div>
                                             <div className="text-xs">
@@ -5837,21 +6392,21 @@ const Dashboard = () => {
                                         {application.status === 'pending' ? (
                                             <div className="flex space-x-2">
                                                 <button 
-                                                    className="inline-flex items-center p-2 border border-transparent rounded-lg text-green-600 hover:bg-green-100 transition-colors"
+                                                    className={`inline-flex items-center p-2 border border-transparent rounded-lg text-green-600 ${isDarkMode ? 'hover:bg-green-900/30' : 'hover:bg-green-100'} transition-colors duration-200`}
                                                     onClick={() => handleApplicationAction(application._id, 'approved')}
                                                     title="Approve Application"
                                                 >
                                                     ✅
                                                 </button>
                                                 <button 
-                                                    className="inline-flex items-center p-2 border border-transparent rounded-lg text-blue-600 hover:bg-blue-100 transition-colors"
+                                                    className={`inline-flex items-center p-2 border border-transparent rounded-lg text-blue-600 ${isDarkMode ? 'hover:bg-blue-900/30' : 'hover:bg-blue-100'} transition-colors duration-200`}
                                                     onClick={() => handleApplicationAction(application._id, 'under_review')}
                                                     title="Under Review"
                                                 >
                                                     👀
                                                 </button>
                                                 <button 
-                                                    className="inline-flex items-center p-2 border border-transparent rounded-lg text-red-600 hover:bg-red-100 transition-colors"
+                                                    className={`inline-flex items-center p-2 border border-transparent rounded-lg text-red-600 ${isDarkMode ? 'hover:bg-red-900/30' : 'hover:bg-red-100'} transition-colors duration-200`}
                                                     onClick={() => handleApplicationAction(application._id, 'rejected')}
                                                     title="Reject Application"
                                                 >
@@ -5861,17 +6416,44 @@ const Dashboard = () => {
                                         ) : (
                                             <div className="flex space-x-2">
                                                 <button 
-                                                    className="inline-flex items-center p-2 border border-transparent rounded-lg text-blue-600 hover:bg-blue-100 transition-colors"
+                                                    className={`inline-flex items-center p-2 border border-transparent rounded-lg text-blue-600 ${isDarkMode ? 'hover:bg-blue-900/30' : 'hover:bg-blue-100'} transition-colors duration-200`}
                                                     title="View Details"
                                                 >
                                                     👁️
                                                 </button>
                                                 <button 
-                                                    className="inline-flex items-center p-2 border border-transparent rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+                                                    className={`inline-flex items-center p-2 border border-transparent rounded-lg ${isDarkMode ? 'text-gray-400 hover:bg-gray-700/50' : 'text-gray-600 hover:bg-gray-100'} transition-colors duration-200`}
                                                     title="Send Message"
                                                 >
                                                     📧
                                                 </button>
+                                                {/* More Actions Dropdown */}
+                                                <div className="relative group">
+                                                    <button className={`inline-flex items-center p-2 border border-transparent rounded-lg ${isDarkMode ? 'text-gray-400 hover:bg-gray-700/50' : 'text-gray-600 hover:bg-gray-100'} transition-colors duration-200`}>
+                                                        ⋮
+                                                    </button>
+                                                    <div className={`absolute right-0 mt-2 w-48 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} rounded-lg shadow-lg border z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200`}>
+                                                        <div className="py-1">
+                                                            <button className={`flex items-center w-full px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors duration-200`}>
+                                                                <span className="mr-2">📝</span>
+                                                                Edit Application
+                                                            </button>
+                                                            <button className={`flex items-center w-full px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors duration-200`}>
+                                                                <span className="mr-2">📧</span>
+                                                                Send Email
+                                                            </button>
+                                                            <button className={`flex items-center w-full px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors duration-200`}>
+                                                                <span className="mr-2">📄</span>
+                                                                Download PDF
+                                                            </button>
+                                                            <hr className={`my-1 ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`} />
+                                                            <button className={`flex items-center w-full px-4 py-2 text-sm text-red-600 ${isDarkMode ? 'hover:bg-red-900/30' : 'hover:bg-red-50'} transition-colors duration-200`}>
+                                                                <span className="mr-2">🗑️</span>
+                                                                Delete Application
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         )}
                                     </td>
@@ -5880,40 +6462,97 @@ const Dashboard = () => {
                         </tbody>
                     </table>
                 </div>
-
-                {/* Table Footer */}
-                <div className="bg-gray-50 px-6 py-3 flex items-center justify-between border-t border-gray-200">
-                    <div className="text-sm text-gray-700">
-                        Showing {getFilteredApplications().length} of {applicationSubmissions.length} applications
+            
+                {/* Table Footer with Dark Mode */}
+                <div className={`${isDarkMode ? 'bg-gray-750 border-gray-700' : 'bg-gray-50 border-gray-200'} px-6 py-3 flex items-center justify-between border-t transition-colors duration-300`}>
+                    <div className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
+                        Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, getFilteredApplications().length)} of {getFilteredApplications().length} applications
                         {(searchTermApp || selectedProgram || selectedAppStatus) && (
-                            <span className="ml-2 text-blue-600 font-medium">
+                            <span className={`ml-2 font-medium ${isDarkMode ? 'text-blue-400' : 'text-blue-600'} transition-colors duration-300`}>
                                 (filtered)
                             </span>
                         )}
                     </div>
                     <div className="flex items-center space-x-2">
-                        <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-500 bg-white hover:bg-gray-50 transition-colors" disabled>
+                        <button 
+                            className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${
+                                isDarkMode 
+                                    ? 'border-gray-600 text-gray-400 bg-gray-800 hover:bg-gray-700' 
+                                    : 'border-gray-300 text-gray-500 bg-white hover:bg-gray-50'
+                            } ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            onClick={handlePreviousPage}
+                            disabled={currentPage === 1}
+                        >
                             ← Previous
                         </button>
+                        
                         <div className="flex space-x-1">
-                            <button className="px-3 py-1 bg-blue-600 text-white rounded-lg text-sm">1</button>
-                            <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors">2</button>
-                            <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors">3</button>
+                            {[...Array(getTotalPages())].map((_, index) => {
+                                const pageNumber = index + 1;
+                                const isCurrentPage = pageNumber === currentPage;
+                                
+                                // Show only a few pages around current page
+                                if (getTotalPages() <= 5 || 
+                                    pageNumber === 1 || 
+                                    pageNumber === getTotalPages() || 
+                                    (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)) {
+                                    
+                                    return (
+                                        <button 
+                                            key={pageNumber}
+                                            className={`px-3 py-1 rounded-lg text-sm transition-colors duration-200 ${
+                                                isCurrentPage 
+                                                    ? 'text-white bg-blue-600 hover:bg-blue-700' 
+                                                    : isDarkMode 
+                                                        ? 'border border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' 
+                                                        : 'border border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                                            }`}
+                                            onClick={() => handlePageChange(pageNumber)}
+                                        >
+                                            {pageNumber}
+                                        </button>
+                                    );
+                                } else if (pageNumber === currentPage - 2 || pageNumber === currentPage + 2) {
+                                    return (
+                                        <span key={pageNumber} className={`px-2 text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                            ...
+                                        </span>
+                                    );
+                                }
+                                return null;
+                            })}
                         </div>
-                        <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                        
+                        <button 
+                            className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${
+                                isDarkMode 
+                                    ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' 
+                                    : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                            } ${currentPage === getTotalPages() ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            onClick={handleNextPage}
+                            disabled={currentPage === getTotalPages()}
+                        >
                             Next →
                         </button>
                     </div>
                 </div>
             </div>
-
-            {/* Bulk Actions */}
-            <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-4">
+    
+            {/* Bulk Actions Bar - Dark Mode */}
+            <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-xl shadow-lg border p-4 transition-colors duration-300`}>
                 <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
-                        <input type="checkbox" id="select-all-apps" className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
-                        <label htmlFor="select-all-apps" className="text-sm font-medium text-gray-700">Select All</label>
-                        <span className="text-sm text-gray-500">{getFilteredApplications().length} items</span>
+                        <input 
+                            type="checkbox" 
+                            id="select-all-applications" 
+                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" 
+                        />
+                        <label htmlFor="select-all-applications" className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
+                            Select All
+                        </label>
+                        <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
+                            {getFilteredApplications().length} items
+                        </span>
                     </div>
                     <div className="flex space-x-2">
                         <button className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 transition-colors">
@@ -5925,7 +6564,11 @@ const Dashboard = () => {
                         <button className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-white bg-red-600 hover:bg-red-700 transition-colors">
                             ❌ Reject Selected
                         </button>
-                        <button className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                        <button className={`inline-flex items-center px-3 py-1.5 border text-xs font-medium rounded-lg transition-colors ${
+                            isDarkMode 
+                                ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' 
+                                : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                        }`}>
                             📤 Export Filtered
                         </button>
                     </div>
@@ -5934,27 +6577,26 @@ const Dashboard = () => {
         </div>
     );
 
-    // Updated renderContactManagement function
     const renderContactManagement = () => (
         <div className="space-y-8">
             {/* Header */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div className="space-y-2">
-                    <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+                    <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                         <span className="mr-2">📧</span>
                         Contact Management
                     </h2>
                     <div className="flex flex-wrap gap-4 text-sm">
-                        <span className="text-gray-600">
-                            <span className="font-semibold text-gray-900">{contactSubmissions.length}</span> Total Messages
+                        <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
+                            <span className={`font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>{contactSubmissions.length}</span> Total Messages
                         </span>
-                        <span className="text-gray-600">
+                        <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
                             <span className="font-semibold text-orange-600">{contactSubmissions.filter(contact => contact.status === 'pending').length}</span> Pending
                         </span>
-                        <span className="text-gray-600">
+                        <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
                             <span className="font-semibold text-green-600">{contactSubmissions.filter(contact => contact.status === 'resolved').length}</span> Resolved
                         </span>
-                        <span className="text-gray-600">
+                        <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
                             <span className="font-semibold text-blue-600">{contactSubmissions.filter(contact => contact.status === 'approved').length}</span> Priority
                         </span>
                     </div>
@@ -5967,12 +6609,20 @@ const Dashboard = () => {
                             placeholder="🔍 Search messages..." 
                             value={searchTermContact}
                             onChange={(e) => setSearchTermContact(e.target.value)}
-                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            className={`px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                isDarkMode 
+                                    ? 'border-gray-600 bg-gray-800 text-gray-100 placeholder-gray-400' 
+                                    : 'border-gray-300 bg-white text-gray-900'
+                            }`}
                         />
                         <select 
                             value={selectedCategory} 
                             onChange={(e) => setSelectedCategory(e.target.value)}
-                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
+                            className={`px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                isDarkMode 
+                                    ? 'border-gray-600 bg-gray-800 text-gray-100' 
+                                    : 'border-gray-300 bg-white text-gray-900'
+                            }`}
                         >
                             <option value="">All Categories</option>
                             <option value="general">General</option>
@@ -5984,7 +6634,11 @@ const Dashboard = () => {
                         <select 
                             value={selectedContactStatus}
                             onChange={(e) => setSelectedContactStatus(e.target.value)}
-                            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            className={`px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                isDarkMode 
+                                    ? 'border-gray-600 bg-gray-800 text-gray-100' 
+                                    : 'border-gray-300 bg-white text-gray-900'
+                            }`}
                         >
                             <option value="">All Status</option>
                             <option value="pending">Pending</option>
@@ -5998,68 +6652,68 @@ const Dashboard = () => {
                     </button>
                 </div>
             </div>
-
-            {/* Table */}
-            <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+    
+            {/* Contact Messages Table - Dark Mode */}
+            <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
                 <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead className={`${isDarkMode ? 'bg-gradient-to-r from-gray-800 to-gray-700' : 'bg-gradient-to-r from-gray-50 to-gray-100'} transition-colors duration-300`}>
                             <tr>
-                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
                                     <div className="flex items-center space-x-1">
                                         <span>👤 Contact</span>
-                                        <span className="text-gray-400">↕️</span>
+                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
                                     </div>
                                 </th>
-                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
                                     <div className="flex items-center space-x-1">
                                         <span>📧 Details</span>
-                                        <span className="text-gray-400">↕️</span>
+                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
                                     </div>
                                 </th>
-                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
                                     <div className="flex items-center space-x-1">
                                         <span>💬 Message</span>
-                                        <span className="text-gray-400">↕️</span>
+                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
                                     </div>
                                 </th>
-                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
                                     <div className="flex items-center space-x-1">
                                         <span>📊 Status</span>
-                                        <span className="text-gray-400">↕️</span>
+                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
                                     </div>
                                 </th>
-                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
                                     <div className="flex items-center space-x-1">
                                         <span>📅 Received</span>
-                                        <span className="text-gray-400">↕️</span>
+                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
                                     </div>
                                 </th>
-                                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
                                     ⚡ Actions
                                 </th>
                             </tr>
                         </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
+                        <tbody className={`${isDarkMode ? 'bg-gray-800 divide-gray-700' : 'bg-white divide-gray-200'} transition-colors duration-300`}>
                             {getFilteredContacts().map((contact, index) => (
-                                <tr key={contact._id} className={`hover:bg-gray-50 transition-colors ${contact.status === 'pending' ? 'bg-orange-25 border-l-4 border-orange-400' : ''}`}>
+                                <tr key={contact._id} className={`${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'} transition-colors duration-200 ${contact.status === 'pending' ? (isDarkMode ? 'bg-orange-900/30 border-l-4 border-orange-500' : 'bg-orange-25 border-l-4 border-orange-400') : ''}`}>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center space-x-4">
                                             <div className="relative">
                                                 <div className="h-12 w-12 rounded-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center text-white font-semibold">
                                                     {contact.name?.charAt(0).toUpperCase()}
                                                 </div>
-                                                <div className={`absolute -bottom-1 -right-1 h-4 w-4 border-2 border-white rounded-full ${
+                                                <div className={`absolute -bottom-1 -right-1 h-4 w-4 border-2 ${isDarkMode ? 'border-gray-800' : 'border-white'} rounded-full ${
                                                     contact.status === 'pending' ? 'bg-orange-400' : 
                                                     contact.status === 'resolved' ? 'bg-green-400' : 
                                                     contact.status === 'approved' ? 'bg-blue-400' : 'bg-gray-400'
-                                                }`}></div>
+                                                } transition-colors duration-300`}></div>
                                             </div>
                                             <div className="space-y-1">
-                                                <div className="text-sm font-semibold text-gray-900">
+                                                <div className={`text-sm font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>
                                                     {contact.name}
                                                 </div>
-                                                <div className="text-xs text-gray-500">
+                                                <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
                                                     ID: {contact._id.slice(-8)}
                                                 </div>
                                             </div>
@@ -6067,19 +6721,19 @@ const Dashboard = () => {
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="space-y-1">
-                                            <div className="text-sm text-gray-900">{contact.email}</div>
+                                            <div className={`text-sm ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>{contact.email}</div>
                                             {contact.phone && (
-                                                <div className="text-xs text-gray-500">📱 {contact.phone}</div>
+                                                <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>📱 {contact.phone}</div>
                                             )}
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="space-y-2">
-                                            <div className="text-sm font-medium text-gray-900">
+                                            <div className={`text-sm font-medium ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>
                                                 {contact.subject}
                                             </div>
-                                            <div className="text-sm text-gray-600 max-w-xs">
-                                                <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                            <div className={`text-sm max-w-xs ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>
+                                                <div className={`p-3 rounded-lg border ${isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'} transition-colors duration-300`}>
                                                     {contact.message.length > 80 ? 
                                                         `${contact.message.substring(0, 80)}...` : 
                                                         contact.message
@@ -6090,11 +6744,11 @@ const Dashboard = () => {
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="space-y-1">
-                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                                contact.status === 'pending' ? 'bg-orange-100 text-orange-800' : 
-                                                contact.status === 'approved' ? 'bg-blue-100 text-blue-800' : 
-                                                contact.status === 'resolved' ? 'bg-green-100 text-green-800' : 
-                                                'bg-gray-100 text-gray-800'
+                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors duration-300 ${
+                                                contact.status === 'pending' ? (isDarkMode ? 'bg-orange-900/50 text-orange-300 border border-orange-700/50' : 'bg-orange-100 text-orange-800') : 
+                                                contact.status === 'approved' ? (isDarkMode ? 'bg-blue-900/50 text-blue-300 border border-blue-700/50' : 'bg-blue-100 text-blue-800') : 
+                                                contact.status === 'resolved' ? (isDarkMode ? 'bg-green-900/50 text-green-300 border border-green-700/50' : 'bg-green-100 text-green-800') : 
+                                                (isDarkMode ? 'bg-gray-900/50 text-gray-300 border border-gray-700/50' : 'bg-gray-100 text-gray-800')
                                             }`}>
                                                 <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
                                                     contact.status === 'pending' ? 'bg-orange-400' : 
@@ -6107,15 +6761,15 @@ const Dashboard = () => {
                                                 contact.status === 'resolved' ? '✅ Resolved' : '❌ Ignored'}
                                             </span>
                                             {contact.status === 'pending' && (
-                                                <div className="text-xs text-orange-600 font-medium">
+                                                <div className={`text-xs font-medium ${isDarkMode ? 'text-orange-400' : 'text-orange-600'} transition-colors duration-300`}>
                                                     ⚠️ Needs Response
                                                 </div>
                                             )}
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <td className={`px-6 py-4 whitespace-nowrap text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
                                         <div className="space-y-1">
-                                            <div className="font-medium text-gray-900">
+                                            <div className={`font-medium ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>
                                                 {new Date(contact.createdAt || Date.now()).toLocaleDateString()}
                                             </div>
                                             <div className="text-xs">
@@ -6130,21 +6784,21 @@ const Dashboard = () => {
                                         {contact.status === 'pending' ? (
                                             <div className="flex space-x-2">
                                                 <button 
-                                                    className="inline-flex items-center p-2 border border-transparent rounded-lg text-green-600 hover:bg-green-100 transition-colors"
+                                                    className={`inline-flex items-center p-2 border border-transparent rounded-lg text-green-600 ${isDarkMode ? 'hover:bg-green-900/30' : 'hover:bg-green-100'} transition-colors duration-200`}
                                                     onClick={() => handleContactAction(contact._id, 'resolved')}
                                                     title="Resolve"
                                                 >
                                                     ✅
                                                 </button>
                                                 <button 
-                                                    className="inline-flex items-center p-2 border border-transparent rounded-lg text-blue-600 hover:bg-blue-100 transition-colors"
+                                                    className={`inline-flex items-center p-2 border border-transparent rounded-lg text-blue-600 ${isDarkMode ? 'hover:bg-blue-900/30' : 'hover:bg-blue-100'} transition-colors duration-200`}
                                                     onClick={() => handleContactAction(contact._id, 'approved')}
                                                     title="Mark as Priority"
                                                 >
                                                     🔥
                                                 </button>
                                                 <button 
-                                                    className="inline-flex items-center p-2 border border-transparent rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+                                                    className={`inline-flex items-center p-2 border border-transparent rounded-lg ${isDarkMode ? 'text-gray-400 hover:bg-gray-700/50' : 'text-gray-600 hover:bg-gray-100'} transition-colors duration-200`}
                                                     onClick={() => handleContactAction(contact._id, 'ignored')}
                                                     title="Ignore"
                                                 >
@@ -6154,13 +6808,13 @@ const Dashboard = () => {
                                         ) : (
                                             <div className="flex space-x-2">
                                                 <button 
-                                                    className="inline-flex items-center p-2 border border-transparent rounded-lg text-blue-600 hover:bg-blue-100 transition-colors"
+                                                    className={`inline-flex items-center p-2 border border-transparent rounded-lg text-blue-600 ${isDarkMode ? 'hover:bg-blue-900/30' : 'hover:bg-blue-100'} transition-colors duration-200`}
                                                     title="View Full Message"
                                                 >
                                                     👁️
                                                 </button>
                                                 <button 
-                                                    className="inline-flex items-center p-2 border border-transparent rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+                                                    className={`inline-flex items-center p-2 border border-transparent rounded-lg ${isDarkMode ? 'text-gray-400 hover:bg-gray-700/50' : 'text-gray-600 hover:bg-gray-100'} transition-colors duration-200`}
                                                     title="Reply"
                                                 >
                                                     📧
@@ -6173,40 +6827,48 @@ const Dashboard = () => {
                         </tbody>
                     </table>
                 </div>
-
-                {/* Table Footer */}
-                <div className="bg-gray-50 px-6 py-3 flex items-center justify-between border-t border-gray-200">
-                    <div className="text-sm text-gray-700">
+    
+                {/* Table Footer with Dark Mode */}
+                <div className={`${isDarkMode ? 'bg-gray-750 border-gray-700' : 'bg-gray-50 border-gray-200'} px-6 py-3 flex items-center justify-between border-t transition-colors duration-300`}>
+                    <div className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
                         Showing {getFilteredContacts().length} of {contactSubmissions.length} messages
                         {(searchTermContact || selectedCategory || selectedContactStatus) && (
-                            <span className="ml-2 text-blue-600 font-medium">
+                            <span className={`ml-2 font-medium ${isDarkMode ? 'text-blue-400' : 'text-blue-600'} transition-colors duration-300`}>
                                 (filtered)
                             </span>
                         )}
                     </div>
                     <div className="flex items-center space-x-2">
-                        <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-500 bg-white hover:bg-gray-50 transition-colors" disabled>
+                        <button className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${
+                            isDarkMode 
+                                ? 'border-gray-600 text-gray-400 bg-gray-800 hover:bg-gray-700' 
+                                : 'border-gray-300 text-gray-500 bg-white hover:bg-gray-50'
+                        }`} disabled>
                             ← Previous
                         </button>
                         <div className="flex space-x-1">
-                            <button className="px-3 py-1 bg-blue-600 text-white rounded-lg text-sm">1</button>
-                            <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors">2</button>
-                            <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors">3</button>
+                            <button className={`px-3 py-1 rounded-lg text-sm text-white transition-colors duration-200 ${isDarkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-600 hover:bg-blue-700'}`}>1</button>
+                            <button className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${isDarkMode ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'}`}>2</button>
+                            <button className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${isDarkMode ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'}`}>3</button>
                         </div>
-                        <button className="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                        <button className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${
+                            isDarkMode 
+                                ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' 
+                                : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                        }`}>
                             Next →
                         </button>
                     </div>
                 </div>
             </div>
-
-            {/* Bulk Actions */}
-            <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-4">
+    
+            {/* Bulk Actions Bar - Dark Mode */}
+            <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-xl shadow-lg border p-4 transition-colors duration-300`}>
                 <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
                         <input type="checkbox" id="select-all-contacts" className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
-                        <label htmlFor="select-all-contacts" className="text-sm font-medium text-gray-700">Select All</label>
-                        <span className="text-sm text-gray-500">{getFilteredContacts().length} items</span>
+                        <label htmlFor="select-all-contacts" className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>Select All</label>
+                        <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>{getFilteredContacts().length} items</span>
                     </div>
                     <div className="flex space-x-2">
                         <button className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 transition-colors">
@@ -6218,7 +6880,11 @@ const Dashboard = () => {
                         <button className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-white bg-gray-600 hover:bg-gray-700 transition-colors">
                             ❌ Ignore Selected
                         </button>
-                        <button className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+                        <button className={`inline-flex items-center px-3 py-1.5 border text-xs font-medium rounded-lg transition-colors ${
+                            isDarkMode 
+                                ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' 
+                                : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                        }`}>
                             📤 Export Filtered
                         </button>
                     </div>
@@ -6367,202 +7033,396 @@ const Dashboard = () => {
             </div>
         );
     };
-    
-    // Add the missing renderAdminSettings function
+
     const renderAdminSettings = () => (
-        <div className="space-y-8">
+        <div className={`space-y-8 ${isDarkMode ? 'dark' : ''}`}>
             {/* Header */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div className="space-y-2">
-                    <h2 className="text-2xl font-bold text-gray-900 flex items-center">
-                        <span className="mr-2">⚙️</span>
-                        System Settings
+                    <h2 className={`text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
+                        <span className="mr-3 text-4xl">⚙️</span>
+                        Admin Settings
                     </h2>
-                    <p className="text-gray-600">Configure system-wide settings and preferences</p>
+                    <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} text-lg transition-colors duration-300`}>
+                        Configure system-wide preferences and administrative controls
+                    </p>
                 </div>
                 
                 <div className="flex space-x-3">
-                    <button className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
-                        🔄 Reset to Defaults
+                    <button className={`inline-flex items-center px-4 py-2 border ${isDarkMode ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'} text-sm font-medium rounded-lg transition-colors`}>
+                        <span className="mr-2">🔄</span>
+                        Reset to Defaults
                     </button>
-                    <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors">
-                        💾 Save All Changes
+                    <button className="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-xl text-white bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-xl">
+                        <span className="mr-2 text-lg">💾</span>
+                        Save All Settings
                     </button>
                 </div>
             </div>
     
-            {/* Settings Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* General Settings */}
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                    <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-                        <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-                            <span className="mr-2">🌐</span>
-                            General Settings
-                        </h3>
-                    </div>
-                    <div className="p-6 space-y-6">
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">Platform Name</label>
-                            <input
-                                type="text"
-                                defaultValue="FIA Learning Portal"
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">Default Language</label>
-                            <select className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
-                                <option>English</option>
-                                <option>Spanish</option>
-                                <option>French</option>
-                            </select>
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">Time Zone</label>
-                            <select className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
-                                <option>UTC</option>
-                                <option>EST</option>
-                                <option>PST</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-    
-                {/* Security Settings */}
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                    <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-red-50 to-orange-50">
-                        <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-                            <span className="mr-2">🔒</span>
-                            Security Settings
-                        </h3>
-                    </div>
-                    <div className="p-6 space-y-6">
-                        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                            <div>
-                                <h4 className="font-medium text-gray-900">Two-Factor Authentication</h4>
-                                <p className="text-sm text-gray-600">Require 2FA for admin accounts</p>
+            {/* Settings Container */}
+            <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+                {/* Account Section */}
+                <div className={`p-8 border-b ${isDarkMode ? 'border-gray-600' : 'border-gray-200'} transition-colors duration-300`}>
+                    <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center mb-6 transition-colors duration-300`}>
+                        <span className="mr-3 text-2xl">👨‍💼</span>
+                        Administrator Profile
+                    </h3>
+                    
+                    <div className="flex items-center space-x-6 mb-8">
+                        <div className="relative">
+                            <div className="w-24 h-24 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white text-3xl font-bold">
+                                {user?.firstName?.charAt(0)?.toUpperCase() || user?.name?.charAt(0)?.toUpperCase() || 'A'}
+                                {user?.lastName?.charAt(0)?.toUpperCase() || ''}
                             </div>
-                            <label className="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" className="sr-only peer" defaultChecked />
-                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            <button className="absolute -bottom-1 -right-1 w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center hover:bg-purple-700 transition-colors">
+                                <span className="text-sm">📷</span>
+                            </button>
+                        </div>
+                        <div className="flex-1">
+                            <h4 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>
+                                {user?.firstName && user?.lastName 
+                                    ? `${user.firstName} ${user.lastName}` 
+                                    : user?.name || 'Administrator'
+                                }
+                            </h4>
+                            <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
+                                {user?.email || 'admin@fiainstitute.com'}
+                            </p>
+                            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800 mt-2">
+                                👨‍💼 {user?.role === 'admin' ? 'Super Admin' : 'Administrator'}
+                            </span>
+                        </div>
+                    </div>
+    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} transition-colors duration-300`}>
+                                Full Name
                             </label>
-                        </div>
-                        
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">Session Timeout (minutes)</label>
-                            <input
-                                type="number"
-                                defaultValue="30"
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                            />
-                        </div>
-                        
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">Password Requirements</label>
-                            <div className="space-y-2">
-                                <label className="flex items-center">
-                                    <input type="checkbox" className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" defaultChecked />
-                                    <span className="ml-2 text-sm text-gray-700">Minimum 8 characters</span>
-                                </label>
-                                <label className="flex items-center">
-                                    <input type="checkbox" className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" defaultChecked />
-                                    <span className="ml-2 text-sm text-gray-700">Require special characters</span>
-                                </label>
-                                <label className="flex items-center">
-                                    <input type="checkbox" className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
-                                    <span className="ml-2 text-sm text-gray-700">Require uppercase letters</span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-    
-                {/* Email Settings */}
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                    <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-green-50 to-emerald-50">
-                        <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-                            <span className="mr-2">📧</span>
-                            Email Configuration
-                        </h3>
-                    </div>
-                    <div className="p-6 space-y-6">
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">SMTP Server</label>
                             <input
                                 type="text"
-                                placeholder="smtp.gmail.com"
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                defaultValue={user?.firstName && user?.lastName 
+                                    ? `${user.firstName} ${user.lastName}` 
+                                    : user?.name || 'Administrator'
+                                }
+                                className={`w-full px-4 py-3 border ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white placeholder-gray-400' : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all`}
+                                placeholder="Enter your full name"
                             />
                         </div>
+                        
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">SMTP Port</label>
-                            <input
-                                type="number"
-                                defaultValue="587"
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">From Email Address</label>
+                            <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} transition-colors duration-300`}>
+                                Email Address
+                            </label>
                             <input
                                 type="email"
-                                placeholder="noreply@fiaportal.com"
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                defaultValue={user?.email || 'admin@fiainstitute.com'}
+                                className={`w-full px-4 py-3 border ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white placeholder-gray-400' : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all`}
+                                placeholder="Enter your email"
                             />
                         </div>
-                        <button className="w-full flex items-center justify-center space-x-2 px-4 py-2 border border-green-300 text-green-700 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
-                            <span>📧</span>
-                            <span>Test Email Configuration</span>
-                        </button>
+                        
+                        <div className="space-y-2">
+                            <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} transition-colors duration-300`}>
+                                Admin ID
+                            </label>
+                            <input
+                                type="text"
+                                defaultValue="ADM-2024-001"
+                                readOnly
+                                className={`w-full px-4 py-3 border ${isDarkMode ? 'border-gray-600 bg-gray-600 text-gray-300' : 'border-gray-300 bg-gray-100 text-gray-600'} rounded-lg transition-all cursor-not-allowed`}
+                            />
+                        </div>
+                        
+                        <div className="space-y-2">
+                            <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} transition-colors duration-300`}>
+                                Access Level
+                            </label>
+                            <select className={`w-full px-4 py-3 border ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white text-gray-900'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all`}>
+                                <option>Super Administrator</option>
+                                <option>System Administrator</option>
+                                <option>Content Administrator</option>
+                                <option>User Administrator</option>
+                            </select>
+                        </div>
+                        
+                        <div className="space-y-2">
+                            <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} transition-colors duration-300`}>
+                                Phone Number
+                            </label>
+                            <input
+                                type="tel"
+                                defaultValue={user?.phone || '+1 (555) 123-4567'}
+                                className={`w-full px-4 py-3 border ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white placeholder-gray-400' : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all`}
+                                placeholder="Enter your phone number"
+                            />
+                        </div>
+                        
+                        <div className="space-y-2">
+                            <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} transition-colors duration-300`}>
+                                Last Login
+                            </label>
+                            <input
+                                type="text"
+                                defaultValue={new Date().toLocaleString()}
+                                readOnly
+                                className={`w-full px-4 py-3 border ${isDarkMode ? 'border-gray-600 bg-gray-600 text-gray-300' : 'border-gray-300 bg-gray-100 text-gray-600'} rounded-lg transition-all cursor-not-allowed`}
+                            />
+                        </div>
                     </div>
                 </div>
     
-                {/* Backup & Maintenance */}
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                    <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50">
-                        <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-                            <span className="mr-2">💾</span>
-                            Backup & Maintenance
-                        </h3>
-                    </div>
-                    <div className="p-6 space-y-6">
-                        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                            <div>
-                                <h4 className="font-medium text-gray-900">Automatic Backups</h4>
-                                <p className="text-sm text-gray-600">Daily database backups at 2:00 AM</p>
-                            </div>
-                            <label className="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" className="sr-only peer" defaultChecked />
-                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                            </label>
-                        </div>
-                        
-                        <div className="space-y-3">
-                            <button className="w-full flex items-center justify-center space-x-2 px-4 py-2 border border-blue-300 text-blue-700 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
-                                <span>💾</span>
-                                <span>Create Manual Backup</span>
-                            </button>
-                            <button className="w-full flex items-center justify-center space-x-2 px-4 py-2 border border-orange-300 text-orange-700 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors">
-                                <span>🔄</span>
-                                <span>Clear System Cache</span>
-                            </button>
-                            <button className="w-full flex items-center justify-center space-x-2 px-4 py-2 border border-purple-300 text-purple-700 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors">
-                                <span>🧹</span>
-                                <span>Clean Temporary Files</span>
-                            </button>
-                        </div>
-                        
-                        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                            <div className="flex items-start space-x-3">
-                                <span className="text-yellow-600 text-lg">⚠️</span>
-                                <div>
-                                    <h4 className="text-sm font-medium text-yellow-800">Maintenance Mode</h4>
-                                    <p className="text-sm text-yellow-700">Enable to perform system updates safely</p>
-                                    <button className="mt-2 text-sm text-yellow-800 hover:text-yellow-900 font-medium">
-                                        Enable Maintenance Mode
-                                    </button>
+                {/* Language Toggle Section */}
+                <div className={`p-8 border-b ${isDarkMode ? 'border-gray-600' : 'border-gray-200'} transition-colors duration-300`}>
+                    <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center mb-6 transition-colors duration-300`}>
+                        <span className="mr-3 text-2xl">🌐</span>
+                        Language Settings
+                    </h3>
+                    
+                    <div className={`p-6 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'} rounded-xl transition-colors duration-300`}>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-4">
+                                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center text-white text-xl">
+                                    🗣️
                                 </div>
+                                <div>
+                                    <h4 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>
+                                        Interface Language
+                                    </h4>
+                                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
+                                        Choose your preferred language
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div className="flex items-center space-x-3">
+                                <span className={`text-sm font-medium transition-colors duration-300 ${
+                                    currentLanguage === 'en' 
+                                        ? isDarkMode ? 'text-white' : 'text-gray-900'
+                                        : isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                                }`}>
+                                    🇺🇸 English
+                                </span>
+                                <button
+                                    onClick={() => {
+                                        const newLanguage = currentLanguage === 'en' ? 'ja' : 'en';
+                                        handleLanguageToggle(newLanguage);
+                                    }}
+                                    className={`relative inline-flex h-8 w-16 items-center rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${
+                                        currentLanguage === 'ja' ? 'bg-purple-600' : 'bg-gray-300'
+                                    }`}
+                                >
+                                    <span
+                                        className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform duration-300 ${
+                                            currentLanguage === 'ja' ? 'translate-x-9' : 'translate-x-1'
+                                        }`}
+                                    />
+                                </button>
+                                <span className={`text-sm font-medium transition-colors duration-300 ${
+                                    currentLanguage === 'ja' 
+                                        ? isDarkMode ? 'text-white' : 'text-gray-900'
+                                        : isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                                }`}>
+                                    🇯🇵 Japanese
+                                </span>
+                            </div>
+                        </div>
+                        
+                        {/* Language Change Feedback */}
+                        {currentLanguage !== 'en' && (
+                            <div className={`mt-4 p-4 ${
+                                isDarkMode 
+                                    ? 'bg-gradient-to-r from-green-900/50 to-emerald-900/50 border-green-700' 
+                                    : 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-200'
+                            } rounded-xl border transition-all duration-300`}>
+                                <div className="flex items-center space-x-3">
+                                    <span className="text-green-600 text-2xl">✅</span>
+                                    <div>
+                                        <h4 className={`font-semibold ${
+                                            isDarkMode ? 'text-green-300' : 'text-green-900'
+                                        } transition-colors duration-300`}>Language Changed</h4>
+                                        <p className={`text-sm ${
+                                            isDarkMode ? 'text-green-400' : 'text-green-700'
+                                        } transition-colors duration-300`}>
+                                            Interface language has been updated to {currentLanguage === 'ja' ? 'Japanese (日本語)' : 'English'}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+    
+                        <div className={`mt-4 p-4 ${
+                            isDarkMode 
+                                ? 'bg-gradient-to-r from-blue-900/50 to-indigo-900/50 border-blue-700' 
+                                : 'bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200'
+                        } rounded-xl border transition-colors duration-300`}>
+                            <div className="flex items-center space-x-3">
+                                <span className="text-blue-600 text-2xl">💡</span>
+                                <div>
+                                    <h4 className={`font-semibold ${
+                                        isDarkMode ? 'text-blue-300' : 'text-blue-900'
+                                    } transition-colors duration-300`}>Admin Note</h4>
+                                    <p className={`text-sm ${
+                                        isDarkMode ? 'text-blue-400' : 'text-blue-700'
+                                    } transition-colors duration-300`}>
+                                        Language changes apply to admin interface only. User portal languages are managed separately.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+                {/* Dark Mode Toggle Section */}
+                <div className={`p-8 border-b ${isDarkMode ? 'border-gray-600' : 'border-gray-200'} transition-colors duration-300`}>
+                    <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center mb-6 transition-colors duration-300`}>
+                        <span className="mr-3 text-2xl">🎨</span>
+                        Display Settings
+                    </h3>
+                    
+                    <div className={`p-6 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'} rounded-xl transition-colors duration-300`}>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-4">
+                                <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center text-white text-xl">
+                                    {isDarkMode ? '🌙' : '☀️'}
+                                </div>
+                                <div>
+                                    <h4 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>
+                                        Dark Mode
+                                    </h4>
+                                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
+                                        Switch between light and dark themes
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div className="flex items-center space-x-3">
+                                <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
+                                    ☀️ Light
+                                </span>
+                                <button
+                                    onClick={toggleDarkMode}
+                                    className={`relative inline-flex h-8 w-16 items-center rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                                        isDarkMode ? 'bg-blue-600' : 'bg-gray-300'
+                                    }`}
+                                >
+                                    <span
+                                        className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform duration-300 ${
+                                            isDarkMode ? 'translate-x-9' : 'translate-x-1'
+                                        }`}
+                                    />
+                                </button>
+                                <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
+                                    🌙 Dark
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+                {/* System Configuration */}
+                <div className="p-8">
+                    <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center mb-6 transition-colors duration-300`}>
+                        <span className="mr-3 text-2xl">🔧</span>
+                        System Configuration
+                    </h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* System Preferences */}
+                        <div className={`p-6 ${isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'} rounded-xl border transition-colors duration-300`}>
+                            <h4 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-4 transition-colors duration-300`}>
+                                System Preferences
+                            </h4>
+                            <div className="space-y-4">
+                                {[
+                                    { title: 'Enable automatic backups', desc: 'Daily system backup at 2:00 AM', checked: true },
+                                    { title: 'Maintenance mode notifications', desc: 'Alert users before maintenance', checked: true },
+                                    { title: 'Debug logging', desc: 'Enhanced logging for troubleshooting', checked: false },
+                                    { title: 'Real-time monitoring', desc: 'Live system performance tracking', checked: true }
+                                ].map((setting, index) => (
+                                    <div key={index} className="flex items-center justify-between">
+                                        <div className="flex-1">
+                                            <div className={`font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-900'} transition-colors duration-300`}>
+                                                {setting.title}
+                                            </div>
+                                            <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
+                                                {setting.desc}
+                                            </div>
+                                        </div>
+                                        <button
+                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${
+                                                setting.checked ? 'bg-purple-600' : 'bg-gray-300'
+                                            }`}
+                                        >
+                                            <span
+                                                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-300 ${
+                                                    setting.checked ? 'translate-x-6' : 'translate-x-1'
+                                                }`}
+                                            />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+    
+                        {/* Notification Settings */}
+                        <div className={`p-6 ${isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'} rounded-xl border transition-colors duration-300`}>
+                            <h4 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-4 transition-colors duration-300`}>
+                                Admin Notifications
+                            </h4>
+                            <div className="space-y-4">
+                                {[
+                                    'User Registration Alerts',
+                                    'System Error Notifications',
+                                    'Security Alerts',
+                                    'Database Backup Status',
+                                    'Performance Warnings'
+                                ].map((notification, index) => (
+                                    <div key={index} className="flex items-center justify-between">
+                                        <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
+                                            {notification}
+                                        </span>
+                                        <button
+                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${
+                                                index % 2 === 0 ? 'bg-purple-600' : 'bg-gray-300'
+                                            }`}
+                                        >
+                                            <span
+                                                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-300 ${
+                                                    index % 2 === 0 ? 'translate-x-6' : 'translate-x-1'
+                                                }`}
+                                            />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+    
+                    {/* Security Section */}
+                    <div className={`mt-8 p-6 bg-gradient-to-r ${isDarkMode ? 'from-red-900/50 to-orange-900/50 border-red-700' : 'from-red-50 to-orange-50 border-red-200'} rounded-xl border transition-colors duration-300`}>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-3">
+                                <span className="text-red-600 text-2xl">🔐</span>
+                                <div>
+                                    <h4 className={`font-semibold ${isDarkMode ? 'text-red-300' : 'text-red-900'} transition-colors duration-300`}>
+                                        Security Settings
+                                    </h4>
+                                    <p className={`text-sm ${isDarkMode ? 'text-red-400' : 'text-red-700'} transition-colors duration-300`}>
+                                        Manage admin account security and access controls
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex space-x-3">
+                                <button className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium">
+                                    <span className="mr-2">🔑</span>
+                                    Change Password
+                                </button>
+                                <button className="inline-flex items-center px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm font-medium">
+                                    <span className="mr-2">🛡️</span>
+                                    2FA Settings
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -6570,220 +7430,246 @@ const Dashboard = () => {
             </div>
         </div>
     );
-
+    
     const renderAdminSidebar = () => (
         <nav className="flex flex-col space-y-2 p-2 sm:p-4">
             <button 
                 className={`flex items-center justify-center sm:justify-start space-x-0 sm:space-x-3 px-2 sm:px-4 py-3 rounded-xl transition-all duration-200 group ${
                     activeTab === 'overview' 
                     ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg transform scale-105' 
-                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    : `${isDarkMode 
+                        ? 'text-gray-300 hover:bg-gray-700/80 hover:text-white border border-gray-700/50 hover:border-gray-600' 
+                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    }`
                 }`}
                 onClick={() => setActiveTab('overview')}
                 title="Overview"
             >
-                <div className={`p-2 rounded-lg ${
+                <div className={`p-2 rounded-lg transition-all duration-200 ${
                     activeTab === 'overview' 
-                    ? 'bg-white/20' 
-                    : 'bg-blue-100 group-hover:bg-blue-200'
+                    ? 'bg-white/20 shadow-sm' 
+                    : `${isDarkMode 
+                        ? 'bg-blue-900/30 group-hover:bg-blue-800/50 border border-blue-800/30 group-hover:border-blue-700/50' 
+                        : 'bg-blue-100 group-hover:bg-blue-200'
+                    }`
                 }`}>
                     <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
                     </svg>
                 </div>
                 <span className="font-medium hidden sm:block">Overview</span>
+                {activeTab === 'overview' && (
+                    <div className="hidden sm:block ml-auto">
+                        <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                    </div>
+                )}
             </button>
     
             <button 
                 className={`flex items-center justify-center sm:justify-start space-x-0 sm:space-x-3 px-2 sm:px-4 py-3 rounded-xl transition-all duration-200 group ${
                     activeTab === 'users' 
                     ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg transform scale-105' 
-                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    : `${isDarkMode 
+                        ? 'text-gray-300 hover:bg-gray-700/80 hover:text-white border border-gray-700/50 hover:border-gray-600' 
+                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    }`
                 }`}
                 onClick={() => setActiveTab('users')}
                 title="Users"
             >
-                <div className={`p-2 rounded-lg ${
+                <div className={`p-2 rounded-lg transition-all duration-200 ${
                     activeTab === 'users' 
-                    ? 'bg-white/20' 
-                    : 'bg-green-100 group-hover:bg-green-200'
+                    ? 'bg-white/20 shadow-sm' 
+                    : `${isDarkMode 
+                        ? 'bg-green-900/30 group-hover:bg-green-800/50 border border-green-800/30 group-hover:border-green-700/50' 
+                        : 'bg-green-100 group-hover:bg-green-200'
+                    }`
                 }`}>
                     <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A2.96 2.96 0 0 0 17 6.5c-.86 0-1.76.34-2.42 1.01L12 10l2.58 2.58c.76.76 2 .76 2.76 0l.66-.66V22h2zM12.5 11.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5S11 9.17 11 10s.67 1.5 1.5 1.5zM5.5 6c1.11 0 2-.89 2-2s-.89-2-2-2-2 .89-2 2 .89 2 2 2zm1.5 16v-6H9l-2.54-7.63A2.96 2.96 0 0 0 3.5 6.5c-.86 0-1.76.34-2.42 1.01L0 10l2.58 2.58c.76.76 2 .76 2.76 0L6 12v10h1z"/>
+                        <path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A2.96 2.96 0 0 0 17 6.5c-.86 0-1.76.34-2.42 1.01L12 10l2.58 2.58c.76.76 2 .76 2.76 0l.66-.66V22h2z"/>
                     </svg>
                 </div>
                 <span className="font-medium hidden sm:block">Users</span>
+                {/* Pending users indicator */}
+                {pendingUsers.length > 0 && (
+                    <div className="hidden sm:block ml-auto">
+                        <span className={`inline-flex items-center justify-center px-2 py-1 text-xs font-bold rounded-full ${
+                            isDarkMode ? 'bg-orange-600 text-orange-100' : 'bg-orange-500 text-white'
+                        }`}>
+                            {pendingUsers.length}
+                        </span>
+                    </div>
+                )}
+                {activeTab === 'users' && (
+                    <div className="hidden sm:block ml-auto">
+                        <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                    </div>
+                )}
             </button>
     
             <button 
                 className={`flex items-center justify-center sm:justify-start space-x-0 sm:space-x-3 px-2 sm:px-4 py-3 rounded-xl transition-all duration-200 group ${
                     activeTab === 'applications' 
                     ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-lg transform scale-105' 
-                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    : `${isDarkMode 
+                        ? 'text-gray-300 hover:bg-gray-700/80 hover:text-white border border-gray-700/50 hover:border-gray-600' 
+                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    }`
                 }`}
                 onClick={() => setActiveTab('applications')}
                 title="Applications"
             >
-                <div className={`p-2 rounded-lg ${
+                <div className={`p-2 rounded-lg transition-all duration-200 ${
                     activeTab === 'applications' 
-                    ? 'bg-white/20' 
-                    : 'bg-orange-100 group-hover:bg-orange-200'
+                    ? 'bg-white/20 shadow-sm' 
+                    : `${isDarkMode 
+                        ? 'bg-orange-900/30 group-hover:bg-orange-800/50 border border-orange-800/30 group-hover:border-orange-700/50' 
+                        : 'bg-orange-100 group-hover:bg-orange-200'
+                    }`
                 }`}>
                     <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h8c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
                     </svg>
                 </div>
                 <span className="font-medium hidden sm:block">Applications</span>
+                {/* Pending applications indicator */}
+                {applicationSubmissions.filter(app => app.status === 'pending').length > 0 && (
+                    <div className="hidden sm:block ml-auto">
+                        <span className={`inline-flex items-center justify-center px-2 py-1 text-xs font-bold rounded-full ${
+                            isDarkMode ? 'bg-red-600 text-red-100' : 'bg-red-500 text-white'
+                        }`}>
+                            {applicationSubmissions.filter(app => app.status === 'pending').length}
+                        </span>
+                    </div>
+                )}
+                {activeTab === 'applications' && (
+                    <div className="hidden sm:block ml-auto">
+                        <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                    </div>
+                )}
             </button>
     
             <button 
                 className={`flex items-center justify-center sm:justify-start space-x-0 sm:space-x-3 px-2 sm:px-4 py-3 rounded-xl transition-all duration-200 group ${
                     activeTab === 'contacts' 
                     ? 'bg-gradient-to-r from-purple-500 to-pink-600 text-white shadow-lg transform scale-105' 
-                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    : `${isDarkMode 
+                        ? 'text-gray-300 hover:bg-gray-700/80 hover:text-white border border-gray-700/50 hover:border-gray-600' 
+                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    }`
                 }`}
                 onClick={() => setActiveTab('contacts')}
                 title="Contacts"
             >
-                <div className={`p-2 rounded-lg ${
+                <div className={`p-2 rounded-lg transition-all duration-200 ${
                     activeTab === 'contacts' 
-                    ? 'bg-white/20' 
-                    : 'bg-purple-100 group-hover:bg-purple-200'
+                    ? 'bg-white/20 shadow-sm' 
+                    : `${isDarkMode 
+                        ? 'bg-purple-900/30 group-hover:bg-purple-800/50 border border-purple-800/30 group-hover:border-purple-700/50' 
+                        : 'bg-purple-100 group-hover:bg-purple-200'
+                    }`
                 }`}>
                     <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
                     </svg>
                 </div>
                 <span className="font-medium hidden sm:block">Contacts</span>
+                {/* Pending contacts indicator */}
+                {contactSubmissions.filter(contact => contact.status === 'pending').length > 0 && (
+                    <div className="hidden sm:block ml-auto">
+                        <span className={`inline-flex items-center justify-center px-2 py-1 text-xs font-bold rounded-full ${
+                            isDarkMode ? 'bg-purple-600 text-purple-100' : 'bg-purple-500 text-white'
+                        }`}>
+                            {contactSubmissions.filter(contact => contact.status === 'pending').length}
+                        </span>
+                    </div>
+                )}
+                {activeTab === 'contacts' && (
+                    <div className="hidden sm:block ml-auto">
+                        <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                    </div>
+                )}
             </button>
     
             <button 
                 className={`flex items-center justify-center sm:justify-start space-x-0 sm:space-x-3 px-2 sm:px-4 py-3 rounded-xl transition-all duration-200 group ${
                     activeTab === 'settings' 
                     ? 'bg-gradient-to-r from-gray-500 to-slate-600 text-white shadow-lg transform scale-105' 
-                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    : `${isDarkMode 
+                        ? 'text-gray-300 hover:bg-gray-700/80 hover:text-white border border-gray-700/50 hover:border-gray-600' 
+                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    }`
                 }`}
                 onClick={() => setActiveTab('settings')}
                 title="Settings"
             >
-                <div className={`p-2 rounded-lg ${
+                <div className={`p-2 rounded-lg transition-all duration-200 ${
                     activeTab === 'settings' 
-                    ? 'bg-white/20' 
-                    : 'bg-gray-100 group-hover:bg-gray-200'
+                    ? 'bg-white/20 shadow-sm' 
+                    : `${isDarkMode 
+                        ? 'bg-slate-900/30 group-hover:bg-slate-800/50 border border-slate-800/30 group-hover:border-slate-700/50' 
+                        : 'bg-gray-100 group-hover:bg-gray-200'
+                    }`
                 }`}>
                     <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
                     </svg>
                 </div>
                 <span className="font-medium hidden sm:block">Settings</span>
+                {activeTab === 'settings' && (
+                    <div className="hidden sm:block ml-auto">
+                        <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                    </div>
+                )}
             </button>
+    
+            {/* Divider */}
+            <div className={`my-4 border-t ${isDarkMode ? 'border-gray-700/50' : 'border-gray-200/50'} transition-colors duration-300`}></div>
+    
+            {/* Quick Stats in Sidebar */}
+            <div className="hidden sm:block space-y-3">
+                <h4 className={`text-xs font-medium uppercase tracking-wider ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} px-2`}>
+                    Quick Stats
+                </h4>
+                
+                <div className={`p-3 rounded-xl ${isDarkMode ? 'bg-gray-800/50 border border-gray-700/30' : 'bg-gray-50 border border-gray-200'} transition-colors duration-300`}>
+                    <div className="flex items-center justify-between mb-2">
+                        <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>System Health</span>
+                        <span className={`text-sm font-bold ${isDarkMode ? 'text-green-400' : 'text-green-600'}`}>98%</span>
+                    </div>
+                    <div className={`w-full h-2 rounded-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`}>
+                        <div className="h-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full" style={{ width: '98%' }}></div>
+                    </div>
+                </div>
+    
+                <div className={`p-3 rounded-xl ${isDarkMode ? 'bg-gray-800/50 border border-gray-700/30' : 'bg-gray-50 border border-gray-200'} transition-colors duration-300`}>
+                    <div className="flex items-center justify-between">
+                        <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Online Users</span>
+                        <div className="flex items-center space-x-2">
+                            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                            <span className={`text-sm font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>247</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            {/* Dark Mode Visual Enhancement */}
+            {isDarkMode && (
+                <div className="hidden sm:block mt-6 p-4 rounded-xl bg-gradient-to-br from-blue-900/20 to-purple-900/20 border border-blue-800/30">
+                    <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                            <span className="text-white text-sm">🌙</span>
+                        </div>
+                        <div>
+                            <p className="text-white text-sm font-medium">Dark Mode</p>
+                            <p className="text-blue-200 text-xs">Enhanced for night work</p>
+                        </div>
+                    </div>
+                </div>
+            )}
         </nav>
     );
-    
-    // const renderAdminSidebar = () => (
-    //     <nav className="flex flex-col space-y-2 p-4">
-    //         <button 
-    //             className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
-    //                 activeTab === 'overview' 
-    //                 ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg transform scale-105' 
-    //                 : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-    //             }`}
-    //             onClick={() => setActiveTab('overview')}
-    //         >
-    //             <div className={`p-2 rounded-lg ${
-    //                 activeTab === 'overview' 
-    //                 ? 'bg-white/20' 
-    //                 : 'bg-blue-100 group-hover:bg-blue-200'
-    //             }`}>
-    //                 <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-    //                     <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
-    //                 </svg>
-    //             </div>
-    //             <span className="font-medium">Overview</span>
-    //         </button>
-    
-    //         <button 
-    //             className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
-    //                 activeTab === 'users' 
-    //                 ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg transform scale-105' 
-    //                 : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-    //             }`}
-    //             onClick={() => setActiveTab('users')}
-    //         >
-    //             <div className={`p-2 rounded-lg ${
-    //                 activeTab === 'users' 
-    //                 ? 'bg-white/20' 
-    //                 : 'bg-green-100 group-hover:bg-green-200'
-    //             }`}>
-    //                 <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-    //                     <path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A2.96 2.96 0 0 0 17 6.5c-.86 0-1.76.34-2.42 1.01L12 10l2.58 2.58c.76.76 2 .76 2.76 0l.66-.66V22h2zM12.5 11.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5S11 9.17 11 10s.67 1.5 1.5 1.5zM5.5 6c1.11 0 2-.89 2-2s-.89-2-2-2-2 .89-2 2 .89 2 2 2zm1.5 16v-6H9l-2.54-7.63A2.96 2.96 0 0 0 3.5 6.5c-.86 0-1.76.34-2.42 1.01L0 10l2.58 2.58c.76.76 2 .76 2.76 0L6 12v10h1z"/>
-    //                 </svg>
-    //             </div>
-    //             <span className="font-medium">Users</span>
-    //         </button>
-    
-    //         <button 
-    //             className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
-    //                 activeTab === 'applications' 
-    //                 ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-lg transform scale-105' 
-    //                 : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-    //             }`}
-    //             onClick={() => setActiveTab('applications')}
-    //         >
-    //             <div className={`p-2 rounded-lg ${
-    //                 activeTab === 'applications' 
-    //                 ? 'bg-white/20' 
-    //                 : 'bg-orange-100 group-hover:bg-orange-200'
-    //             }`}>
-    //                 <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-    //                     <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h8c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
-    //                 </svg>
-    //             </div>
-    //             <span className="font-medium">Applications</span>
-    //         </button>
-    
-    //         <button 
-    //             className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
-    //                 activeTab === 'contacts' 
-    //                 ? 'bg-gradient-to-r from-purple-500 to-pink-600 text-white shadow-lg transform scale-105' 
-    //                 : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-    //             }`}
-    //             onClick={() => setActiveTab('contacts')}
-    //         >
-    //             <div className={`p-2 rounded-lg ${
-    //                 activeTab === 'contacts' 
-    //                 ? 'bg-white/20' 
-    //                 : 'bg-purple-100 group-hover:bg-purple-200'
-    //             }`}>
-    //                 <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-    //                     <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
-    //                 </svg>
-    //             </div>
-    //             <span className="font-medium">Contacts</span>
-    //         </button>
-    
-    //         <button 
-    //             className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
-    //                 activeTab === 'settings' 
-    //                 ? 'bg-gradient-to-r from-gray-500 to-slate-600 text-white shadow-lg transform scale-105' 
-    //                 : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-    //             }`}
-    //             onClick={() => setActiveTab('settings')}
-    //         >
-    //             <div className={`p-2 rounded-lg ${
-    //                 activeTab === 'settings' 
-    //                 ? 'bg-white/20' 
-    //                 : 'bg-gray-100 group-hover:bg-gray-200'
-    //             }`}>
-    //                 <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-    //                     <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
-    //                 </svg>
-    //             </div>
-    //             <span className="font-medium">Settings</span>
-    //         </button>
-    //     </nav>
-    // );
-    
+
     const renderDefaultSidebar = () => (
         <nav className="flex flex-col space-y-2 p-4">
             <button 
@@ -6901,8 +7787,6 @@ const Dashboard = () => {
         }
     };
     
-// Replace your existing renderDashboardTabs function with this updated version:
-
     const renderDashboardTabs = () => {
         const studentTabs = [
             { id: 'overview', label: 'Overview', icon: '🏠', gradient: 'from-blue-500 to-indigo-600', bgColor: 'bg-blue-100 group-hover:bg-blue-200' },
@@ -6911,7 +7795,7 @@ const Dashboard = () => {
             { id: 'messages', label: 'Messages', icon: '💬', gradient: 'from-orange-500 to-red-600', bgColor: 'bg-orange-100 group-hover:bg-orange-200' },
             { id: 'settings', label: 'Settings', icon: '⚙️', gradient: 'from-gray-500 to-slate-600', bgColor: 'bg-gray-100 group-hover:bg-gray-200' }
         ];
-
+    
         const teacherTabs = [
             { id: 'overview', label: 'Overview', icon: '📊', gradient: 'from-blue-500 to-purple-600', bgColor: 'bg-blue-100 group-hover:bg-blue-200' },
             { id: 'courses', label: 'Courses', icon: '📚', gradient: 'from-green-500 to-teal-600', bgColor: 'bg-green-100 group-hover:bg-green-200' },
@@ -6919,15 +7803,15 @@ const Dashboard = () => {
             { id: 'messages', label: 'Messages', icon: '💬', gradient: 'from-orange-500 to-amber-600', bgColor: 'bg-orange-100 group-hover:bg-orange-200' },
             { id: 'settings', label: 'Settings', icon: '⚙️', gradient: 'from-gray-500 to-zinc-600', bgColor: 'bg-gray-100 group-hover:bg-gray-200' }
         ];
-
+    
         const tabs = user.role === 'teacher' ? teacherTabs : studentTabs;
 
         return (
-            <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100 flex">
+            <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100'} flex transition-colors duration-300`}>
                 {/* Responsive Sidebar */}
-                <div className="w-16 sm:w-80 bg-white/80 backdrop-blur-xl shadow-2xl border-r border-gray-200/50 flex flex-col">
-                    {/* Sidebar Header - Updated for small screens */}
-                    <div className="p-2 sm:p-6 border-b border-gray-200/50">
+                <div className={`w-16 sm:w-80 ${isDarkMode ? 'bg-gray-800/80' : 'bg-white/80'} backdrop-blur-xl shadow-2xl border-r ${isDarkMode ? 'border-gray-700/50' : 'border-gray-200/50'} flex flex-col transition-colors duration-300`}>
+                    {/* Sidebar Header - Updated for dark mode */}
+                    <div className={`p-2 sm:p-6 border-b ${isDarkMode ? 'border-gray-700/50' : 'border-gray-200/50'} transition-colors duration-300`}>
                         <div className="flex items-center justify-center sm:justify-start space-x-0 sm:space-x-3 mb-4">
                             <div className="w-8 sm:w-12 h-8 sm:h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
                                 <span className="text-white text-lg sm:text-xl font-bold">
@@ -6935,29 +7819,37 @@ const Dashboard = () => {
                                 </span>
                             </div>
                             <div className="hidden sm:block">
-                                <h2 className="text-xl font-bold text-gray-900">FIA Portal</h2>
-                                <p className="text-sm text-gray-600">{user?.role === 'teacher' ? 'Teacher Dashboard' : 'Student Dashboard'}</p>
+                                <h2 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>FIA Portal</h2>
+                                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
+                                    {user?.role === 'teacher' ? 'Teacher Dashboard' : 'Student Dashboard'}
+                                </p>
                             </div>
                         </div>
                     </div>
-
-                    {/* Navigation Items - Updated with Admin-style colored buttons */}
+        
+                    {/* Navigation Items - Updated with dark mode */}
                     <nav className="flex-1 py-2 sm:py-6 px-2 sm:px-4 space-y-2">
                         {tabs.map((tab) => (
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
-                                title={tab.label} // Tooltip for mobile
+                                title={tab.label}
                                 className={`w-full flex items-center justify-center sm:justify-start space-x-0 sm:space-x-3 px-2 sm:px-4 py-3 rounded-xl transition-all duration-200 group ${
                                     activeTab === tab.id
                                         ? `bg-gradient-to-r ${tab.gradient} text-white shadow-lg transform scale-105`
-                                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                                        : `${isDarkMode 
+                                            ? 'text-gray-300 hover:bg-gray-700 hover:text-white' 
+                                            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                                        }`
                                 }`}
                             >
                                 <div className={`p-2 rounded-lg ${
                                     activeTab === tab.id 
                                     ? 'bg-white/20' 
-                                    : tab.bgColor
+                                    : `${isDarkMode 
+                                        ? 'bg-gray-700 group-hover:bg-gray-600' 
+                                        : tab.bgColor
+                                    }`
                                 }`}>
                                     <span className="text-lg sm:text-base">{tab.icon}</span>
                                 </div>
@@ -6965,23 +7857,27 @@ const Dashboard = () => {
                             </button>
                         ))}
                     </nav>
-
-                    {/* User Profile Section */}
-                    <div className="p-2 sm:p-6 border-t border-gray-200/50">
+        
+                    {/* User Profile Section - Updated with dark mode */}
+                    <div className={`p-2 sm:p-6 border-t ${isDarkMode ? 'border-gray-700/50' : 'border-gray-200/50'} transition-colors duration-300`}>
                         <div className="flex items-center justify-center sm:justify-start space-x-0 sm:space-x-3 mb-4">
                             <div className="w-8 sm:w-12 h-8 sm:h-12 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center text-white font-semibold text-sm sm:text-lg">
                                 {user?.name?.charAt(0).toUpperCase()}
                             </div>
                             <div className="flex-1 min-w-0 hidden sm:block">
-                                <p className="text-sm font-semibold text-gray-900 truncate">{user?.name}</p>
-                                <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+                                <p className={`text-sm font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} truncate transition-colors duration-300`}>
+                                    {user?.name}
+                                </p>
+                                <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} truncate transition-colors duration-300`}>
+                                    {user?.email}
+                                </p>
                             </div>
                         </div>
                         
                         {/* Logout Button */}
                         <button
                             onClick={handleLogout}
-                            title="Logout" // Tooltip for mobile
+                            title="Logout"
                             className="w-full flex items-center justify-center space-x-0 sm:space-x-2 px-2 sm:px-4 py-3 bg-gradient-to-r from-red-500 to-pink-600 text-white rounded-xl hover:from-red-600 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
                         >
                             <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
@@ -6991,59 +7887,137 @@ const Dashboard = () => {
                         </button>
                     </div>
                 </div>
-
+        
                 {/* Main Content Area */}
                 <div className="flex-1 flex flex-col overflow-hidden">
-                    {/* Top Header - Mobile Only */}
-                    <div className="sm:hidden bg-white/80 backdrop-blur-xl shadow-sm border-b border-gray-200/50 p-4">
+                    {/* Top Header - Mobile Only - Updated with dark mode */}
+                    <div className={`sm:hidden ${isDarkMode ? 'bg-gray-800/80 border-gray-700/50' : 'bg-white/80 border-gray-200/50'} backdrop-blur-xl shadow-sm border-b p-4 transition-colors duration-300`}>
                         <div className="flex items-center justify-between">
                             <div>
-                                <h1 className="text-lg font-bold text-gray-900">
+                                <h1 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>
                                     {tabs.find(tab => tab.id === activeTab)?.label || 'Dashboard'}
                                 </h1>
-                                <p className="text-sm text-gray-600 capitalize">{user.role} Portal</p>
+                                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} capitalize transition-colors duration-300`}>
+                                    {user.role} Portal
+                                </p>
                             </div>
                             <div className="flex items-center space-x-2">
-                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 capitalize">
+                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium capitalize transition-colors duration-300 ${
+                                    isDarkMode ? 'bg-blue-900/50 text-blue-300 border border-blue-700/50' : 'bg-blue-100 text-blue-800'
+                                }`}>
                                     {user.role}
                                 </span>
                             </div>
                         </div>
                     </div>
-
-                    {/* Desktop Header */}
-                    <div className="hidden sm:block bg-white/80 backdrop-blur-xl shadow-lg border-b border-gray-200/50 px-4 sm:px-8 py-4 sm:py-6">
+        
+                    {/* Desktop Header - Already has dark mode support */}
+                    <div className={`hidden sm:block ${isDarkMode ? 'bg-gray-800/80 border-gray-700/50' : 'bg-white/80 border-gray-200/50'} backdrop-blur-xl shadow-lg border-b px-4 sm:px-8 py-4 sm:py-6 transition-colors duration-300`}>
+                        {/* Header content remains the same as it already has dark mode support */}
                         <div className="max-w-7xl mx-auto">
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
                                 <div>
-                                    <h1 className="text-xl sm:text-3xl font-bold text-gray-900 flex items-center">
-                                        Welcome back, {user?.name}! 
+                                    <h1 className={`text-xl sm:text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
+                                        {currentLanguage === 'en' 
+                                            ? `Welcome back, ${user?.name}!` 
+                                            : `おかえりなさい、${user?.name}！`
+                                        }
                                         <span className="ml-2 text-2xl sm:text-4xl">👋</span>
                                     </h1>
-                                    <p className="text-gray-600 mt-1 text-sm sm:text-base">
-                                        Here's what's happening in your {user?.role} dashboard today.
+                                    <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mt-1 text-sm sm:text-base transition-colors duration-300`}>
+                                        {currentLanguage === 'en' 
+                                            ? `Here's what's happening in your ${user?.role} dashboard today.`
+                                            : `今日の${user?.role === 'student' ? '学生' : '教師'}ダッシュボードの状況です。`
+                                        }
                                     </p>
                                 </div>
                                 <div className="flex items-center justify-between sm:justify-end space-x-4">
-                                    <div className="flex items-center space-x-2 px-3 sm:px-4 py-1 sm:py-2 bg-green-100 text-green-800 rounded-full">
-                                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                                        <span className="text-xs sm:text-sm font-medium">Online</span>
+                                    {/* Language Toggle */}
+                                    <div className={`flex ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'} p-1 rounded-lg transition-colors duration-300`}>
+                                        <button 
+                                            className={`flex items-center justify-center w-8 h-8 rounded-md transition-all ${
+                                                currentLanguage === 'en' 
+                                                    ? 'text-white bg-blue-600 shadow' 
+                                                    : `${isDarkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-gray-700 hover:bg-gray-200'}`
+                                            }`}
+                                            onClick={() => handleLanguageToggle('en')}
+                                            title="English"
+                                        >
+                                            <span className="text-sm font-bold">EN</span>
+                                        </button>
+                                        <button 
+                                            className={`flex items-center justify-center w-8 h-8 rounded-md transition-all ${
+                                                currentLanguage === 'ja' 
+                                                    ? 'text-white bg-blue-600 shadow' 
+                                                    : `${isDarkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-gray-700 hover:bg-gray-200'}`
+                                            }`}
+                                            onClick={() => handleLanguageToggle('ja')}
+                                            title="Japanese"
+                                        >
+                                            <span className="text-sm font-bold">JA</span>
+                                        </button>
                                     </div>
-                                    <div className="text-xs sm:text-sm text-gray-500 hidden sm:block">
-                                        {new Date().toLocaleDateString('en-US', { 
-                                            weekday: 'long', 
-                                            year: 'numeric', 
-                                            month: 'long', 
-                                            day: 'numeric' 
-                                        })}
+        
+                                    {/* Dark Mode Toggle */}
+                                    <div className={`flex ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'} p-1 rounded-lg transition-colors duration-300`}>
+                                        <button 
+                                            className={`flex items-center justify-center w-8 h-8 rounded-md transition-all ${
+                                                !isDarkMode 
+                                                    ? 'text-white bg-yellow-500 shadow' 
+                                                    : `${isDarkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-gray-700 hover:bg-gray-200'}`
+                                            }`}
+                                            onClick={() => handleThemeToggle('light')}
+                                            title="Light Mode"
+                                        >
+                                            <span className="text-lg">☀️</span>
+                                        </button>
+                                        <button 
+                                            className={`flex items-center justify-center w-8 h-8 rounded-md transition-all ${
+                                                isDarkMode 
+                                                    ? 'text-white bg-gray-800 shadow' 
+                                                    : `${isDarkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-gray-700 hover:bg-gray-200'}`
+                                            }`}
+                                            onClick={() => handleThemeToggle('dark')}
+                                            title="Dark Mode"
+                                        >
+                                            <span className="text-lg">🌙</span>
+                                        </button>
+                                    </div>
+        
+                                    {/* Online Status */}
+                                    <div className={`flex items-center space-x-2 px-3 sm:px-4 py-1 sm:py-2 rounded-full transition-colors duration-300 ${
+                                        isDarkMode ? 'bg-green-900/50 text-green-300' : 'bg-green-100 text-green-800'
+                                    }`}>
+                                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                        <span className="text-xs sm:text-sm font-medium">
+                                            {currentLanguage === 'en' ? 'Online' : 'オンライン'}
+                                        </span>
+                                    </div>
+        
+                                    {/* Date */}
+                                    <div className={`text-xs sm:text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} hidden sm:block transition-colors duration-300`}>
+                                        {currentLanguage === 'en' 
+                                            ? new Date().toLocaleDateString('en-US', { 
+                                                weekday: 'long', 
+                                                year: 'numeric', 
+                                                month: 'long', 
+                                                day: 'numeric' 
+                                            })
+                                            : new Date().toLocaleDateString('ja-JP', { 
+                                                weekday: 'long', 
+                                                year: 'numeric', 
+                                                month: 'long', 
+                                                day: 'numeric' 
+                                            })
+                                        }
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    {/* Dashboard Content */}
-                    <div className="flex-1 overflow-auto">
+        
+                    {/* Dashboard Content - UPDATED WITH DARK MODE */}
+                    <div className={`flex-1 overflow-auto ${isDarkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100'} transition-colors duration-300`}>
                         <div className="max-w-7xl mx-auto px-4 sm:px-8 py-4 sm:py-8">
                             {user.role === 'teacher' ? renderTeacherDashboard() : renderStudentDashboard()}
                         </div>
@@ -7133,18 +8107,18 @@ const Dashboard = () => {
     
             {/* Admin Dashboard - Keep existing admin layout */}
             {!isLoading && user?.role === 'admin' && (
-                <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100 flex">
-                    {/* Admin Sidebar - Updated for responsiveness */}
-                    <div className="w-16 sm:w-80 bg-white/80 backdrop-blur-xl shadow-2xl border-r border-gray-200/50 flex flex-col">
+                <div className={`min-h-screen flex ${isDarkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100'} transition-colors duration-300`}>
+                    {/* Admin Sidebar with Dark Mode Support */}
+                    <div className={`w-16 sm:w-80 ${isDarkMode ? 'bg-gray-800/90' : 'bg-white/80'} backdrop-blur-xl shadow-2xl border-r ${isDarkMode ? 'border-gray-700/50' : 'border-gray-200/50'} flex flex-col transition-colors duration-300`}>
                         {/* Admin Sidebar Header */}
-                        <div className="p-2 sm:p-6 border-b border-gray-200/50">
+                        <div className={`p-2 sm:p-6 border-b ${isDarkMode ? 'border-gray-700/50' : 'border-gray-200/50'} transition-colors duration-300`}>
                             <div className="flex items-center justify-center sm:justify-start space-x-0 sm:space-x-3 mb-4">
                                 <div className="w-8 sm:w-12 h-8 sm:h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
                                     <span className="text-white text-lg sm:text-xl font-bold">⚡</span>
                                 </div>
                                 <div className="hidden sm:block">
-                                    <h2 className="text-xl font-bold text-gray-900">System Health Monitor</h2>
-                                    <p className="text-sm text-gray-600">Administrator Portal</p>
+                                    <h2 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>System Health Monitor</h2>
+                                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>Administrator Portal</p>
                                 </div>
                             </div>
                         </div>
@@ -7154,15 +8128,15 @@ const Dashboard = () => {
                             {renderAdminSidebar()}
                         </div>
     
-                        {/* Admin Sidebar Footer */}
-                        <div className="p-2 sm:p-6 border-t border-gray-200/50">
+                        {/* Admin Sidebar Footer with Dark Mode */}
+                        <div className={`p-2 sm:p-6 border-t ${isDarkMode ? 'border-gray-700/50' : 'border-gray-200/50'} transition-colors duration-300`}>
                             <div className="flex items-center justify-center sm:justify-start space-x-0 sm:space-x-3 mb-4">
                                 <div className="w-8 sm:w-12 h-8 sm:h-12 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center text-white font-semibold text-sm sm:text-lg">
                                     {user?.name?.charAt(0).toUpperCase()}
                                 </div>
                                 <div className="flex-1 min-w-0 hidden sm:block">
-                                    <p className="text-sm font-semibold text-gray-900 truncate">{user?.name}</p>
-                                    <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+                                    <p className={`text-sm font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} truncate transition-colors duration-300`}>{user?.name}</p>
+                                    <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} truncate transition-colors duration-300`}>{user?.email}</p>
                                 </div>
                             </div>
                             <button 
@@ -7177,42 +8151,113 @@ const Dashboard = () => {
                             </button>
                         </div>
                     </div>
-    
-                    {/* Admin Main Content */}
+
+                    {/* Admin Main Content with Dark Mode */}
                     <div className="flex-1 flex flex-col overflow-hidden">
-                        {/* Admin Header */}
-                        <div className="bg-white/80 backdrop-blur-xl shadow-lg border-b border-gray-200/50 px-4 sm:px-8 py-4 sm:py-6">
+                        {/* Admin Header with Working Toggles and Dark Mode */}
+                        <div className={`${isDarkMode ? 'bg-gray-800/80 border-gray-700/50' : 'bg-white/80 border-gray-200/50'} backdrop-blur-xl shadow-lg border-b px-4 sm:px-8 py-4 sm:py-6 transition-colors duration-300`}>
                             <div className="max-w-7xl mx-auto">
                                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
                                     <div>
-                                        <h1 className="text-xl sm:text-3xl font-bold text-gray-900 flex items-center">
-                                            Welcome back, {user?.name}! 
+                                        <h1 className={`text-xl sm:text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
+                                            {currentLanguage === 'en' 
+                                                ? `Welcome back, ${user?.name}!` 
+                                                : `おかえりなさい、${user?.name}！`
+                                            }
                                             <span className="ml-2 text-2xl sm:text-4xl">👋</span>
                                         </h1>
-                                        <p className="text-gray-600 mt-1 text-sm sm:text-base">
-                                            Here's what's happening in your administrator dashboard today.
+                                        <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mt-1 text-sm sm:text-base transition-colors duration-300`}>
+                                            {currentLanguage === 'en' 
+                                                ? "Here's what's happening in your administrator dashboard today."
+                                                : "今日の管理者ダッシュボードの状況です。"
+                                            }
                                         </p>
                                     </div>
                                     <div className="flex items-center justify-between sm:justify-end space-x-4">
-                                        <div className="flex items-center space-x-2 px-3 sm:px-4 py-1 sm:py-2 bg-green-100 text-green-800 rounded-full">
-                                            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                                            <span className="text-xs sm:text-sm font-medium">Online</span>
+                                        {/* Language Toggle with Dark Mode Support - Compact Version */}
+                                        <div className={`flex ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'} p-1 rounded-lg transition-colors duration-300`}>
+                                            <button 
+                                                className={`flex items-center justify-center w-8 h-8 rounded-md transition-all ${
+                                                    currentLanguage === 'en' 
+                                                        ? 'text-white bg-blue-600 shadow' 
+                                                        : `${isDarkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-gray-700 hover:bg-gray-200'}`
+                                                }`}
+                                                onClick={() => handleLanguageToggle('en')}
+                                                title="English"
+                                            >
+                                                <span className="text-sm font-bold">EN</span>
+                                            </button>
+                                            <button 
+                                                className={`flex items-center justify-center w-8 h-8 rounded-md transition-all ${
+                                                    currentLanguage === 'ja' 
+                                                        ? 'text-white bg-blue-600 shadow' 
+                                                        : `${isDarkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-gray-700 hover:bg-gray-200'}`
+                                                }`}
+                                                onClick={() => handleLanguageToggle('ja')}
+                                                title="Japanese"
+                                            >
+                                                <span className="text-sm font-bold">JP</span>
+                                            </button>
                                         </div>
-                                        <div className="text-xs sm:text-sm text-gray-500 hidden sm:block">
-                                            {new Date().toLocaleDateString('en-US', { 
-                                                weekday: 'long', 
-                                                year: 'numeric', 
-                                                month: 'long', 
-                                                day: 'numeric' 
-                                            })}
+                    
+                                        {/* Dark Mode Toggle - FIXED */}
+                                        <div className={`flex ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'} p-1 rounded-lg transition-colors duration-300`}>
+                                            <button 
+                                                className={`flex items-center justify-center w-8 h-8 rounded-md transition-all ${
+                                                    !isDarkMode 
+                                                        ? 'text-white bg-yellow-500 shadow' 
+                                                        : `${isDarkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-gray-700 hover:bg-gray-200'}`
+                                                }`}
+                                                onClick={() => handleThemeToggle('light')}
+                                                title="Light Mode"
+                                            >
+                                                <span className="text-lg">☀️</span>
+                                            </button>
+                                            <button 
+                                                className={`flex items-center justify-center w-8 h-8 rounded-md transition-all ${
+                                                    isDarkMode 
+                                                        ? 'text-white bg-gray-800 shadow' 
+                                                        : `${isDarkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-gray-700 hover:bg-gray-200'}`
+                                                }`}
+                                                onClick={() => handleThemeToggle('dark')}
+                                                title="Dark Mode"
+                                            >
+                                                <span className="text-lg">🌙</span>
+                                            </button>
+                                        </div>
+                    
+                                        {/* Online Status with Dark Mode */}
+                                        <div className={`flex items-center space-x-2 px-3 sm:px-4 py-1 sm:py-2 ${isDarkMode ? 'bg-green-900/50 text-green-300' : 'bg-green-100 text-green-800'} rounded-full transition-colors duration-300`}>
+                                            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                            <span className="text-xs sm:text-sm font-medium">
+                                                {currentLanguage === 'en' ? 'Online' : 'オンライン'}
+                                            </span>
+                                        </div>
+                    
+                                        {/* Date with Dark Mode */}
+                                        <div className={`text-xs sm:text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} hidden sm:block transition-colors duration-300`}>
+                                            {currentLanguage === 'en' 
+                                                ? new Date().toLocaleDateString('en-US', { 
+                                                    weekday: 'long', 
+                                                    year: 'numeric', 
+                                                    month: 'long', 
+                                                    day: 'numeric' 
+                                                })
+                                                : new Date().toLocaleDateString('ja-JP', { 
+                                                    weekday: 'long', 
+                                                    year: 'numeric', 
+                                                    month: 'long', 
+                                                    day: 'numeric' 
+                                                })
+                                            }
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-    
-                        {/* Admin Dashboard Content */}
-                        <div className="flex-1 overflow-auto">
+                    
+                        {/* Admin Dashboard Content with Dark Mode */}
+                        <div className={`flex-1 overflow-auto ${isDarkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100'} transition-colors duration-300`}>
                             <div className="max-w-7xl mx-auto px-4 sm:px-8 py-4 sm:py-8">
                                 {renderAdminDashboard()}
                             </div>
