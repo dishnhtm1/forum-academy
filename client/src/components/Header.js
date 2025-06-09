@@ -423,12 +423,13 @@ const Header = ({ onLoginClick }) => {
                                         : 'text-white hover:text-blue-200 hover:bg-white/10'
                                 }`}
                             >
-                                <User className="w-4 h-4 relative z-10 group-hover:scale-110 transition-transform duration-300" />
-                                <span className="font-medium relative z-10">
+                                <span className="font-medium relative z-10 whitespace-nowrap">
                                     {t('buttons.login') || 'Login'}
                                 </span>
+                                <User className="w-4 h-4 relative z-10 group-hover:scale-110 transition-transform duration-300" />
                                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg"></div>
                             </button>
+
 
                             {/* Apply Button */}
                             <Link
