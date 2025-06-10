@@ -1084,7 +1084,7 @@
             }
         }
     },
-        "dashboard": {
+    "dashboard": {
         "loading": "ダッシュボード読み込み中...",
         "roles": {
             "student": "学生",
@@ -1101,7 +1101,11 @@
                 "system": "システム",
                 "calendar": "カレンダー",
                 "messages": "メッセージ",
-                "settings": "設定"
+                "settings": "設定",
+                "analytics": "分析",
+                "userManagement": "ユーザー管理",
+                "applicationManagement": "申請管理",
+                "contactManagement": "連絡先管理"
             },
             "logout": "ログアウト"
         },
@@ -1116,7 +1120,7 @@
                     "title": "履修コース"
                 },
                 "assignmentsDue": {
-                    "title": "提出期限の課題"
+                    "title": "提出期限"
                 },
                 "studyHours": {
                     "title": "学習時間"
@@ -1125,40 +1129,62 @@
                     "title": "平均成績"
                 }
             },
-            "recentCourses": {
-                "title": "最近のコース",
-                "courses": {
-                    "dataScience": {
-                        "title": "データサイエンス基礎",
-                        "progress": "進捗"
-                    },
-                    "webDevelopment": {
-                        "title": "ウェブ開発",
-                        "progress": "進捗"
-                    },
-                    "machineLearning": {
-                        "title": "機械学習",
-                        "progress": "進捗"
-                    }
-                }
+            "journeyProgress": {
+                "title": "あなたの学習の旅",
+                "subtitle": "素晴らしい進歩を続けてください！とても良くできています。",
+                "milestonesAchieved": "達成したマイルストーン",
+                "moreToGo": "あと",
+                "dayStreak": "日連続",
+                "keepItUp": "この調子で頑張って！"
             },
-            "upcomingTasks": {
-                "title": "今後のタスク",
-                "tasks": {
-                    "dataAnalysis": {
-                        "month": "5月",
-                        "title": "データ分析プロジェクト",
-                        "due": "2日後締切"
-                    },
-                    "javascriptQuiz": {
-                        "month": "5月",
-                        "title": "JavaScriptクイズ",
-                        "due": "5日後締切"
-                    }
-                }
+            "aiRecommendations": {
+                "title": "AI学習推奨事項",
+                "subtitle": "学習を向上させるための個別提案",
+                "highPriority": "高優先度",
+                "estimated": "推定",
+                "minutes": "分",
+                "startStudySession": "学習セッション開始",
+                "scheduleLater": "後でスケジュール"
             },
-            "buttons": {
-                "continue": "続行"
+            "upcomingDeadlines": {
+                "title": "今後の締切",
+                "subtitle": "課題を忘れずに管理しましょう",
+                "dueSoon": "まもなく締切",
+                "daysLeft": "日後",
+                "workOnIt": "取り組む"
+            },
+            "performanceInsights": {
+                "title": "パフォーマンス洞察",
+                "strengths": "あなたの強み",
+                "areasForGrowth": "成長分野"
+            },
+            "quickActions": {
+                "title": "クイックアクション",
+                "subtitle": "より早く物事を完了させましょう",
+                "askQuestion": "質問する",
+                "takeQuiz": "クイズを受ける",
+                "setGoal": "目標設定",
+                "studyNotes": "学習ノート"
+            },
+            "overallProgress": {
+                "title": "全体の進捗",
+                "subtitle": "学習統計の一覧",
+                "courseCompletion": "コース完了",
+                "coursesCompleted": "コース完了",
+                "assignmentScore": "課題スコア",
+                "averageAcross": "全コースの平均",
+                "studyGoal": "学習目標",
+                "weeklyGoal": "週間目標"
+            },
+            "enrolledCourses": {
+                "title": "履修コース",
+                "subtitle": "学習の旅を続けましょう",
+                "active": "アクティブ",
+                "progress": "進捗",
+                "complete": "完了",
+                "next": "次",
+                "continueLearning": "学習を続ける",
+                "materials": "教材"
             }
         },
         "teacher": {
@@ -1176,39 +1202,20 @@
                     "title": "今日の授業"
                 }
             },
-            "myCourses": {
-                "title": "担当コース",
-                "courses": {
-                    "dataScience101": {
-                        "title": "データサイエンス101",
-                        "students": "学生"
-                    },
-                    "advancedAnalytics": {
-                        "title": "上級アナリティクス",
-                        "students": "学生"
-                    },
-                    "businessIntelligence": {
-                        "title": "ビジネスインテリジェンス",
-                        "students": "学生",
-                        "online": "オンライン"
-                    }
-                }
+            "analytics": {
+                "title": "コース分析",
+                "subtitle": "学生のパフォーマンスとエンゲージメントの包括的洞察",
+                "performanceTrends": "パフォーマンストレンド",
+                "engagementByTime": "時間別エンゲージメント",
+                "assignmentCompletion": "課題完了分析"
             },
-            "todaySchedule": {
-                "title": "今日のスケジュール",
-                "schedule": {
-                    "dataScience101": {
-                        "title": "データサイエンス101",
-                        "location": "203号室 • 講義ホール"
-                    },
-                    "officeHours": {
-                        "title": "オフィスアワー",
-                        "location": "A棟 • 415号室"
-                    }
-                }
-            },
-            "buttons": {
-                "manage": "管理"
+            "messages": {
+                "title": "メッセージ・コミュニケーション",
+                "subtitle": "学生とつながり、コースコミュニケーションを管理",
+                "unreadMessages": "未読メッセージ",
+                "studentQuestions": "学生の質問",
+                "announcements": "お知らせ",
+                "avgResponse": "平均応答"
             }
         },
         "admin": {
@@ -1226,49 +1233,57 @@
                     "title": "システム状態"
                 }
             },
-            "userManagement": {
-                "title": "ユーザー管理",
-                "pendingApprovals": "承認待ち",
-                "registered": "登録日"
+            "systemHealthMonitor": {
+                "title": "システム状態監視",
+                "subtitle": "すべてのシステムが最適に動作中",
+                "serverLoad": "サーバー負荷",
+                "cpuUtilization": "CPU使用率",
+                "optimal": "最適",
+                "storageUsed": "ストレージ使用量",
+                "databaseFiles": "データベース・ファイル",
+                "growing": "増加中",
+                "responseTime": "応答時間",
+                "averageApiSpeed": "平均API速度",
+                "fast": "高速",
+                "activeSessions": "アクティブセッション",
+                "currentUsersOnline": "現在のオンラインユーザー",
+                "liveMonitoring": "ライブ監視"
             },
-            "systemOverview": {
-                "title": "システム概要",
-                "modules": {
-                    "userManagement": {
-                        "title": "ユーザー管理",
-                        "description": "ユーザーと権限の管理"
-                    },
-                    "courseManagement": {
-                        "title": "コース管理",
-                        "description": "すべてのコースを監督"
-                    },
-                    "systemSettings": {
-                        "title": "システム設定",
-                        "description": "システムパラメータの設定"
-                    }
-                }
+            "userDistribution": {
+                "title": "ユーザー分布",
+                "subtitle": "役割別プラットフォームユーザー内訳"
             },
-            "recentActivity": {
-                "title": "最近のアクティビティ",
-                "activities": {
-                    "userRegistrations": {
-                        "label": "新規",
-                        "title": "ユーザー登録",
-                        "description": "承認待ち"
-                    },
-                    "courseRequests": {
-                        "label": "新規",
-                        "title": "コースリクエスト",
-                        "description": "教員からの申請"
-                    }
-                }
-            },
-            "buttons": {
-                "approve": "承認",
-                "reject": "拒否",
-                "manage": "管理",
-                "configure": "設定"
+            "realtimeActivity": {
+                "title": "リアルタイムアクティビティ",
+                "subtitle": "ライブシステムイベントとユーザーアクション",
+                "live": "ライブ"
             }
+        },
+        "settings": {
+            "title": "設定",
+            "accountInformation": "アカウント情報",
+            "languageSettings": "言語設定",
+            "interfaceLanguage": "インターフェース言語",
+            "chooseLanguage": "お好みの言語を選択してください",
+            "languageChanged": "言語が変更されました",
+            "languageUpdated": "インターフェース言語が更新されました：",
+            "languageNote": "言語についてのお知らせ",
+            "languageNoteDescription": "言語の変更はインターフェースに適用されます。コースコンテンツの言語は異なる場合があります。",
+            "displaySettings": "表示設定",
+            "darkMode": "ダークモード",
+            "switchThemes": "ライトテーマとダークテーマを切り替え",
+            "light": "ライト",
+            "dark": "ダーク"
+        },
+        "buttons": {
+            "approve": "承認",
+            "reject": "拒否",
+            "manage": "管理",
+            "configure": "設定",
+            "continue": "続行",
+            "viewDetails": "詳細を見る",
+            "saveSettings": "設定を保存",
+            "resetDefaults": "デフォルトにリセット"
         }
     }
 }

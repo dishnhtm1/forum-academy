@@ -16,7 +16,7 @@ connectDB();
 app.use(cors({
     origin: [
         'http://localhost:3000',
-        'https://your-frontend-domain.azurewebsites.net', // Replace with your frontend domain
+        'https://your-frontend-domain.azurewebsites.net',
         process.env.CLIENT_URL
     ].filter(Boolean),
     credentials: true
@@ -45,7 +45,7 @@ app.get('/', (req, res) => {
     res.send('✅ Backend is running with all routes.');
 });
 
-// ROUTES
+// ROUTES - LOAD ONLY ONCE!
 console.log('🔧 Loading routes...');
 
 try {
@@ -59,8 +59,6 @@ try {
 try {
     const applicationRoutes = require('./routes/applicationRoutes');
     app.use('/api/applications', applicationRoutes);
-    // If you need backward compatibility, use a redirect:
-    // app.use('/api/application', (req, res) => res.redirect(301, '/api/applications' + req.url));
     console.log('✅ Application routes loaded and mounted');
 } catch (error) {
     console.error('❌ Failed to load application routes:', error.message);

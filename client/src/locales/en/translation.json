@@ -1085,83 +1085,109 @@
         }
     },
         "dashboard": {
-        "loading": "Loading dashboard...",
-        "roles": {
-            "student": "Student",
-            "teacher": "Teacher",
-            "administrator": "Administrator",
-            "user": "User"
-        },
-        "sidebar": {
-            "title": "Dashboard",
-            "portal": "Portal",
-            "nav": {
-                "overview": "Overview",
-                "courses": "Courses",
-                "system": "System",
-                "calendar": "Calendar",
-                "messages": "Messages",
-                "settings": "Settings"
-            },
-            "logout": "Logout"
-        },
-        "header": {
-            "welcome": "Welcome back",
-            "description1": "Here's what's happening with your",
-            "description2": "account today."
-        },
-        "student": {
-            "stats": {
+            "loading": "Loading dashboard...",
+            "roles": {
+                "student": "Student",
+                "teacher": "Teacher",
+                "administrator": "Administrator",
+                "user": "User"
+                },
+            "sidebar": {
+                "title": "Dashboard",
+                "portal": "Portal",
+                "nav": {
+                    "overview": "Overview",
+                    "courses": "Courses",
+                    "system": "System",
+                    "calendar": "Calendar",
+                    "messages": "Messages",
+                    "settings": "Settings",
+                    "analytics": "Analytics",
+                    "userManagement": "User Management",
+                    "applicationManagement": "Application Management",
+                    "contactManagement": "Contact Management"
+                },
+                    "logout": "Logout"
+                },
+                    "header": {
+                    "welcome": "Welcome back",
+                    "description1": "Here's what's happening with your",
+                    "description2": "account today."
+                },
+                "student": {
+                "stats": {
+                    "enrolledCourses": {
+                        "title": "Active Courses"
+                    },
+                    "assignmentsDue": {
+                        "title": "Deadlines"
+                    },
+                    "studyHours": {
+                                "title": "Study Hours"
+                    },
+                    "averageGrade": {
+                        "title": "Avg Grade"
+                    }
+                },
+                "journeyProgress": {
+                    "title": "Your Learning Journey",
+                    "subtitle": "Keep up the amazing progress! You're doing great.",
+                    "milestonesAchieved": "Milestones Achieved",
+                    "moreToGo": "more to go",
+                    "dayStreak": "Day Streak",
+                    "keepItUp": "Keep it up!"
+                },
+                "aiRecommendations": {
+                    "title": "AI Study Recommendations",
+                    "subtitle": "Personalized suggestions to boost your learning",
+                    "highPriority": "High Priority",
+                    "estimated": "Estimated",
+                    "minutes": "minutes",
+                    "startStudySession": "Start Study Session",
+                    "scheduleLater": "Schedule Later"
+                },
+                "upcomingDeadlines": {
+                    "title": "Upcoming Deadlines",
+                    "subtitle": "Stay on top of your assignments",
+                    "dueSoon": "Due soon",
+                    "daysLeft": "days left",
+                    "workOnIt": "Work On It"
+                },
+                "performanceInsights": {
+                    "title": "Performance Insights",
+                    "strengths": "Your Strengths",
+                    "areasForGrowth": "Areas for Growth"
+                },
+                "quickActions": {
+                    "title": "Quick Actions",
+                    "subtitle": "Get things done faster",
+                    "askQuestion": "Ask Question",
+                    "takeQuiz": "Take Quiz",
+                    "setGoal": "Set Goal",
+                    "studyNotes": "Study Notes"
+                },
+                "overallProgress": {
+                    "title": "Overall Progress",
+                    "subtitle": "Your learning statistics at a glance",
+                    "courseCompletion": "Course Completion",
+                    "coursesCompleted": "courses completed",
+                    "assignmentScore": "Assignment Score",
+                    "averageAcross": "Average across all courses",
+                    "studyGoal": "Study Goal",
+                    "weeklyGoal": "weekly goal"
+                },
                 "enrolledCourses": {
-                    "title": "Enrolled Courses"
-                },
-                "assignmentsDue": {
-                    "title": "Assignments Due"
-                },
-                "studyHours": {
-                    "title": "Study Hours"
-                },
-                "averageGrade": {
-                    "title": "Average Grade"
+                    "title": "Enrolled Courses",
+                    "subtitle": "Continue your learning journey",
+                    "active": "Active",
+                    "progress": "Progress",
+                    "complete": "Complete",
+                    "next": "Next",
+                    "continueLearning": "Continue Learning",
+                    "materials": "Materials"
                 }
             },
-            "recentCourses": {
-                "title": "Recent Courses",
-                "courses": {
-                    "dataScience": {
-                        "title": "Data Science Fundamentals",
-                        "progress": "Progress"
-                    },
-                    "webDevelopment": {
-                        "title": "Web Development",
-                        "progress": "Progress"
-                    },
-                    "machineLearning": {
-                        "title": "Machine Learning",
-                        "progress": "Progress"
-                    }
-                }
-            },
-            "upcomingTasks": {
-                "title": "Upcoming Tasks",
-                "tasks": {
-                    "dataAnalysis": {
-                        "month": "May",
-                        "title": "Data Analysis Project",
-                        "due": "Due in 2 days"
-                    },
-                    "javascriptQuiz": {
-                        "month": "May",
-                        "title": "JavaScript Quiz",
-                        "due": "Due in 5 days"
-                    }
-                }
-            },
-            "buttons": {
-                "continue": "Continue"
-            }
-        },
-        "teacher": {
+            "teacher": {
             "stats": {
                 "activeCourses": {
                     "title": "Active Courses"
@@ -1176,39 +1202,20 @@
                     "title": "Classes Today"
                 }
             },
-            "myCourses": {
-                "title": "My Courses",
-                "courses": {
-                    "dataScience101": {
-                        "title": "Data Science 101",
-                        "students": "Students"
-                    },
-                    "advancedAnalytics": {
-                        "title": "Advanced Analytics",
-                        "students": "Students"
-                    },
-                    "businessIntelligence": {
-                        "title": "Business Intelligence",
-                        "students": "Students",
-                        "online": "Online"
-                    }
-                }
+            "analytics": {
+                "title": "Course Analytics",
+                "subtitle": "Comprehensive insights into student performance and engagement",
+                "performanceTrends": "Performance Trends",
+                "engagementByTime": "Engagement by Time",
+                "assignmentCompletion": "Assignment Completion Analytics"
             },
-            "todaySchedule": {
-                "title": "Today's Schedule",
-                "schedule": {
-                    "dataScience101": {
-                        "title": "Data Science 101",
-                        "location": "Room 203 • Lecture Hall"
-                    },
-                    "officeHours": {
-                        "title": "Office Hours",
-                        "location": "Building A • Room 415"
-                    }
-                }
-            },
-            "buttons": {
-                "manage": "Manage"
+            "messages": {
+                "title": "Messages & Communications",
+                "subtitle": "Connect with students and manage course communications",
+                "unreadMessages": "Unread Messages",
+                "studentQuestions": "Student Questions",
+                "announcements": "Announcements",
+                "avgResponse": "Avg Response"
             }
         },
         "admin": {
@@ -1226,49 +1233,63 @@
                     "title": "System Health"
                 }
             },
-            "userManagement": {
-                "title": "User Management",
-                "pendingApprovals": "Pending Approvals",
-                "registered": "Registered"
+            "systemHealthMonitor": {
+                "title": "System Health Monitor",
+                "subtitle": "All systems operating optimally",
+                "serverLoad": "Server Load",
+                "cpuUtilization": "CPU utilization",
+                "optimal": "Optimal",
+                "storageUsed": "Storage Used",
+                "databaseFiles": "Database & files",
+                "growing": "Growing",
+                "responseTime": "Response Time",
+                "averageApiSpeed": "Average API speed",
+                "fast": "Fast",
+                "activeSessions": "Active Sessions",
+                "currentUsersOnline": "Current users online",
+                "liveMonitoring": "Live monitoring"
             },
-            "systemOverview": {
-                "title": "System Overview",
-                "modules": {
-                    "userManagement": {
-                        "title": "User Management",
-                        "description": "Manage users and permissions"
-                    },
-                    "courseManagement": {
-                        "title": "Course Management",
-                        "description": "Oversee all courses"
-                    },
-                    "systemSettings": {
-                        "title": "System Settings",
-                        "description": "Configure system parameters"
-                    }
-                }
+            "userDistribution": {
+                "title": "User Distribution",
+                "subtitle": "Platform user breakdown by role"
             },
-            "recentActivity": {
-                "title": "Recent Activity",
-                "activities": {
-                    "userRegistrations": {
-                        "label": "New",
-                        "title": "User Registrations",
-                        "description": "Pending approval"
-                    },
-                    "courseRequests": {
-                        "label": "New",
-                        "title": "Course Requests",
-                        "description": "From faculty members"
-                    }
-                }
-            },
-            "buttons": {
-                "approve": "Approve",
-                "reject": "Reject",
-                "manage": "Manage",
-                "configure": "Configure"
+            "realtimeActivity": {
+                "title": "Real-time Activity",
+                "subtitle": "Live system events and user actions",
+                "live": "Live"
             }
+        },
+        "settings": {
+        "title": "Settings",
+        "accountInformation": "Account Information",
+        "languageSettings": "Language Settings",
+        "interfaceLanguage": "Interface Language",
+        "chooseLanguage": "Choose your preferred language",
+        "languageChanged": "Language Changed",
+        "languageUpdated": "Interface language has been updated to",
+        "languageNote": "Language Note",
+        "languageNoteDescription": "Changing language will apply to the interface. Course content language may vary.",
+        "displaySettings": "Display Settings",
+        "darkMode": "Dark Mode",
+        "switchThemes": "Switch between light and dark themes",
+        "light": "Light",
+        "dark": "Dark"
+        },
+        "buttons": {
+        "approve": "Approve",
+        "reject": "Reject",
+        "manage": "Manage",
+        "configure": "Configure",
+        "continue": "Continue",
+        "viewDetails": "View Details",
+        "saveSettings": "Save Settings",
+        "resetDefaults": "Reset to Defaults"
         }
+    },
+    "register": {
+        "success": {
+        "pendingTitle": "Registration Submitted!",
+        "pendingMessage": "Your account is pending admin approval. You will be able to login once an administrator approves your account."
     }
+  }
 }
