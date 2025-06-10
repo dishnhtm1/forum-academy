@@ -161,7 +161,6 @@ const RegisterPage = ({ isOpen, onClose, onRegisterSuccess }) => {
     setError('');
     
     try {
-
       const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: 'POST',
         headers: {
@@ -184,18 +183,11 @@ const RegisterPage = ({ isOpen, onClose, onRegisterSuccess }) => {
       
       setSuccess(true);
       
-      // After successful registration
+      // ✅ CHANGED: Don't auto-login anymore, just show success message
       setTimeout(() => {
-        if (data.token) {
-          localStorage.setItem('authToken', data.token);
-          localStorage.setItem('userRole', data.role || 'student');
-          localStorage.setItem('userEmail', formData.email);
-          history.push('/dashboard');
-        } else {
-          onClose();
-          if (onRegisterSuccess) {
-            onRegisterSuccess();
-          }
+        onClose(); // Close the modal
+        if (onRegisterSuccess) {
+          onRegisterSuccess();
         }
       }, 3000);
       
@@ -206,6 +198,70 @@ const RegisterPage = ({ isOpen, onClose, onRegisterSuccess }) => {
       setLoading(false);
     }
   };
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+    
+  //   // Validation
+  //   if (formData.password !== formData.confirmPassword) {
+  //     setError(t('register.errors.passwordsNoMatch'));
+  //     return;
+  //   }
+    
+  //   if (formData.password.length < 6) {
+  //     setError(t('register.errors.passwordLength'));
+  //     return;
+  //   }
+    
+  //   setLoading(true);
+  //   setError('');
+    
+  //   try {
+
+  //     const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json'
+  //       },
+  //       body: JSON.stringify({
+  //         firstName: formData.firstName,
+  //         lastName: formData.lastName,
+  //         email: formData.email,
+  //         password: formData.password,
+  //         role: 'student'
+  //       })
+  //     });
+
+  //     const data = await response.json();
+      
+  //     if (!response.ok) {
+  //       throw new Error(data.message || t('register.errors.registrationFailed'));
+  //     }
+      
+  //     setSuccess(true);
+      
+  //     // After successful registration
+  //     setTimeout(() => {
+  //       if (data.token) {
+  //         localStorage.setItem('authToken', data.token);
+  //         localStorage.setItem('userRole', data.role || 'student');
+  //         localStorage.setItem('userEmail', formData.email);
+  //         history.push('/dashboard');
+  //       } else {
+  //         onClose();
+  //         if (onRegisterSuccess) {
+  //           onRegisterSuccess();
+  //         }
+  //       }
+  //     }, 3000);
+      
+  //   } catch (error) {
+  //     console.error('Registration error:', error);
+  //     setError(error.message || t('register.errors.registrationFailed'));
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   // Keep ALL your existing renderStep logic - only replace text
   const renderStep = () => {
@@ -426,12 +482,20 @@ const RegisterPage = ({ isOpen, onClose, onRegisterSuccess }) => {
                 </form>
               </>
             ) : (
+              // <div className="success-message">
+              //   <div className="success-icon">
+              //     <span className="material-icons">check_circle</span>
+              //   </div>
+              //   <h3>{t('register.success.title')}</h3>
+              //   <p>{t('register.success.message')}</p>
+              //   <div className="success-loader"></div>
+              // </div>
               <div className="success-message">
                 <div className="success-icon">
-                  <span className="material-icons">check_circle</span>
+                  <span className="material-icons">pending</span>
                 </div>
-                <h3>{t('register.success.title')}</h3>
-                <p>{t('register.success.message')}</p>
+                <h3>{t('register.success.pendingTitle')}</h3>
+                <p>{t('register.success.pendingMessage')}</p>
                 <div className="success-loader"></div>
               </div>
             )}

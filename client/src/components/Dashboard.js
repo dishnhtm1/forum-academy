@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement,
     Title, Tooltip, Legend, ArcElement, } from 'chart.js';
 import { Bar, Line, Doughnut } from 'react-chartjs-2';
+
 
 ChartJS.register(
     CategoryScale,
@@ -82,14 +84,31 @@ const Dashboard = () => {
         }
     };
 
-    // ADD THESE HANDLER FUNCTIONS
     const handleLanguageToggle = (language) => {
         setCurrentLanguage(language);
-        if (i18n) {
+        
+        // If using react-i18next or similar i18n library
+        if (typeof i18n !== 'undefined' && i18n.changeLanguage) {
             i18n.changeLanguage(language);
         }
+        
+        // Store preference in localStorage
         localStorage.setItem('preferredLanguage', language);
-        console.log(`Language switched to: ${language}`);
+        
+        // Optional: Send to backend to save user preference
+        try {
+            // Example API call to save language preference
+            fetch('/api/user/preferences', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({ language: language })
+            });
+        } catch (error) {
+            console.log('Could not save language preference:', error);
+        }
     };
 
     const handleThemeToggle = (theme) => {
@@ -116,38 +135,26 @@ const Dashboard = () => {
         console.log(`Theme switched to: ${theme}`);
     };
 
-    //toggleDarkMode function near the top of your Dashboard component
+    // Theme toggle handler (if you don't have this)
     const toggleDarkMode = () => {
-        setIsDarkMode(prevMode => {
-            const newMode = !prevMode;
-            localStorage.setItem('darkMode', newMode.toString());
-            return newMode;
-        });
+        setIsDarkMode(!isDarkMode);
+        localStorage.setItem('preferredTheme', !isDarkMode ? 'dark' : 'light');
     };
 
-    // ADD useEffect to load saved preferences
+    // Update useEffect to load saved language preference
     useEffect(() => {
-        // Load saved language preference
         const savedLanguage = localStorage.getItem('preferredLanguage');
-        if (savedLanguage) {
-            setCurrentLanguage(savedLanguage);
-            if (i18n) {
-                i18n.changeLanguage(savedLanguage);
-            }
-        }
-
-        // Load saved theme preference
         const savedTheme = localStorage.getItem('preferredTheme');
-        if (savedTheme) {
-            const isDark = savedTheme === 'dark';
-            setIsDarkMode(isDark);
-            if (isDark) {
-                document.body.classList.add('dark');
-                document.documentElement.classList.add('dark');
-                document.documentElement.style.colorScheme = 'dark';
-                document.body.style.backgroundColor = '#1f2937';
-                document.body.style.color = '#f9fafb';
-            }
+        
+        if (savedLanguage && savedLanguage !== i18n.language) {
+            i18n.changeLanguage(savedLanguage);
+            setCurrentLanguage(savedLanguage);
+        } else {
+            setCurrentLanguage(i18n.language);
+        }
+        
+        if (savedTheme === 'dark') {
+            setIsDarkMode(true);
         }
     }, [i18n]);
 
@@ -4790,7 +4797,7 @@ const Dashboard = () => {
             </div>
         </div>
     );
-    
+
     const renderTeacherSettings = () => (
         <div className={`space-y-8 ${isDarkMode ? 'dark' : ''}`}>
             {/* Header */}
@@ -5153,7 +5160,7 @@ const Dashboard = () => {
             </div>
         </div>
     );
-    
+
     // Admin Dashboard Components
     const renderAdminOverview = () => (
         <div className="space-y-8">
@@ -7430,7 +7437,7 @@ const Dashboard = () => {
             </div>
         </div>
     );
-    
+
     const renderAdminSidebar = () => (
         <nav className="flex flex-col space-y-2 p-2 sm:p-4">
             <button 
@@ -7773,7 +7780,7 @@ const Dashboard = () => {
             </button>
         </nav>
     );
-    
+
     const renderDashboardContent = () => {
         switch(user?.role) {
             case 'student':
@@ -7786,7 +7793,7 @@ const Dashboard = () => {
                 return renderStudentDashboard();
         }
     };
-    
+
     const renderDashboardTabs = () => {
         const studentTabs = [
             { id: 'overview', label: 'Overview', icon: '🏠', gradient: 'from-blue-500 to-indigo-600', bgColor: 'bg-blue-100 group-hover:bg-blue-200' },
@@ -8026,7 +8033,7 @@ const Dashboard = () => {
             </div>
         );
     };
-    
+
     const getRoleDisplayName = (role) => {
         const roleNames = {
             student: 'Student',
@@ -8035,7 +8042,7 @@ const Dashboard = () => {
         };
         return roleNames[role] || 'User';
     };
-    
+
     const getDashboardTitle = (role) => {
         const titles = {
             student: 'Learning Journey Tracker',
@@ -8044,7 +8051,7 @@ const Dashboard = () => {
         };
         return titles[role] || 'Dashboard';
     };
-    
+
     return (
         <div className="min-h-screen">
             {/* Loading Screen */}
@@ -8153,6 +8160,7 @@ const Dashboard = () => {
                     </div>
 
                     {/* Admin Main Content with Dark Mode */}
+                    {/* Admin Main Content with Dark Mode */}
                     <div className="flex-1 flex flex-col overflow-hidden">
                         {/* Admin Header with Working Toggles and Dark Mode */}
                         <div className={`${isDarkMode ? 'bg-gray-800/80 border-gray-700/50' : 'bg-white/80 border-gray-200/50'} backdrop-blur-xl shadow-lg border-b px-4 sm:px-8 py-4 sm:py-6 transition-colors duration-300`}>
@@ -8174,53 +8182,57 @@ const Dashboard = () => {
                                         </p>
                                     </div>
                                     <div className="flex items-center justify-between sm:justify-end space-x-4">
-                                        {/* Language Toggle with Dark Mode Support - Compact Version */}
+                                        {/* Language Toggle with i18n Integration */}
                                         <div className={`flex ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'} p-1 rounded-lg transition-colors duration-300`}>
                                             <button 
-                                                className={`flex items-center justify-center w-8 h-8 rounded-md transition-all ${
+                                                className={`flex items-center justify-center w-8 h-8 rounded-md transition-all duration-200 ${
                                                     currentLanguage === 'en' 
-                                                        ? 'text-white bg-blue-600 shadow' 
-                                                        : `${isDarkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-gray-700 hover:bg-gray-200'}`
+                                                        ? 'text-white bg-blue-600 shadow-lg transform scale-105' 
+                                                        : `${isDarkMode ? 'text-gray-300 hover:bg-gray-600 hover:text-white' : 'text-gray-700 hover:bg-gray-200'} hover:scale-105`
                                                 }`}
                                                 onClick={() => handleLanguageToggle('en')}
-                                                title="English"
+                                                title={currentLanguage === 'en' ? 'English (Current)' : 'Switch to English'}
+                                                aria-label="Switch to English"
                                             >
                                                 <span className="text-sm font-bold">EN</span>
                                             </button>
                                             <button 
-                                                className={`flex items-center justify-center w-8 h-8 rounded-md transition-all ${
+                                                className={`flex items-center justify-center w-8 h-8 rounded-md transition-all duration-200 ${
                                                     currentLanguage === 'ja' 
-                                                        ? 'text-white bg-blue-600 shadow' 
-                                                        : `${isDarkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-gray-700 hover:bg-gray-200'}`
+                                                        ? 'text-white bg-blue-600 shadow-lg transform scale-105' 
+                                                        : `${isDarkMode ? 'text-gray-300 hover:bg-gray-600 hover:text-white' : 'text-gray-700 hover:bg-gray-200'} hover:scale-105`
                                                 }`}
                                                 onClick={() => handleLanguageToggle('ja')}
-                                                title="Japanese"
+                                                title={currentLanguage === 'ja' ? '日本語 (現在)' : '日本語に切り替え'}
+                                                aria-label="Switch to Japanese"
                                             >
-                                                <span className="text-sm font-bold">JP</span>
+                                                <span className="text-sm font-bold">JA</span>
                                             </button>
                                         </div>
                     
                                         {/* Dark Mode Toggle - FIXED */}
                                         <div className={`flex ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'} p-1 rounded-lg transition-colors duration-300`}>
                                             <button 
-                                                className={`flex items-center justify-center w-8 h-8 rounded-md transition-all ${
+                                                className={`flex items-center justify-center w-8 h-8 rounded-md transition-all duration-200 ${
                                                     !isDarkMode 
-                                                        ? 'text-white bg-yellow-500 shadow' 
-                                                        : `${isDarkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-gray-700 hover:bg-gray-200'}`
+                                                        ? 'text-white bg-yellow-500 shadow-lg transform scale-105' 
+                                                        : `${isDarkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-gray-700 hover:bg-gray-200'} hover:scale-105`
                                                 }`}
                                                 onClick={() => handleThemeToggle('light')}
-                                                title="Light Mode"
+                                                title={currentLanguage === 'en' ? 'Light Mode' : 'ライトモード'}
+                                                aria-label={currentLanguage === 'en' ? 'Switch to light mode' : 'ライトモードに切り替え'}
                                             >
                                                 <span className="text-lg">☀️</span>
                                             </button>
                                             <button 
-                                                className={`flex items-center justify-center w-8 h-8 rounded-md transition-all ${
+                                                className={`flex items-center justify-center w-8 h-8 rounded-md transition-all duration-200 ${
                                                     isDarkMode 
-                                                        ? 'text-white bg-gray-800 shadow' 
-                                                        : `${isDarkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-gray-700 hover:bg-gray-200'}`
+                                                        ? 'text-white bg-gray-800 shadow-lg transform scale-105' 
+                                                        : `${isDarkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-gray-700 hover:bg-gray-200'} hover:scale-105`
                                                 }`}
                                                 onClick={() => handleThemeToggle('dark')}
-                                                title="Dark Mode"
+                                                title={currentLanguage === 'en' ? 'Dark Mode' : 'ダークモード'}
+                                                aria-label={currentLanguage === 'en' ? 'Switch to dark mode' : 'ダークモードに切り替え'}
                                             >
                                                 <span className="text-lg">🌙</span>
                                             </button>
@@ -8268,5 +8280,5 @@ const Dashboard = () => {
         </div>
     );
 };
-    
+
 export default Dashboard;
