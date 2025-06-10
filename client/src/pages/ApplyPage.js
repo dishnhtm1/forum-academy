@@ -240,7 +240,7 @@ const ApplyPage = () => {
 
             const API_URL = process.env.REACT_APP_API_URL;
 
-            const response = await fetch(`${API_URL}/api/application`, {
+            const response = await fetch(`${API_URL}/api/applications`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
