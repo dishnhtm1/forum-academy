@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement,
     Title, Tooltip, Legend, ArcElement, } from 'chart.js';
 import { Bar, Line, Doughnut } from 'react-chartjs-2';
-
+const getToken = () => localStorage.getItem("token");
 
 ChartJS.register(
     CategoryScale,
