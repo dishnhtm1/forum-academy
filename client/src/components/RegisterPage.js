@@ -21,7 +21,9 @@ const RegisterPage = ({ isOpen, onClose, onRegisterSuccess }) => {
   const history = useHistory();
 
   // API base URL
-  const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+  //const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+    const API_BASE_URL = process.env.REACT_APP_API_URL ;
+    const token = localStorage.getItem("token");
 
   // Keep ALL your existing useEffect code exactly as is
   useEffect(() => {
