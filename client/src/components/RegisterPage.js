@@ -482,14 +482,6 @@ const RegisterPage = ({ isOpen, onClose, onRegisterSuccess }) => {
                 </form>
               </>
             ) : (
-              // <div className="success-message">
-              //   <div className="success-icon">
-              //     <span className="material-icons">check_circle</span>
-              //   </div>
-              //   <h3>{t('register.success.title')}</h3>
-              //   <p>{t('register.success.message')}</p>
-              //   <div className="success-loader"></div>
-              // </div>
               <div className="success-message">
                 <div className="success-icon">
                   <span className="material-icons">pending</span>

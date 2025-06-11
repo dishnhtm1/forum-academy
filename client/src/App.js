@@ -22,6 +22,8 @@ import 'material-icons/iconfont/material-icons.css';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import './styles/Swiper-Customs.css';
+
 
 function App() {
     const { t, i18n } = useTranslation();
