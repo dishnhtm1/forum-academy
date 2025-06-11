@@ -225,15 +225,15 @@ const Dashboard = () => {
 
     const history = useHistory();
     // Base API URL
-    const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+    //const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
     // const getToken = localStorage.getItem("authToken");
-    const getToken = () => localStorage.getItem("authToken");
+    //const getToken = () => localStorage.getItem("authToken");
 
     // const API_BASE_URL = process.env.REACT_APP_API_URL ;
     // const API_BASE_URL = 'http://localhost:5000'; // Test with local server
 
-    // const API_BASE_URL = process.env.REACT_APP_API_URL ;
-    // const token = localStorage.getItem("token");
+    const API_BASE_URL = process.env.REACT_APP_API_URL ;
+    const token = localStorage.getItem("token");
     // const API_BASE_URL = 'http://localhost:5000'; // Test with local server
 
     const fetchPendingUsers = async (token) => {
