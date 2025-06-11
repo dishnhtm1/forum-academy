@@ -21,7 +21,8 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick }) => {
     const history = useHistory();
     // Fixed API base URL - removed /api from here since we'll add it in the fetc mbingjuhvygtbfdzSXxqw XCVBJNKLM;,./'
 
-    const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+    const API_BASE_URL = process.env.REACT_APP_API_URL ;
+    const token = localStorage.getItem("token");
 
     useEffect(() => {
         if (isOpen) {
