@@ -37,6 +37,7 @@
     "yup": "^1.6.1"
   },
   "devDependencies": {
+    "@tailwindcss/line-clamp": "^0.4.4",
     "autoprefixer": "^10.4.21",
     "eslint": "^7.14.0",
     "eslint-config-react-app": "^6.0.0",
