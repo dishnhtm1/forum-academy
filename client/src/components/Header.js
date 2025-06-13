@@ -1,28 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LoginModal from './LoginModal';
 import logoWhiteImage from '../assets/images/logo1.png';
-
-// Import Lucide React icons
-import { 
-    Menu, 
-    X, 
-    ChevronDown, 
-    Globe, 
-    User, 
-    ArrowRight, 
-    Code, 
-    BarChart3, 
-    Shield, 
-    Cloud, 
-    Brain, 
-    List, 
-    Info, 
-    Users, 
-    Handshake, 
-    Star 
-} from 'lucide-react';
+import { Menu, X, ChevronDown, Globe, User, ArrowRight, Code, BarChart3, Shield, Cloud, Brain, List, Info, Users, Handshake, Star } from 'lucide-react';
 
 const Header = ({ onLoginClick }) => {
     const { t, i18n } = useTranslation();
@@ -101,13 +82,86 @@ const Header = ({ onLoginClick }) => {
         return i18n.language === 'en' ? 'EN' : 'JP';
     };
 
+    // Function to handle smooth scrolling for anchor links
+    // const handleAnchorClick = (path) => {
+    //     if (path.includes('#')) {
+    //         const [route, hash] = path.split('#');
+            
+    //         // If we're already on the target page, just scroll
+    //         if (location.pathname === route) {
+    //             const element = document.getElementById(hash);
+    //             if (element) {
+    //                 const headerHeight = 80; // Adjust based on your header height
+    //                 const elementPosition = element.offsetTop - headerHeight;
+                    
+    //                 window.scrollTo({
+    //                     top: elementPosition,
+    //                     behavior: 'smooth'
+    //                 });
+    //             }
+    //         } else {
+    //             // Navigate to the page and then scroll
+    //             navigate(path);
+    //         }
+    //     } else {
+    //         navigate(path);
+    //     }
+        
+    //     // Close mobile menu if open
+    //     setMenuOpen(false);
+    //     setDropdownOpen('');
+    // };
+
+        // Update the handleAnchorClick function to work properly
+    const handleAnchorClick = (path) => {
+        if (path.includes('#')) {
+            const [route, hash] = path.split('#');
+            
+            // If we're already on the target page, just scroll
+            if (location.pathname === route) {
+                const element = document.getElementById(hash);
+                if (element) {
+                    const headerHeight = 80; // Adjust based on your header height
+                    const elementPosition = element.offsetTop - headerHeight;
+                    
+                    window.scrollTo({
+                        top: elementPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            } else {
+                // Navigate to the page and then scroll after a brief delay
+                navigate(path);
+                setTimeout(() => {
+                    const element = document.getElementById(hash);
+                    if (element) {
+                        const headerHeight = 80;
+                        const elementPosition = element.offsetTop - headerHeight;
+                        
+                        window.scrollTo({
+                            top: elementPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                }, 100);
+            }
+        } else {
+            navigate(path);
+        }
+        
+        // Close mobile menu if open
+        setMenuOpen(false);
+        setDropdownOpen('');
+    };
+
     const coursesData = [
         {
             icon: Code,
             title: t('courses.webDevelopment') || 'Web Development',
             desc: t('courses.webDevelopmentDesc') || 'Full-stack engineering courses',
             path: '/courses/web-development',
-            gradient: 'from-blue-500 to-purple-600'
+            gradient: 'from-blue-500 to-purple-600',
+            featured: true
         },
         {
             icon: BarChart3,
@@ -135,7 +189,8 @@ const Header = ({ onLoginClick }) => {
             title: t('courses.aiMl') || 'AI & Machine Learning',
             desc: t('courses.aiMlDesc') || 'Advanced AI technologies',
             path: '/courses/ai-ml',
-            gradient: 'from-purple-500 to-pink-600'
+            gradient: 'from-purple-500 to-pink-600',
+            featured: true
         }
     ];
 
@@ -153,12 +208,12 @@ const Header = ({ onLoginClick }) => {
         { 
             icon: Handshake, 
             title: t('navigation.industryPartners') || 'Industry Partners', 
-            path: '/partners' 
+            path: '/team#industry-partners' 
         },
         { 
             icon: Star, 
             title: t('navigation.studentSuccess') || 'Student Success', 
-            path: '/testimonials' 
+            path: '/team#student-testimonials' 
         }
     ];
 
@@ -217,7 +272,6 @@ const Header = ({ onLoginClick }) => {
 
                         {/* Desktop Navigation */}
                         <nav className="hidden lg:flex items-center space-x-8">
-                            
                             {/* Programs Dropdown */}
                             <div 
                                 className="relative"
@@ -241,84 +295,109 @@ const Header = ({ onLoginClick }) => {
                                     <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg"></div>
                                 </button>
                                 
-                                {/* Mega Menu */}
-                                <div className={`absolute top-full left-1/2 transform -translate-x-1/2 w-screen max-w-4xl transition-all duration-500 ${
+                                {/* Redesigned Mega Menu */}
+                                <div className={`absolute top-full left-1/2 transform -translate-x-1/2 transition-all duration-500 z-50 ${
                                     dropdownOpen === 'courses' 
                                         ? 'opacity-100 translate-y-0 pointer-events-auto' 
                                         : 'opacity-0 -translate-y-4 pointer-events-none'
                                 }`}>
-                                    <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 mt-2 overflow-hidden backdrop-blur-xl">
-                                        <div className="p-8">
-                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                                {coursesData.map((course, index) => {
-                                                    const IconComponent = course.icon;
-                                                    return (
-                                                        <Link
-                                                            key={index}
-                                                            to={course.path}
-                                                            className="group p-4 rounded-xl border border-gray-100 hover:border-transparent hover:shadow-xl transition-all duration-300 hover:-translate-y-2 text-left w-full relative overflow-hidden"
-                                                        >
-                                                            <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-white opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                                                            <div className="relative z-10">
-                                                                <div className={`w-12 h-12 rounded-lg bg-gradient-to-r ${course.gradient} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
-                                                                    <IconComponent className="w-6 h-6 text-white" />
+                                    <div className="w-[800px] max-w-[90vw] bg-white rounded-2xl shadow-2xl border border-gray-100 mt-2 overflow-hidden backdrop-blur-xl">
+                                        {/* Header Section */}
+                                        <div className="bg-gradient-to-r from-blue-50 to-purple-50 px-6 py-4 border-b border-gray-100">
+                                            <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                                                {t('Our Programs') || 'Our Programs'}
+                                            </h3>
+                                            <p className="text-sm text-gray-600">
+                                                {t('Choose from our industry-leading courses') || 'Choose from our industry-leading courses'}
+                                            </p>
+                                        </div>
+
+                                        <div className="p-6">
+                                            {/* Featured Programs */}
+                                            <div className="mb-6">
+                                                <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                                                    {t('Featured Programs') || 'Featured Programs'}
+                                                </h4>
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    {coursesData.filter(course => course.featured).map((course, index) => {
+                                                        const IconComponent = course.icon;
+                                                        return (
+                                                            <Link
+                                                                key={index}
+                                                                to={course.path}
+                                                                className="group relative p-4 rounded-xl bg-gradient-to-br from-white to-gray-50 border border-gray-200 hover:border-transparent hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                                                            >
+                                                                <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-purple-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
+                                                                <div className="relative z-10">
+                                                                    <div className="flex items-start space-x-3">
+                                                                        <div className={`w-10 h-10 rounded-lg bg-gradient-to-r ${course.gradient} flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-md flex-shrink-0`}>
+                                                                            <IconComponent className="w-5 h-5 text-white" />
+                                                                        </div>
+                                                                        <div className="flex-1 min-w-0">
+                                                                            <h5 className="font-semibold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors duration-300 text-sm">
+                                                                                {course.title}
+                                                                            </h5>
+                                                                            <p className="text-xs text-gray-500 group-hover:text-gray-700 transition-colors duration-300 line-clamp-2">
+                                                                                {course.desc}
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="flex items-center text-blue-500 opacity-0 group-hover:opacity-100 transition-all duration-300 mt-3">
+                                                                        <span className="text-xs font-medium mr-1">Learn More</span>
+                                                                        <ArrowRight className="w-3 h-3" />
+                                                                    </div>
                                                                 </div>
-                                                                <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-300">
-                                                                    {course.title}
-                                                                </h3>
-                                                                <p className="text-sm text-gray-500 group-hover:text-gray-700 transition-colors duration-300 mb-3">
-                                                                    {course.desc}
-                                                                </p>
-                                                                <div className="flex items-center text-blue-500 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-0 group-hover:translate-x-1">
-                                                                    <span className="text-sm font-medium mr-1">Learn More</span>
-                                                                    <ArrowRight className="w-4 h-4" />
-                                                                </div>
-                                                            </div>
-                                                        </Link>
-                                                    );
-                                                })}
-                                                
-                                                {/* View All Programs */}
-                                                <Link
-                                                    to="/courses"
-                                                    className="group p-4 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl text-left w-full relative overflow-hidden"
-                                                >
-                                                    <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                                                    <div className="relative z-10">
-                                                        <div className="w-12 h-12 rounded-lg bg-white/20 flex items-center justify-center mb-4 group-hover:bg-white/30 group-hover:scale-110 transition-all duration-300">
-                                                            <List className="w-6 h-6" />
-                                                        </div>
-                                                        <h3 className="font-semibold mb-2">
-                                                            {t('navigation.viewAllPrograms') || 'View All Programs'}
-                                                        </h3>
-                                                        <p className="text-sm text-blue-100 mb-3">
-                                                            {t('navigation.browseCatalog') || 'Browse our complete catalog'}
-                                                        </p>
-                                                        <div className="flex items-center opacity-70 group-hover:opacity-100 transition-all duration-300 transform translate-x-0 group-hover:translate-x-1">
-                                                            <span className="text-sm font-medium mr-1">Explore</span>
-                                                            <ArrowRight className="w-4 h-4" />
-                                                        </div>
-                                                    </div>
-                                                </Link>
+                                                            </Link>
+                                                        );
+                                                    })}
+                                                </div>
                                             </div>
-                                            
-                                            {/* Call to Action */}
-                                            <div className="mt-8 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-100 relative overflow-hidden">
-                                                <div className="absolute inset-0 bg-gradient-to-r from-blue-100/50 to-purple-100/50 opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
-                                                <div className="flex items-center justify-between relative z-10">
-                                                    <div>
-                                                        <h3 className="font-semibold text-gray-900 mb-1 flex items-center">
-                                                            <span className="text-2xl mr-2">🎓</span>
-                                                            {t('navigation.startJourney') || 'Start Your Journey'}
-                                                        </h3>
-                                                        <p className="text-sm text-gray-600">
-                                                            {t('navigation.joinStudents') || 'Join thousands of students already learning with us'}
-                                                        </p>
-                                                    </div>
-                                                    <Link 
-                                                        to="/apply"
-                                                        className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-300 hover:scale-105 hover:shadow-lg transform hover:-translate-y-0.5 font-medium"
+
+                                            {/* All Programs */}
+                                            <div className="mb-6">
+                                                <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                                                    {t('All Programs') || 'All Programs'}
+                                                </h4>
+                                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                                                    {coursesData.filter(course => !course.featured).map((course, index) => {
+                                                        const IconComponent = course.icon;
+                                                        return (
+                                                            <Link
+                                                                key={index}
+                                                                to={course.path}
+                                                                className="group flex items-center space-x-3 p-3 rounded-lg hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all duration-300 hover:translate-x-1"
+                                                            >
+                                                                <div className={`w-8 h-8 rounded-lg bg-gradient-to-r ${course.gradient} flex items-center justify-center group-hover:scale-110 transition-transform duration-300 flex-shrink-0`}>
+                                                                    <IconComponent className="w-4 h-4 text-white" />
+                                                                </div>
+                                                                <div className="flex-1 min-w-0">
+                                                                    <h5 className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors duration-300 text-sm truncate">
+                                                                        {course.title}
+                                                                    </h5>
+                                                                </div>
+                                                                <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-blue-500 opacity-0 group-hover:opacity-100 transition-all duration-300" />
+                                                            </Link>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+
+                                            {/* Bottom Actions */}
+                                            <div className="border-t border-gray-100 pt-4">
+                                                <div className="flex flex-col sm:flex-row gap-3">
+                                                    <Link
+                                                        to="/courses"
+                                                        className="flex-1 group flex items-center justify-center px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-300 hover:scale-105 hover:shadow-lg text-sm font-medium"
                                                     >
+                                                        <List className="w-4 h-4 mr-2" />
+                                                        {t('navigation.viewAllPrograms') || 'View All Programs'}
+                                                        <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
+                                                    </Link>
+                                                    <Link
+                                                        to="/apply"
+                                                        className="flex-1 group flex items-center justify-center px-4 py-3 bg-white border-2 border-blue-500 text-blue-600 rounded-lg hover:bg-blue-50 transition-all duration-300 hover:scale-105 text-sm font-medium"
+                                                    >
+                                                        <span className="text-xl mr-2">🎓</span>
                                                         {t('buttons.applyNow') || 'Apply Now'}
                                                     </Link>
                                                 </div>
