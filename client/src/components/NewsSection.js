@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useTranslation } from 'react-i18next'; // Add this import only
-import '../styles/NewsSection.css'; 
+import { useTranslation } from 'react-i18next';
+
 import data1Video from '../assets/videos/vid1.mp4';
 import data2Video from '../assets/videos/vid2.mp4';
 import data3Video from '../assets/videos/vid3.mp4';
@@ -9,13 +9,12 @@ import data5Video from '../assets/videos/vid5.mp4';
 import data6Video from '../assets/videos/vid6.mp4';
 
 const NewsSection = () => {
-    const { t } = useTranslation(); // Add this line only
+    const { t } = useTranslation();
     const [filter, setFilter] = useState('all');
     const [loadedVideos, setLoadedVideos] = useState({});
     const [isVisible, setIsVisible] = useState(false);
     const sectionRef = useRef(null);
 
-    // Keep ALL your existing intersection observer animation code exactly as is
     useEffect(() => {
         const observer = new IntersectionObserver(
             ([entry]) => {
@@ -41,7 +40,6 @@ const NewsSection = () => {
         setLoadedVideos(prev => ({...prev, [id]: true}));
     };
 
-    // Keep ALL your existing data structure - only replace text values
     const newsItems = [
         {
             id: 1,
@@ -99,61 +97,62 @@ const NewsSection = () => {
         }
     ];
 
-    // Keep ALL your existing filtering logic exactly as is
     const filteredNews = filter === 'all' 
         ? newsItems 
         : newsItems.filter(item => item.category === filter);
 
-    // Keep ALL your existing animation delay function exactly as is
     const getAnimationDelay = (index) => {
         return `${index * 0.1}s`;
     };
 
     return (
-        <section className="news-events" id="news" ref={sectionRef}>
-            <div className="container">
-                <div className="section-header"> 
-                    <h2>{t('newsSection.header.title')}</h2>
-                    <p>{t('newsSection.header.subtitle')}</p>
+        <section className="py-16 bg-gray-50" id="news" ref={sectionRef}>
+            <div className="container mx-auto px-4">
+                <div className="text-center mb-12"> 
+                    <h2 className="text-4xl font-bold text-gray-800 mb-4">{t('newsSection.header.title')}</h2>
+                    <p className="text-lg text-gray-600">{t('newsSection.header.subtitle')}</p>
                 </div>
                 
-                <div className="filter-buttons">
+                <div className="flex justify-center space-x-2 sm:space-x-4 mb-10">
                     <button 
-                        className={`filter-btn ${filter === 'all' ? 'active' : ''}`} 
+                        className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium text-sm sm:text-base transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50
+                                    ${filter === 'all' ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-gray-700 hover:bg-gray-100 shadow'}`} 
                         onClick={() => setFilter('all')}
                     >
                         {t('newsSection.filters.all')}
                     </button>
                     <button 
-                        className={`filter-btn ${filter === 'news' ? 'active' : ''}`} 
+                        className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium text-sm sm:text-base transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50
+                                    ${filter === 'news' ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-gray-700 hover:bg-gray-100 shadow'}`} 
                         onClick={() => setFilter('news')}
                     >
                         {t('newsSection.filters.news')}
                     </button>
                     <button 
-                        className={`filter-btn ${filter === 'event' ? 'active' : ''}`} 
+                        className={`px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-medium text-sm sm:text-base transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50
+                                    ${filter === 'event' ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-gray-700 hover:bg-gray-100 shadow'}`} 
                         onClick={() => setFilter('event')}
                     >
                         {t('newsSection.filters.events')}
                     </button>
                 </div>
                 
-                <div className="news-grid">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {filteredNews.map((item, index) => (
                         <div 
-                            className="news-item" 
+                            className="bg-white rounded-xl shadow-lg overflow-hidden group transform hover:scale-105 hover:shadow-2xl transition-all duration-300 ease-out" 
                             key={item.id} 
                             style={{
                                 opacity: isVisible ? 1 : 0,
                                 transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
-                                transition: `all 0.6s ease ${getAnimationDelay(index)}`
+                                transition: `opacity 0.6s ease ${getAnimationDelay(index)}, transform 0.6s ease ${getAnimationDelay(index)}, box-shadow 0.3s ease-out, transform 0.3s ease-out`
                             }}
                         >
-                            <div className="news-img">
+                            <div className="relative h-56">
                                 {!loadedVideos[item.id] && (
-                                    <div className="video-placeholder">
-                                        <div className="loading-spinner"></div>
-                                        {t('newsSection.loading')}
+                                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-200">
+                                        <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-2"></div>
+                                        <span className="text-gray-600">{t('newsSection.loading')}</span>
                                     </div>
                                 )}
                                 <video 
@@ -161,7 +160,7 @@ const NewsSection = () => {
                                     autoPlay 
                                     muted 
                                     loop 
-                                    className="news-video"
+                                    className="w-full h-full object-cover transition-opacity duration-500"
                                     onLoadedData={() => handleVideoLoad(item.id)}
                                     style={{opacity: loadedVideos[item.id] ? 1 : 0}}
                                 >
@@ -169,16 +168,20 @@ const NewsSection = () => {
                                     {t('newsSection.videoNotSupported')}
                                 </video>
                             </div>
-                            <div className="news-content">
-                                <div className="news-meta">
+                            <div className="p-6">
+                                <div className="flex justify-between items-center mb-3 text-xs text-gray-500">
                                     <span className="news-date">{item.date}</span>
-                                    <span className="news-category">
+                                    <span className={`px-2 py-1 rounded-full text-white text-xs font-semibold ${item.category === 'event' ? 'bg-purple-500' : 'bg-green-500'}`}>
                                         {item.category === 'event' ? t('newsSection.categoryLabels.event') : t('newsSection.categoryLabels.news')}
                                     </span>
                                 </div>
-                                <h3 className="news-title">{item.title}</h3>
-                                <p className="news-excerpt">{item.excerpt}</p>
-                                <a href={item.fullContent} className="btn btn-outline">
+                                <h3 className="text-xl font-semibold text-gray-800 mb-2 group-hover:text-blue-600 transition-colors duration-300">{item.title}</h3>
+                                <p className="text-gray-600 text-sm mb-4 h-20 overflow-hidden line-clamp-4">{item.excerpt}</p>
+                                <a 
+                                    href={item.fullContent} 
+                                    className="inline-block text-blue-600 font-medium border-2 border-blue-600 rounded-full px-5 py-2 text-sm
+                                               hover:bg-blue-600 hover:text-white transition-all duration-300 ease-in-out transform group-hover:translate-x-1"
+                                >
                                     {t('newsSection.buttons.readMore')}
                                 </a>
                             </div>
@@ -186,8 +189,10 @@ const NewsSection = () => {
                     ))}
                 </div>
                 
-                <div className="text-center mt-4">
-                    <a href="/news" className="btn btn-primary">{t('newsSection.buttons.viewAllNews')}</a>
+                <div className="text-center mt-12">
+                    <a href="/news" className="bg-blue-600 text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-300 transform hover:scale-105">
+                        {t('newsSection.buttons.viewAllNews')}
+                    </a>
                 </div>
             </div>
         </section>

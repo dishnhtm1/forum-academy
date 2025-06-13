@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Users, Mail, Phone, MapPin, Award, BookOpen, Calendar, Linkedin, Twitter, Github, GraduationCap, Shield, Star, Clock, Building, User, X, UserCheck, Briefcase, Settings } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import {Users, Mail, Phone, MapPin, Award, BookOpen, Calendar, Linkedin, Twitter, Github, GraduationCap, Shield, Star, Clock, Building, User, X, UserCheck, Briefcase, Settings, Handshake } from 'lucide-react';
+import { useScrollToSection } from '../hooks/useScrollToSection';
 
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -41,6 +43,8 @@ const Team = () => {
     const { t } = useTranslation();
     const [isHeroVisible, setIsHeroVisible] = useState(false);
     const heroRef = useRef(null);
+
+    useScrollToSection();
 
     useEffect(() => {
         setIsHeroVisible(true);
@@ -553,8 +557,501 @@ const Team = () => {
                     </div>
                 </div>
             </section>
+            
+            {/* Team Section with Swiper */}
+            <section id="team-members" className="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
+                {/* ...existing team section code... */}
+            </section>
+
+            {/* Industry Partners Section */}
+            <section id="industry-partners" className="py-20 bg-white">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    {/* Section Header */}
+                    <div className="text-center mb-16">
+                        <div className="inline-flex items-center bg-purple-100 text-purple-600 px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wider mb-8">
+                            <Handshake className="w-4 h-4 mr-2" />
+                            {t('Industry Collaboration') || 'Industry Collaboration'}
+                        </div>
+                        
+                        <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                            Our <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Industry Partners</span>
+                        </h2>
+                        
+                        <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                            {t('We collaborate with leading companies to provide real-world experience, internships, and career opportunities for our students.') || 'We collaborate with leading companies to provide real-world experience, internships, and career opportunities for our students.'}
+                        </p>
+                    </div>
+
+                    {/* Partnership Benefits */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+                        <div className="text-center group">
+                            <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                                <Briefcase className="w-8 h-8 text-white" />
+                            </div>
+                            <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors duration-300">
+                                {t('Internship Programs') || 'Internship Programs'}
+                            </h3>
+                            <p className="text-gray-600">
+                                {t('Hands-on experience with industry-leading companies') || 'Hands-on experience with industry-leading companies'}
+                            </p>
+                        </div>
+                        
+                        <div className="text-center group">
+                            <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                                <Users className="w-8 h-8 text-white" />
+                            </div>
+                            <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-green-600 transition-colors duration-300">
+                                {t('Mentorship Network') || 'Mentorship Network'}
+                            </h3>
+                            <p className="text-gray-600">
+                                {t('Direct guidance from industry professionals') || 'Direct guidance from industry professionals'}
+                            </p>
+                        </div>
+                        
+                        <div className="text-center group">
+                            <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                                <Award className="w-8 h-8 text-white" />
+                            </div>
+                            <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-orange-600 transition-colors duration-300">
+                                {t('Career Placement') || 'Career Placement'}
+                            </h3>
+                            <p className="text-gray-600">
+                                {t('Direct pathways to employment opportunities') || 'Direct pathways to employment opportunities'}
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Partner Companies Grid */}
+                    {/* Partner Companies Grid */}
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6 items-center">
+                        {/* Industry-Academia Collaboration Partners */}
+                        {[
+                            { 
+                                name: 'Adam Innovations', 
+                                country: 'Japan', 
+                                logo: 'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=100&h=60&fit=crop&auto=format', 
+                                type: 'Digital Consulting',
+                                fallbackEmoji: '🚀'
+                            },
+                            { 
+                                name: 'Neuland Japan', 
+                                country: 'Japan', 
+                                logo: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=100&h=60&fit=crop&auto=format', 
+                                type: 'BPO Services',
+                                fallbackEmoji: '💼'
+                            },
+                            { 
+                                name: 'Creanies Co.', 
+                                country: 'Japan', 
+                                logo: 'https://images.unsplash.com/photo-1551434678-e076c223a692?w=100&h=60&fit=crop&auto=format', 
+                                type: 'System Engineering',
+                                fallbackEmoji: '🌐'
+                            },
+                            { 
+                                name: 'Xpelize', 
+                                country: 'India', 
+                                logo: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=100&h=60&fit=crop&auto=format', 
+                                type: 'IT Solutions',
+                                fallbackEmoji: '⚡'
+                            },
+                            { 
+                                name: 'Divama Technologies', 
+                                country: 'India', 
+                                logo: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=100&h=60&fit=crop&auto=format', 
+                                type: 'Software Development',
+                                fallbackEmoji: '💻'
+                            },
+                            { 
+                                name: 'ULTS Global', 
+                                country: 'India', 
+                                logo: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=100&h=60&fit=crop&auto=format', 
+                                type: 'Technology Services',
+                                fallbackEmoji: '🏢'
+                            },
+                            { 
+                                name: 'LBS', 
+                                country: 'Poland', 
+                                logo: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=100&h=60&fit=crop&auto=format', 
+                                type: 'Business Solutions',
+                                fallbackEmoji: '📊'
+                            },
+                            { 
+                                name: 'LOOPS', 
+                                country: 'Sri Lanka', 
+                                logo: 'https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=100&h=60&fit=crop&auto=format', 
+                                type: 'Software Solutions',
+                                fallbackEmoji: '🔄'
+                            },
+                            { 
+                                name: 'Neovibe Technologies', 
+                                country: 'India', 
+                                logo: 'https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=100&h=60&fit=crop&auto=format', 
+                                type: 'Tech Innovation',
+                                fallbackEmoji: '🎯'
+                            },
+                            { 
+                                name: 'Tech Mahindra', 
+                                country: 'India', 
+                                logo: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=100&h=60&fit=crop&auto=format', 
+                                type: 'IT Services',
+                                fallbackEmoji: '🛠️'
+                            },
+                            { 
+                                name: 'Germi Software', 
+                                country: 'India', 
+                                logo: 'https://images.unsplash.com/photo-1551434678-e076c223a692?w=100&h=60&fit=crop&auto=format', 
+                                type: 'Software Development',
+                                fallbackEmoji: '💡'
+                            },
+                            { 
+                                name: 'NetObjex', 
+                                country: 'USA', 
+                                logo: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=100&h=60&fit=crop&auto=format', 
+                                type: 'IoT Solutions',
+                                fallbackEmoji: '🌍'
+                            },
+                            { 
+                                name: 'DESAQT', 
+                                country: 'India', 
+                                logo: 'https://images.unsplash.com/photo-1581093458791-9d42e1e36b7f?w=100&h=60&fit=crop&auto=format', 
+                                type: 'Engineering Solutions',
+                                fallbackEmoji: '🔧'
+                            },
+                            { 
+                                name: 'Infogain Auto Technologies', 
+                                country: 'India', 
+                                logo: 'https://images.unsplash.com/photo-1549923746-c502d488b3ea?w=100&h=60&fit=crop&auto=format', 
+                                type: 'Automotive IT',
+                                fallbackEmoji: '🚗'
+                            },
+                            { 
+                                name: 'X2 Holdings', 
+                                country: 'Japan/Vietnam', 
+                                logo: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=100&h=60&fit=crop&auto=format', 
+                                type: 'Business Holdings',
+                                fallbackEmoji: '✖️'
+                            },
+                            { 
+                                name: 'Repo Inc.', 
+                                country: 'Japan', 
+                                logo: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=100&h=60&fit=crop&auto=format', 
+                                type: 'Technology Services',
+                                fallbackEmoji: '📁'
+                            },
+                            { 
+                                name: 'Ras Asha Consulting', 
+                                country: 'Japan', 
+                                logo: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=100&h=60&fit=crop&auto=format', 
+                                type: 'Business Consulting',
+                                fallbackEmoji: '📈'
+                            }
+                        ].map((partner, index) => (
+                            <div 
+                                key={index}
+                                className="group p-4 bg-white rounded-xl border border-gray-100 hover:border-purple-200 hover:shadow-lg transition-all duration-300 hover:-translate-y-2 text-center"
+                            >
+                                <div className="mb-3 h-12 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                    <img
+                                        src={partner.logo}
+                                        alt={partner.name}
+                                        className="max-h-full max-w-full object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
+                                        onError={(e) => {
+                                            e.target.style.display = 'none';
+                                            e.target.nextElementSibling.style.display = 'block';
+                                        }}
+                                    />
+                                    <div className="text-2xl hidden">
+                                        {partner.fallbackEmoji}
+                                    </div>
+                                </div>
+                                <div className="text-xs font-semibold text-gray-800 mb-1 group-hover:text-purple-600 transition-colors duration-300">
+                                    {partner.name}
+                                </div>
+                                <div className="text-xs text-gray-500 mb-1">
+                                    {partner.country}
+                                </div>
+                                <div className="text-xs text-purple-600 font-medium">
+                                    {partner.type}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Call to Action */}
+                    <div className="mt-16 text-center">
+                        <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-8 border border-purple-100">
+                            <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                                {t('Ready to Connect with Industry Leaders?') || 'Ready to Connect with Industry Leaders?'}
+                            </h3>
+                            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+                                {t('Join our network and get access to exclusive internships, mentorship programs, and career opportunities.') || 'Join our network and get access to exclusive internships, mentorship programs, and career opportunities.'}
+                            </p>
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                <Link
+                                    to="/apply"
+                                    className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold text-lg rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 hover:from-purple-700 hover:to-pink-700"
+                                >
+                                    <UserCheck className="w-5 h-5 mr-2" />
+                                    {t('Join Our Program') || 'Join Our Program'}
+                                </Link>
+                                <Link
+                                    to="/contact"
+                                    className="inline-flex items-center px-8 py-4 border-2 border-purple-600 text-purple-600 font-semibold text-lg rounded-full hover:bg-purple-600 hover:text-white transition-all duration-300 hover:shadow-lg transform hover:scale-105"
+                                >
+                                    <Building className="w-5 h-5 mr-2" />
+                                    {t('Partner with Us') || 'Partner with Us'}
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Student Testimonials Section */}
+            <section id="student-testimonials" className="py-20 bg-gradient-to-br from-blue-50 to-purple-50">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    {/* Section Header */}
+                    <div className="text-center mb-16">
+                        <div className="inline-flex items-center bg-green-100 text-green-600 px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wider mb-8">
+                            <Star className="w-4 h-4 mr-2" />
+                            {t('Student Success Stories') || 'Student Success Stories'}
+                        </div>
+                        
+                        <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                            Our <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">Success Stories</span>
+                        </h2>
+                        
+                        <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                            {t('Hear from our graduates who have successfully launched their careers with top companies worldwide.') || 'Hear from our graduates who have successfully launched their careers with top companies worldwide.'}
+                        </p>
+                    </div>
+            
+                    {/* Testimonials Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+                        {/* Testimonial 1 */}
+                        <div className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
+                            <div className="flex items-center mb-4">
+                                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mr-4">
+                                    <span className="text-white font-bold text-lg">YS</span>
+                                </div>
+                                <div>
+                                    <h4 className="font-semibold text-gray-900">Yuki Sato</h4>
+                                    <p className="text-sm text-gray-500">Web Developer at Google Japan</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center mb-3">
+                                {[...Array(5)].map((_, i) => (
+                                    <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+                                ))}
+                            </div>
+                            <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                                "Forum Academy's comprehensive curriculum and hands-on projects prepared me perfectly for my role at Google. The industry connections they provided were invaluable."
+                            </p>
+                            <div className="text-xs text-blue-600 font-medium">
+                                Class of 2023 • Web Development Program
+                            </div>
+                        </div>
+            
+                        {/* Testimonial 2 */}
+                        <div className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
+                            <div className="flex items-center mb-4">
+                                <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-teal-600 rounded-full flex items-center justify-center mr-4">
+                                    <span className="text-white font-bold text-lg">AK</span>
+                                </div>
+                                <div>
+                                    <h4 className="font-semibold text-gray-900">Arjun Kumar</h4>
+                                    <p className="text-sm text-gray-500">Data Scientist at Sony Corporation</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center mb-3">
+                                {[...Array(5)].map((_, i) => (
+                                    <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+                                ))}
+                            </div>
+                            <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                                "The AI and Machine Learning program exceeded my expectations. The practical approach and mentorship from industry experts made all the difference in landing my dream job."
+                            </p>
+                            <div className="text-xs text-green-600 font-medium">
+                                Class of 2022 • Data Science Program
+                            </div>
+                        </div>
+            
+                        {/* Testimonial 3 */}
+                        <div className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
+                            <div className="flex items-center mb-4">
+                                <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-pink-600 rounded-full flex items-center justify-center mr-4">
+                                    <span className="text-white font-bold text-lg">MT</span>
+                                </div>
+                                <div>
+                                    <h4 className="font-semibold text-gray-900">Maria Thompson</h4>
+                                    <p className="text-sm text-gray-500">Cybersecurity Analyst at NTT</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center mb-3">
+                                {[...Array(5)].map((_, i) => (
+                                    <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+                                ))}
+                            </div>
+                            <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                                "Forum Academy's cybersecurity program is world-class. The real-world scenarios and cutting-edge labs gave me the confidence to tackle complex security challenges."
+                            </p>
+                            <div className="text-xs text-red-600 font-medium">
+                                Class of 2023 • Cybersecurity Program
+                            </div>
+                        </div>
+            
+                        {/* Testimonial 4 */}
+                        <div className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
+                            <div className="flex items-center mb-4">
+                                <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-blue-600 rounded-full flex items-center justify-center mr-4">
+                                    <span className="text-white font-bold text-lg">RP</span>
+                                </div>
+                                <div>
+                                    <h4 className="font-semibold text-gray-900">Raj Patel</h4>
+                                    <p className="text-sm text-gray-500">Cloud Engineer at Amazon Web Services</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center mb-3">
+                                {[...Array(5)].map((_, i) => (
+                                    <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+                                ))}
+                            </div>
+                            <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                                "The cloud computing curriculum was perfectly aligned with industry needs. I landed my AWS role straight after graduation thanks to the practical skills I gained here."
+                            </p>
+                            <div className="text-xs text-indigo-600 font-medium">
+                                Class of 2022 • Cloud Computing Program
+                            </div>
+                        </div>
+            
+                        {/* Testimonial 5 */}
+                        <div className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
+                            <div className="flex items-center mb-4">
+                                <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full flex items-center justify-center mr-4">
+                                    <span className="text-white font-bold text-lg">SL</span>
+                                </div>
+                                <div>
+                                    <h4 className="font-semibold text-gray-900">Sarah Lee</h4>
+                                    <p className="text-sm text-gray-500">Full-Stack Developer at Microsoft Japan</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center mb-3">
+                                {[...Array(5)].map((_, i) => (
+                                    <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+                                ))}
+                            </div>
+                            <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                                "The supportive environment and expert faculty at Forum Academy helped me transition from a complete beginner to a confident full-stack developer in just two years."
+                            </p>
+                            <div className="text-xs text-purple-600 font-medium">
+                                Class of 2023 • Full-Stack Development Program
+                            </div>
+                        </div>
+            
+                        {/* Testimonial 6 */}
+                        <div className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
+                            <div className="flex items-center mb-4">
+                                <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-600 rounded-full flex items-center justify-center mr-4">
+                                    <span className="text-white font-bold text-lg">DW</span>
+                                </div>
+                                <div>
+                                    <h4 className="font-semibold text-gray-900">David Wilson</h4>
+                                    <p className="text-sm text-gray-500">AI Research Engineer at RIKEN</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center mb-3">
+                                {[...Array(5)].map((_, i) => (
+                                    <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+                                ))}
+                            </div>
+                            <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                                "Forum Academy's AI program is at the forefront of technology education. The research opportunities and cutting-edge facilities prepared me for my role in AI research."
+                            </p>
+                            <div className="text-xs text-orange-600 font-medium">
+                                Class of 2022 • AI & Machine Learning Program
+                            </div>
+                        </div>
+                    </div>
+            
+                    {/* Success Statistics */}
+                    <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 mb-16">
+                        <div className="text-center mb-8">
+                            <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                                {t('Student Success by Numbers') || 'Student Success by Numbers'}
+                            </h3>
+                            <p className="text-gray-600">
+                                {t('Our track record speaks for itself') || 'Our track record speaks for itself'}
+                            </p>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                            <div className="text-center group">
+                                <div className="text-4xl font-bold text-green-600 mb-2 group-hover:scale-110 transition-transform duration-300">
+                                    95%
+                                </div>
+                                <div className="text-sm text-gray-600 font-medium">
+                                    {t('Employment Rate') || 'Employment Rate'}
+                                </div>
+                            </div>
+                            <div className="text-center group">
+                                <div className="text-4xl font-bold text-blue-600 mb-2 group-hover:scale-110 transition-transform duration-300">
+                                    ¥4.2M
+                                </div>
+                                <div className="text-sm text-gray-600 font-medium">
+                                    {t('Average Starting Salary') || 'Average Starting Salary'}
+                                </div>
+                            </div>
+                            <div className="text-center group">
+                                <div className="text-4xl font-bold text-purple-600 mb-2 group-hover:scale-110 transition-transform duration-300">
+                                    3 months
+                                </div>
+                                <div className="text-sm text-gray-600 font-medium">
+                                    {t('Average Job Search Time') || 'Average Job Search Time'}
+                                </div>
+                            </div>
+                            <div className="text-center group">
+                                <div className="text-4xl font-bold text-orange-600 mb-2 group-hover:scale-110 transition-transform duration-300">
+                                    500+
+                                </div>
+                                <div className="text-sm text-gray-600 font-medium">
+                                    {t('Partner Companies') || 'Partner Companies'}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            
+                    {/* Call to Action */}
+                    <div className="text-center">
+                        <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-8 border border-green-100">
+                            <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                                {t('Ready to Write Your Success Story?') || 'Ready to Write Your Success Story?'}
+                            </h3>
+                            <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+                                {t('Join thousands of successful graduates who have transformed their careers with Forum Academy. Your journey to success starts here.') || 'Join thousands of successful graduates who have transformed their careers with Forum Academy. Your journey to success starts here.'}
+                            </p>
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                <Link
+                                    to="/apply"
+                                    className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-green-600 to-blue-600 text-white font-semibold text-lg rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 hover:from-green-700 hover:to-blue-700"
+                                >
+                                    <GraduationCap className="w-5 h-5 mr-2" />
+                                    {t('Start Your Journey') || 'Start Your Journey'}
+                                </Link>
+                                <Link
+                                    to="/testimonials"
+                                    className="inline-flex items-center px-8 py-4 border-2 border-green-600 text-green-600 font-semibold text-lg rounded-full hover:bg-green-600 hover:text-white transition-all duration-300 hover:shadow-lg transform hover:scale-105"
+                                >
+                                    <Star className="w-5 h-5 mr-2" />
+                                    {t('Read More Stories') || 'Read More Stories'}
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </div>
     );
 };
+            
 
 export default Team;
