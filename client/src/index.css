@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+    scroll-behavior: smooth;
+}
+
 /* Dashboard Animation Classes */
 @keyframes fadeIn {
     from { 
