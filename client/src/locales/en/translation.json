@@ -1286,10 +1286,80 @@
         "resetDefaults": "Reset to Defaults"
         }
     },
-    "register": {
-        "success": {
-        "pendingTitle": "Registration Submitted!",
-        "pendingMessage": "Your account is pending admin approval. You will be able to login once an administrator approves your account."
+        "register": {
+            "success": {
+            "pendingTitle": "Registration Submitted!",
+            "pendingMessage": "Your account is pending admin approval. You will be able to login once an administrator approves your account."
+        }
+    },
+      "team": {
+    "hero": {
+      "badge": "Hello, Welcome to Our Faculty",
+      "title": "Meet Our Amazing",
+      "highlight": "Faculty Team",
+      "description": "Hello! Welcome to our dedicated team of passionate educators and professionals who are committed to transforming your learning journey. Our faculty brings together industry expertise and academic excellence to provide you with world-class education.",
+      "stats": {
+        "facultyMembers": "Expert Faculty Members",
+        "experience": "Years Combined Experience", 
+        "satisfactionRate": "Student Satisfaction Rate",
+        "certifications": "Professional Certifications"
+      },
+      "buttons": {
+        "exploreFaculty": "Explore Our Faculty",
+        "joinTeam": "Join Our Team"
+      }
+    },
+    "section": {
+      "title": "Our Faculty Teams",
+      "description": "Our dedicated team of professionals brings years of industry experience and passion for education to help you succeed in your learning journey."
+    },
+    "industryPartners": {
+      "badge": "Industry Collaboration",
+      "title": "Industry Partners",
+      "description": "We collaborate with leading companies to provide real-world experience, internships, and career opportunities for our students.",
+      "benefits": {
+        "internships": {
+          "title": "Internship Programs",
+          "description": "Hands-on experience with industry-leading companies"
+        },
+        "mentorship": {
+          "title": "Mentorship Network", 
+          "description": "Direct guidance from industry professionals"
+        },
+        "placement": {
+          "title": "Career Placement",
+          "description": "Direct pathways to employment opportunities"
+        }
+      },
+      "cta": {
+        "title": "Ready to Connect with Industry Leaders?",
+        "description": "Join our network and get access to exclusive internships, mentorship programs, and career opportunities.",
+        "buttons": {
+          "joinProgram": "Join Our Program",
+          "partnerWithUs": "Partner with Us"
+        }
+      }
+    },
+    "testimonials": {
+      "badge": "Student Success Stories",
+      "title": "Success Stories", 
+      "description": "Hear from our graduates who have successfully launched their careers with top companies worldwide.",
+      "successStats": {
+        "title": "Student Success by Numbers",
+        "description": "Our track record speaks for itself",
+        "employmentRate": "Employment Rate",
+        "averageSalary": "Average Starting Salary",
+        "jobSearchTime": "Average Job Search Time",
+        "partnerCompanies": "Partner Companies"
+      },
+      "cta": {
+        "title": "Ready to Write Your Success Story?",
+        "description": "Join thousands of successful graduates who have transformed their careers with Forum Academy. Your journey to success starts here.",
+        "buttons": {
+          "startJourney": "Start Your Journey",
+          "readMoreStories": "Read More Stories"
+        }
+      }
     }
   }
 }
