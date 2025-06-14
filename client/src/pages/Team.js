@@ -40,7 +40,7 @@ import teacher17 from '../assets/teachers/水野先生.jpg';
 import teacher18 from '../assets/teachers/深見先生.jpg';
 
 const Team = () => {
-    const { t } = useTranslation();
+        const { t } = useTranslation();
     const [isHeroVisible, setIsHeroVisible] = useState(false);
     const heroRef = useRef(null);
 
@@ -357,7 +357,6 @@ const Team = () => {
         }
     ];
 
-        // ...existing code...
     const SwiperSlideCard = ({ member }) => (
         <div className="card-container relative group">
             <div className="card-blob">
@@ -416,6 +415,7 @@ const Team = () => {
     return (
         <div className="about-page">
             {/* Hero Section - Keep existing */}
+
             <section 
                 ref={heroRef}
                 className={`min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center ${isHeroVisible ? 'visible' : ''}`}
@@ -425,18 +425,18 @@ const Team = () => {
                     <div className="text-center py-20">
                         <div className="inline-flex items-center bg-blue-100 text-blue-600 px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wider mb-8">
                             <span className="material-icons mr-2">people</span>
-                            {t('Hello, Welcome to Our Faculty') || 'Hello, Welcome to Our Faculty'}
+                            {t('team.hero.badge')}
                         </div>
                         
                         <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-gray-900 leading-tight mb-8">
-                            {t('Meet Our Amazing') || 'Meet Our Amazing'} <br />
+                            {t('team.hero.title')} <br />
                             <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent block md:inline">
-                                {t('Faculty Team') || 'Faculty Team'}
+                                {t('team.hero.highlight')}
                             </span>
                         </h1>
                         
                         <p className="text-xl md:text-2xl text-gray-600 leading-relaxed max-w-4xl mx-auto mb-12 font-light">
-                            {t('Hello! Welcome to our dedicated team of passionate educators and professionals who are committed to transforming your learning journey. Our faculty brings together industry expertise and academic excellence to provide you with world-class education.') || 'Hello! Welcome to our dedicated team of passionate educators and professionals who are committed to transforming your learning journey. Our faculty brings together industry expertise and academic excellence to provide you with world-class education.'}
+                            {t('team.hero.description')}
                         </p>
                         
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
@@ -445,7 +445,7 @@ const Team = () => {
                                     50+
                                 </div>
                                 <div className="text-sm md:text-base text-gray-600 font-medium uppercase tracking-wide">
-                                    {t('Expert Faculty Members') || 'Expert Faculty Members'}
+                                    {t('team.hero.stats.facultyMembers')}
                                 </div>
                             </div>
                             <div className="text-center group">
@@ -453,7 +453,7 @@ const Team = () => {
                                     15+
                                 </div>
                                 <div className="text-sm md:text-base text-gray-600 font-medium uppercase tracking-wide">
-                                    {t('Years Combined Experience') || 'Years Combined Experience'}
+                                    {t('team.hero.stats.experience')}
                                 </div>
                             </div>
                             <div className="text-center group">
@@ -461,7 +461,7 @@ const Team = () => {
                                     95%
                                 </div>
                                 <div className="text-sm md:text-base text-gray-600 font-medium uppercase tracking-wide">
-                                    {t('Student Satisfaction Rate') || 'Student Satisfaction Rate'}
+                                    {t('team.hero.stats.satisfactionRate')}
                                 </div>
                             </div>
                             <div className="text-center group">
@@ -469,30 +469,31 @@ const Team = () => {
                                     100+
                                 </div>
                                 <div className="text-sm md:text-base text-gray-600 font-medium uppercase tracking-wide">
-                                    {t('Professional Certifications') || 'Professional Certifications'}
+                                    {t('team.hero.stats.certifications')}
                                 </div>
                             </div>
                         </div>
                         
                         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                            <a 
-                                href="#team-members" 
+                            <button 
+                                onClick={() => scrollToSection('team-members')}
                                 className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold text-lg rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 hover:from-blue-700 hover:to-purple-700"
                             >
                                 <span className="material-icons mr-2">groups</span>
-                                {t('Explore Our Faculty') || 'Explore Our Faculty'}
-                            </a>
+                                {t('team.hero.buttons.exploreFaculty')}
+                            </button>
                             <a 
                                 href="/contact" 
                                 className="inline-flex items-center px-8 py-4 border-2 border-gray-800 text-gray-800 font-semibold text-lg rounded-full hover:bg-gray-800 hover:text-white transition-all duration-300 hover:shadow-lg transform hover:scale-105"
                             >
                                 <span className="material-icons mr-2">work</span>
-                                {t('Join Our Team') || 'Join Our Team'}
+                                {t('team.hero.buttons.joinTeam')}
                             </a>
                         </div>
                     </div>
                 </div>
             </section>
+
 
             {/* Team Section with Swiper */}
             <section id="team-members" className="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
@@ -500,12 +501,13 @@ const Team = () => {
                     {/* Section Header */}
                     <div className="text-center mb-16">
                         <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                            Our <span className="text-blue-600">Faculty Teams</span>
+                            {t('team.section.title').split(' ').slice(0, -2).join(' ')} <span className="text-blue-600">{t('team.section.title').split(' ').slice(-2).join(' ')}</span>
                         </h2>
                         <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                            Our dedicated team of professionals brings years of industry experience and passion for education to help you succeed in your learning journey.
+                            {t('team.section.description')}
                         </p>
                     </div>
+
 
                     {/* // Update the Swiper section */}
                     <div className="swiper-container">
@@ -560,7 +562,6 @@ const Team = () => {
             
             {/* Team Section with Swiper */}
             <section id="team-members" className="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
-                {/* ...existing team section code... */}
             </section>
 
             {/* Industry Partners Section */}
@@ -570,15 +571,15 @@ const Team = () => {
                     <div className="text-center mb-16">
                         <div className="inline-flex items-center bg-purple-100 text-purple-600 px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wider mb-8">
                             <Handshake className="w-4 h-4 mr-2" />
-                            {t('Industry Collaboration') || 'Industry Collaboration'}
+                            {t('team.industryPartners.badge')}
                         </div>
                         
                         <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                            Our <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Industry Partners</span>
+                            Our <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">{t('team.industryPartners.title')}</span>
                         </h2>
                         
                         <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                            {t('We collaborate with leading companies to provide real-world experience, internships, and career opportunities for our students.') || 'We collaborate with leading companies to provide real-world experience, internships, and career opportunities for our students.'}
+                            {t('team.industryPartners.description')}
                         </p>
                     </div>
 
@@ -589,10 +590,10 @@ const Team = () => {
                                 <Briefcase className="w-8 h-8 text-white" />
                             </div>
                             <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors duration-300">
-                                {t('Internship Programs') || 'Internship Programs'}
+                                {t('team.industryPartners.benefits.internships.title')}
                             </h3>
                             <p className="text-gray-600">
-                                {t('Hands-on experience with industry-leading companies') || 'Hands-on experience with industry-leading companies'}
+                                {t('team.industryPartners.benefits.internships.description')}
                             </p>
                         </div>
                         
@@ -601,10 +602,10 @@ const Team = () => {
                                 <Users className="w-8 h-8 text-white" />
                             </div>
                             <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-green-600 transition-colors duration-300">
-                                {t('Mentorship Network') || 'Mentorship Network'}
+                                {t('team.industryPartners.benefits.mentorship.title')}
                             </h3>
                             <p className="text-gray-600">
-                                {t('Direct guidance from industry professionals') || 'Direct guidance from industry professionals'}
+                                {t('team.industryPartners.benefits.mentorship.description')}
                             </p>
                         </div>
                         
@@ -613,10 +614,10 @@ const Team = () => {
                                 <Award className="w-8 h-8 text-white" />
                             </div>
                             <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-orange-600 transition-colors duration-300">
-                                {t('Career Placement') || 'Career Placement'}
+                                {t('team.industryPartners.benefits.placement.title')}
                             </h3>
                             <p className="text-gray-600">
-                                {t('Direct pathways to employment opportunities') || 'Direct pathways to employment opportunities'}
+                                {t('team.industryPartners.benefits.placement.description')}
                             </p>
                         </div>
                     </div>
@@ -781,10 +782,10 @@ const Team = () => {
                     <div className="mt-16 text-center">
                         <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-8 border border-purple-100">
                             <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                                {t('Ready to Connect with Industry Leaders?') || 'Ready to Connect with Industry Leaders?'}
+                                {t('team.industryPartners.cta.title')}
                             </h3>
                             <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                                {t('Join our network and get access to exclusive internships, mentorship programs, and career opportunities.') || 'Join our network and get access to exclusive internships, mentorship programs, and career opportunities.'}
+                                {t('team.industryPartners.cta.description')}
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
                                 <Link
@@ -792,14 +793,14 @@ const Team = () => {
                                     className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold text-lg rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 hover:from-purple-700 hover:to-pink-700"
                                 >
                                     <UserCheck className="w-5 h-5 mr-2" />
-                                    {t('Join Our Program') || 'Join Our Program'}
+                                    {t('team.industryPartners.cta.buttons.joinProgram')}
                                 </Link>
                                 <Link
                                     to="/contact"
                                     className="inline-flex items-center px-8 py-4 border-2 border-purple-600 text-purple-600 font-semibold text-lg rounded-full hover:bg-purple-600 hover:text-white transition-all duration-300 hover:shadow-lg transform hover:scale-105"
                                 >
                                     <Building className="w-5 h-5 mr-2" />
-                                    {t('Partner with Us') || 'Partner with Us'}
+                                    {t('team.industryPartners.cta.buttons.partnerWithUs')}
                                 </Link>
                             </div>
                         </div>
@@ -814,15 +815,15 @@ const Team = () => {
                     <div className="text-center mb-16">
                         <div className="inline-flex items-center bg-green-100 text-green-600 px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wider mb-8">
                             <Star className="w-4 h-4 mr-2" />
-                            {t('Student Success Stories') || 'Student Success Stories'}
+                            {t('team.testimonials.badge')}
                         </div>
                         
                         <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                            Our <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">Success Stories</span>
+                            Our <span className="bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">{t('team.testimonials.title')}</span>
                         </h2>
                         
                         <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                            {t('Hear from our graduates who have successfully launched their careers with top companies worldwide.') || 'Hear from our graduates who have successfully launched their careers with top companies worldwide.'}
+                            {t('team.testimonials.description')}
                         </p>
                     </div>
             
@@ -977,10 +978,10 @@ const Team = () => {
                     <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 mb-16">
                         <div className="text-center mb-8">
                             <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                                {t('Student Success by Numbers') || 'Student Success by Numbers'}
+                                {t('team.testimonials.successStats.title')}
                             </h3>
                             <p className="text-gray-600">
-                                {t('Our track record speaks for itself') || 'Our track record speaks for itself'}
+                                {t('team.testimonials.successStats.description')}
                             </p>
                         </div>
                         
@@ -990,7 +991,7 @@ const Team = () => {
                                     95%
                                 </div>
                                 <div className="text-sm text-gray-600 font-medium">
-                                    {t('Employment Rate') || 'Employment Rate'}
+                                    {t('team.testimonials.successStats.employmentRate')}
                                 </div>
                             </div>
                             <div className="text-center group">
@@ -998,7 +999,7 @@ const Team = () => {
                                     ¥4.2M
                                 </div>
                                 <div className="text-sm text-gray-600 font-medium">
-                                    {t('Average Starting Salary') || 'Average Starting Salary'}
+                                    {t('team.testimonials.successStats.averageSalary')}
                                 </div>
                             </div>
                             <div className="text-center group">
@@ -1006,7 +1007,7 @@ const Team = () => {
                                     3 months
                                 </div>
                                 <div className="text-sm text-gray-600 font-medium">
-                                    {t('Average Job Search Time') || 'Average Job Search Time'}
+                                    {t('team.testimonials.successStats.jobSearchTime')}
                                 </div>
                             </div>
                             <div className="text-center group">
@@ -1014,20 +1015,21 @@ const Team = () => {
                                     500+
                                 </div>
                                 <div className="text-sm text-gray-600 font-medium">
-                                    {t('Partner Companies') || 'Partner Companies'}
+                                    {t('team.testimonials.successStats.partnerCompanies')}
                                 </div>
                             </div>
                         </div>
                     </div>
-            
+
+
                     {/* Call to Action */}
                     <div className="text-center">
                         <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-8 border border-green-100">
                             <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                                {t('Ready to Write Your Success Story?') || 'Ready to Write Your Success Story?'}
+                                {t('team.testimonials.cta.title')}
                             </h3>
                             <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                                {t('Join thousands of successful graduates who have transformed their careers with Forum Academy. Your journey to success starts here.') || 'Join thousands of successful graduates who have transformed their careers with Forum Academy. Your journey to success starts here.'}
+                                {t('team.testimonials.cta.description')}
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
                                 <Link
@@ -1035,14 +1037,14 @@ const Team = () => {
                                     className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-green-600 to-blue-600 text-white font-semibold text-lg rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 hover:from-green-700 hover:to-blue-700"
                                 >
                                     <GraduationCap className="w-5 h-5 mr-2" />
-                                    {t('Start Your Journey') || 'Start Your Journey'}
+                                    {t('team.testimonials.cta.buttons.startJourney')}
                                 </Link>
                                 <Link
                                     to="/testimonials"
                                     className="inline-flex items-center px-8 py-4 border-2 border-green-600 text-green-600 font-semibold text-lg rounded-full hover:bg-green-600 hover:text-white transition-all duration-300 hover:shadow-lg transform hover:scale-105"
                                 >
                                     <Star className="w-5 h-5 mr-2" />
-                                    {t('Read More Stories') || 'Read More Stories'}
+                                    {t('team.testimonials.cta.buttons.readMoreStories')}
                                 </Link>
                             </div>
                         </div>
