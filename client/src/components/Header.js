@@ -203,7 +203,7 @@ const Header = ({ onLoginClick }) => {
         { 
             icon: Users, 
             title: t('navigation.ourTeam') || 'Our Team', 
-            path: '/team' 
+            path: '/team#team-members'
         },
         { 
             icon: Handshake, 
