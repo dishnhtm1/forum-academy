@@ -1285,5 +1285,75 @@
             "saveSettings": "設定を保存",
             "resetDefaults": "デフォルトにリセット"
         }
+    },
+        "team": {
+            "hero": {
+            "badge": "こんにちは、私たちの教員陣へようこそ",
+            "title": "私たちの素晴らしい",
+            "highlight": "教員チーム",
+            "description": "こんにちは！あなたの学習の旅を変革することに取り組んでいる情熱的な教育者と専門家の専任チームへようこそ。私たちの教員は業界の専門知識と学術的な卓越性を組み合わせて、世界クラスの教育を提供します。",
+            "stats": {
+                "facultyMembers": "専門教員数",
+                "experience": "年の合計経験",
+                "satisfactionRate": "学生満足度",
+                "certifications": "専門資格"
+            },
+            "buttons": {
+                "exploreFaculty": "教員陣を見る",
+                "joinTeam": "チームに参加"
+            }
+            },
+            "section": {
+            "title": "私たちの教員チーム",
+            "description": "私たちの専門家チームは、あなたの学習の旅での成功を支援するために、長年の業界経験と教育への情熱を持っています。"
+            },
+            "industryPartners": {
+            "badge": "業界コラボレーション",
+            "title": "業界パートナー",
+            "description": "私たちは主要企業と協力して、学生に実世界の経験、インターンシップ、キャリア機会を提供しています。",
+            "benefits": {
+                "internships": {
+                "title": "インターンシッププログラム",
+                "description": "業界をリードする企業での実践的な経験"
+                },
+                "mentorship": {
+                "title": "メンターネットワーク",
+                "description": "業界専門家からの直接指導"
+                },
+                "placement": {
+                "title": "キャリア配置",
+                "description": "就職機会への直接的な道筋"
+                }
+            },
+            "cta": {
+                "title": "業界リーダーとつながる準備はできていますか？",
+                "description": "私たちのネットワークに参加して、独占的なインターンシップ、メンタープログラム、キャリア機会にアクセスしてください。",
+                "buttons": {
+                "joinProgram": "プログラムに参加",
+                "partnerWithUs": "パートナーになる"
+                }
+            }
+            },
+            "testimonials": {
+            "badge": "学生成功ストーリー",
+            "title": "成功ストーリー",
+            "description": "世界中のトップ企業で成功したキャリアを開始した卒業生の声をお聞きください。",
+            "successStats": {
+                "title": "数字で見る学生の成功",
+                "description": "私たちの実績が物語っています",
+                "employmentRate": "就職率",
+                "averageSalary": "平均初任給",
+                "jobSearchTime": "平均就職活動期間",
+                "partnerCompanies": "パートナー企業"
+            },
+            "cta": {
+                "title": "あなたの成功ストーリーを書く準備はできていますか？",
+                "description": "フォーラムアカデミーでキャリアを変革した何千人もの成功した卒業生に参加してください。あなたの成功への旅はここから始まります。",
+                "buttons": {
+                "startJourney": "旅を始める",
+                "readMoreStories": "他のストーリーを読む"
+                }
+            }
+        }
     }
 }
