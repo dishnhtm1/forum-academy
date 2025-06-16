@@ -1355,5 +1355,132 @@
                 }
             }
         }
+    },
+      "common": {
+        "videoNotSupported": "お使いのブラウザはビデオタグをサポートしていません。"
+      },
+      "campusLife": {
+        "badge": "キャンパス体験",
+        "title": "キャンパスライフ",
+        "subtitle": "多様な活動、コミュニティ、そして個人的成長の機会に満ちた活気あるキャンパスライフを体験してください。",
+        "items": {
+          "studentLife": {
+            "title": "学生生活",
+            "description": "世界中から集まった多様な学生コミュニティに参加し、一生の友情を築きましょう。"
+          },
+          "clubs": {
+            "title": "クラブ・サークル活動",
+            "description": "幅広いクラブ、サークル、課外活動を通じてあなたの興味を探求してください。"
+          },
+          "dining": {
+            "title": "食事・ダイニング",
+            "description": "国際料理を含む、キャンパス内の美味しく多様な食事オプションをお楽しみください。"
+          },
+          "sports": {
+            "title": "スポーツ・レクリエーション",
+            "description": "最新のスポーツ施設とあらゆるスキルレベルに対応したレクリエーションプログラムで健康的に過ごしましょう。"
+          }
+        }
+      },
+    "facilities": {
+    "badge": "世界クラスの施設",
+    "title": "最新キャンパス施設",
+    "subtitle": "学習体験を向上させ、学術的な歩みをサポートするために設計された最先端の施設。",
+    "items": {
+        "labs": {
+        "tag": "テクノロジーハブ",
+        "title": "最新実験室",
+        "description": "実践的な学習と研究のための最新技術を備えた最先端の実験室。",
+        "features": {
+            "ai": "AI・機械学習ラボ",
+            "robotics": "ロボティクス・自動化",
+            "networking": "ネットワークセキュリティセンター"
+        }
+        },
+        "library": {
+        "tag": "知識センター",
+        "title": "大学図書館",
+        "description": "豊富なコレクションと協働スペースを備えた総合的な学習リソースセンター。",
+        "features": {
+            "books": "10万冊以上の書籍・学術誌",
+            "digitalResources": "デジタル研究リソース",
+            "studySpaces": "静寂・グループ学習エリア"
+        }
+        },
+        "dormitories": {
+        "tag": "学生寮",
+        "title": "学生寮",
+        "description": "コミュニティと学術的成功を促進するよう設計された快適で安全な宿泊施設。",
+        "features": {
+            "furnished": "完全家具付き居室",
+            "wifi": "高速インターネット",
+            "communitySpaces": "共有エリア・キッチン"
+        }
+        }
+    }
+    },
+    "niigataLife": {
+    "badge": "新潟を発見",
+    "title": "新潟での生活",
+    "subtitle": "新潟を学習と生活に最適な場所にしている美しさ、文化、そして機会を発見してください。",
+    "items": {
+        "nature": {
+        "title": "自然の美しさ",
+        "description": "新潟を特別な場所にしている素晴らしい風景、山々、海岸線を体験してください。"
+        },
+        "culture": {
+        "title": "豊かな文化",
+        "description": "伝統的な日本文化、祭り、そして世界的に有名な地元料理に浸ってください。"
+        },
+        "transportation": {
+        "title": "便利なアクセス",
+        "description": "優れた交通網とインフラで主要都市への簡単なアクセス。"
+        },
+        "seasons": {
+        "title": "四季",
+        "description": "桜から雪祭りまで、四季すべての美しさを体験してください。"
+        }
+    },
+    "gallery": {
+        "title": "新潟ライフギャラリー",
+        "items": {
+        "cityView": "街の風景",
+        "festivals": "地域の祭り",
+        "winterScenes": "冬の風景"
+        }
+    }
+    },
+    "register": {
+        "closeModal": "登録モーダルを閉じる",
+        "header": {
+            "title": "フォーラムアカデミーに参加",
+            "subtitle": "学術的な旅を始めるためにアカウントを作成してください"
+        },
+        "steps": {
+            "personal": "個人情報",
+            "account": "アカウント詳細",
+            "security": "セキュリティ"
+        },
+        "form": {
+            "firstName": "名",
+            "lastName": "姓",
+            "email": "メールアドレス",
+            "password": "パスワード",
+            "confirmPassword": "パスワード確認",
+            "createAccount": "アカウント作成",
+            "creatingAccount": "アカウント作成中..."
+        },
+        "studentInfo": {
+            "title": "学生情報",
+            "description": "認証のため、学術用メールアドレスをご使用ください。これにより、お客様の教育機関との連携が可能になります。"
+        },
+        "navigation": {
+            "back": "戻る",
+            "next": "次へ"
+        },
+        "success": {
+            "pendingTitle": "登録保留中",
+            "pendingMessage": "アカウントが作成され、承認待ちです。アカウントが有効化されると、メール通知が送信されます。"
+        }
     }
 }
