@@ -153,65 +153,66 @@ const Dashboard = () => {
         setShowSendMessageModal(true);
     };
 
-    // ✅ FIXED: Update the confirmDeleteApplication function
-    // const confirmDeleteApplication = async () => {
-    //     console.log('🔥 DELETE APPLICATION CONFIRMATION CLICKED!');
-    //     console.log('Application to delete:', applicationToDelete);
-        
-    //     if (!applicationToDelete) {
-    //         alert('No application selected for deletion');
-    //         return;
-    //     }
-        
-    //     try {
-    //         const token = getToken();
-    //         if (!token) {
-    //             alert('No authentication token found');
-    //             return;
-    //         }
+    
+    const handleUpdateApplicationStatus = async (applicationId, newStatus) => {
+        try {
+            console.log(`🔄 Updating application ${applicationId} status to: ${newStatus}`);
             
-    //         console.log('🗑️ Attempting to delete application:', applicationToDelete._id);
-            
-    //         const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/applications/${applicationToDelete._id}`, {
-    //             method: 'DELETE',
-    //             headers: {
-    //                 'Authorization': `Bearer ${token}`,
-    //                 'Content-Type': 'application/json'
-    //             }
-    //         });
-
-    //         console.log('Delete application response status:', response.status);
-
-    //         if (response.ok) {
-    //             const result = await response.json();
-    //             console.log('Delete application successful:', result);
+            const token = getToken();
+            if (!token) {
+                alert('No authentication token found');
+                return;
+            }
+    
+            const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+            const response = await fetch(`${apiUrl}/api/applications/${applicationId}/status`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status: newStatus })
+            });
+    
+            console.log('Update status response:', response.status);
+    
+            if (response.ok) {
+                const result = await response.json();
+                console.log('Status update successful:', result);
                 
-    //             if (result.success) {
-    //                 // Remove application from local state
-    //                 setApplicationSubmissions(prevApps => 
-    //                     prevApps.filter(app => app._id !== applicationToDelete._id)
-    //                 );
+                if (result.success) {
+                    // Update the application in local state
+                    setApplicationSubmissions(prevApps => 
+                        prevApps.map(app => 
+                            app._id === applicationId 
+                                ? { ...app, status: newStatus, updatedAt: new Date().toISOString() }
+                                : app
+                        )
+                    );
                     
-    //                 // Reset modal state
-    //                 setShowDeleteApplicationConfirm(false);
-    //                 setApplicationToDelete(null);
-                    
-    //                 alert('Application deleted successfully!');
-    //             } else {
-    //                 alert(`Error: ${result.message}`);
-    //             }
-    //         } else {
-    //             const error = await response.json();
-    //             console.error('Delete application failed:', error);
-    //             alert(`Error deleting application: ${error.message || 'Unknown error'}`);
-    //         }
-    //     } catch (error) {
-    //         console.error('Error deleting application:', error);
-    //         alert('Error deleting application. Please try again.');
-    //     }
-    // };
-
-        // Update the confirmDeleteApplication function (around line 172):
+                    alert(`Application status updated to ${newStatus} successfully!`);
+                } else {
+                    alert(`Error: ${result.message}`);
+                }
+            } else {
+                const errorText = await response.text();
+                console.error('Status update failed:', errorText);
+                
+                let errorMessage;
+                try {
+                    const errorJson = JSON.parse(errorText);
+                    errorMessage = errorJson.message || 'Unknown error';
+                } catch {
+                    errorMessage = errorText || 'Unknown error';
+                }
+                
+                alert(`Error updating status: ${errorMessage}`);
+            }
+        } catch (error) {
+            console.error('Error updating application status:', error);
+            alert('Error updating application status. Please try again.');
+        }
+    };
     
     const confirmDeleteApplication = async () => {
         console.log('🔥 DELETE APPLICATION CONFIRMATION CLICKED!');
@@ -283,58 +284,6 @@ const Dashboard = () => {
         }
     };
     
-    // const confirmDeleteApplication = async () => {
-    //     console.log('🔥 DELETE APPLICATION CONFIRMATION CLICKED!');
-    //     console.log('Application to delete:', applicationToDelete);
-        
-    //     if (!applicationToDelete) {
-    //         alert('No application selected for deletion');
-    //         return;
-    //     }
-        
-    //     try {
-    //         const token = getToken();
-    //         if (!token) {
-    //             alert('No authentication token found');
-    //             return;
-    //         }
-            
-    //         console.log('🗑️ Attempting to delete application:', applicationToDelete._id);
-            
-    //         const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/applications/${applicationToDelete._id}`, {
-    //             method: 'DELETE',
-    //             headers: {
-    //                 'Authorization': `Bearer ${token}`,
-    //                 'Content-Type': 'application/json'
-    //             }
-    //         });
-    
-    //         console.log('Delete application response status:', response.status);
-    
-    //         if (response.ok) {
-    //             const result = await response.json();
-    //             console.log('Delete application successful:', result);
-                
-    //             // Remove application from local state
-    //             setApplicationSubmissions(prevApps => 
-    //                 prevApps.filter(app => app._id !== applicationToDelete._id)
-    //             );
-                
-    //             // Reset modal state
-    //             setShowDeleteApplicationConfirm(false);
-    //             setApplicationToDelete(null);
-                
-    //             alert('Application deleted successfully!');
-    //         } else {
-    //             const error = await response.json();
-    //             console.error('Delete application failed:', error);
-    //             alert(`Error deleting application: ${error.message || 'Unknown error'}`);
-    //         }
-    //     } catch (error) {
-    //         console.error('Error deleting application:', error);
-    //         alert('Error deleting application. Please try again.');
-    //     }
-    // };
     
     const handleSendMessageSubmit = async (e) => {
         e.preventDefault();
