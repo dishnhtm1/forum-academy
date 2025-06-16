@@ -180,7 +180,7 @@ const NewsSection = () => {
                                 <a 
                                     href={item.fullContent} 
                                     className="inline-block text-blue-600 font-medium border-2 border-blue-600 rounded-full px-5 py-2 text-sm
-                                               hover:bg-blue-600 hover:text-white transition-all duration-300 ease-in-out transform group-hover:translate-x-1"
+                                             hover:bg-blue-600 hover:text-white transition-all duration-300 ease-in-out transform group-hover:translate-x-1"
                                 >
                                     {t('newsSection.buttons.readMore')}
                                 </a>
