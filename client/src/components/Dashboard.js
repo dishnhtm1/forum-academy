@@ -20,33 +20,85 @@ ChartJS.register(
 );
 
 
+// const Dashboard = () => {
+//     const { t, i18n } = useTranslation();
+//     const [user, setUser] = useState(null);
+//     const [activeTab, setActiveTab] = useState('overview');
+//     const [isLoading, setIsLoading] = useState(true);
+//     const [pendingUsers, setPendingUsers] = useState([]);
+//     const [applicationSubmissions, setApplicationSubmissions] = useState([]);
+//     const [contactSubmissions, setContactSubmissions] = useState([]);
+//     const [allUsers, setAllUsers] = useState([]);
+//     const [searchTerm, setSearchTerm] = useState('');
+//     const [selectedRole, setSelectedRole] = useState('');
+//     const [selectedStatus, setSelectedStatus] = useState('');
+//     const [searchTermApp, setSearchTermApp] = useState('');
+//     const [selectedProgram, setSelectedProgram] = useState('');
+//     const [selectedAppStatus, setSelectedAppStatus] = useState('');
+//     const [searchTermContact, setSearchTermContact] = useState('');
+//     const [selectedCategory, setSelectedCategory] = useState('');
+//     const [selectedContactStatus, setSelectedContactStatus] = useState('');
+//     const [editingUser, setEditingUser] = useState(null);
+//     const [showEditUserForm, setShowEditUserForm] = useState(false);
+//     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+//     const [userToDelete, setUserToDelete] = useState(null);
+//     const [showCreateUserForm, setShowCreateUserForm] = useState(false);
+//     const [currentLanguage, setCurrentLanguage] = useState('en');
+//     const [currentPage, setCurrentPage] = useState(1);
+//     const [itemsPerPage] = useState(10); // Adjust this number as needed
+//     const [isDarkMode, setIsDarkMode] = useState(false);
+//     const [newUserData, setNewUserData] = useState({
+//         firstName: '',
+//         lastName: '',
+//         email: '',
+//         password: '',
+//         role: 'student'
+//     });
+
 const Dashboard = () => {
+    // ✅ Translation and Theme States
     const { t, i18n } = useTranslation();
+    const [currentLanguage, setCurrentLanguage] = useState('en');
+    const [isDarkMode, setIsDarkMode] = useState(false);
+
+    // ✅ User and Authentication States
     const [user, setUser] = useState(null);
-    const [activeTab, setActiveTab] = useState('overview');
     const [isLoading, setIsLoading] = useState(true);
+
+    // ✅ Navigation and UI States
+    const [activeTab, setActiveTab] = useState('overview');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(10);
+
+    // ✅ Data Collection States
     const [pendingUsers, setPendingUsers] = useState([]);
+    const [allUsers, setAllUsers] = useState([]);
     const [applicationSubmissions, setApplicationSubmissions] = useState([]);
     const [contactSubmissions, setContactSubmissions] = useState([]);
-    const [allUsers, setAllUsers] = useState([]);
+
+    // ✅ Search and Filter States - Users
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedRole, setSelectedRole] = useState('');
     const [selectedStatus, setSelectedStatus] = useState('');
+
+    // ✅ Search and Filter States - Applications
     const [searchTermApp, setSearchTermApp] = useState('');
     const [selectedProgram, setSelectedProgram] = useState('');
     const [selectedAppStatus, setSelectedAppStatus] = useState('');
+
+    // ✅ Search and Filter States - Contact Forms
     const [searchTermContact, setSearchTermContact] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
     const [selectedContactStatus, setSelectedContactStatus] = useState('');
-    const [showEditUserForm, setShowEditUserForm] = useState(false);
-    const [editingUser, setEditingUser] = useState(null);
-    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-    const [userToDelete, setUserToDelete] = useState(null);
+
+    // ✅ Modal and Form States
     const [showCreateUserForm, setShowCreateUserForm] = useState(false);
-    const [currentLanguage, setCurrentLanguage] = useState('en');
-    const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(10); // Adjust this number as needed
-    const [isDarkMode, setIsDarkMode] = useState(false);
+    const [showEditUserForm, setShowEditUserForm] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+    // ✅ User Management States
+    const [editingUser, setEditingUser] = useState(null);
+    const [userToDelete, setUserToDelete] = useState(null);
     const [newUserData, setNewUserData] = useState({
         firstName: '',
         lastName: '',
@@ -485,7 +537,9 @@ const Dashboard = () => {
         }
     };
 
+    // ✅ User Management Functions
     const handleEditUser = (user) => {
+        console.log('✏️ Edit user clicked:', user);
         setEditingUser(user);
         setNewUserData({
             firstName: user.firstName,
@@ -497,10 +551,23 @@ const Dashboard = () => {
         setShowEditUserForm(true);
     };
 
+
+    // const handleEditUser = (user) => {
+    //     setEditingUser(user);
+    //     setNewUserData({
+    //         firstName: user.firstName,
+    //         lastName: user.lastName,
+    //         email: user.email,
+    //         role: user.role,
+    //         password: '' // Don't populate password for security
+    //     });
+    //     setShowEditUserForm(true);
+    // };
+    
     const handleUpdateUser = async (e) => {
         e.preventDefault();
         try {
-            const token = getToken(); // Use helper function
+            const token = getToken();
             const updateData = {
                 firstName: newUserData.firstName,
                 lastName: newUserData.lastName,
@@ -512,8 +579,8 @@ const Dashboard = () => {
             if (newUserData.password.trim()) {
                 updateData.password = newUserData.password;
             }
-    
-            const response = await fetch(`${API_BASE_URL}/api/users/${editingUser._id}`, {
+
+            const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/users/${editingUser._id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -521,9 +588,13 @@ const Dashboard = () => {
                 },
                 body: JSON.stringify(updateData)
             });
-    
+
             if (response.ok) {
-                const updatedUser = await response.json();
+                const result = await response.json();
+                console.log('Update response:', result);
+                
+                // ✅ Use the user object from the response
+                const updatedUser = result.user;
                 
                 // Update the user in the local state
                 setAllUsers(prevUsers => 
@@ -532,6 +603,7 @@ const Dashboard = () => {
                     )
                 );
                 
+                // Reset form state
                 setShowEditUserForm(false);
                 setEditingUser(null);
                 setNewUserData({
@@ -552,18 +624,26 @@ const Dashboard = () => {
             alert('Error updating user. Please try again.');
         }
     };
-
-    const handleDeleteUser = (user) => {
-        setUserToDelete(user);
-        setShowDeleteConfirm(true);
-    };
-
+    
     const confirmDeleteUser = async () => {
+        console.log('🔥 DELETE CONFIRMATION CLICKED!');
+        console.log('User to delete:', userToDelete);
+        
+        if (!userToDelete) {
+            alert('No user selected for deletion');
+            return;
+        }
+        
         try {
-            const token = getToken(); // ✅ Use helper function consistently
+            const token = getToken();
+            if (!token) {
+                alert('No authentication token found');
+                return;
+            }
+            
             console.log('🗑️ Attempting to delete user:', userToDelete._id);
             
-            const response = await fetch(`${API_BASE_URL}/api/users/${userToDelete._id}`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/users/${userToDelete._id}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -577,15 +657,20 @@ const Dashboard = () => {
                 const result = await response.json();
                 console.log('Delete successful:', result);
                 
-                // Remove user from local state
-                setAllUsers(prevUsers => 
-                    prevUsers.filter(user => user._id !== userToDelete._id)
-                );
-                
-                setShowDeleteConfirm(false);
-                setUserToDelete(null);
-                
-                alert('User deleted successfully!');
+                if (result.success) {
+                    // Remove user from local state
+                    setAllUsers(prevUsers => 
+                        prevUsers.filter(user => user._id !== userToDelete._id)
+                    );
+                    
+                    // Reset modal state
+                    setShowDeleteConfirm(false);
+                    setUserToDelete(null);
+                    
+                    alert('User deleted successfully!');
+                } else {
+                    alert(`Error: ${result.message}`);
+                }
             } else {
                 const error = await response.json();
                 console.error('Delete failed:', error);
@@ -595,6 +680,13 @@ const Dashboard = () => {
             console.error('Error deleting user:', error);
             alert('Error deleting user. Please try again.');
         }
+    };
+
+    const handleDeleteUser = (user) => {
+        console.log('🎯 DELETE BUTTON CLICKED!');
+        console.log('👤 User data:', user);
+        setUserToDelete(user);
+        setShowDeleteConfirm(true);
     };
 
     const getFilteredUsers = () => {
@@ -5963,6 +6055,195 @@ const Dashboard = () => {
                                     </button>
                                 </div>
                             </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {showEditUserForm && editingUser && (
+                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+                    <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-2xl border w-full max-w-2xl mx-4 transition-colors duration-300`}>
+                        <div className={`flex items-center justify-between p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
+                            <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
+                                <span className="mr-2">📝</span>
+                                Edit User: {editingUser.firstName} {editingUser.lastName}
+                            </h3>
+                            <button 
+                                className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+                                onClick={() => {
+                                    setShowEditUserForm(false);
+                                    setEditingUser(null);
+                                    setNewUserData({
+                                        firstName: '',
+                                        lastName: '',
+                                        email: '',
+                                        password: '',
+                                        role: 'student'
+                                    });
+                                }}
+                            >
+                                <span className={`${isDarkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-400 hover:text-gray-600'} text-xl transition-colors`}>✕</span>
+                            </button>
+                        </div>
+                        <div className="p-6">
+                            <form onSubmit={handleUpdateUser} className="space-y-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>First Name</label>
+                                        <input
+                                            type="text"
+                                            placeholder="Enter first name"
+                                            value={newUserData.firstName}
+                                            onChange={(e) => setNewUserData({...newUserData, firstName: e.target.value})}
+                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                                isDarkMode 
+                                                    ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+                                                    : 'border-gray-300 bg-white text-gray-900'
+                                            }`}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>Last Name</label>
+                                        <input
+                                            type="text"
+                                            placeholder="Enter last name"
+                                            value={newUserData.lastName}
+                                            onChange={(e) => setNewUserData({...newUserData, lastName: e.target.value})}
+                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                                isDarkMode 
+                                                    ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+                                                    : 'border-gray-300 bg-white text-gray-900'
+                                            }`}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="md:col-span-2 space-y-2">
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>Email Address</label>
+                                        <input
+                                            type="email"
+                                            placeholder="Enter email address"
+                                            value={newUserData.email}
+                                            onChange={(e) => setNewUserData({...newUserData, email: e.target.value})}
+                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                                isDarkMode 
+                                                    ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+                                                    : 'border-gray-300 bg-white text-gray-900'
+                                            }`}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>New Password</label>
+                                        <input
+                                            type="password"
+                                            placeholder="Leave blank to keep current password"
+                                            value={newUserData.password}
+                                            onChange={(e) => setNewUserData({...newUserData, password: e.target.value})}
+                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                                isDarkMode 
+                                                    ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+                                                    : 'border-gray-300 bg-white text-gray-900'
+                                            }`}
+                                        />
+                                        <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                            Leave blank to keep the current password
+                                        </p>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>Role</label>
+                                        <select
+                                            value={newUserData.role}
+                                            onChange={(e) => setNewUserData({...newUserData, role: e.target.value})}
+                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                                isDarkMode 
+                                                    ? 'border-gray-600 bg-gray-700 text-gray-100' 
+                                                    : 'border-gray-300 bg-white text-gray-900'
+                                            }`}
+                                        >
+                                            <option value="student">👨‍🎓 Student</option>
+                                            <option value="teacher">👨‍🏫 Teacher</option>
+                                            <option value="admin">👨‍💼 Admin</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className={`flex justify-end space-x-3 pt-4 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
+                                    <button 
+                                        type="button" 
+                                        className={`px-4 py-2 border rounded-lg transition-colors ${
+                                            isDarkMode 
+                                                ? 'border-gray-600 text-gray-300 bg-gray-700 hover:bg-gray-600' 
+                                                : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                                        }`}
+                                        onClick={() => {
+                                            setShowEditUserForm(false);
+                                            setEditingUser(null);
+                                            setNewUserData({
+                                                firstName: '',
+                                                lastName: '',
+                                                email: '',
+                                                password: '',
+                                                role: 'student'
+                                            });
+                                        }}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button 
+                                        type="submit" 
+                                        className="px-4 py-2 border border-transparent rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+                                    >
+                                        💾 Update User
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ✅ ADD DELETE CONFIRMATION MODAL HERE */}
+            {showDeleteConfirm && userToDelete && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-2xl border w-full max-w-md mx-4 transition-colors duration-300`}>
+                        <div className="p-6">
+                            <div className="flex items-center mb-4">
+                                <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                                    <span className="text-red-600 text-2xl">⚠️</span>
+                                </div>
+                            </div>
+                            <div className="text-center">
+                                <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} mb-2`}>
+                                    Confirm Delete User
+                                </h3>
+                                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} mb-6`}>
+                                    Are you sure you want to delete user <strong>"{userToDelete.firstName} {userToDelete.lastName}"</strong> ({userToDelete.email})?
+                                    <br />
+                                    <span className="text-red-500 font-medium">This action cannot be undone.</span>
+                                </p>
+                            </div>
+                            <div className="flex justify-center space-x-4">
+                                <button
+                                    onClick={() => {
+                                        console.log('❌ Cancel delete clicked');
+                                        setShowDeleteConfirm(false);
+                                        setUserToDelete(null);
+                                    }}
+                                    className={`px-4 py-2 border rounded-lg transition-colors ${
+                                        isDarkMode 
+                                            ? 'border-gray-600 text-gray-300 bg-gray-700 hover:bg-gray-600' 
+                                            : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                                    }`}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={confirmDeleteUser}
+                                    className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                                >
+                                    🗑️ Yes, Delete
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
