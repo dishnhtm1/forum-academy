@@ -1482,5 +1482,206 @@
             "pendingTitle": "登録保留中",
             "pendingMessage": "アカウントが作成され、承認待ちです。アカウントが有効化されると、メール通知が送信されます。"
         }
+    },
+      "aboutSection": {
+      },
+      "courseSection": {
+        "header": {
+          "badge": "プレミアムコース",
+          "title": "注目のコース",
+          "subtitle": "テクノロジー分野でのキャリアを開始するために設計された世界クラスのITプログラムを発見してください。業界専門家から学び、最先端ツールでの実践経験を積みましょう。"
+        },
+        "filters": {
+          "all": "全コース",
+          "webDevelopment": "ウェブ開発",
+          "dataScience": "データサイエンス",
+          "cybersecurity": "サイバーセキュリティ",
+          "cloudComputing": "クラウドコンピューティング"
+        },
+        "buttons": {
+            "viewAllCourses": "全コースを見る",
+            "browseAllPrograms": "全プログラムを閲覧",
+            "enrollNow": "今すぐ登録"
+        },
+        "cta": {
+          "title": "学習の旅を始める準備はできていますか？",
+          "description": "全コースを探索し、あなたのキャリア目標にぴったりのコースを見つけましょう。"
+        },
+        "courses": {
+          "webDev": {
+            "title": "ウェブ開発ブートキャンプ",
+            "description": "React、Node.js、フルスタック技術でモダンなウェブ開発をマスターしましょう。",
+            "duration": "6ヶ月",
+            "startDate": "2025年3月15日",
+            "category": "ウェブ開発",
+            "level": "初級",
+            "features": [
+              "フルスタックJavaScript開発",
+              "ReactとNode.jsのマスタリー",
+              "データベース設計と管理"
+            ]
+          },
+          "dataScience": {
+            "title": "データサイエンス＆アナリティクス",
+            "description": "Python、機械学習、データビジュアライゼーションを学んでデータエキスパートになりましょう。",
+            "duration": "8ヶ月",
+            "startDate": "2025年4月1日",
+            "category": "データサイエンス",
+            "level": "中級",
+            "features": [
+              "データサイエンス用Pythonプログラミング",
+              "機械学習アルゴリズム",
+              "Tableauでのデータビジュアライゼーション"
+            ]
+          },
+          "cybersecurity": {
+            "title": "サイバーセキュリティスペシャリスト",
+            "description": "包括的なセキュリティトレーニングとエシカルハッキングでデジタル資産を保護しましょう。",
+            "duration": "7ヶ月",
+            "startDate": "2025年3月20日",
+            "category": "サイバーセキュリティ",
+            "level": "中級",
+            "features": [
+              "ネットワークセキュリティの基礎",
+              "エシカルハッキング技術",
+              "セキュリティリスク評価"
+            ]
+          },
+          "cloudComputing": {
+            "title": "クラウドコンピューティング＆AWS",
+            "description": "AWS、Azure、モダンなDevOpsプラクティスでクラウド技術をマスターしましょう。",
+            "duration": "6ヶ月",
+            "startDate": "2025年4月10日",
+            "category": "クラウドコンピューティング",
+            "level": "中級",
+            "features": [
+              "AWSとAzure認定準備",
+              "DevOpsとCI/CDパイプライン",
+              "クラウドアーキテクチャ設計"
+            ]
+          },
+          "aiMl": {
+            "title": "AI＆機械学習",
+            "description": "人工知能を深く学び、インテリジェントなアプリケーションを構築しましょう。",
+            "duration": "10ヶ月",
+            "startDate": "2025年5月1日",
+            "category": "人工知能",
+            "level": "上級",
+            "features": [
+              "ディープラーニングフレームワーク",
+              "ニューラルネットワークアーキテクチャ",
+              "AIプロジェクト開発"
+            ]
+          },
+          "mobileDev": {
+            "title": "モバイルアプリ開発",
+            "description": "iOSとAndroid向けのネイティブおよびクロスプラットフォームモバイルアプリを作成しましょう。",
+            "duration": "5ヶ月",
+            "startDate": "2025年3月25日",
+            "category": "モバイル開発",
+            "level": "初級",
+            "features": [
+              "React Native開発",
+              "iOSとAndroidプラットフォーム",
+              "アプリストアデプロイメント"
+            ]
+          }
+        }
+    },
+      "aboutSection": {
+        "header": {
+          "badge": "FIAについて",
+          "title": "未来のIT専門家を育成",
+          "subtitle": "15年以上にわたり、FIAはIT教育の最前線に立ち、世界中の学生に世界クラスのトレーニングとキャリア機会を提供しています。"
+        },
+        "features": {
+          "partnerships": {
+            "title": "業界パートナーシップ",
+            "description": "主要なテクノロジー企業との強固なつながりにより、卒業生に直接的な就職機会への道筋を提供します。",
+            "highlight": "100社以上のパートナー企業"
+          },
+          "instructors": {
+            "title": "専門講師陣",
+            "description": "最先端技術と手法における実世界の経験を持つ業界の専門家から学びます。",
+            "highlight": "業界のベテラン"
+          },
+          "facilities": {
+            "title": "最新設備",
+            "description": "最先端のコンピュータラボ、高速インターネット、実践的な学習のための最新ソフトウェアとハードウェア。",
+            "highlight": "最新技術"
+          },
+          "career": {
+            "title": "キャリアサポート",
+            "description": "就職支援、面接準備、専門的な発達を含む包括的なキャリアサポート。",
+            "highlight": "95%の就職率"
+          },
+          "certifications": {
+            "title": "業界認定資格",
+            "description": "世界中の雇用者に認められている価値ある業界認定資格の準備と取得。",
+            "highlight": "認定プログラム"
+          },
+          "support": {
+            "title": "学生サポート",
+            "description": "24時間365日の学習サポート、メンターシッププログラム、学習過程における個別指導。",
+            "highlight": "常時利用可能"
+          }
+        },
+        "cta": {
+          "imageAlt": "FIA学生の学習風景",
+          "badge": "詳細を見る",
+          "title": "キャリアを変える準備はできていますか？",
+          "description": "FIAの包括的なプログラムと専門的な指導でITキャリアをスタートした何千人もの成功した卒業生に参加しましょう。",
+          "stats": {
+            "years": "年の実績",
+            "graduates": "成功した卒業生"
+          },
+          "button": "プログラムを探索"
+        },
+        "testimonial": {
+          "quote": "FIAは、テクノロジー業界で成功するために必要なスキルと自信を与えてくれました。講師陣は素晴らしく、キャリアサポートは格別です。",
+          "author": {
+            "name": "サラ・ジョンソン",
+            "title": "テックコープ ソフトウェア開発者"
+          }
+        }
+      },
+      "courses": {
+        "pageTitle": "私たちのプログラム",
+        "pageDescription": "未来に備えて設計された包括的な技術プログラムの範囲を探索する",
+        "allCategories": "すべてのコース",
+        "webDevelopment": "ウェブ開発",
+        "webDevelopmentDesc": "モダンなフレームワークと技術でフルスタック開発をマスター",
+        "dataScience": "データサイエンス",
+        "dataScienceDesc": "分析、機械学習、データ可視化技術を学ぶ",
+        "cybersecurity": "サイバーセキュリティ",
+        "cybersecurityDesc": "デジタル脅威と攻撃からネットワークとシステムを保護",
+        "cloudComputing": "クラウドコンピューティング",
+        "cloudComputingDesc": "AWS、Azure、Google Cloudを含むクラウドプラットフォームをマスター",
+        "aiMl": "人工知能",
+        "aiMlDesc": "人工知能と機械学習アルゴリズムを深く学ぶ",
+        "hero": {
+          "badge": "未来対応教育",
+          "title": "私たちの",
+          "highlight": "ITコース",
+          "description": "技術分野で成功するキャリアに備える業界をリードするカリキュラムを発見してください。専門家から学び、雇用主が評価する実用的なスキルを身につけましょう。",
+          "findCourse": "コースを見つける",
+          "programGuide": "プログラムガイド",
+          "imageAlt": "AI技術の可視化"
+        },
+        "categories": {
+          "badge": "コースカテゴリー",
+          "title": "あなたの",
+          "highlight": "学習パスを選択",
+          "subtitle": "テクノロジー分野でのキャリア加速のために設計された、専門家が作成した包括的なコース範囲を発見してください"
+        },
+        "stats": {
+          "courses": "コース",
+          "jobPlacement": "就職率",
+          "studentRating": "学生評価"
+        },
+        "news": {
+          "title": "最新ニュース",
+          "description": "私たちのアカデミーとIT業界の最新の発展について最新情報を入手してください。"
+        }
+      }
     }
-}
