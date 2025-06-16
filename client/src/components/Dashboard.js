@@ -107,6 +107,287 @@ const Dashboard = () => {
         role: 'student'
     });
 
+    // ✅ Add these new state variables with your existing states
+    const [showViewApplicationModal, setShowViewApplicationModal] = useState(false);
+    const [selectedApplication, setSelectedApplication] = useState(null);
+    const [showDeleteApplicationConfirm, setShowDeleteApplicationConfirm] = useState(false);
+    const [applicationToDelete, setApplicationToDelete] = useState(null);
+    const [showSendMessageModal, setShowSendMessageModal] = useState(false);
+    const [messageData, setMessageData] = useState({
+        subject: '',
+        message: '',
+        recipient: null
+    });
+
+    // ✅ Application Management Functions
+    const handleViewApplication = (application) => {
+        console.log('👁️ View application clicked:', application);
+        setSelectedApplication(application);
+        setShowViewApplicationModal(true);
+    };
+    
+    const handleDeleteApplication = (application) => {
+        console.log('🗑️ Delete application clicked:', application);
+        setApplicationToDelete(application);
+        setShowDeleteApplicationConfirm(true);
+    };
+    
+    // const handleSendMessage = (application) => {
+    //     console.log('📧 Send message clicked:', application);
+    //     setMessageData({
+    //         subject: `Regarding your application for ${application.programInterested}`,
+    //         message: '',
+    //         recipient: application
+    //     });
+    //     setShowSendMessageModal(true);
+    // };
+
+    // ✅ FIXED: Update the handleSendMessage function to use correct field name
+    const handleSendMessage = (application) => {
+        console.log('📧 Send message clicked:', application);
+        setMessageData({
+            subject: `Regarding your application for ${application.program}`, // ✅ Changed from programInterested to program
+            message: '',
+            recipient: application
+        });
+        setShowSendMessageModal(true);
+    };
+
+    // ✅ FIXED: Update the confirmDeleteApplication function
+    // const confirmDeleteApplication = async () => {
+    //     console.log('🔥 DELETE APPLICATION CONFIRMATION CLICKED!');
+    //     console.log('Application to delete:', applicationToDelete);
+        
+    //     if (!applicationToDelete) {
+    //         alert('No application selected for deletion');
+    //         return;
+    //     }
+        
+    //     try {
+    //         const token = getToken();
+    //         if (!token) {
+    //             alert('No authentication token found');
+    //             return;
+    //         }
+            
+    //         console.log('🗑️ Attempting to delete application:', applicationToDelete._id);
+            
+    //         const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/applications/${applicationToDelete._id}`, {
+    //             method: 'DELETE',
+    //             headers: {
+    //                 'Authorization': `Bearer ${token}`,
+    //                 'Content-Type': 'application/json'
+    //             }
+    //         });
+
+    //         console.log('Delete application response status:', response.status);
+
+    //         if (response.ok) {
+    //             const result = await response.json();
+    //             console.log('Delete application successful:', result);
+                
+    //             if (result.success) {
+    //                 // Remove application from local state
+    //                 setApplicationSubmissions(prevApps => 
+    //                     prevApps.filter(app => app._id !== applicationToDelete._id)
+    //                 );
+                    
+    //                 // Reset modal state
+    //                 setShowDeleteApplicationConfirm(false);
+    //                 setApplicationToDelete(null);
+                    
+    //                 alert('Application deleted successfully!');
+    //             } else {
+    //                 alert(`Error: ${result.message}`);
+    //             }
+    //         } else {
+    //             const error = await response.json();
+    //             console.error('Delete application failed:', error);
+    //             alert(`Error deleting application: ${error.message || 'Unknown error'}`);
+    //         }
+    //     } catch (error) {
+    //         console.error('Error deleting application:', error);
+    //         alert('Error deleting application. Please try again.');
+    //     }
+    // };
+
+        // Update the confirmDeleteApplication function (around line 172):
+    
+    const confirmDeleteApplication = async () => {
+        console.log('🔥 DELETE APPLICATION CONFIRMATION CLICKED!');
+        console.log('Application to delete:', applicationToDelete);
+        
+        if (!applicationToDelete) {
+            alert('No application selected for deletion');
+            return;
+        }
+        
+        try {
+            const token = getToken();
+            if (!token) {
+                alert('No authentication token found');
+                return;
+            }
+            
+            console.log('🗑️ Attempting to delete application:', applicationToDelete._id);
+            
+            // Use the correct API URL
+            const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+            const response = await fetch(`${apiUrl}/api/applications/${applicationToDelete._id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+    
+            console.log('Delete application response status:', response.status);
+            console.log('Response URL:', response.url);
+    
+            if (response.ok) {
+                const result = await response.json();
+                console.log('Delete application successful:', result);
+                
+                if (result.success) {
+                    // Remove application from local state
+                    setApplicationSubmissions(prevApps => 
+                        prevApps.filter(app => app._id !== applicationToDelete._id)
+                    );
+                    
+                    // Reset modal state
+                    setShowDeleteApplicationConfirm(false);
+                    setApplicationToDelete(null);
+                    
+                    alert('Application deleted successfully!');
+                } else {
+                    alert(`Error: ${result.message}`);
+                }
+            } else {
+                const errorText = await response.text();
+                console.error('Delete application failed:', errorText);
+                
+                // Try to parse as JSON, fallback to text
+                let errorMessage;
+                try {
+                    const errorJson = JSON.parse(errorText);
+                    errorMessage = errorJson.message || 'Unknown error';
+                } catch {
+                    errorMessage = errorText || 'Unknown error';
+                }
+                
+                alert(`Error deleting application: ${errorMessage}`);
+            }
+        } catch (error) {
+            console.error('Error deleting application:', error);
+            alert('Error deleting application. Please try again.');
+        }
+    };
+    
+    // const confirmDeleteApplication = async () => {
+    //     console.log('🔥 DELETE APPLICATION CONFIRMATION CLICKED!');
+    //     console.log('Application to delete:', applicationToDelete);
+        
+    //     if (!applicationToDelete) {
+    //         alert('No application selected for deletion');
+    //         return;
+    //     }
+        
+    //     try {
+    //         const token = getToken();
+    //         if (!token) {
+    //             alert('No authentication token found');
+    //             return;
+    //         }
+            
+    //         console.log('🗑️ Attempting to delete application:', applicationToDelete._id);
+            
+    //         const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/applications/${applicationToDelete._id}`, {
+    //             method: 'DELETE',
+    //             headers: {
+    //                 'Authorization': `Bearer ${token}`,
+    //                 'Content-Type': 'application/json'
+    //             }
+    //         });
+    
+    //         console.log('Delete application response status:', response.status);
+    
+    //         if (response.ok) {
+    //             const result = await response.json();
+    //             console.log('Delete application successful:', result);
+                
+    //             // Remove application from local state
+    //             setApplicationSubmissions(prevApps => 
+    //                 prevApps.filter(app => app._id !== applicationToDelete._id)
+    //             );
+                
+    //             // Reset modal state
+    //             setShowDeleteApplicationConfirm(false);
+    //             setApplicationToDelete(null);
+                
+    //             alert('Application deleted successfully!');
+    //         } else {
+    //             const error = await response.json();
+    //             console.error('Delete application failed:', error);
+    //             alert(`Error deleting application: ${error.message || 'Unknown error'}`);
+    //         }
+    //     } catch (error) {
+    //         console.error('Error deleting application:', error);
+    //         alert('Error deleting application. Please try again.');
+    //     }
+    // };
+    
+    const handleSendMessageSubmit = async (e) => {
+        e.preventDefault();
+        
+        try {
+            const token = getToken();
+            if (!token) {
+                alert('No authentication token found');
+                return;
+            }
+            
+            const messagePayload = {
+                to: messageData.recipient.email,
+                subject: messageData.subject,
+                message: messageData.message,
+                applicantName: `${messageData.recipient.firstName} ${messageData.recipient.lastName}`,
+                applicationId: messageData.recipient._id
+            };
+            
+            console.log('📧 Sending message:', messagePayload);
+            
+            const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/applications/send-message`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(messagePayload)
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                console.log('Message sent successfully:', result);
+                
+                // Reset form and close modal
+                setShowSendMessageModal(false);
+                setMessageData({
+                    subject: '',
+                    message: '',
+                    recipient: null
+                });
+                
+                alert('Message sent successfully!');
+            } else {
+                const error = await response.json();
+                alert(`Error sending message: ${error.message || 'Unknown error'}`);
+            }
+        } catch (error) {
+            console.error('Error sending message:', error);
+            alert('Error sending message. Please try again.');
+        }
+    };
+
     // Add these helper functions
     const getTotalPages = () => {
         const totalItems = getFilteredApplications().length; // or getFilteredUsers().length depending on context
@@ -6559,6 +6840,314 @@ const Dashboard = () => {
                 </div>
             </div>
             
+            {/* View Application Modal */}
+            {showViewApplicationModal && selectedApplication && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-2xl border w-full max-w-4xl max-h-[90vh] overflow-y-auto transition-colors duration-300`}>
+                        <div className={`flex items-center justify-between p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} sticky top-0 bg-inherit`}>
+                            <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center`}>
+                                <span className="mr-2">👁️</span>
+                                Application Details
+                            </h3>
+                            <button 
+                                className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+                                onClick={() => {
+                                    setShowViewApplicationModal(false);
+                                    setSelectedApplication(null);
+                                }}
+                            >
+                                <span className={`${isDarkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-400 hover:text-gray-600'} text-xl`}>✕</span>
+                            </button>
+                        </div>
+                        <div className="p-6 space-y-6">
+                            {/* Personal Information */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-4">
+                                    <h4 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} pb-2`}>
+                                        👤 Personal Information
+                                    </h4>
+                                    <div className="space-y-3">
+                                        <div>
+                                            <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Full Name</label>
+                                            <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
+                                                {selectedApplication.firstName} {selectedApplication.lastName}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Email</label>
+                                            <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>{selectedApplication.email}</p>
+                                        </div>
+                                        <div>
+                                            <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Phone</label>
+                                            <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>{selectedApplication.phone}</p>
+                                        </div>
+                                        <div>
+                                            <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Date of Birth</label>
+                                            <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
+                                                {selectedApplication.dateOfBirth ? new Date(selectedApplication.dateOfBirth).toLocaleDateString() : 'Not provided'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="space-y-4">
+                                    <h4 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} pb-2`}>
+                                        📍 Contact Information
+                                    </h4>
+                                    <div className="space-y-3">
+                                        <div>
+                                            <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Address</label>
+                                            <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>{selectedApplication.address || 'Not provided'}</p>
+                                        </div>
+                                        <div>
+                                            <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>City</label>
+                                            <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>{selectedApplication.city || 'Not provided'}</p>
+                                        </div>
+                                        <div>
+                                            <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Country</label>
+                                            <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>{selectedApplication.country || 'Not provided'}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+            
+                            {/* Academic Information */}
+                            <div className="space-y-4">
+                                <h4 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} pb-2`}>
+                                    🎓 Academic Information
+                                </h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {/* <div>
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Program Interested</label>
+                                        <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'} font-medium`}>{selectedApplication.programInterested}</p>
+                                    </div> */}
+                                    {/* // In your view application modal, update this part: */}
+                                    <div>
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Program Interested</label>
+                                        <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'} font-medium`}>{selectedApplication.program}</p>
+                                    </div>
+                                    <div>
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Education Level</label>
+                                        <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>{selectedApplication.educationLevel || 'Not provided'}</p>
+                                    </div>
+                                </div>
+                            </div>
+            
+                            {/* Additional Information */}
+                            {selectedApplication.personalStatement && (
+                                <div className="space-y-4">
+                                    <h4 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} pb-2`}>
+                                        📝 Personal Statement
+                                    </h4>
+                                    <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
+                                        <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'} whitespace-pre-wrap`}>
+                                            {selectedApplication.personalStatement}
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+            
+                            {/* Application Status and Metadata */}
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Application Status</label>
+                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mt-1 ${
+                                        selectedApplication.status === 'approved' ? 'bg-green-100 text-green-800' :
+                                        selectedApplication.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                                        'bg-yellow-100 text-yellow-800'
+                                    }`}>
+                                        {selectedApplication.status ? selectedApplication.status.charAt(0).toUpperCase() + selectedApplication.status.slice(1) : 'Pending'}
+                                    </span>
+                                </div>
+                                <div>
+                                    <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Submitted On</label>
+                                    <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
+                                        {new Date(selectedApplication.createdAt || Date.now()).toLocaleDateString()}
+                                    </p>
+                                </div>
+                                <div>
+                                    <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Application ID</label>
+                                    <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'} font-mono text-sm`}>
+                                        {selectedApplication._id?.slice(-8) || 'N/A'}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {/* Modal Footer */}
+                        <div className={`flex justify-end space-x-3 p-6 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                            <button 
+                                onClick={() => handleSendMessage(selectedApplication)}
+                                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                            >
+                                📧 Send Message
+                            </button>
+                            <button 
+                                onClick={() => {
+                                    setShowViewApplicationModal(false);
+                                    setSelectedApplication(null);
+                                }}
+                                className={`px-4 py-2 border rounded-lg transition-colors ${
+                                    isDarkMode 
+                                        ? 'border-gray-600 text-gray-300 bg-gray-700 hover:bg-gray-600' 
+                                        : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                                }`}
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            
+            {/* Delete Application Confirmation Modal */}
+            {showDeleteApplicationConfirm && applicationToDelete && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-2xl border w-full max-w-md mx-4 transition-colors duration-300`}>
+                        <div className="p-6">
+                            <div className="flex items-center mb-4">
+                                <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                                    <span className="text-red-600 text-2xl">⚠️</span>
+                                </div>
+                            </div>
+                            <div className="text-center">
+                                <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} mb-2`}>
+                                    Delete Application
+                                </h3>
+                                {/* <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} mb-6`}>
+                                    Are you sure you want to delete the application from <strong>"{applicationToDelete.firstName} {applicationToDelete.lastName}"</strong> for <strong>{applicationToDelete.programInterested}</strong>?
+                                    <br />
+                                    <span className="text-red-500 font-medium">This action cannot be undone.</span>
+                                </p> */}
+                                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} mb-6`}>
+                                    Are you sure you want to delete the application from <strong>"{applicationToDelete.firstName} {applicationToDelete.lastName}"</strong> for <strong>{applicationToDelete.program}</strong>?
+                                    <br />
+                                    <span className="text-red-500 font-medium">This action cannot be undone.</span>
+                                </p>
+                            </div>
+                            <div className="flex justify-center space-x-4">
+                                <button
+                                    onClick={() => {
+                                        setShowDeleteApplicationConfirm(false);
+                                        setApplicationToDelete(null);
+                                    }}
+                                    className={`px-4 py-2 border rounded-lg transition-colors ${
+                                        isDarkMode 
+                                            ? 'border-gray-600 text-gray-300 bg-gray-700 hover:bg-gray-600' 
+                                            : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                                    }`}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={confirmDeleteApplication}
+                                    className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                                >
+                                    🗑️ Yes, Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+            
+            {/* Send Message Modal */}
+            {showSendMessageModal && messageData.recipient && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-2xl border w-full max-w-2xl transition-colors duration-300`}>
+                        <div className={`flex items-center justify-between p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                            <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center`}>
+                                <span className="mr-2">📧</span>
+                                Send Message to {messageData.recipient.firstName} {messageData.recipient.lastName}
+                            </h3>
+                            <button 
+                                className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+                                onClick={() => {
+                                    setShowSendMessageModal(false);
+                                    setMessageData({
+                                        subject: '',
+                                        message: '',
+                                        recipient: null
+                                    });
+                                }}
+                            >
+                                <span className={`${isDarkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-400 hover:text-gray-600'} text-xl`}>✕</span>
+                            </button>
+                        </div>
+                        <div className="p-6">
+                            <form onSubmit={handleSendMessageSubmit} className="space-y-6">
+                                <div className="space-y-2">
+                                    <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>To:</label>
+                                    <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
+                                        <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
+                                            {messageData.recipient.firstName} {messageData.recipient.lastName} ({messageData.recipient.email})
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <div className="space-y-2">
+                                    <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Subject:</label>
+                                    <input
+                                        type="text"
+                                        value={messageData.subject}
+                                        onChange={(e) => setMessageData({...messageData, subject: e.target.value})}
+                                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                            isDarkMode 
+                                                ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+                                                : 'border-gray-300 bg-white text-gray-900'
+                                        }`}
+                                        required
+                                    />
+                                </div>
+                                
+                                <div className="space-y-2">
+                                    <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Message:</label>
+                                    <textarea
+                                        rows="8"
+                                        value={messageData.message}
+                                        onChange={(e) => setMessageData({...messageData, message: e.target.value})}
+                                        placeholder="Enter your message here..."
+                                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none ${
+                                            isDarkMode 
+                                                ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+                                                : 'border-gray-300 bg-white text-gray-900'
+                                        }`}
+                                        required
+                                    />
+                                </div>
+                                
+                                <div className={`flex justify-end space-x-3 pt-4 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                                    <button 
+                                        type="button" 
+                                        className={`px-4 py-2 border rounded-lg transition-colors ${
+                                            isDarkMode 
+                                                ? 'border-gray-600 text-gray-300 bg-gray-700 hover:bg-gray-600' 
+                                                : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                                        }`}
+                                        onClick={() => {
+                                            setShowSendMessageModal(false);
+                                            setMessageData({
+                                                subject: '',
+                                                message: '',
+                                                recipient: null
+                                            });
+                                        }}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button 
+                                        type="submit" 
+                                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                    >
+                                        📧 Send Message
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+            
             {/* Table */}
             <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
                 <div className="overflow-x-auto">
@@ -6676,7 +7265,7 @@ const Dashboard = () => {
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    {/* <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         {application.status === 'pending' ? (
                                             <div className="flex space-x-2">
                                                 <button 
@@ -6715,7 +7304,6 @@ const Dashboard = () => {
                                                 >
                                                     📧
                                                 </button>
-                                                {/* More Actions Dropdown */}
                                                 <div className="relative group">
                                                     <button className={`inline-flex items-center p-2 border border-transparent rounded-lg ${isDarkMode ? 'text-gray-400 hover:bg-gray-700/50' : 'text-gray-600 hover:bg-gray-100'} transition-colors duration-200`}>
                                                         ⋮
@@ -6744,6 +7332,69 @@ const Dashboard = () => {
                                                 </div>
                                             </div>
                                         )}
+                                    </td> */}
+                                    {/* // ✅ In your application table, replace the actions column with this: */}
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div className="flex items-center space-x-2">
+                                            {/* View Application */}
+                                            <button 
+                                                className={`inline-flex items-center p-2 border border-transparent rounded-lg text-blue-600 ${isDarkMode ? 'hover:bg-blue-900/30' : 'hover:bg-blue-100'} transition-colors duration-200`}
+                                                onClick={() => handleViewApplication(application)}
+                                                title="View Application Details"
+                                            >
+                                                👁️
+                                            </button>
+                                            
+                                            {/* Send Message */}
+                                            <button 
+                                                className={`inline-flex items-center p-2 border border-transparent rounded-lg text-green-600 ${isDarkMode ? 'hover:bg-green-900/30' : 'hover:bg-green-100'} transition-colors duration-200`}
+                                                onClick={() => handleSendMessage(application)}
+                                                title="Send Message to Applicant"
+                                            >
+                                                📧
+                                            </button>
+                                            
+                                            {/* Delete Application */}
+                                            <button 
+                                                className={`inline-flex items-center p-2 border border-transparent rounded-lg text-red-600 ${isDarkMode ? 'hover:bg-red-900/30' : 'hover:bg-red-100'} transition-colors duration-200`}
+                                                onClick={() => handleDeleteApplication(application)}
+                                                title="Delete Application"
+                                            >
+                                                🗑️
+                                            </button>
+                                            
+                                            {/* Status Update Dropdown */}
+                                            <div className="relative group">
+                                                <button className={`inline-flex items-center p-2 border border-transparent rounded-lg ${isDarkMode ? 'text-gray-400 hover:bg-gray-700/50' : 'text-gray-600 hover:bg-gray-100'} transition-colors duration-200`}>
+                                                    ⋮
+                                                </button>
+                                                <div className={`absolute right-0 mt-2 w-48 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} rounded-lg shadow-lg border z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200`}>
+                                                    <div className="py-1">
+                                                        <button 
+                                                            className={`flex items-center w-full px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors duration-200`}
+                                                            onClick={() => handleUpdateApplicationStatus(application._id, 'approved')}
+                                                        >
+                                                            <span className="mr-2">✅</span>
+                                                            Approve Application
+                                                        </button>
+                                                        <button 
+                                                            className={`flex items-center w-full px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors duration-200`}
+                                                            onClick={() => handleUpdateApplicationStatus(application._id, 'rejected')}
+                                                        >
+                                                            <span className="mr-2">❌</span>
+                                                            Reject Application
+                                                        </button>
+                                                        <button 
+                                                            className={`flex items-center w-full px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors duration-200`}
+                                                            onClick={() => handleUpdateApplicationStatus(application._id, 'pending')}
+                                                        >
+                                                            <span className="mr-2">⏳</span>
+                                                            Mark as Pending
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}
