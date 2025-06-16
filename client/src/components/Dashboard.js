@@ -19,42 +19,6 @@ ChartJS.register(
     ArcElement
 );
 
-
-// const Dashboard = () => {
-//     const { t, i18n } = useTranslation();
-//     const [user, setUser] = useState(null);
-//     const [activeTab, setActiveTab] = useState('overview');
-//     const [isLoading, setIsLoading] = useState(true);
-//     const [pendingUsers, setPendingUsers] = useState([]);
-//     const [applicationSubmissions, setApplicationSubmissions] = useState([]);
-//     const [contactSubmissions, setContactSubmissions] = useState([]);
-//     const [allUsers, setAllUsers] = useState([]);
-//     const [searchTerm, setSearchTerm] = useState('');
-//     const [selectedRole, setSelectedRole] = useState('');
-//     const [selectedStatus, setSelectedStatus] = useState('');
-//     const [searchTermApp, setSearchTermApp] = useState('');
-//     const [selectedProgram, setSelectedProgram] = useState('');
-//     const [selectedAppStatus, setSelectedAppStatus] = useState('');
-//     const [searchTermContact, setSearchTermContact] = useState('');
-//     const [selectedCategory, setSelectedCategory] = useState('');
-//     const [selectedContactStatus, setSelectedContactStatus] = useState('');
-//     const [editingUser, setEditingUser] = useState(null);
-//     const [showEditUserForm, setShowEditUserForm] = useState(false);
-//     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-//     const [userToDelete, setUserToDelete] = useState(null);
-//     const [showCreateUserForm, setShowCreateUserForm] = useState(false);
-//     const [currentLanguage, setCurrentLanguage] = useState('en');
-//     const [currentPage, setCurrentPage] = useState(1);
-//     const [itemsPerPage] = useState(10); // Adjust this number as needed
-//     const [isDarkMode, setIsDarkMode] = useState(false);
-//     const [newUserData, setNewUserData] = useState({
-//         firstName: '',
-//         lastName: '',
-//         email: '',
-//         password: '',
-//         role: 'student'
-//     });
-
 const Dashboard = () => {
     // ✅ Translation and Theme States
     const { t, i18n } = useTranslation();
@@ -119,6 +83,13 @@ const Dashboard = () => {
         recipient: null
     });
 
+    // Add these state variables with your existing ones
+    // const [contactSubmissions, setContactSubmissions] = useState([]);
+    const [showContactDetails, setShowContactDetails] = useState(false);
+    const [selectedContact, setSelectedContact] = useState(null);
+    const [showDeleteContactConfirm, setShowDeleteContactConfirm] = useState(false);
+    const [contactToDelete, setContactToDelete] = useState(null);
+
     // ✅ Application Management Functions
     const handleViewApplication = (application) => {
         console.log('👁️ View application clicked:', application);
@@ -131,16 +102,6 @@ const Dashboard = () => {
         setApplicationToDelete(application);
         setShowDeleteApplicationConfirm(true);
     };
-    
-    // const handleSendMessage = (application) => {
-    //     console.log('📧 Send message clicked:', application);
-    //     setMessageData({
-    //         subject: `Regarding your application for ${application.programInterested}`,
-    //         message: '',
-    //         recipient: application
-    //     });
-    //     setShowSendMessageModal(true);
-    // };
 
     // ✅ FIXED: Update the handleSendMessage function to use correct field name
     const handleSendMessage = (application) => {
@@ -153,7 +114,6 @@ const Dashboard = () => {
         setShowSendMessageModal(true);
     };
 
-    
     const handleUpdateApplicationStatus = async (applicationId, newStatus) => {
         try {
             console.log(`🔄 Updating application ${applicationId} status to: ${newStatus}`);
@@ -336,6 +296,186 @@ const Dashboard = () => {
             alert('Error sending message. Please try again.');
         }
     };
+
+    const fetchContacts = async () => {
+        try {
+            const token = getToken();
+            if (!token) {
+                console.log('No token found for fetching contacts');
+                return;
+            }
+    
+            console.log('🔄 Fetching contacts...');
+            const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+            const response = await fetch(`${apiUrl}/api/contact`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+    
+            if (response.ok) {
+                const data = await response.json();
+                console.log('✅ Contacts fetched successfully:', data);
+                if (data.success && data.contacts) {
+                    setContactSubmissions(data.contacts);
+                }
+            } else {
+                console.error('❌ Failed to fetch contacts:', response.status);
+            }
+        } catch (error) {
+            console.error('❌ Error fetching contacts:', error);
+        }
+    };
+    
+    // Handle contact status update
+    const handleUpdateContactStatus = async (contactId, newStatus) => {
+        try {
+            console.log(`🔄 Updating contact ${contactId} status to: ${newStatus}`);
+            
+            const token = getToken();
+            if (!token) {
+                alert('No authentication token found');
+                return;
+            }
+    
+            const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+            const response = await fetch(`${apiUrl}/api/contact/${contactId}/status`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status: newStatus })
+            });
+    
+            if (response.ok) {
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Update local state
+                    setContactSubmissions(prevContacts => 
+                        prevContacts.map(contact => 
+                            contact._id === contactId 
+                                ? { ...contact, status: newStatus, updatedAt: new Date().toISOString() }
+                                : contact
+                        )
+                    );
+                    
+                    alert(`Contact status updated to ${newStatus} successfully!`);
+                } else {
+                    alert(`Error: ${result.message}`);
+                }
+            } else {
+                const errorData = await response.json();
+                alert(`Error updating status: ${errorData.message || 'Unknown error'}`);
+            }
+        } catch (error) {
+            console.error('Error updating contact status:', error);
+            alert('Error updating contact status. Please try again.');
+        }
+    };
+    
+    // View contact details
+    const viewContactDetails = (contact) => {
+        console.log('👁️ Viewing contact details:', contact);
+        setSelectedContact(contact);
+        setShowContactDetails(true);
+    };
+    
+    // Close contact details modal
+    const closeContactDetails = () => {
+        setShowContactDetails(false);
+        setSelectedContact(null);
+    };
+    
+    // Delete contact functions
+    const deleteContact = (contact) => {
+        console.log('🗑️ DELETE CONTACT CLICKED!');
+        console.log('Contact to delete:', contact);
+        setContactToDelete(contact);
+        setShowDeleteContactConfirm(true);
+    };
+    
+    const confirmDeleteContact = async () => {
+        console.log('🔥 DELETE CONTACT CONFIRMATION CLICKED!');
+        console.log('Contact to delete:', contactToDelete);
+        
+        if (!contactToDelete) {
+            alert('No contact selected for deletion');
+            return;
+        }
+        
+        try {
+            const token = getToken();
+            if (!token) {
+                alert('No authentication token found');
+                return;
+            }
+            
+            console.log('🗑️ Attempting to delete contact:', contactToDelete._id);
+            
+            const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+            const response = await fetch(`${apiUrl}/api/contact/${contactToDelete._id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+    
+            console.log('Delete contact response status:', response.status);
+    
+            if (response.ok) {
+                const result = await response.json();
+                console.log('Delete contact successful:', result);
+                
+                if (result.success) {
+                    // Remove contact from local state
+                    setContactSubmissions(prevContacts => 
+                        prevContacts.filter(contact => contact._id !== contactToDelete._id)
+                    );
+                    
+                    // Reset modal state
+                    setShowDeleteContactConfirm(false);
+                    setContactToDelete(null);
+                    
+                    alert('Contact deleted successfully!');
+                } else {
+                    alert(`Error: ${result.message}`);
+                }
+            } else {
+                const errorText = await response.text();
+                console.error('Delete contact failed:', errorText);
+                
+                let errorMessage;
+                try {
+                    const errorJson = JSON.parse(errorText);
+                    errorMessage = errorJson.message || 'Unknown error';
+                } catch {
+                    errorMessage = errorText || 'Unknown error';
+                }
+                
+                alert(`Error deleting contact: ${errorMessage}`);
+            }
+        } catch (error) {
+            console.error('Error deleting contact:', error);
+            alert('Error deleting contact. Please try again.');
+        }
+    };
+    
+    const cancelDeleteContact = () => {
+        setShowDeleteContactConfirm(false);
+        setContactToDelete(null);
+    };
+
+    // Update your existing useEffect to include contacts
+    useEffect(() => {
+        if (user && user.role === 'admin') {
+            fetchContacts(); // Add this line
+        }
+    }, [user]);
 
     // Add these helper functions
     const getTotalPages = () => {
@@ -553,7 +693,7 @@ const Dashboard = () => {
         }
     };
 
-        // Around line 102, update the fetchApplicationSubmissions function:
+    // Around line 102, update the fetchApplicationSubmissions function:
     const fetchApplicationSubmissions = async (token) => {
         try {
             console.log('Fetching application submissions...');
@@ -781,19 +921,6 @@ const Dashboard = () => {
         setShowEditUserForm(true);
     };
 
-
-    // const handleEditUser = (user) => {
-    //     setEditingUser(user);
-    //     setNewUserData({
-    //         firstName: user.firstName,
-    //         lastName: user.lastName,
-    //         email: user.email,
-    //         role: user.role,
-    //         password: '' // Don't populate password for security
-    //     });
-    //     setShowEditUserForm(true);
-    // };
-    
     const handleUpdateUser = async (e) => {
         e.preventDefault();
         try {
@@ -6866,11 +6993,6 @@ const Dashboard = () => {
                                     🎓 Academic Information
                                 </h4>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {/* <div>
-                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Program Interested</label>
-                                        <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'} font-medium`}>{selectedApplication.programInterested}</p>
-                                    </div> */}
-                                    {/* // In your view application modal, update this part: */}
                                     <div>
                                         <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Program Interested</label>
                                         <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'} font-medium`}>{selectedApplication.program}</p>
@@ -7541,216 +7663,361 @@ const Dashboard = () => {
                 </div>
             </div>
     
-            {/* Contact Messages Table - Dark Mode */}
-            <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
-                <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead className={`${isDarkMode ? 'bg-gradient-to-r from-gray-800 to-gray-700' : 'bg-gradient-to-r from-gray-50 to-gray-100'} transition-colors duration-300`}>
-                            <tr>
-                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
-                                    <div className="flex items-center space-x-1">
-                                        <span>👤 Contact</span>
-                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
-                                    </div>
-                                </th>
-                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
-                                    <div className="flex items-center space-x-1">
-                                        <span>📧 Details</span>
-                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
-                                    </div>
-                                </th>
-                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
-                                    <div className="flex items-center space-x-1">
-                                        <span>💬 Message</span>
-                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
-                                    </div>
-                                </th>
-                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
-                                    <div className="flex items-center space-x-1">
-                                        <span>📊 Status</span>
-                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
-                                    </div>
-                                </th>
-                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
-                                    <div className="flex items-center space-x-1">
-                                        <span>📅 Received</span>
-                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
-                                    </div>
-                                </th>
-                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
-                                    ⚡ Actions
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody className={`${isDarkMode ? 'bg-gray-800 divide-gray-700' : 'bg-white divide-gray-200'} transition-colors duration-300`}>
-                            {getFilteredContacts().map((contact, index) => (
-                                <tr key={contact._id} className={`${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'} transition-colors duration-200 ${contact.status === 'pending' ? (isDarkMode ? 'bg-orange-900/30 border-l-4 border-orange-500' : 'bg-orange-25 border-l-4 border-orange-400') : ''}`}>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="flex items-center space-x-4">
-                                            <div className="relative">
-                                                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center text-white font-semibold">
-                                                    {contact.name?.charAt(0).toUpperCase()}
-                                                </div>
-                                                <div className={`absolute -bottom-1 -right-1 h-4 w-4 border-2 ${isDarkMode ? 'border-gray-800' : 'border-white'} rounded-full ${
-                                                    contact.status === 'pending' ? 'bg-orange-400' : 
-                                                    contact.status === 'resolved' ? 'bg-green-400' : 
-                                                    contact.status === 'approved' ? 'bg-blue-400' : 'bg-gray-400'
-                                                } transition-colors duration-300`}></div>
+            {/* Single Contact Messages Table */}
+            {user && user.role === 'admin' && (
+                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+                    <div className="p-6 border-b border-gray-200 dark:border-gray-600 bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/50 dark:to-red-900/50 transition-colors duration-300">
+                        <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
+                            <span className="mr-3 text-2xl">📧</span>
+                            Contact Submissions ({contactSubmissions.length})
+                        </h3>
+                        <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mt-1 transition-colors duration-300`}>
+                            Manage and respond to contact form submissions
+                        </p>
+                    </div>
+                    
+                    {contactSubmissions.length === 0 ? (
+                        <div className="p-8 text-center">
+                            <div className="text-6xl mb-4">📭</div>
+                            <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-2`}>No Contact Submissions</h3>
+                            <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>No contact form submissions have been received yet.</p>
+                        </div>
+                    ) : (
+                        <div className="overflow-x-auto">
+                            <table className={`w-full border-collapse ${isDarkMode ? 'bg-gray-800' : 'bg-white'} text-sm`}>
+                                <thead className={`${isDarkMode ? 'bg-gradient-to-r from-gray-800 to-gray-700' : 'bg-gradient-to-r from-gray-50 to-gray-100'} transition-colors duration-300`}>
+                                    <tr>
+                                        <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
+                                            <div className="flex items-center space-x-1">
+                                                <span>👤 Contact</span>
+                                                <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
                                             </div>
-                                            <div className="space-y-1">
-                                                <div className={`text-sm font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>
-                                                    {contact.name}
-                                                </div>
-                                                <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
-                                                    ID: {contact._id.slice(-8)}
-                                                </div>
+                                        </th>
+                                        <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
+                                            <div className="flex items-center space-x-1">
+                                                <span>📧 Details</span>
+                                                <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="space-y-1">
-                                            <div className={`text-sm ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>{contact.email}</div>
-                                            {contact.phone && (
-                                                <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>📱 {contact.phone}</div>
-                                            )}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="space-y-2">
-                                            <div className={`text-sm font-medium ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>
-                                                {contact.subject}
+                                        </th>
+                                        <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
+                                            <div className="flex items-center space-x-1">
+                                                <span>💬 Message</span>
+                                                <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
                                             </div>
-                                            <div className={`text-sm max-w-xs ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>
-                                                <div className={`p-3 rounded-lg border ${isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'} transition-colors duration-300`}>
-                                                    {contact.message.length > 80 ? 
-                                                        `${contact.message.substring(0, 80)}...` : 
-                                                        contact.message
-                                                    }
+                                        </th>
+                                        <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
+                                            <div className="flex items-center space-x-1">
+                                                <span>📊 Status</span>
+                                                <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
+                                            </div>
+                                        </th>
+                                        <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
+                                            <div className="flex items-center space-x-1">
+                                                <span>📅 Received</span>
+                                                <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
+                                            </div>
+                                        </th>
+                                        <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
+                                            ⚡ Actions
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody className={`${isDarkMode ? 'bg-gray-800 divide-gray-700' : 'bg-white divide-gray-200'} transition-colors duration-300`}>
+                                    {getFilteredContacts().map((contact) => (
+                                        <tr key={contact._id} className={`${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'} transition-colors duration-200 ${contact.status === 'pending' ? (isDarkMode ? 'bg-orange-900/30 border-l-4 border-orange-500' : 'bg-orange-25 border-l-4 border-orange-400') : ''}`}>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="flex items-center space-x-4">
+                                                    <div className="relative">
+                                                        <div className="h-12 w-12 rounded-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center text-white font-semibold">
+                                                            {contact.name?.charAt(0)?.toUpperCase()}
+                                                        </div>
+                                                        <div className={`absolute -bottom-1 -right-1 h-4 w-4 border-2 ${isDarkMode ? 'border-gray-800' : 'border-white'} rounded-full ${
+                                                            contact.status === 'pending' ? 'bg-orange-400' : 
+                                                            contact.status === 'resolved' ? 'bg-green-400' : 
+                                                            contact.status === 'approved' ? 'bg-blue-400' : 'bg-gray-400'
+                                                        } transition-colors duration-300`}></div>
+                                                    </div>
+                                                    <div className="space-y-1">
+                                                        <div className={`text-sm font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>
+                                                            {contact.name}
+                                                        </div>
+                                                        <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
+                                                            ID: {contact._id.slice(-8)}
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="space-y-1">
-                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors duration-300 ${
-                                                contact.status === 'pending' ? (isDarkMode ? 'bg-orange-900/50 text-orange-300 border border-orange-700/50' : 'bg-orange-100 text-orange-800') : 
-                                                contact.status === 'approved' ? (isDarkMode ? 'bg-blue-900/50 text-blue-300 border border-blue-700/50' : 'bg-blue-100 text-blue-800') : 
-                                                contact.status === 'resolved' ? (isDarkMode ? 'bg-green-900/50 text-green-300 border border-green-700/50' : 'bg-green-100 text-green-800') : 
-                                                (isDarkMode ? 'bg-gray-900/50 text-gray-300 border border-gray-700/50' : 'bg-gray-100 text-gray-800')
-                                            }`}>
-                                                <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
-                                                    contact.status === 'pending' ? 'bg-orange-400' : 
-                                                    contact.status === 'approved' ? 'bg-blue-400' : 
-                                                    contact.status === 'resolved' ? 'bg-green-400' : 
-                                                    'bg-gray-400'
-                                                }`}></span>
-                                                {contact.status === 'pending' ? '⏳ Pending' : 
-                                                contact.status === 'approved' ? '🔥 Priority' : 
-                                                contact.status === 'resolved' ? '✅ Resolved' : '❌ Ignored'}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="space-y-1">
+                                                    <div className={`text-sm ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>{contact.email}</div>
+                                                    {contact.phone && (
+                                                        <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>📱 {contact.phone}</div>
+                                                    )}
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="space-y-2">
+                                                    <div className={`text-sm font-medium ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>
+                                                        {contact.subject}
+                                                    </div>
+                                                    <div className={`text-sm max-w-xs ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>
+                                                        <div className={`p-3 rounded-lg border ${isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'} transition-colors duration-300`}>
+                                                            {contact.message.length > 80 ? 
+                                                                `${contact.message.substring(0, 80)}...` : 
+                                                                contact.message
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="space-y-1">
+                                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors duration-300 ${
+                                                        contact.status === 'pending' ? (isDarkMode ? 'bg-orange-900/50 text-orange-300 border border-orange-700/50' : 'bg-orange-100 text-orange-800') : 
+                                                        contact.status === 'approved' ? (isDarkMode ? 'bg-blue-900/50 text-blue-300 border border-blue-700/50' : 'bg-blue-100 text-blue-800') : 
+                                                        contact.status === 'resolved' ? (isDarkMode ? 'bg-green-900/50 text-green-300 border border-green-700/50' : 'bg-green-100 text-green-800') : 
+                                                        (isDarkMode ? 'bg-gray-900/50 text-gray-300 border border-gray-700/50' : 'bg-gray-100 text-gray-800')
+                                                    }`}>
+                                                        <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
+                                                            contact.status === 'pending' ? 'bg-orange-400' : 
+                                                            contact.status === 'approved' ? 'bg-blue-400' : 
+                                                            contact.status === 'resolved' ? 'bg-green-400' : 
+                                                            'bg-gray-400'
+                                                        }`}></span>
+                                                        {contact.status === 'pending' ? '⏳ Pending' : 
+                                                        contact.status === 'approved' ? '🔥 Priority' : 
+                                                        contact.status === 'resolved' ? '✅ Resolved' : '❌ Ignored'}
+                                                    </span>
+                                                    {contact.status === 'pending' && (
+                                                        <div className={`text-xs font-medium ${isDarkMode ? 'text-orange-400' : 'text-orange-600'} transition-colors duration-300`}>
+                                                            ⚠️ Needs Response
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </td>
+                                            <td className={`px-6 py-4 whitespace-nowrap text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
+                                                <div className="space-y-1">
+                                                    <div className={`font-medium ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>
+                                                        {new Date(contact.createdAt).toLocaleDateString()}
+                                                    </div>
+                                                    <div className="text-xs">
+                                                        {(() => {
+                                                            const daysAgo = Math.floor((new Date() - new Date(contact.createdAt)) / (1000 * 60 * 60 * 24));
+                                                            return daysAgo === 0 ? 'Today' : daysAgo === 1 ? '1 day ago' : `${daysAgo} days ago`;
+                                                        })()}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                <div className="flex items-center space-x-2">
+                                                    <button 
+                                                        onClick={() => viewContactDetails(contact)}
+                                                        className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs font-semibold flex items-center gap-1"
+                                                        title="View Details"
+                                                    >
+                                                        👁️ View
+                                                    </button>
+                                                    
+                                                    <select 
+                                                        value={contact.status} 
+                                                        onChange={(e) => handleUpdateContactStatus(contact._id, e.target.value)}
+                                                        className={`px-3 py-2 border ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white text-gray-900'} rounded-lg cursor-pointer text-xs font-medium hover:border-blue-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
+                                                    >
+                                                        <option value="pending">Pending</option>
+                                                        <option value="resolved">Resolved</option>
+                                                        <option value="approved">Approved</option>
+                                                        <option value="ignored">Ignored</option>
+                                                    </select>
+                                                    
+                                                    <button 
+                                                        onClick={() => deleteContact(contact)}
+                                                        className="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-xs font-semibold flex items-center gap-1"
+                                                        title="Delete Contact"
+                                                    >
+                                                        🗑️ Delete
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+    
+                    {/* Table Footer */}
+                    <div className={`${isDarkMode ? 'bg-gray-750 border-gray-700' : 'bg-gray-50 border-gray-200'} px-6 py-3 flex items-center justify-between border-t transition-colors duration-300`}>
+                        <div className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
+                            Showing {getFilteredContacts().length} of {contactSubmissions.length} messages
+                            {(searchTermContact || selectedCategory || selectedContactStatus) && (
+                                <span className={`ml-2 font-medium ${isDarkMode ? 'text-blue-400' : 'text-blue-600'} transition-colors duration-300`}>
+                                    (filtered)
+                                </span>
+                            )}
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <button className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${
+                                isDarkMode 
+                                    ? 'border-gray-600 text-gray-400 bg-gray-800 hover:bg-gray-700' 
+                                    : 'border-gray-300 text-gray-500 bg-white hover:bg-gray-50'
+                            }`} disabled>
+                                ← Previous
+                            </button>
+                            <div className="flex space-x-1">
+                                <button className={`px-3 py-1 rounded-lg text-sm text-white transition-colors duration-200 ${isDarkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-600 hover:bg-blue-700'}`}>1</button>
+                                <button className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${isDarkMode ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'}`}>2</button>
+                                <button className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${isDarkMode ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'}`}>3</button>
+                            </div>
+                            <button className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${
+                                isDarkMode 
+                                    ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' 
+                                    : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                            }`}>
+                                Next →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+    
+            {/* Contact Details Modal */}
+            {showContactDetails && selectedContact && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-2xl border w-full max-w-2xl max-h-[90vh] overflow-y-auto transition-colors duration-300`} 
+                         onClick={(e) => e.stopPropagation()}>
+                        <div className={`p-6 border-b ${isDarkMode ? 'border-gray-600' : 'border-gray-200'} bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/50 dark:to-indigo-900/50 flex items-center justify-between`}>
+                            <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center`}>
+                                <span className="mr-3 text-2xl">📧</span>
+                                Contact Details
+                            </h3>
+                            <button 
+                                onClick={closeContactDetails} 
+                                className={`p-2 ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} rounded-lg transition-colors`}
+                            >
+                                <span className={`text-2xl ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>×</span>
+                            </button>
+                        </div>
+                        <div className="p-6">
+                            <div className="space-y-6 max-w-2xl">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-4">
+                                        <div className="flex flex-col">
+                                            <label className={`text-sm font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-2`}>Name:</label>
+                                            <span className={`px-4 py-3 ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-gray-50 border-gray-200 text-gray-900'} border rounded-lg`}>
+                                                {selectedContact.name}
                                             </span>
-                                            {contact.status === 'pending' && (
-                                                <div className={`text-xs font-medium ${isDarkMode ? 'text-orange-400' : 'text-orange-600'} transition-colors duration-300`}>
-                                                    ⚠️ Needs Response
-                                                </div>
-                                            )}
                                         </div>
-                                    </td>
-                                    <td className={`px-6 py-4 whitespace-nowrap text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
-                                        <div className="space-y-1">
-                                            <div className={`font-medium ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>
-                                                {new Date(contact.createdAt || Date.now()).toLocaleDateString()}
-                                            </div>
-                                            <div className="text-xs">
-                                                {(() => {
-                                                    const days = Math.floor((Date.now() - new Date(contact.createdAt || Date.now())) / (1000 * 60 * 60 * 24));
-                                                    return days === 0 ? 'Today' : `${days} days ago`;
-                                                })()}
-                                            </div>
+                                        <div className="flex flex-col">
+                                            <label className={`text-sm font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-2`}>Email:</label>
+                                            <span className={`px-4 py-3 ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-gray-50 border-gray-200 text-gray-900'} border rounded-lg`}>
+                                                {selectedContact.email}
+                                            </span>
                                         </div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        {contact.status === 'pending' ? (
-                                            <div className="flex space-x-2">
-                                                <button 
-                                                    className={`inline-flex items-center p-2 border border-transparent rounded-lg text-green-600 ${isDarkMode ? 'hover:bg-green-900/30' : 'hover:bg-green-100'} transition-colors duration-200`}
-                                                    onClick={() => handleContactAction(contact._id, 'resolved')}
-                                                    title="Resolve"
-                                                >
-                                                    ✅
-                                                </button>
-                                                <button 
-                                                    className={`inline-flex items-center p-2 border border-transparent rounded-lg text-blue-600 ${isDarkMode ? 'hover:bg-blue-900/30' : 'hover:bg-blue-100'} transition-colors duration-200`}
-                                                    onClick={() => handleContactAction(contact._id, 'approved')}
-                                                    title="Mark as Priority"
-                                                >
-                                                    🔥
-                                                </button>
-                                                <button 
-                                                    className={`inline-flex items-center p-2 border border-transparent rounded-lg ${isDarkMode ? 'text-gray-400 hover:bg-gray-700/50' : 'text-gray-600 hover:bg-gray-100'} transition-colors duration-200`}
-                                                    onClick={() => handleContactAction(contact._id, 'ignored')}
-                                                    title="Ignore"
-                                                >
-                                                    ❌
-                                                </button>
-                                            </div>
-                                        ) : (
-                                            <div className="flex space-x-2">
-                                                <button 
-                                                    className={`inline-flex items-center p-2 border border-transparent rounded-lg text-blue-600 ${isDarkMode ? 'hover:bg-blue-900/30' : 'hover:bg-blue-100'} transition-colors duration-200`}
-                                                    title="View Full Message"
-                                                >
-                                                    👁️
-                                                </button>
-                                                <button 
-                                                    className={`inline-flex items-center p-2 border border-transparent rounded-lg ${isDarkMode ? 'text-gray-400 hover:bg-gray-700/50' : 'text-gray-600 hover:bg-gray-100'} transition-colors duration-200`}
-                                                    title="Reply"
-                                                >
-                                                    📧
-                                                </button>
+                                    </div>
+                                    <div className="space-y-4">
+                                        {selectedContact.phone && (
+                                            <div className="flex flex-col">
+                                                <label className={`text-sm font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-2`}>Phone:</label>
+                                                <span className={`px-4 py-3 ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-gray-50 border-gray-200 text-gray-900'} border rounded-lg`}>
+                                                    {selectedContact.phone}
+                                                </span>
                                             </div>
                                         )}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-    
-                {/* Table Footer with Dark Mode */}
-                <div className={`${isDarkMode ? 'bg-gray-750 border-gray-700' : 'bg-gray-50 border-gray-200'} px-6 py-3 flex items-center justify-between border-t transition-colors duration-300`}>
-                    <div className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
-                        Showing {getFilteredContacts().length} of {contactSubmissions.length} messages
-                        {(searchTermContact || selectedCategory || selectedContactStatus) && (
-                            <span className={`ml-2 font-medium ${isDarkMode ? 'text-blue-400' : 'text-blue-600'} transition-colors duration-300`}>
-                                (filtered)
-                            </span>
-                        )}
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        <button className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${
-                            isDarkMode 
-                                ? 'border-gray-600 text-gray-400 bg-gray-800 hover:bg-gray-700' 
-                                : 'border-gray-300 text-gray-500 bg-white hover:bg-gray-50'
-                        }`} disabled>
-                            ← Previous
-                        </button>
-                        <div className="flex space-x-1">
-                            <button className={`px-3 py-1 rounded-lg text-sm text-white transition-colors duration-200 ${isDarkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-600 hover:bg-blue-700'}`}>1</button>
-                            <button className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${isDarkMode ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'}`}>2</button>
-                            <button className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${isDarkMode ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'}`}>3</button>
+                                        <div className="flex flex-col">
+                                            <label className={`text-sm font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-2`}>Subject:</label>
+                                            <span className={`px-4 py-3 ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-gray-50 border-gray-200 text-gray-900'} border rounded-lg`}>
+                                                {selectedContact.subject}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="flex flex-col">
+                                    <label className={`text-sm font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-2`}>Message:</label>
+                                    <div className={`px-4 py-3 ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-gray-50 border-gray-200 text-gray-900'} border rounded-lg min-h-[120px] whitespace-pre-wrap`}>
+                                        {selectedContact.message}
+                                    </div>
+                                </div>
+                                
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="flex flex-col">
+                                        <label className={`text-sm font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-2`}>Status:</label>
+                                        <span className={`inline-flex items-center w-fit px-3 py-1 rounded-full text-sm font-medium ${
+                                            selectedContact.status === 'pending' ? (isDarkMode ? 'bg-yellow-900/50 text-yellow-300' : 'bg-yellow-100 text-yellow-800') :
+                                            selectedContact.status === 'resolved' ? (isDarkMode ? 'bg-green-900/50 text-green-300' : 'bg-green-100 text-green-800') :
+                                            selectedContact.status === 'approved' ? (isDarkMode ? 'bg-blue-900/50 text-blue-300' : 'bg-blue-100 text-blue-800') :
+                                            (isDarkMode ? 'bg-gray-900/50 text-gray-300' : 'bg-gray-100 text-gray-800')
+                                        }`}>
+                                            {selectedContact.status.charAt(0).toUpperCase() + selectedContact.status.slice(1)}
+                                        </span>
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <label className={`text-sm font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} mb-2`}>Submitted:</label>
+                                        <span className={`px-4 py-3 ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-100' : 'bg-gray-50 border-gray-200 text-gray-900'} border rounded-lg`}>
+                                            {new Date(selectedContact.createdAt).toLocaleString()}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <button className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${
-                            isDarkMode 
-                                ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' 
-                                : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
-                        }`}>
-                            Next →
-                        </button>
+                        <div className={`flex justify-end p-6 border-t ${isDarkMode ? 'border-gray-600' : 'border-gray-200'}`}>
+                            <button 
+                                onClick={closeContactDetails}
+                                className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium"
+                            >
+                                Close
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
     
-            {/* Bulk Actions Bar - Dark Mode */}
+            {/* Delete Contact Confirmation Modal */}
+            {showDeleteContactConfirm && contactToDelete && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-2xl border w-full max-w-md transition-colors duration-300`}>
+                        <div className="p-6">
+                            <div className="flex items-center mb-4">
+                                <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                                    <span className="text-red-600 text-2xl">🗑️</span>
+                                </div>
+                            </div>
+                            <div className="text-center">
+                                <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-2`}>
+                                    Confirm Delete Contact
+                                </h3>
+                                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} mb-6`}>
+                                    Are you sure you want to delete this contact submission?
+                                </p>
+                                <div className={`${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'} p-4 rounded-lg mb-4 text-left`}>
+                                    <div className="space-y-2 text-sm">
+                                        <div><strong className={`${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Name:</strong> <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{contactToDelete.name}</span></div>
+                                        <div><strong className={`${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Email:</strong> <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{contactToDelete.email}</span></div>
+                                        <div><strong className={`${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Subject:</strong> <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{contactToDelete.subject}</span></div>
+                                    </div>
+                                </div>
+                                <p className={`text-sm ${isDarkMode ? 'text-red-400' : 'text-red-600'} font-medium mb-6`}>This action cannot be undone.</p>
+                            </div>
+                            <div className="flex justify-center space-x-4">
+                                <button
+                                    onClick={cancelDeleteContact}
+                                    className={`px-4 py-2 border ${isDarkMode ? 'border-gray-600 text-gray-300 bg-gray-700 hover:bg-gray-600' : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'} rounded-lg transition-colors`}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={confirmDeleteContact}
+                                    className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                                >
+                                    🗑️ Delete Contact
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+    
+            {/* Bulk Actions Bar */}
             <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-xl shadow-lg border p-4 transition-colors duration-300`}>
                 <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
