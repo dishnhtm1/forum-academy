@@ -1488,5 +1488,262 @@
         "pendingTitle": "Registration Pending",
         "pendingMessage": "Your account has been created and is pending approval. You will receive an email notification once your account is activated."
         }
+    },
+      "aboutSection": {
+        "header": {
+          "badge": "About FIA",
+          "title": "Empowering Future IT Professionals",
+          "subtitle": "For over 15 years, FIA has been at the forefront of IT education, providing world-class training and career opportunities."
+        },
+        "features": {
+          "partnerships": {
+            "title": "Industry Partnerships",
+            "description": "Strong connections with leading tech companies ensure our graduates have direct pathways to employment opportunities.",
+            "highlight": "100+ Partner Companies"
+          },
+          "instructors": {
+            "title": "Expert Instructors",
+            "description": "Learn from industry professionals with real-world experience in cutting-edge technologies and methodologies.",
+            "highlight": "Industry Veterans"
+          },
+          "facilities": {
+            "title": "Modern Facilities",
+            "description": "State-of-the-art computer labs, high-speed internet, and the latest software and hardware for hands-on learning.",
+            "highlight": "Latest Technology"
+          },
+          "career": {
+            "title": "Career Launch",
+            "description": "Comprehensive career support including job placement assistance, interview preparation, and professional development.",
+            "highlight": "95% Job Placement Rate"
+          },
+          "certifications": {
+            "title": "Industry Certifications",
+            "description": "Prepare for and obtain valuable industry certifications that are recognized by employers worldwide.",
+            "highlight": "Certified Programs"
+          },
+          "support": {
+            "title": "Student Support",
+            "description": "24/7 academic support, mentorship programs, and personalized guidance throughout your learning journey.",
+            "highlight": "Always Available"
+          }
+        },
+        "cta": {
+          "imageAlt": "FIA Students",
+          "badge": "Learn More",
+          "title": "Ready to Transform Your Career?",
+          "description": "Join thousands of successful graduates who have launched their IT careers with FIA's comprehensive programs.",
+          "stats": {
+            "years": "Years of Excellence",
+            "graduates": "Successful Graduates"
+          },
+          "button": "Explore Our Programs"
+        },
+        "testimonial": {
+          "quote": "FIA provided me with the skills and confidence I needed to succeed in the tech industry. The instructors are amazing and the career support is exceptional.",
+          "author": {
+            "name": "Sarah Johnson",
+            "title": "Software Developer at Tech Corp"
+          }
+        }
+      },
+    "aboutSection": {
+        },
+        "courseSection": {
+        "header": {
+            "badge": "Premium Courses",
+            "title": "Our Featured Courses",
+            "subtitle": "Discover world-class IT programs designed to launch your career in technology. Learn from industry experts and gain hands-on experience with cutting-edge tools."
+        },
+        "filters": {
+            "all": "All Courses",
+            "webDevelopment": "Web Development",
+            "dataScience": "Data Science",
+            "cybersecurity": "Cybersecurity",
+            "cloudComputing": "Cloud Computing"
+        },
+        "buttons": {
+            "viewAllCourses": "View All Courses",
+            "browseAllPrograms": "Browse All Programs",
+            "enrollNow": "Enroll Now"
+        },
+        "cta": {
+            "title": "Ready to Start Your Journey?",
+            "description": "Explore all our courses and find the perfect fit for your career goals."
+        },
+        "courses": {
+            "webDev": {
+            "title": "Web Development Bootcamp",
+            "description": "Master modern web development with React, Node.js, and full-stack technologies.",
+            "duration": "6 Months",
+            "startDate": "March 15, 2025",
+            "category": "Web Development",
+            "level": "Beginner",
+            "features": [
+                "Full-stack JavaScript development",
+                "React and Node.js mastery",
+                "Database design and management"
+            ]
+            },
+            "dataScience": {
+            "title": "Data Science & Analytics",
+            "description": "Learn Python, machine learning, and data visualization to become a data expert.",
+            "duration": "8 Months",
+            "startDate": "April 1, 2025",
+            "category": "Data Science",
+            "level": "Intermediate",
+            "features": [
+                "Python programming for data science",
+                "Machine learning algorithms",
+                "Data visualization with Tableau"
+            ]
+            },
+            "cybersecurity": {
+            "title": "Cybersecurity Specialist",
+            "description": "Protect digital assets with comprehensive security training and ethical hacking.",
+            "duration": "7 Months",
+            "startDate": "March 20, 2025",
+            "category": "Cybersecurity",
+            "level": "Intermediate",
+            "features": [
+                "Network security fundamentals",
+                "Ethical hacking techniques",
+                "Security risk assessment"
+            ]
+            },
+            "cloudComputing": {
+            "title": "Cloud Computing & AWS",
+            "description": "Master cloud technologies with AWS, Azure, and modern DevOps practices.",
+            "duration": "6 Months",
+            "startDate": "April 10, 2025",
+            "category": "Cloud Computing",
+            "level": "Intermediate",
+            "features": [
+                "AWS and Azure certification prep",
+                "DevOps and CI/CD pipelines",
+                "Cloud architecture design"
+            ]
+            },
+            "aiMl": {
+            "title": "AI & Machine Learning",
+            "description": "Dive deep into artificial intelligence and build intelligent applications.",
+            "duration": "10 Months",
+            "startDate": "May 1, 2025",
+            "category": "Artificial Intelligence",
+            "level": "Advanced",
+            "features": [
+                "Deep learning frameworks",
+                "Neural network architecture",
+                "AI project development"
+            ]
+            },
+            "mobileDev": {
+            "title": "Mobile App Development",
+            "description": "Create native and cross-platform mobile apps for iOS and Android.",
+            "duration": "5 Months",
+            "startDate": "March 25, 2025",
+            "category": "Mobile Development",
+            "level": "Beginner",
+            "features": [
+                "React Native development",
+                "iOS and Android platforms",
+                "App store deployment"
+            ]
+            }
+        }
+    },
+      "courses": {
+        "hero": {
+          "badge": "Transform Your Career",
+          "title": "Learn",
+          "highlight": "Future-Ready Skills",
+          "description": "Join thousands of students mastering cutting-edge technologies with our industry-expert instructors and hands-on projects.",
+          "findCourse": "Find Your Course",
+          "programGuide": "Program Guide",
+          "imageAlt": "Students learning technology"
+        },
+        "categories": {
+          "badge": "Course Categories",
+          "title": "Choose Your",
+          "highlight": "Learning Path",
+          "subtitle": "Discover our comprehensive range of expertly-crafted courses designed to accelerate your career in technology"
+        },
+        "allCategories": "All Categories",
+        "webDevelopment": "Web Development",
+        "dataScience": "Data Science",
+        "cybersecurity": "Cybersecurity",
+        "cloudComputing": "Cloud Computing",
+        "aiMl": "AI & ML",
+        "stats": {
+          "courses": "Expert Courses",
+          "jobPlacement": "Job Placement",
+          "studentRating": "Student Rating"
+        },
+        "news": {
+          "title": "Latest News & Updates",
+          "description": "Stay updated with the latest industry trends and FIA announcements"
+        }
+      },
+      "aboutSection": {
+        "header": {
+          "badge": "About FIA",
+          "title": "Empowering Future IT Professionals",
+          "subtitle": "For over 15 years, FIA has been at the forefront of IT education, providing world-class training and career opportunities to students worldwide."
+        },
+        "features": {
+          "partnerships": {
+            "title": "Industry Partnerships",
+            "description": "Strong connections with leading tech companies ensure our graduates have direct pathways to employment opportunities.",
+            "highlight": "100+ Partner Companies"
+          },
+          "instructors": {
+            "title": "Expert Instructors",
+            "description": "Learn from industry professionals with real-world experience in cutting-edge technologies and methodologies.",
+            "highlight": "Industry Veterans"
+          },
+          "facilities": {
+            "title": "Modern Facilities",
+            "description": "State-of-the-art computer labs, high-speed internet, and the latest software and hardware for hands-on learning.",
+            "highlight": "Latest Technology"
+          },
+          "career": {
+            "title": "Career Launch",
+            "description": "Comprehensive career support including job placement assistance, interview preparation, and professional development.",
+            "highlight": "95% Job Placement Rate"
+          },
+          "certifications": {
+            "title": "Industry Certifications",
+            "description": "Prepare for and obtain valuable industry certifications that are recognized by employers worldwide.",
+            "highlight": "Certified Programs"
+          },
+          "support": {
+            "title": "Student Support",
+            "description": "24/7 academic support, mentorship programs, and personalized guidance throughout your learning journey.",
+            "highlight": "Always Available"
+          }
+        },
+        "cta": {
+          "imageAlt": "FIA Students Learning",
+          "badge": "Learn More",
+          "title": "Ready to Transform Your Career?",
+          "description": "Join thousands of successful graduates who have launched their IT careers with FIA's comprehensive programs and expert guidance.",
+          "stats": {
+            "years": "Years of Excellence",
+            "graduates": "Successful Graduates"
+          },
+          "button": "Explore Our Programs"
+        },
+        "testimonial": {
+          "quote": "FIA provided me with the skills and confidence I needed to succeed in the tech industry. The instructors are amazing and the career support is exceptional.",
+          "author": {
+            "name": "Sarah Johnson",
+            "title": "Software Developer at Tech Corp"
+          }
+        }
+      },
+      "categories": {
+          "badge": "Course Categories",
+          "title": "Choose Your",
+          "highlight": "Learning Path",
+          "subtitle": "Discover our comprehensive range of expertly-crafted courses designed to accelerate your career in technology"
+        }
     }
-}

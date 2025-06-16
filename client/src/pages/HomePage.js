@@ -57,36 +57,156 @@ const HomePage = () => {
                             {t('home.courses.description')}
                         </p>
                     </div>
+
+                    {/* // Replace the course filters section with this enhanced version: */}
                     
-                    {/* Course filters */}
-                    <div className="course-filters relative overflow-x-auto py-4 mb-12">
-                        <div className="flex gap-3 sm:gap-4 min-w-max px-4 sm:px-0">
-                            <button className="filter-btn flex items-center gap-2 bg-white border-2 border-slate-200 rounded-xl px-4 sm:px-6 py-3 font-medium text-slate-600 hover:border-slate-300 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 whitespace-nowrap shadow-sm bg-slate-50 border-slate-300 text-slate-700">
-                                <span className="material-icons text-xl">school</span>
-                                <span className="text-sm sm:text-base">{t('home.courses.allCourses')}</span>
-                            </button>
-                            <button className="filter-btn flex items-center gap-2 bg-white border-2 border-slate-200 rounded-xl px-4 sm:px-6 py-3 font-medium text-slate-600 hover:border-slate-300 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 whitespace-nowrap shadow-sm">
-                                <span className="material-icons text-xl">code</span>
-                                <span className="text-sm sm:text-base">{t('courses.webDevelopment')}</span>
-                            </button>
-                            <button className="filter-btn flex items-center gap-2 bg-white border-2 border-slate-200 rounded-xl px-4 sm:px-6 py-3 font-medium text-slate-600 hover:border-slate-300 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 whitespace-nowrap shadow-sm">
-                                <span className="material-icons text-xl">analytics</span>
-                                <span className="text-sm sm:text-base">{t('courses.dataScience')}</span>
-                            </button>
-                            <button className="filter-btn flex items-center gap-2 bg-white border-2 border-slate-200 rounded-xl px-4 sm:px-6 py-3 font-medium text-slate-600 hover:border-slate-300 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 whitespace-nowrap shadow-sm">
-                                <span className="material-icons text-xl">security</span>
-                                <span className="text-sm sm:text-base">{t('courses.cybersecurity')}</span>
-                            </button>
-                            <button className="filter-btn flex items-center gap-2 bg-white border-2 border-slate-200 rounded-xl px-4 sm:px-6 py-3 font-medium text-slate-600 hover:border-slate-300 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 whitespace-nowrap shadow-sm">
-                                <span className="material-icons text-xl">cloud</span>
-                                <span className="text-sm sm:text-base">{t('courses.cloudComputing')}</span>
-                            </button>
-                            <button className="filter-btn flex items-center gap-2 bg-white border-2 border-slate-200 rounded-xl px-4 sm:px-6 py-3 font-medium text-slate-600 hover:border-slate-300 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 whitespace-nowrap shadow-sm">
-                                <span className="material-icons text-xl">smart_toy</span>
-                                <span className="text-sm sm:text-base">{t('courses.aiMl')}</span>
-                            </button>
+                    {/* Course filters - Enhanced Design */}
+                    <div className="course-filters relative mb-16">
+                        {/* Background decoration */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 rounded-3xl opacity-50"></div>
+                        <div className="absolute top-4 left-8 w-20 h-20 bg-blue-200 rounded-full opacity-30 animate-pulse"></div>
+                        <div className="absolute bottom-4 right-8 w-16 h-16 bg-purple-200 rounded-full opacity-30 animate-pulse delay-300"></div>
+                        
+                        <div className="relative z-10 p-8">
+                    
+                            {/* Filter buttons grid */}
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 max-w-6xl mx-auto">
+                                {/* All Courses */}
+                                <button className="group relative overflow-hidden bg-white hover:bg-gradient-to-br hover:from-blue-500 hover:to-purple-600 border-2 border-gray-200 hover:border-transparent rounded-2xl p-6 transition-all duration-500 transform hover:-translate-y-2 hover:scale-105 hover:shadow-2xl">
+                                    {/* Animated background */}
+                                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
+                                    
+                                    {/* Content */}
+                                    <div className="relative z-10 text-center">
+                                        <div className="w-14 h-14 mx-auto mb-4 bg-blue-100 group-hover:bg-white/20 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:rotate-12 group-hover:scale-110">
+                                            <span className="material-icons text-2xl text-blue-600 group-hover:text-white transition-colors duration-300">school</span>
+                                        </div>
+                                        <div className="font-bold text-gray-800 group-hover:text-white transition-colors duration-300 text-sm">
+                                            {t('home.courses.allCourses')}
+                                        </div>
+                                        <div className="text-xs text-gray-500 group-hover:text-blue-100 transition-colors duration-300 mt-1">
+                                            All Programs
+                                        </div>
+                                    </div>
+                    
+                                    {/* Hover glow effect */}
+                                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-400 to-purple-400 opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500"></div>
+                                </button>
+                    
+                                {/* Web Development */}
+                                <button className="group relative overflow-hidden bg-white hover:bg-gradient-to-br hover:from-green-500 hover:to-teal-500 border-2 border-gray-200 hover:border-transparent rounded-2xl p-6 transition-all duration-500 transform hover:-translate-y-2 hover:scale-105 hover:shadow-2xl">
+                                    <div className="absolute inset-0 bg-gradient-to-br from-green-500 to-teal-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
+                                    
+                                    <div className="relative z-10 text-center">
+                                        <div className="w-14 h-14 mx-auto mb-4 bg-green-100 group-hover:bg-white/20 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:rotate-12 group-hover:scale-110">
+                                            <span className="material-icons text-2xl text-green-600 group-hover:text-white transition-colors duration-300">code</span>
+                                        </div>
+                                        <div className="font-bold text-gray-800 group-hover:text-white transition-colors duration-300 text-sm">
+                                            {t('courses.webDevelopment')}
+                                        </div>
+                                        <div className="text-xs text-gray-500 group-hover:text-green-100 transition-colors duration-300 mt-1">
+                                            Frontend & Backend
+                                        </div>
+                                    </div>
+                    
+                                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-green-400 to-teal-400 opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500"></div>
+                                </button>
+                    
+                                {/* Data Science */}
+                                <button className="group relative overflow-hidden bg-white hover:bg-gradient-to-br hover:from-orange-500 hover:to-red-500 border-2 border-gray-200 hover:border-transparent rounded-2xl p-6 transition-all duration-500 transform hover:-translate-y-2 hover:scale-105 hover:shadow-2xl">
+                                    <div className="absolute inset-0 bg-gradient-to-br from-orange-500 to-red-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
+                                    
+                                    <div className="relative z-10 text-center">
+                                        <div className="w-14 h-14 mx-auto mb-4 bg-orange-100 group-hover:bg-white/20 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:rotate-12 group-hover:scale-110">
+                                            <span className="material-icons text-2xl text-orange-600 group-hover:text-white transition-colors duration-300">analytics</span>
+                                        </div>
+                                        <div className="font-bold text-gray-800 group-hover:text-white transition-colors duration-300 text-sm">
+                                            {t('courses.dataScience')}
+                                        </div>
+                                        <div className="text-xs text-gray-500 group-hover:text-orange-100 transition-colors duration-300 mt-1">
+                                            AI & Analytics
+                                        </div>
+                                    </div>
+                    
+                                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-orange-400 to-red-400 opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500"></div>
+                                </button>
+                    
+                                {/* Cybersecurity */}
+                                <button className="group relative overflow-hidden bg-white hover:bg-gradient-to-br hover:from-red-600 hover:to-pink-600 border-2 border-gray-200 hover:border-transparent rounded-2xl p-6 transition-all duration-500 transform hover:-translate-y-2 hover:scale-105 hover:shadow-2xl">
+                                    <div className="absolute inset-0 bg-gradient-to-br from-red-600 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
+                                    
+                                    <div className="relative z-10 text-center">
+                                        <div className="w-14 h-14 mx-auto mb-4 bg-red-100 group-hover:bg-white/20 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:rotate-12 group-hover:scale-110">
+                                            <span className="material-icons text-2xl text-red-600 group-hover:text-white transition-colors duration-300">security</span>
+                                        </div>
+                                        <div className="font-bold text-gray-800 group-hover:text-white transition-colors duration-300 text-sm">
+                                            {t('courses.cybersecurity')}
+                                        </div>
+                                        <div className="text-xs text-gray-500 group-hover:text-red-100 transition-colors duration-300 mt-1">
+                                            Ethical Hacking
+                                        </div>
+                                    </div>
+                    
+                                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-red-400 to-pink-400 opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500"></div>
+                                </button>
+                    
+                                {/* Cloud Computing */}
+                                <button className="group relative overflow-hidden bg-white hover:bg-gradient-to-br hover:from-cyan-500 hover:to-blue-500 border-2 border-gray-200 hover:border-transparent rounded-2xl p-6 transition-all duration-500 transform hover:-translate-y-2 hover:scale-105 hover:shadow-2xl">
+                                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-500 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
+                                    
+                                    <div className="relative z-10 text-center">
+                                        <div className="w-14 h-14 mx-auto mb-4 bg-cyan-100 group-hover:bg-white/20 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:rotate-12 group-hover:scale-110">
+                                            <span className="material-icons text-2xl text-cyan-600 group-hover:text-white transition-colors duration-300">cloud</span>
+                                        </div>
+                                        <div className="font-bold text-gray-800 group-hover:text-white transition-colors duration-300 text-sm">
+                                            {t('courses.cloudComputing')}
+                                        </div>
+                                        <div className="text-xs text-gray-500 group-hover:text-cyan-100 transition-colors duration-300 mt-1">
+                                            AWS & Azure
+                                        </div>
+                                    </div>
+                    
+                                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-cyan-400 to-blue-400 opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500"></div>
+                                </button>
+                    
+                                {/* AI & ML */}
+                                <button className="group relative overflow-hidden bg-white hover:bg-gradient-to-br hover:from-purple-600 hover:to-indigo-600 border-2 border-gray-200 hover:border-transparent rounded-2xl p-6 transition-all duration-500 transform hover:-translate-y-2 hover:scale-105 hover:shadow-2xl">
+                                    <div className="absolute inset-0 bg-gradient-to-br from-purple-600 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
+                                    
+                                    <div className="relative z-10 text-center">
+                                        <div className="w-14 h-14 mx-auto mb-4 bg-purple-100 group-hover:bg-white/20 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:rotate-12 group-hover:scale-110">
+                                            <span className="material-icons text-2xl text-purple-600 group-hover:text-white transition-colors duration-300">smart_toy</span>
+                                        </div>
+                                        <div className="font-bold text-gray-800 group-hover:text-white transition-colors duration-300 text-sm">
+                                            {t('courses.aiMl')}
+                                        </div>
+                                        <div className="text-xs text-gray-500 group-hover:text-purple-100 transition-colors duration-300 mt-1">
+                                            Neural Networks
+                                        </div>
+                                    </div>
+                    
+                                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-400 to-indigo-400 opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500"></div>
+                                </button>
+                            </div>
+                    
+                            {/* Bottom stats */}
+                            <div className="flex justify-center items-center gap-8 mt-8 pt-6 border-t border-gray-200">
+                                <div className="text-center">
+                                    <div className="text-2xl font-bold text-gray-800">6</div>
+                                    <div className="text-sm text-gray-600">Categories</div>
+                                </div>
+                                <div className="w-px h-8 bg-gray-300"></div>
+                                <div className="text-center">
+                                    <div className="text-2xl font-bold text-gray-800">50+</div>
+                                    <div className="text-sm text-gray-600">Courses</div>
+                                </div>
+                                <div className="w-px h-8 bg-gray-300"></div>
+                                <div className="text-center">
+                                    <div className="text-2xl font-bold text-gray-800">15k+</div>
+                                    <div className="text-sm text-gray-600">Students</div>
+                                </div>
+                            </div>
                         </div>
-                        <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-slate-50 to-transparent pointer-events-none sm:hidden"></div>
                     </div>
                     
                     <CourseSection />

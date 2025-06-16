@@ -99,14 +99,14 @@ const Footer = () => {
                     <p><i className="fas fa-clock"></i> {t('footer.hours')}</p>
                 </div>
                 
-                <div className="footer-section newsletter">
+                {/* <div className="footer-section newsletter">
                     <h2 className="footer-heading">{t('footer.subscribe')}</h2>
                     <p>{t('footer.subscribeDescription')}</p>
                     <form className="newsletter-form">
                         <input type="email" placeholder={t('footer.emailPlaceholder')} required />
                         <button type="submit">{t('footer.subscribeButton')}</button>
                     </form>
-                </div>
+                </div> */}
             </div>
             
             <div className="copyright">
