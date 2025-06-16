@@ -1361,5 +1361,132 @@
         }
       }
     }
-  }
+  },
+  "common": {
+    "videoNotSupported": "Your browser does not support the video tag."
+  },
+  "campusLife": {
+    "badge": "Campus Experience",
+    "title": "Campus Life",
+    "subtitle": "Experience vibrant campus life with diverse activities, communities, and opportunities for personal growth.",
+    "items": {
+      "studentLife": {
+        "title": "Student Life",
+        "description": "Join a diverse community of students from around the world and create lasting friendships."
+      },
+      "clubs": {
+        "title": "Clubs & Activities",
+        "description": "Explore your interests through our wide range of clubs, societies, and extracurricular activities."
+      },
+      "dining": {
+        "title": "Dining",
+        "description": "Enjoy delicious and diverse dining options across campus, including international cuisines."
+      },
+      "sports": {
+        "title": "Sports & Recreation",
+        "description": "Stay active with our modern sports facilities and recreational programs for all skill levels."
+      }
+    }
+  },
+  "facilities": {
+    "badge": "World-Class Facilities",
+    "title": "Modern Campus Facilities",
+    "subtitle": "State-of-the-art facilities designed to enhance your learning experience and support your academic journey.",
+    "items": {
+      "labs": {
+        "tag": "Technology Hub",
+        "title": "Modern Laboratories",
+        "description": "Cutting-edge laboratories equipped with the latest technology for hands-on learning and research.",
+        "features": {
+          "ai": "AI & Machine Learning Labs",
+          "robotics": "Robotics & Automation",
+          "networking": "Network Security Center"
+        }
+      },
+      "library": {
+        "tag": "Knowledge Center",
+        "title": "University Library",
+        "description": "A comprehensive learning resource center with extensive collections and collaborative spaces.",
+        "features": {
+          "books": "100,000+ Books & Journals",
+          "digitalResources": "Digital Research Resources",
+          "studySpaces": "Quiet & Group Study Areas"
+        }
+      },
+      "dormitories": {
+        "tag": "Student Housing",
+        "title": "Student Dormitories",
+        "description": "Comfortable and secure accommodation designed to foster community and academic success.",
+        "features": {
+          "furnished": "Fully Furnished Rooms",
+          "wifi": "High-Speed Internet",
+          "communitySpaces": "Common Areas & Kitchens"
+        }
+      }
+    }
+  },
+  "niigataLife": {
+    "badge": "Discover Niigata",
+    "title": "Life in Niigata",
+    "subtitle": "Discover the beauty, culture, and opportunities that make Niigata a perfect place to study and live.",
+    "items": {
+      "nature": {
+        "title": "Natural Beauty",
+        "description": "Experience stunning landscapes, mountains, and coastlines that make Niigata truly special."
+      },
+      "culture": {
+        "title": "Rich Culture",
+        "description": "Immerse yourself in traditional Japanese culture, festivals, and world-famous local cuisine."
+      },
+      "transportation": {
+        "title": "Convenient Access",
+        "description": "Easy access to major cities with excellent transportation networks and infrastructure."
+      },
+      "seasons": {
+        "title": "Four Seasons",
+        "description": "Experience the beauty of all four seasons, from cherry blossoms to snow festivals."
+      }
+    },
+    "gallery": {
+      "title": "Niigata Life Gallery",
+      "items": {
+        "cityView": "City Views",
+        "festivals": "Local Festivals",
+        "winterScenes": "Winter Scenes"
+      }
+    }
+  },
+    "register": {
+        "closeModal": "Close registration modal",
+        "header": {
+        "title": "Join Forum Academy",
+        "subtitle": "Create your account to start your academic journey"
+        },
+        "steps": {
+        "personal": "Personal Info",
+        "account": "Account Details",
+        "security": "Security"
+        },
+        "form": {
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "email": "Email Address",
+        "password": "Password",
+        "confirmPassword": "Confirm Password",
+        "createAccount": "Create Account",
+        "creatingAccount": "Creating Account..."
+        },
+        "studentInfo": {
+        "title": "Student Information",
+        "description": "Please use your academic email address for verification purposes. This will help us connect you with your institution."
+        },
+        "navigation": {
+        "back": "Back",
+        "next": "Next"
+        },
+        "success": {
+        "pendingTitle": "Registration Pending",
+        "pendingMessage": "Your account has been created and is pending approval. You will receive an email notification once your account is activated."
+        }
+    }
 }
