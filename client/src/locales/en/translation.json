@@ -1745,5 +1745,173 @@
           "title": "Choose Your",
           "highlight": "Learning Path",
           "subtitle": "Discover our comprehensive range of expertly-crafted courses designed to accelerate your career in technology"
+        },
+          "footer": {
+            "aboutAcademy": "Forum Information Academy",
+            "aboutDescription": "Leading technology education institution dedicated to preparing students for successful careers in the digital economy.",
+            "followUs": "Follow Us",
+            "quickLinks": "Quick Links",
+            "contactUs": "Contact Us",
+            "address": "3-1-19 Benten, Chuo-ku, Niigata City, Niigata Prefecture, Japan 950-0901",
+            "phone": "TEL: 025-247-6300",
+            "fax": "FAX: 025-247-6305",
+            "website": "https://www.forum.ac.jp/",
+            "websiteLabel": "Official Website",
+            "hours": "Mon-Fri: 9:00 AM - 6:00 PM",
+            "copyright": "© 2025 Forum Information Academy. All rights reserved.",
+            "privacyPolicy": "Privacy Policy",
+            "termsOfService": "Terms of Service"
+          },
+  "team": {
+    "hero": {
+      "badge": "Our Team",
+      "title": "Exceptional",
+      "highlight": "Educators",
+      "description": "Industry experts and passionate educators supporting your journey to success. With practical knowledge and specialized skills, we nurture the next generation of leaders.",
+      "stats": {
+        "facultyMembers": "Faculty Members",
+        "experience": "Years Experience",
+        "satisfactionRate": "Satisfaction Rate",
+        "certifications": "Certifications"
+      },
+      "buttons": {
+        "exploreFaculty": "Explore Faculty",
+        "joinTeam": "Join Our Team"
+      }
+    },
+    "faculty": {
+      "badge": "Meet Our Distinguished Faculty",
+      "title": "Inspiring",
+      "highlight": "Educators",
+      "subtitle": "Shaping Tomorrow's Leaders",
+      "description": "Discover the passionate educators, industry experts, and dedicated mentors who guide our students on their journey to success. Each bringing unique expertise and unwavering commitment to excellence."
+    },
+    "industryPartners": {
+      "badge": "Industry-Academia Collaboration",
+      "title": "Partner Companies",
+      "description": "Through strong partnerships with leading companies worldwide, we provide students with practical learning opportunities and career support.",
+      "benefits": {
+        "internships": {
+          "title": "Internship Opportunities",
+          "description": "Gain real-world work experience through practical internships at major companies."
+        },
+        "mentorship": {
+          "title": "Industry Mentorship",
+          "description": "Receive direct guidance from experienced industry professionals to accelerate your career growth."
+        },
+        "placement": {
+          "title": "Job Placement Guarantee",
+          "description": "We provide priority job opportunities at partner companies and continuous career support after graduation."
         }
+      },
+      "cta": {
+        "title": "Ready to Start Your Journey to Success?",
+        "description": "Leverage our network with top industry companies to realize your ideal career. Apply now and open the door to your future.",
+        "buttons": {
+          "joinProgram": "Join Our Program",
+          "partnerWithUs": "Partnership Opportunities"
+        }
+      }
+    },
+    "testimonials": {
+      "badge": "Success Stories That Inspire",
+      "title": "Student",
+      "highlight": "Voices",
+      "subtitle": "Real Stories, Real Success",
+      "description": "Discover how our graduates are making their mark in the tech industry across the globe. These aren't just testimonials - they're proof of what's possible when passion meets excellence.",
+      "students": {
+        "yuki": {
+          "name": "Yuki Sato",
+          "role": "Web Developer",
+          "company": "Google Japan",
+          "quote": "Forum Academy's comprehensive curriculum and hands-on projects prepared me perfectly for my role at Google. The industry connections they provided were invaluable for my career growth.",
+          "year": "Class of 2023",
+          "program": "Web Development"
+        },
+        "arjun": {
+          "name": "Arjun Kumar",
+          "role": "Data Scientist",
+          "company": "Sony Corporation",
+          "quote": "The AI and Machine Learning program exceeded my expectations. The practical approach and mentorship from industry experts made all the difference in landing my dream job.",
+          "year": "Class of 2022",
+          "program": "Data Science"
+        },
+        "maria": {
+          "name": "Maria Thompson",
+          "role": "Cybersecurity Analyst",
+          "company": "NTT Communications",
+          "quote": "Forum Academy's cybersecurity program is world-class. The real-world scenarios and cutting-edge labs gave me the confidence to tackle complex security challenges.",
+          "year": "Class of 2023",
+          "program": "Cybersecurity"
+        },
+        "raj": {
+          "name": "Raj Patel",
+          "role": "Cloud Engineer",
+          "company": "Amazon Web Services",
+          "quote": "The cloud computing curriculum was perfectly aligned with industry needs. I landed my AWS role straight after graduation thanks to the practical skills I gained here.",
+          "year": "Class of 2022",
+          "program": "Cloud Computing"
+        },
+        "sarah": {
+          "name": "Sarah Lee",
+          "role": "Full-Stack Developer",
+          "company": "Microsoft Japan",
+          "quote": "The supportive environment and expert faculty at Forum Academy helped me transition from a complete beginner to a confident full-stack developer in just two years.",
+          "year": "Class of 2023",
+          "program": "Full-Stack Dev"
+        },
+        "david": {
+          "name": "David Wilson",
+          "role": "AI Research Engineer",
+          "company": "RIKEN Institute",
+          "quote": "Forum Academy's AI program is at the forefront of technology education. The research opportunities and cutting-edge facilities prepared me for my role in AI research.",
+          "year": "Class of 2022",
+          "program": "AI & ML"
+        }
+      },
+      "connectButton": "Connect on LinkedIn",
+      "successStats": {
+        "badge": "Success Metrics That Matter",
+        "title": "Numbers That Tell Our",
+        "highlight": "Story",
+        "description": "These aren't just statistics - they represent real lives transformed, dreams achieved, and futures secured through world-class education.",
+        "employmentRate": {
+          "value": "95%",
+          "title": "Employment Rate",
+          "description": "Within 6 months of graduation"
+        },
+        "averageSalary": {
+          "value": "¥4.2M",
+          "title": "Average Salary",
+          "description": "Starting annual salary"
+        },
+        "jobSearchTime": {
+          "value": "3mo",
+          "title": "Job Search Time",
+          "description": "Average time to employment"
+        },
+        "partnerCompanies": {
+          "value": "500+",
+          "title": "Partner Companies",
+          "description": "Global hiring partners"
+        }
+      },
+      "cta": {
+        "badge": "Ready to Write Your Success Story?",
+        "title": "Your Journey to",
+        "highlight": "Excellence Starts Here",
+        "description": "Join thousands of successful graduates who transformed their careers through our industry-leading programs. Your future in tech is just one application away.",
+        "buttons": {
+          "startJourney": "Start Your Journey",
+          "readMoreStories": "Read More Stories"
+        },
+        "trustIndicators": {
+          "noFee": "No Application Fee",
+          "response": "24h Response Guarantee",
+          "support": "Career Support Included",
+          "certification": "Industry Certification"
+        }
+      }
     }
+  }
+}
