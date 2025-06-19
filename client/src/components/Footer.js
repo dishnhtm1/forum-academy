@@ -137,7 +137,7 @@ const Footer = () => {
                     ))}
                 </div>
             
-                <style jsx>{`
+                <style>{`
                     @keyframes footer-wave {
                         0%, 100% { transform: translateX(0%) scale(1); }
                         25% { transform: translateX(-2%) scale(1.02); }
