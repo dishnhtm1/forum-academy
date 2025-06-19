@@ -97,56 +97,6 @@ const LoginModal = ({ isOpen, onClose, onRegisterClick }) => {
         }
     }, [isVisible]);
 
-       // Add forgot password handler
-    // const handleForgotPassword = async (e) => {
-    //     e.preventDefault();
-    //     setForgotError('');
-    //     setForgotMessage('');
-    //     setForgotLoading(true);
-
-    //     try {
-    //         const response = await fetch(`${API_BASE_URL}/api/auth/forgot-password`, {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json'
-    //             },
-    //             body: JSON.stringify({ email: forgotEmail })
-    //         });
-
-    //         const data = await response.json();
-
-    //         if (!response.ok) {
-    //             throw new Error(data.message || 'Failed to send reset email');
-    //         }
-
-    //         setForgotMessage('Password reset email sent successfully! Please check your inbox.');
-    //         setTimeout(() => {
-    //             setShowForgotPassword(false);
-    //             setForgotEmail('');
-    //             setForgotMessage('');
-    //         }, 3000);
-
-    //     } catch (error) {
-    //         console.error('Forgot password error:', error);
-    //         setForgotError(error.message || 'Failed to send reset email. Please try again.');
-    //     } finally {
-    //         setForgotLoading(false);
-    //     }
-    // };
-
-    // // Clear forgot password form when modal closes
-    // useEffect(() => {
-    //     if (!isOpen) {
-    //         setEmail('');
-    //         setPassword('');
-    //         setFormError('');
-    //         setShowForgotPassword(false);
-    //         setForgotEmail('');
-    //         setForgotMessage('');
-    //         setForgotError('');
-    //     }
-    // }, [isOpen]);
-        // ...existing code...
     const handleForgotPassword = async (e) => {
         e.preventDefault();
         setForgotError('');
