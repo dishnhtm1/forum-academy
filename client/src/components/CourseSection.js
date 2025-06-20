@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import webImage from '../assets/images/web.jpg';
-import dataImage from '../assets/images/data.jpg';
-import cyberImage from '../assets/images/cyber.jpg';
-import cloudImage from '../assets/images/cloud.jpg';
-import aiImage from '../assets/images/Ai.jpg';
-import mobileImage from '../assets/images/mobile.png';
+
+import webImage from '../assets/courses/web.jpg';
+import dataImage from '../assets/courses/data.jpg';
+import cyberImage from '../assets/courses/cyber.jpg';
+import cloudImage from '../assets/courses/cloud.jpg';
+import aiImage from '../assets/courses/ai.jpg';
+import mobileImage from '../assets/courses/mobile.jpg';
 
 const CourseSection = ({ limit, showFilters = false, title = "Our Featured Courses" }) => {
     const { t } = useTranslation();

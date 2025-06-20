@@ -1913,5 +1913,373 @@
         }
       }
     }
+  },
+  "admin": {
+    "systemHealth": {
+      "title": "System Health Monitor",
+      "description": "All systems operating optimally",
+      "status": "HEALTHY"
+    },
+    "metrics": {
+      "serverLoad": {
+        "title": "Server Load",
+        "subtitle": "CPU utilization"
+      },
+      "storage": {
+        "title": "Storage Used",
+        "subtitle": "Database & files"
+      },
+      "response": {
+        "title": "Response Time",
+        "subtitle": "Average API speed"
+      },
+      "sessions": {
+        "title": "Active Sessions",
+        "subtitle": "Current users online"
+      },
+      "totalUsers": "Total Users",
+      "applications": "Applications",
+      "messages": "Messages",
+      "uptime": "Uptime",
+      "pendingApproval": "Pending approval",
+      "pendingReview": "Pending review",
+      "needsResponse": "Needs response",
+      "last30Days": "Last 30 days",
+      "downtime": "minutes downtime",
+      "totalActiveUsers": "Total Active Users",
+      "growthRate": "Growth rate",
+      "thisMonth": "this month"
+    },
+    "status": {
+      "optimal": "Optimal",
+      "growing": "Growing",
+      "fast": "Fast",
+      "active": "Active",
+      "liveMonitoring": "Live monitoring",
+      "approved": "approved",
+      "resolved": "resolved",
+      "excellent": "Excellent",
+      "live": "Live",
+      "allClear": "All Clear",
+      "automated": "Automated"
+    },
+    "userDistribution": {
+      "title": "User Distribution",
+      "subtitle": "Platform user breakdown by role"
+    },
+    "roles": {
+      "students": "Students",
+      "studentsDesc": "Active learners",
+      "teachers": "Teachers",
+      "teachersDesc": "Course instructors",
+      "administrators": "Administrators",
+      "administratorsDesc": "System managers"
+    },
+    "activity": {
+      "title": "Real-time Activity",
+      "subtitle": "Live system events and user actions",
+      "newRegistration": "New {{role}} registration",
+      "awaitingApproval": "awaiting approval",
+      "newContactMessage": "New contact message",
+      "securityScan": "Security scan completed",
+      "noThreats": "No threats detected. All systems secure.",
+      "databaseBackup": "Database backup completed",
+      "backupSuccess": "Daily backup successful. 2.4GB archived."
+    },
+    "actions": {
+      "approve": "Approve",
+      "reject": "Reject",
+      "priority": "Priority",
+      "resolve": "Resolve"
+    },
+    "quickActions": {
+      "title": "Quick Administration",
+      "manageUsers": "Manage Users",
+      "applications": "Applications",
+      "messages": "Messages",
+      "settings": "Settings"
+    },
+    "alerts": {
+      "title": "System Alerts",
+      "subtitle": "Recent system notifications and alerts"
+    },
+    "time": {
+      "fiveMinutesAgo": "5 minutes ago",
+      "oneHourAgo": "1 hour ago"
+    }
+  },
+  "userManagement": {
+    "title": "User Management",
+    "stats": {
+      "totalUsers": "Total Users",
+      "pending": "Pending",
+      "approved": "Approved"
+    },
+    "search": {
+      "placeholder": "🔍 Search users...",
+      "allRoles": "All Roles",
+      "allStatus": "All Status"
+    },
+    "roles": {
+      "student": "Student",
+      "teacher": "Teacher",
+      "admin": "Admin",
+      "students": "Students",
+      "teachers": "Teachers",
+      "admins": "Admins"
+    },
+    "status": {
+      "approved": "Approved",
+      "pending": "Pending",
+      "needsReview": "Needs Review"
+    },
+    "buttons": {
+      "createNewUser": "Create New User",
+      "cancel": "Cancel",
+      "createUser": "Create User",
+      "updateUser": "Update User",
+      "yesDelete": "Yes, Delete"
+    },
+    "modals": {
+      "createUser": {
+        "title": "Create New User"
+      },
+      "editUser": {
+        "title": "Edit User"
+      },
+      "deleteUser": {
+        "title": "Confirm Delete User",
+        "message": "Are you sure you want to delete user",
+        "warning": "This action cannot be undone."
+      }
+    },
+    "form": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email Address",
+      "password": "Password",
+      "newPassword": "New Password",
+      "role": "Role",
+      "placeholders": {
+        "firstName": "Enter first name",
+        "lastName": "Enter last name",
+        "email": "Enter email address",
+        "password": "Enter password",
+        "newPassword": "Leave blank to keep current password"
+      },
+      "notes": {
+        "passwordKeep": "Leave blank to keep the current password"
+      }
+    },
+    "table": {
+      "headers": {
+        "user": "User",
+        "contact": "Contact",
+        "role": "Role",
+        "status": "Status",
+        "joined": "Joined",
+        "actions": "Actions"
+      },
+      "actions": {
+        "approve": "Approve User",
+        "reject": "Reject User",
+        "edit": "Edit User",
+        "delete": "Delete User",
+        "editAction": "Edit User",
+        "deleteAction": "Delete User"
+      },
+      "timeago": {
+        "today": "Today",
+        "daysAgo": "days ago"
+      }
+    },
+    "footer": {
+      "showing": "Showing",
+      "of": "of",
+      "users": "users",
+      "filtered": "(filtered)",
+      "previous": "← Previous",
+      "next": "Next →"
+    },
+    "dropdown": {
+      "editUser": "Edit User",
+      "deleteUser": "Delete User"
+    }
+  },
+    "newsPage": {
+      "hero": {
+        "badge": "Latest Updates",
+        "title": {
+          "part1": "Stay Updated with",
+          "highlight": "Campus News"
+        },
+        "description": "Discover the latest announcements, events, and achievements from our vibrant academic community.",
+        "trending": {
+          "label": "Trending",
+          "tags": {
+            "techSymposium": "Tech Symposium",
+            "hackathon": "Hackathon",
+            "newCourses": "New Courses"
+          }
+        },
+        "stats": {
+          "upcomingEvents": "Upcoming Events",
+          "recentAnnouncements": "Recent Announcements",
+          "studentAchievements": "Student Achievements"
+        }
+      },
+      "filters": {
+        "all": "All News",
+        "events": "Events",
+        "announcements": "Announcements",
+        "achievements": "Achievements"
+      },
+      "sectionTitles": {
+        "all": "Latest News & Updates",
+        "events": "Upcoming Events",
+        "announcements": "Official Announcements",
+        "achievements": "Student Achievements"
+      },
+      "categoryLabels": {
+        "event": "Event",
+        "announcement": "Announcement",
+        "achievement": "Achievement"
+      },
+      "itemCount": {
+        "singular": "item",
+        "plural": "items"
+      },
+      "featured": {
+        "tag": "Featured",
+        "title": "International Technology Symposium 2024",
+        "excerpt": "Join us for a groundbreaking symposium featuring leading experts in artificial intelligence, robotics, and quantum computing. Network with industry professionals and discover the latest innovations shaping our future."
+      },
+      "buttons": {
+        "learnMore": "Learn More",
+        "registerNow": "Register Now",
+        "readMore": "Read More"
+      },
+      "items": {
+        "techSymposium": {
+          "date": "March 15, 2024",
+          "title": "International Technology Symposium 2024",
+          "excerpt": "Join leading experts in AI, robotics, and quantum computing for an inspiring day of innovation and discovery."
+        },
+        "industryPartnership": {
+          "date": "March 10, 2024",
+          "title": "New Industry Partnership Announcement",
+          "excerpt": "We're excited to announce our new collaboration with major tech companies to enhance student opportunities."
+        },
+        "springOpenHouse": {
+          "date": "April 5, 2024",
+          "title": "Spring Open House Event",
+          "excerpt": "Explore our campus, meet faculty, and discover the programs that will shape your future in technology."
+        },
+        "hackathonWinners": {
+          "date": "February 28, 2024",
+          "title": "Student Hackathon Winners Announced",
+          "excerpt": "Congratulations to our talented students who showcased innovative solutions at the annual hackathon competition."
+        },
+        "quantumCourse": {
+          "date": "March 20, 2024",
+          "title": "New Quantum Computing Course Launch",
+          "excerpt": "Dive into the future of computing with our newly launched quantum computing specialization program."
+        },
+        "aiEthicsLecture": {
+          "date": "April 12, 2024",
+          "title": "AI Ethics Guest Lecture Series",
+          "excerpt": "Join renowned experts as they discuss the ethical implications and future of artificial intelligence."
+        }
+      },
+      "noResults": {
+        "title": "No news found in",
+        "items": "all categories",
+        "description": "Try adjusting your filters or check back later for new updates."
+      },
+      "loading": "Loading...",
+      "videoNotSupported": "Your browser does not support the video tag."
+    },
+    "campusLife": {
+      "badge": "Campus Experience",
+      "title": "Life at Our Campus",
+      "subtitle": "Discover the vibrant community, modern facilities, and endless opportunities that make our campus a perfect place to learn and grow.",
+      "items": {
+        "studentLife": {
+          "title": "Student Life",
+          "description": "Vibrant community with diverse student organizations, cultural events, and social activities that enrich your academic journey."
+        },
+        "clubs": {
+          "title": "Clubs & Activities",
+          "description": "Join over 50 student clubs and organizations, from technology societies to cultural groups and sports teams."
+        },
+        "dining": {
+          "title": "Campus Dining",
+          "description": "Enjoy delicious and diverse dining options featuring local Niigata specialties and international cuisine."
+        },
+        "sports": {
+          "title": "Sports & Recreation",
+          "description": "Stay active with our modern gymnasium, fitness centers, and various sports facilities for all skill levels."
+        }
+      },
+      "map": {
+        "title": "Campus Map & Access",
+        "description": "Navigate our campus easily and find the best routes to reach us from anywhere in Niigata."
+      },
+      "dining": {
+        "gallery": "Campus Dining Experience",
+        "galleryDesc": "Taste the authentic flavors of Niigata with our diverse selection of local and international cuisine."
+      }
+    },
+    "facilities": {
+      "badge": "World-Class Facilities",
+      "title": "Our Facilities",
+      "subtitle": "Experience cutting-edge technology and modern infrastructure designed to support your academic and personal growth.",
+      "items": {
+        "campus": {
+          "tag": "Campus Tour",
+          "title": "Modern Campus Facilities",
+          "description": "Our state-of-the-art campus features modern classrooms, advanced laboratories, and collaborative spaces designed for 21st-century learning.",
+          "features": {
+            "modernBuildings": "Modern Architecture",
+            "laboratories": "Advanced Labs",
+            "library": "Digital Library",
+            "sportsFacilities": "Sports Complex"
+          }
+        },
+        "niigataLife": {
+          "tag": "City Life",
+          "title": "Life in Niigata",
+          "description": "Experience the perfect blend of urban convenience and natural beauty in Niigata, a city rich in culture, cuisine, and seasonal charm.",
+          "features": {
+            "culturalSites": "Cultural Heritage",
+            "localCuisine": "Local Cuisine",
+            "naturalBeauty": "Natural Beauty",
+            "festivals": "Seasonal Festivals"
+          }
+        }
+      }
+    },
+    "niigataLife": {
+      "badge": "Discover Niigata",
+      "title": "Life in Niigata",
+      "subtitle": "Experience the unique charm of Niigata, where traditional Japanese culture meets modern innovation in a city known for its natural beauty, delicious cuisine, and warm hospitality.",
+      "items": {
+        "nature": {
+          "title": "Natural Beauty",
+          "description": "From beautiful coastlines to majestic mountains, Niigata offers breathtaking landscapes throughout the seasons."
+        },
+        "culture": {
+          "title": "Rich Culture",
+          "description": "Immerse yourself in authentic Japanese culture with traditional festivals, local crafts, and historical sites."
+        },
+        "transportation": {
+          "title": "Convenient Access",
+          "description": "Excellent transportation links connect you to Tokyo and other major cities via shinkansen and local trains."
+        },
+        "seasons": {
+          "title": "Four Seasons",
+          "description": "Experience Japan's distinct seasons, from cherry blossoms in spring to world-class skiing in winter."
+        }
+      }
+    }
   }
-}

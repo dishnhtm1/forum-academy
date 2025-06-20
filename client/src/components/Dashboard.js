@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement,
     Title, Tooltip, Legend, ArcElement, } from 'chart.js';
 import { Bar, Line, Doughnut } from 'react-chartjs-2';
+import Swal from 'sweetalert2';
 
 
 ChartJS.register(
@@ -981,7 +982,7 @@ const Dashboard = () => {
             alert('Error updating user. Please try again.');
         }
     };
-    
+
     const confirmDeleteUser = async () => {
         console.log('🔥 DELETE CONFIRMATION CLICKED!');
         console.log('User to delete:', userToDelete);
@@ -3273,8 +3274,7 @@ const Dashboard = () => {
         </div>
     );
 
-    // Teacher Dashboard Components
-    
+    // Teacher Dashboard Components    
     const renderTeacherDashboard = () => {
         if (activeTab === 'overview') {
             return renderTeacherOverview();
@@ -5611,6 +5611,1320 @@ const Dashboard = () => {
     );
 
     // Admin Dashboard Components
+    // const renderAdminOverview = () => (
+    //     <div className="space-y-8">
+    //         {/* System Health Header - Enhanced Dark Mode */}
+    //         <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 rounded-3xl shadow-2xl overflow-hidden">
+    //             <div className="relative p-8">
+    //                 {/* Background Pattern */}
+    //                 <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+    //                 <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-48 translate-x-48"></div>
+    //                 <div className="absolute bottom-0 left-0 w-72 h-72 bg-white/5 rounded-full translate-y-36 -translate-x-36"></div>
+                    
+    //                 <div className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+    //                     {/* System Health Score */}
+    //                     <div className="flex flex-col items-center lg:items-start">
+    //                         <div className="relative w-32 h-32 mb-4">
+    //                             <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 100 100">
+    //                                 <circle 
+    //                                     cx="50" 
+    //                                     cy="50" 
+    //                                     r="40" 
+    //                                     stroke="rgba(255,255,255,0.2)" 
+    //                                     strokeWidth="8" 
+    //                                     fill="transparent"
+    //                                 />
+    //                                 <circle 
+    //                                     cx="50" 
+    //                                     cy="50" 
+    //                                     r="40" 
+    //                                     stroke="white" 
+    //                                     strokeWidth="8" 
+    //                                     fill="transparent"
+    //                                     strokeDasharray={`${dashboardData.admin.systemHealth * 2.51} 251`}
+    //                                     strokeLinecap="round"
+    //                                     className="transition-all duration-1000 ease-out"
+    //                                 />
+    //                             </svg>
+    //                             <div className="absolute inset-0 flex items-center justify-center">
+    //                                 <div className="text-center">
+    //                                     <div className="text-3xl font-bold text-white">{dashboardData.admin.systemHealth}%</div>
+    //                                     <div className="text-xs text-white/80 font-medium">HEALTHY</div>
+    //                                 </div>
+    //                             </div>
+    //                         </div>
+    //                         <h2 className="text-2xl font-bold text-white mb-2">System Health Monitor</h2>
+    //                         <p className="text-white/80 text-center lg:text-left">All systems operating optimally</p>
+    //                     </div>
+    
+    //                     {/* Real-time Metrics */}
+    //                     <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+    //                         <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
+    //                             <div className="flex items-center justify-between mb-4">
+    //                                 <div className="flex items-center space-x-3">
+    //                                     <div className="w-10 h-10 bg-green-500/20 rounded-xl flex items-center justify-center">
+    //                                         <span className="text-green-400 text-xl">🖥️</span>
+    //                                     </div>
+    //                                     <div>
+    //                                         <h3 className="text-white font-semibold">Server Load</h3>
+    //                                         <p className="text-white/60 text-sm">CPU utilization</p>
+    //                                     </div>
+    //                                 </div>
+    //                                 <div className="text-right">
+    //                                     <div className="text-2xl font-bold text-white">{dashboardData.admin.serverLoad}%</div>
+    //                                     <div className="text-green-400 text-sm font-medium">↗ Optimal</div>
+    //                                 </div>
+    //                             </div>
+    //                             <div className="w-full bg-white/20 rounded-full h-2">
+    //                                 <div 
+    //                                     className="bg-gradient-to-r from-green-400 to-emerald-500 h-2 rounded-full transition-all duration-1000"
+    //                                     style={{ width: `${dashboardData.admin.serverLoad}%` }}
+    //                                 ></div>
+    //                             </div>
+    //                         </div>
+    
+    //                         <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
+    //                             <div className="flex items-center justify-between mb-4">
+    //                                 <div className="flex items-center space-x-3">
+    //                                     <div className="w-10 h-10 bg-orange-500/20 rounded-xl flex items-center justify-center">
+    //                                         <span className="text-orange-400 text-xl">💾</span>
+    //                                     </div>
+    //                                     <div>
+    //                                         <h3 className="text-white font-semibold">Storage Used</h3>
+    //                                         <p className="text-white/60 text-sm">Database & files</p>
+    //                                     </div>
+    //                                 </div>
+    //                                 <div className="text-right">
+    //                                     <div className="text-2xl font-bold text-white">{dashboardData.admin.storageUsed}%</div>
+    //                                     <div className="text-orange-400 text-sm font-medium">📈 Growing</div>
+    //                                 </div>
+    //                             </div>
+    //                             <div className="w-full bg-white/20 rounded-full h-2">
+    //                                 <div 
+    //                                     className="bg-gradient-to-r from-orange-400 to-yellow-500 h-2 rounded-full transition-all duration-1000"
+    //                                     style={{ width: `${dashboardData.admin.storageUsed}%` }}
+    //                                 ></div>
+    //                             </div>
+    //                         </div>
+    
+    //                         <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
+    //                             <div className="flex items-center justify-between mb-4">
+    //                                 <div className="flex items-center space-x-3">
+    //                                     <div className="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center">
+    //                                         <span className="text-blue-400 text-xl">⚡</span>
+    //                                     </div>
+    //                                     <div>
+    //                                         <h3 className="text-white font-semibold">Response Time</h3>
+    //                                         <p className="text-white/60 text-sm">Average API speed</p>
+    //                                     </div>
+    //                                 </div>
+    //                                 <div className="text-right">
+    //                                     <div className="text-2xl font-bold text-white">142ms</div>
+    //                                     <div className="text-blue-400 text-sm font-medium">⚡ Fast</div>
+    //                                 </div>
+    //                             </div>
+    //                             <div className="flex space-x-1">
+    //                                 {[...Array(10)].map((_, i) => (
+    //                                     <div 
+    //                                         key={i} 
+    //                                         className={`h-8 w-3 rounded-sm ${i < 7 ? 'bg-blue-400' : 'bg-white/20'}`}
+    //                                     ></div>
+    //                                 ))}
+    //                             </div>
+    //                         </div>
+    
+    //                         <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
+    //                             <div className="flex items-center justify-between mb-4">
+    //                                 <div className="flex items-center space-x-3">
+    //                                     <div className="w-10 h-10 bg-purple-500/20 rounded-xl flex items-center justify-center">
+    //                                         <span className="text-purple-400 text-xl">🌐</span>
+    //                                     </div>
+    //                                     <div>
+    //                                         <h3 className="text-white font-semibold">Active Sessions</h3>
+    //                                         <p className="text-white/60 text-sm">Current users online</p>
+    //                                     </div>
+    //                                 </div>
+    //                                 <div className="text-right">
+    //                                     <div className="text-2xl font-bold text-white">247</div>
+    //                                     <div className="text-purple-400 text-sm font-medium">👥 Active</div>
+    //                                 </div>
+    //                             </div>
+    //                             <div className="flex items-center space-x-2">
+    //                                 <div className="flex space-x-1">
+    //                                     <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+    //                                     <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse delay-75"></div>
+    //                                     <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse delay-150"></div>
+    //                                 </div>
+    //                                 <span className="text-white/60 text-sm">Live monitoring</span>
+    //                             </div>
+    //                         </div>
+    //                     </div>
+    //                 </div>
+    //             </div>
+    //         </div>
+    
+    //         {/* Key Metrics Dashboard - Dark Mode */}
+    //         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    //             <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
+    //                 <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-6 text-white">
+    //                     <div className="flex items-center justify-between">
+    //                         <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+    //                             <span className="text-2xl">👥</span>
+    //                         </div>
+    //                         <div className="text-right">
+    //                             <div className="text-3xl font-bold">{allUsers.length}</div>
+    //                             <div className="text-blue-100 text-sm font-medium">Total Users</div>
+    //                         </div>
+    //                     </div>
+    //                 </div>
+    //                 <div className={`p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} transition-colors duration-300`}>
+    //                     <div className="flex items-center justify-between text-sm">
+    //                         <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>Pending approval</span>
+    //                         <span className="font-semibold text-orange-600">{pendingUsers.length}</span>
+    //                     </div>
+    //                     <div className={`mt-4 rounded-full h-2 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} transition-colors duration-300`}>
+    //                         <div 
+    //                             className="bg-blue-500 h-2 rounded-full transition-all duration-1000"
+    //                             style={{ width: `${(allUsers.filter(u => u.isApproved).length / allUsers.length) * 100}%` }}
+    //                         ></div>
+    //                     </div>
+    //                     <div className={`mt-2 text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-500'} transition-colors duration-300`}>
+    //                         {Math.round((allUsers.filter(u => u.isApproved).length / allUsers.length) * 100)}% approved
+    //                     </div>
+    //                 </div>
+    //             </div>
+    
+    //             <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
+    //                 <div className="bg-gradient-to-br from-green-500 to-green-600 p-6 text-white">
+    //                     <div className="flex items-center justify-between">
+    //                         <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+    //                             <span className="text-2xl">📋</span>
+    //                         </div>
+    //                         <div className="text-right">
+    //                             <div className="text-3xl font-bold">{applicationSubmissions.length}</div>
+    //                             <div className="text-green-100 text-sm font-medium">Applications</div>
+    //                         </div>
+    //                     </div>
+    //                 </div>
+    //                 <div className={`p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} transition-colors duration-300`}>
+    //                     <div className="flex items-center justify-between text-sm">
+    //                         <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>Pending review</span>
+    //                         <span className="font-semibold text-orange-600">{dashboardData.admin.pendingApplications || 0}</span>
+    //                     </div>
+    //                     <div className={`mt-4 rounded-full h-2 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} transition-colors duration-300`}>
+    //                         <div 
+    //                             className="bg-green-500 h-2 rounded-full transition-all duration-1000"
+    //                             style={{ width: `${applicationSubmissions.length > 0 ? ((applicationSubmissions.filter(app => app.status === 'approved').length / applicationSubmissions.length) * 100) : 0}%` }}
+    //                         ></div>
+    //                     </div>
+    //                     <div className={`mt-2 text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-500'} transition-colors duration-300`}>
+    //                         {applicationSubmissions.filter(app => app.status === 'approved').length} approved
+    //                     </div>
+    //                 </div>
+    //             </div>
+    
+    //             <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
+    //                 <div className="bg-gradient-to-br from-orange-500 to-orange-600 p-6 text-white">
+    //                     <div className="flex items-center justify-between">
+    //                         <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+    //                             <span className="text-2xl">📧</span>
+    //                         </div>
+    //                         <div className="text-right">
+    //                             <div className="text-3xl font-bold">{contactSubmissions.length}</div>
+    //                             <div className="text-orange-100 text-sm font-medium">Messages</div>
+    //                         </div>
+    //                     </div>
+    //                 </div>
+    //                 <div className={`p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} transition-colors duration-300`}>
+    //                     <div className="flex items-center justify-between text-sm">
+    //                         <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>Needs response</span>
+    //                         <span className="font-semibold text-red-600">{dashboardData.admin.pendingContacts || 0}</span>
+    //                     </div>
+    //                     <div className={`mt-4 rounded-full h-2 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} transition-colors duration-300`}>
+    //                         <div 
+    //                             className="bg-orange-500 h-2 rounded-full transition-all duration-1000"
+    //                             style={{ width: `${contactSubmissions.length > 0 ? ((contactSubmissions.filter(contact => contact.status === 'resolved').length / contactSubmissions.length) * 100) : 0}%` }}
+    //                         ></div>
+    //                     </div>
+    //                     <div className={`mt-2 text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-500'} transition-colors duration-300`}>
+    //                         {contactSubmissions.filter(contact => contact.status === 'resolved').length} resolved
+    //                     </div>
+    //                 </div>
+    //             </div>
+    
+    //             <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
+    //                 <div className="bg-gradient-to-br from-purple-500 to-purple-600 p-6 text-white">
+    //                     <div className="flex items-center justify-between">
+    //                         <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+    //                             <span className="text-2xl">⏱️</span>
+    //                         </div>
+    //                         <div className="text-right">
+    //                             <div className="text-3xl font-bold">99.9%</div>
+    //                             <div className="text-purple-100 text-sm font-medium">Uptime</div>
+    //                         </div>
+    //                     </div>
+    //                 </div>
+    //                 <div className={`p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} transition-colors duration-300`}>
+    //                     <div className="flex items-center justify-between text-sm">
+    //                         <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>Last 30 days</span>
+    //                         <span className="font-semibold text-green-600">Excellent</span>
+    //                     </div>
+    //                     <div className={`mt-4 rounded-full h-2 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} transition-colors duration-300`}>
+    //                         <div className="bg-purple-500 h-2 rounded-full transition-all duration-1000" style={{ width: '99.9%' }}></div>
+    //                     </div>
+    //                     <div className={`mt-2 text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-500'} transition-colors duration-300`}>
+    //                         43.2 minutes downtime
+    //                     </div>
+    //                 </div>
+    //             </div>
+    //         </div>
+    
+    //         {/* Main Content Grid - Dark Mode */}
+    //         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    //             {/* User Role Distribution - Dark Mode */}
+    //             <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+    //                 <div className={`p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
+    //                     <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
+    //                         <span className="mr-2">📊</span>
+    //                         User Distribution
+    //                     </h3>
+    //                     <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mt-1 transition-colors duration-300`}>Platform user breakdown by role</p>
+    //                 </div>
+    //                 <div className="p-6">
+    //                     <div className="space-y-4">
+    //                         <div className={`flex items-center justify-between p-4 rounded-xl border transition-colors ${
+    //                             isDarkMode ? 'bg-blue-900/20 border-blue-700/50' : 'bg-blue-50 border-blue-200'
+    //                         }`}>
+    //                             <div className="flex items-center space-x-3">
+    //                                 <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+    //                                     <span className="text-white text-sm font-bold">👨‍🎓</span>
+    //                                 </div>
+    //                                 <div>
+    //                                     <div className={`font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>Students</div>
+    //                                     <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>Active learners</div>
+    //                                 </div>
+    //                             </div>
+    //                             <div className="text-right">
+    //                                 <div className="text-2xl font-bold text-blue-600">{allUsers.filter(u => u.role === 'student').length}</div>
+    //                                 <div className="text-xs text-blue-500 font-medium">
+    //                                     {Math.round((allUsers.filter(u => u.role === 'student').length / allUsers.length) * 100)}%
+    //                                 </div>
+    //                             </div>
+    //                         </div>
+    
+    //                         <div className={`flex items-center justify-between p-4 rounded-xl border transition-colors ${
+    //                             isDarkMode ? 'bg-green-900/20 border-green-700/50' : 'bg-green-50 border-green-200'
+    //                         }`}>
+    //                             <div className="flex items-center space-x-3">
+    //                                 <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
+    //                                     <span className="text-white text-sm font-bold">👨‍🏫</span>
+    //                                 </div>
+    //                                 <div>
+    //                                     <div className={`font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>Teachers</div>
+    //                                     <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>Course instructors</div>
+    //                                 </div>
+    //                             </div>
+    //                             <div className="text-right">
+    //                                 <div className="text-2xl font-bold text-green-600">{allUsers.filter(u => u.role === 'teacher').length}</div>
+    //                                 <div className="text-xs text-green-500 font-medium">
+    //                                     {Math.round((allUsers.filter(u => u.role === 'teacher').length / allUsers.length) * 100)}%
+    //                                 </div>
+    //                             </div>
+    //                         </div>
+    
+    //                         <div className={`flex items-center justify-between p-4 rounded-xl border transition-colors ${
+    //                             isDarkMode ? 'bg-purple-900/20 border-purple-700/50' : 'bg-purple-50 border-purple-200'
+    //                         }`}>
+    //                             <div className="flex items-center space-x-3">
+    //                                 <div className="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center">
+    //                                     <span className="text-white text-sm font-bold">👨‍💼</span>
+    //                                 </div>
+    //                                 <div>
+    //                                     <div className={`font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>Administrators</div>
+    //                                     <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>System managers</div>
+    //                                 </div>
+    //                             </div>
+    //                             <div className="text-right">
+    //                                 <div className="text-2xl font-bold text-purple-600">{allUsers.filter(u => u.role === 'admin').length}</div>
+    //                                 <div className="text-xs text-purple-500 font-medium">
+    //                                     {Math.round((allUsers.filter(u => u.role === 'admin').length / allUsers.length) * 100)}%
+    //                                 </div>
+    //                             </div>
+    //                         </div>
+    //                     </div>
+    
+    //                     <div className={`mt-6 p-4 rounded-xl transition-colors ${
+    //                         isDarkMode ? 'bg-gradient-to-r from-gray-700 to-gray-600' : 'bg-gradient-to-r from-gray-50 to-gray-100'
+    //                     }`}>
+    //                         <div className="flex items-center justify-between">
+    //                             <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>Total Active Users</span>
+    //                             <span className={`text-lg font-bold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>{allUsers.filter(u => u.isApproved).length}</span>
+    //                         </div>
+    //                         <div className={`mt-2 text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
+    //                             Growth rate: +{Math.floor(Math.random() * 15) + 5}% this month
+    //                         </div>
+    //                     </div>
+    //                 </div>
+    //             </div>
+    
+    //             {/* Recent Activity Feed - Dark Mode */}
+    //             <div className={`lg:col-span-2 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+    //                 <div className={`p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
+    //                     <div className="flex items-center justify-between">
+    //                         <div>
+    //                             <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
+    //                                 <span className="mr-2">⚡</span>
+    //                                 Real-time Activity
+    //                             </h3>
+    //                             <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mt-1 transition-colors duration-300`}>Live system events and user actions</p>
+    //                         </div>
+    //                         <div className="flex items-center space-x-2">
+    //                             <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+    //                             <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>Live</span>
+    //                         </div>
+    //                     </div>
+    //                 </div>
+    //                 <div className="p-6">
+    //                     <div className="space-y-4">
+    //                         {/* Pending User Approvals - Dark Mode */}
+    //                         {pendingUsers.length > 0 && pendingUsers.slice(0, 3).map(user => (
+    //                             <div key={user._id} className={`flex items-start space-x-4 p-4 border rounded-xl transition-colors ${
+    //                                 isDarkMode 
+    //                                     ? 'bg-orange-900/20 border-orange-700/50 hover:bg-orange-900/30' 
+    //                                     : 'bg-orange-25 border-orange-200 hover:bg-orange-50'
+    //                             }`}>
+    //                                 <div className="relative">
+    //                                     <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-red-500 rounded-xl flex items-center justify-center text-white font-semibold">
+    //                                         {user.firstName?.charAt(0)}{user.lastName?.charAt(0)}
+    //                                     </div>
+    //                                     <div className="absolute -top-1 -right-1 w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center">
+    //                                         <span className="text-white text-xs">!</span>
+    //                                     </div>
+    //                                 </div>
+    //                                 <div className="flex-1 min-w-0">
+    //                                     <div className="flex items-center justify-between">
+    //                                         <h4 className={`text-sm font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>
+    //                                             New {user.role} registration
+    //                                         </h4>
+    //                                         <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
+    //                                             {new Date(user.createdAt || Date.now()).toLocaleDateString()}
+    //                                         </span>
+    //                                     </div>
+    //                                     <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>
+    //                                         {user.firstName} {user.lastName} ({user.email}) awaiting approval
+    //                                     </p>
+    //                                     <div className="flex space-x-2 mt-3">
+    //                                         <button 
+    //                                             className={`inline-flex items-center px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
+    //                                                 isDarkMode 
+    //                                                     ? 'text-green-300 bg-green-900/50 hover:bg-green-900/70 border border-green-700/50' 
+    //                                                     : 'text-green-700 bg-green-100 hover:bg-green-200'
+    //                                             }`}
+    //                                             onClick={() => handleUserApproval(user._id, true)}
+    //                                         >
+    //                                             ✅ Approve
+    //                                         </button>
+    //                                         <button 
+    //                                             className={`inline-flex items-center px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
+    //                                                 isDarkMode 
+    //                                                     ? 'text-red-300 bg-red-900/50 hover:bg-red-900/70 border border-red-700/50' 
+    //                                                     : 'text-red-700 bg-red-100 hover:bg-red-200'
+    //                                             }`}
+    //                                             onClick={() => handleUserApproval(user._id, false)}
+    //                                         >
+    //                                             ❌ Reject
+    //                                         </button>
+    //                                     </div>
+    //                                 </div>
+    //                             </div>
+    //                         ))}
+    
+    //                         {/* Recent Contact Messages - Dark Mode */}
+    //                         {contactSubmissions.length > 0 && contactSubmissions.filter(c => c.status === 'pending').slice(0, 2).map(contact => (
+    //                             <div key={contact._id} className={`flex items-start space-x-4 p-4 border rounded-xl transition-colors ${
+    //                                 isDarkMode 
+    //                                     ? 'bg-blue-900/20 border-blue-700/50 hover:bg-blue-900/30' 
+    //                                     : 'bg-blue-25 border-blue-200 hover:bg-blue-50'
+    //                             }`}>
+    //                                 <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-xl flex items-center justify-center text-white font-semibold">
+    //                                     {contact.name?.charAt(0).toUpperCase()}
+    //                                 </div>
+    //                                 <div className="flex-1 min-w-0">
+    //                                     <div className="flex items-center justify-between">
+    //                                         <h4 className={`text-sm font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>New contact message</h4>
+    //                                         <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
+    //                                             {new Date(contact.createdAt || Date.now()).toLocaleDateString()}
+    //                                         </span>
+    //                                     </div>
+    //                                     <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>
+    //                                         {contact.name} - {contact.subject}
+    //                                     </p>
+    //                                     <div className="flex space-x-2 mt-3">
+    //                                         <button 
+    //                                             className={`inline-flex items-center px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
+    //                                                 isDarkMode 
+    //                                                     ? 'text-blue-300 bg-blue-900/50 hover:bg-blue-900/70 border border-blue-700/50' 
+    //                                                     : 'text-blue-700 bg-blue-100 hover:bg-blue-200'
+    //                                             }`}
+    //                                             onClick={() => handleContactAction(contact._id, 'approved')}
+    //                                         >
+    //                                             🔥 Priority
+    //                                         </button>
+    //                                         <button 
+    //                                             className={`inline-flex items-center px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
+    //                                                 isDarkMode 
+    //                                                     ? 'text-green-300 bg-green-900/50 hover:bg-green-900/70 border border-green-700/50' 
+    //                                                     : 'text-green-700 bg-green-100 hover:bg-green-200'
+    //                                             }`}
+    //                                             onClick={() => handleContactAction(contact._id, 'resolved')}
+    //                                         >
+    //                                             ✅ Resolve
+    //                                         </button>
+    //                                     </div>
+    //                                 </div>
+    //                             </div>
+    //                         ))}
+    
+    //                         {/* System Events - Dark Mode */}
+    //                         <div className={`flex items-start space-x-4 p-4 border rounded-xl transition-colors ${
+    //                             isDarkMode 
+    //                                 ? 'bg-green-900/20 border-green-700/50' 
+    //                                 : 'bg-green-25 border-green-200'
+    //                         }`}>
+    //                             <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center text-white">
+    //                                 <span className="text-lg">🛡️</span>
+    //                             </div>
+    //                             <div className="flex-1">
+    //                                 <div className="flex items-center justify-between">
+    //                                     <h4 className={`text-sm font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>Security scan completed</h4>
+    //                                     <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>5 minutes ago</span>
+    //                                 </div>
+    //                                 <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>No threats detected. All systems secure.</p>
+    //                                 <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium mt-2 transition-colors ${
+    //                                     isDarkMode ? 'bg-green-900/50 text-green-300 border border-green-700/50' : 'bg-green-100 text-green-800'
+    //                                 }`}>
+    //                                     ✅ All Clear
+    //                                 </span>
+    //                             </div>
+    //                         </div>
+    
+    //                         <div className={`flex items-start space-x-4 p-4 border rounded-xl transition-colors ${
+    //                             isDarkMode 
+    //                                 ? 'bg-purple-900/20 border-purple-700/50' 
+    //                                 : 'bg-purple-25 border-purple-200'
+    //                         }`}>
+    //                             <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-500 rounded-xl flex items-center justify-center text-white">
+    //                                 <span className="text-lg">💾</span>
+    //                             </div>
+    //                             <div className="flex-1">
+    //                                 <div className="flex items-center justify-between">
+    //                                     <h4 className={`text-sm font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>Database backup completed</h4>
+    //                                     <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>1 hour ago</span>
+    //                                 </div>
+    //                                 <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>Daily backup successful. 2.4GB archived.</p>
+    //                                 <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium mt-2 transition-colors ${
+    //                                     isDarkMode ? 'bg-purple-900/50 text-purple-300 border border-purple-700/50' : 'bg-purple-100 text-purple-800'
+    //                                 }`}>
+    //                                     📊 Automated
+    //                                 </span>
+    //                             </div>
+    //                         </div>
+    //                     </div>
+    
+    //                     {/* Quick Actions - Dark Mode */}
+    //                     <div className={`mt-8 p-6 rounded-xl transition-colors ${
+    //                         isDarkMode ? 'bg-gradient-to-r from-gray-700 to-gray-600' : 'bg-gradient-to-r from-gray-50 to-gray-100'
+    //                     }`}>
+    //                         <h4 className={`text-sm font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-900'} mb-4 transition-colors duration-300`}>Quick Administration</h4>
+    //                         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+    //                             <button className={`flex flex-col items-center p-3 rounded-lg border transition-all group ${
+    //                                 isDarkMode 
+    //                                     ? 'bg-gray-800 border-gray-600 hover:bg-blue-900/30 hover:border-blue-700/50' 
+    //                                     : 'bg-white border-gray-200 hover:bg-blue-50 hover:border-blue-300'
+    //                             }`}>
+    //                                 <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">👥</span>
+    //                                 <span className={`text-xs font-medium transition-colors ${
+    //                                     isDarkMode ? 'text-gray-300 group-hover:text-blue-300' : 'text-gray-700 group-hover:text-blue-700'
+    //                                 }`}>Manage Users</span>
+    //                             </button>
+    //                             <button className={`flex flex-col items-center p-3 rounded-lg border transition-all group ${
+    //                                 isDarkMode 
+    //                                     ? 'bg-gray-800 border-gray-600 hover:bg-green-900/30 hover:border-green-700/50' 
+    //                                     : 'bg-white border-gray-200 hover:bg-green-50 hover:border-green-300'
+    //                             }`}>
+    //                                 <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">📋</span>
+    //                                 <span className={`text-xs font-medium transition-colors ${
+    //                                     isDarkMode ? 'text-gray-300 group-hover:text-green-300' : 'text-gray-700 group-hover:text-green-700'
+    //                                 }`}>Applications</span>
+    //                             </button>
+    //                             <button className={`flex flex-col items-center p-3 rounded-lg border transition-all group ${
+    //                                 isDarkMode 
+    //                                     ? 'bg-gray-800 border-gray-600 hover:bg-orange-900/30 hover:border-orange-700/50' 
+    //                                     : 'bg-white border-gray-200 hover:bg-orange-50 hover:border-orange-300'
+    //                             }`}>
+    //                                 <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">📧</span>
+    //                                 <span className={`text-xs font-medium transition-colors ${
+    //                                     isDarkMode ? 'text-gray-300 group-hover:text-orange-300' : 'text-gray-700 group-hover:text-orange-700'
+    //                                 }`}>Messages</span>
+    //                             </button>
+    //                             <button className={`flex flex-col items-center p-3 rounded-lg border transition-all group ${
+    //                                 isDarkMode 
+    //                                     ? 'bg-gray-800 border-gray-600 hover:bg-purple-900/30 hover:border-purple-700/50' 
+    //                                     : 'bg-white border-gray-200 hover:bg-purple-50 hover:border-purple-300'
+    //                             }`}>
+    //                                 <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">⚙️</span>
+    //                                 <span className={`text-xs font-medium transition-colors ${
+    //                                     isDarkMode ? 'text-gray-300 group-hover:text-purple-300' : 'text-gray-700 group-hover:text-purple-700'
+    //                                 }`}>Settings</span>
+    //                             </button>
+    //                         </div>
+    //                     </div>
+    //                 </div>
+    //             </div>
+    //         </div>
+    
+    //         {/* System Alerts & Notifications - Dark Mode */}
+    //         {dashboardData.admin.recentAlerts && dashboardData.admin.recentAlerts.length > 0 && (
+    //             <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+    //                 <div className={`p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
+    //                     <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
+    //                         <span className="mr-2">🚨</span>
+    //                         System Alerts
+    //                     </h3>
+    //                     <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mt-1 transition-colors duration-300`}>Recent system notifications and alerts</p>
+    //                 </div>
+    //                 <div className="p-6">
+    //                     <div className="space-y-3">
+    //                         {dashboardData.admin.recentAlerts.map((alert, index) => (
+    //                             <div key={index} className={`flex items-start space-x-4 p-4 rounded-xl border transition-colors ${
+    //                                 alert.type === 'warning' 
+    //                                     ? (isDarkMode ? 'bg-yellow-900/20 border-yellow-700/50' : 'bg-yellow-25 border-yellow-200')
+    //                                     : (isDarkMode ? 'bg-blue-900/20 border-blue-700/50' : 'bg-blue-25 border-blue-200')
+    //                             }`}>
+    //                                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+    //                                     alert.type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
+    //                                 }`}>
+    //                                     <span className="text-white text-sm">
+    //                                         {alert.type === 'warning' ? '⚠️' : 'ℹ️'}
+    //                                     </span>
+    //                                 </div>
+    //                                 <div className="flex-1">
+    //                                     <p className={`text-sm font-medium ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>{alert.message}</p>
+    //                                     <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mt-1 transition-colors duration-300`}>{alert.time}</p>
+    //                                 </div>
+    //                                 <button className={`transition-colors ${isDarkMode ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'}`}>
+    //                                     <span className="text-lg">✕</span>
+    //                                 </button>
+    //                             </div>
+    //                         ))}
+    //                     </div>
+    //                 </div>
+    //             </div>
+    //         )}
+    //     </div>
+    // );
+
+    const renderUserManagement = () => (
+        <div className="space-y-8">
+            {/* Header Section */}
+            <div className={`rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300 ${
+                isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'
+            }`}>
+                <div className={`p-6 border-b transition-colors duration-300 ${
+                    isDarkMode ? 'border-gray-700' : 'border-gray-200'
+                }`}>
+                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                        <div>
+                            <h2 className={`text-2xl font-bold flex items-center transition-colors duration-300 ${
+                                isDarkMode ? 'text-gray-100' : 'text-gray-900'
+                            }`}>
+                                <span className="mr-3">👥</span>
+                                {t('userManagement.title')}
+                            </h2>
+                            <div className="flex flex-wrap gap-4 text-sm mt-2">
+                                <span className={`transition-colors duration-300 ${
+                                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                                }`}>
+                                    <span className={`font-semibold transition-colors duration-300 ${
+                                        isDarkMode ? 'text-gray-100' : 'text-gray-900'
+                                    }`}>{allUsers.length}</span> {t('userManagement.stats.totalUsers')}
+                                </span>
+                                <span className={`transition-colors duration-300 ${
+                                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                                }`}>
+                                    <span className="font-semibold text-orange-600">{pendingUsers.length}</span> {t('userManagement.stats.pending')}
+                                </span>
+                                <span className={`transition-colors duration-300 ${
+                                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                                }`}>
+                                    <span className="font-semibold text-green-600">{allUsers.filter(u => u.isApproved).length}</span> {t('userManagement.stats.approved')}
+                                </span>
+                            </div>
+                        </div>
+    
+                        <div className="flex flex-col sm:flex-row gap-3">
+                            <div className="flex flex-col sm:flex-row gap-2">
+                                <input 
+                                    type="text" 
+                                    placeholder={t('userManagement.search.placeholder')}
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className={`px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                        isDarkMode 
+                                            ? 'border-gray-600 bg-gray-800 text-gray-100 placeholder-gray-400' 
+                                            : 'border-gray-300 bg-white text-gray-900'
+                                    }`}
+                                />
+                                <select 
+                                    value={selectedRole}
+                                    onChange={(e) => setSelectedRole(e.target.value)}
+                                    className={`px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                        isDarkMode 
+                                            ? 'border-gray-600 bg-gray-800 text-gray-100' 
+                                            : 'border-gray-300 bg-white text-gray-900'
+                                    }`}
+                                >
+                                    <option value="">{t('userManagement.search.allRoles')}</option>
+                                    <option value="student">{t('userManagement.roles.students')}</option>
+                                    <option value="teacher">{t('userManagement.roles.teachers')}</option>
+                                    <option value="admin">{t('userManagement.roles.admins')}</option>
+                                </select>
+                                <select 
+                                    value={selectedStatus}
+                                    onChange={(e) => setSelectedStatus(e.target.value)}
+                                    className={`px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                        isDarkMode 
+                                            ? 'border-gray-600 bg-gray-800 text-gray-100' 
+                                            : 'border-gray-300 bg-white text-gray-900'
+                                    }`}
+                                >
+                                    <option value="">{t('userManagement.search.allStatus')}</option>
+                                    <option value="approved">{t('userManagement.status.approved')}</option>
+                                    <option value="pending">{t('userManagement.status.pending')}</option>
+                                </select>
+                            </div>
+                            <button 
+                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+                                onClick={() => setShowCreateUserForm(true)}
+                            >
+                                ➕ {t('userManagement.buttons.createNewUser')}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            {/* CREATE USER MODAL */}
+            {showCreateUserForm && (
+                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+                    <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-2xl border w-full max-w-2xl mx-4 transition-colors duration-300`}>
+                        <div className={`flex items-center justify-between p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
+                            <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
+                                <span className="mr-2">✨</span>
+                                {t('userManagement.modals.createUser.title')}
+                            </h3>
+                            <button 
+                                className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+                                onClick={() => setShowCreateUserForm(false)}
+                            >
+                                <span className={`${isDarkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-400 hover:text-gray-600'} text-xl transition-colors`}>✕</span>
+                            </button>
+                        </div>
+                        <div className="p-6">
+                            <form onSubmit={handleCreateUser} className="space-y-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
+                                            {t('userManagement.form.firstName')}
+                                        </label>
+                                        <input
+                                            type="text"
+                                            placeholder={t('userManagement.form.placeholders.firstName')}
+                                            value={newUserData.firstName}
+                                            onChange={(e) => setNewUserData({...newUserData, firstName: e.target.value})}
+                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                                isDarkMode 
+                                                    ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+                                                    : 'border-gray-300 bg-white text-gray-900'
+                                            }`}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
+                                            {t('userManagement.form.lastName')}
+                                        </label>
+                                        <input
+                                            type="text"
+                                            placeholder={t('userManagement.form.placeholders.lastName')}
+                                            value={newUserData.lastName}
+                                            onChange={(e) => setNewUserData({...newUserData, lastName: e.target.value})}
+                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                                isDarkMode 
+                                                    ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+                                                    : 'border-gray-300 bg-white text-gray-900'
+                                            }`}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="md:col-span-2 space-y-2">
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
+                                            {t('userManagement.form.email')}
+                                        </label>
+                                        <input
+                                            type="email"
+                                            placeholder={t('userManagement.form.placeholders.email')}
+                                            value={newUserData.email}
+                                            onChange={(e) => setNewUserData({...newUserData, email: e.target.value})}
+                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                                isDarkMode 
+                                                    ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+                                                    : 'border-gray-300 bg-white text-gray-900'
+                                            }`}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
+                                            {t('userManagement.form.password')}
+                                        </label>
+                                        <input
+                                            type="password"
+                                            placeholder={t('userManagement.form.placeholders.password')}
+                                            value={newUserData.password}
+                                            onChange={(e) => setNewUserData({...newUserData, password: e.target.value})}
+                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                                isDarkMode 
+                                                    ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+                                                    : 'border-gray-300 bg-white text-gray-900'
+                                            }`}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
+                                            {t('userManagement.form.role')}
+                                        </label>
+                                        <select
+                                            value={newUserData.role}
+                                            onChange={(e) => setNewUserData({...newUserData, role: e.target.value})}
+                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                                isDarkMode 
+                                                    ? 'border-gray-600 bg-gray-700 text-gray-100' 
+                                                    : 'border-gray-300 bg-white text-gray-900'
+                                            }`}
+                                        >
+                                            <option value="student">👨‍🎓 {t('userManagement.roles.student')}</option>
+                                            <option value="teacher">👨‍🏫 {t('userManagement.roles.teacher')}</option>
+                                            <option value="admin">👨‍💼 {t('userManagement.roles.admin')}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className={`flex justify-end space-x-3 pt-4 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
+                                    <button 
+                                        type="button" 
+                                        className={`px-4 py-2 border rounded-lg transition-colors ${
+                                            isDarkMode 
+                                                ? 'border-gray-600 text-gray-300 bg-gray-700 hover:bg-gray-600' 
+                                                : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                                        }`}
+                                        onClick={() => setShowCreateUserForm(false)}
+                                    >
+                                        {t('userManagement.buttons.cancel')}
+                                    </button>
+                                    <button 
+                                        type="submit" 
+                                        className="px-4 py-2 border border-transparent rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+                                    >
+                                        ✨ {t('userManagement.buttons.createUser')}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+    
+            {/* EDIT USER MODAL */}
+            {showEditUserForm && editingUser && (
+                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+                    <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-2xl border w-full max-w-2xl mx-4 transition-colors duration-300`}>
+                        <div className={`flex items-center justify-between p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
+                            <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
+                                <span className="mr-2">📝</span>
+                                {t('userManagement.modals.editUser.title')}: {editingUser.firstName} {editingUser.lastName}
+                            </h3>
+                            <button 
+                                className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+                                onClick={() => {
+                                    setShowEditUserForm(false);
+                                    setEditingUser(null);
+                                    setNewUserData({
+                                        firstName: '',
+                                        lastName: '',
+                                        email: '',
+                                        password: '',
+                                        role: 'student'
+                                    });
+                                }}
+                            >
+                                <span className={`${isDarkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-400 hover:text-gray-600'} text-xl transition-colors`}>✕</span>
+                            </button>
+                        </div>
+                        <div className="p-6">
+                            <form onSubmit={handleUpdateUser} className="space-y-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
+                                            {t('userManagement.form.firstName')}
+                                        </label>
+                                        <input
+                                            type="text"
+                                            placeholder={t('userManagement.form.placeholders.firstName')}
+                                            value={newUserData.firstName}
+                                            onChange={(e) => setNewUserData({...newUserData, firstName: e.target.value})}
+                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                                isDarkMode 
+                                                    ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+                                                    : 'border-gray-300 bg-white text-gray-900'
+                                            }`}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
+                                            {t('userManagement.form.lastName')}
+                                        </label>
+                                        <input
+                                            type="text"
+                                            placeholder={t('userManagement.form.placeholders.lastName')}
+                                            value={newUserData.lastName}
+                                            onChange={(e) => setNewUserData({...newUserData, lastName: e.target.value})}
+                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                                isDarkMode 
+                                                    ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+                                                    : 'border-gray-300 bg-white text-gray-900'
+                                            }`}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="md:col-span-2 space-y-2">
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
+                                            {t('userManagement.form.email')}
+                                        </label>
+                                        <input
+                                            type="email"
+                                            placeholder={t('userManagement.form.placeholders.email')}
+                                            value={newUserData.email}
+                                            onChange={(e) => setNewUserData({...newUserData, email: e.target.value})}
+                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                                isDarkMode 
+                                                    ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+                                                    : 'border-gray-300 bg-white text-gray-900'
+                                            }`}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
+                                            {t('userManagement.form.newPassword')}
+                                        </label>
+                                        <input
+                                            type="password"
+                                            placeholder={t('userManagement.form.placeholders.newPassword')}
+                                            value={newUserData.password}
+                                            onChange={(e) => setNewUserData({...newUserData, password: e.target.value})}
+                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                                isDarkMode 
+                                                    ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+                                                    : 'border-gray-300 bg-white text-gray-900'
+                                            }`}
+                                        />
+                                        <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                            {t('userManagement.form.notes.passwordKeep')}
+                                        </p>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
+                                            {t('userManagement.form.role')}
+                                        </label>
+                                        <select
+                                            value={newUserData.role}
+                                            onChange={(e) => setNewUserData({...newUserData, role: e.target.value})}
+                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                                isDarkMode 
+                                                    ? 'border-gray-600 bg-gray-700 text-gray-100' 
+                                                    : 'border-gray-300 bg-white text-gray-900'
+                                            }`}
+                                        >
+                                            <option value="student">👨‍🎓 {t('userManagement.roles.student')}</option>
+                                            <option value="teacher">👨‍🏫 {t('userManagement.roles.teacher')}</option>
+                                            <option value="admin">👨‍💼 {t('userManagement.roles.admin')}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className={`flex justify-end space-x-3 pt-4 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
+                                    <button 
+                                        type="button" 
+                                        className={`px-4 py-2 border rounded-lg transition-colors ${
+                                            isDarkMode 
+                                                ? 'border-gray-600 text-gray-300 bg-gray-700 hover:bg-gray-600' 
+                                                : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                                        }`}
+                                        onClick={() => {
+                                            setShowEditUserForm(false);
+                                            setEditingUser(null);
+                                            setNewUserData({
+                                                firstName: '',
+                                                lastName: '',
+                                                email: '',
+                                                password: '',
+                                                role: 'student'
+                                            });
+                                        }}
+                                    >
+                                        {t('userManagement.buttons.cancel')}
+                                    </button>
+                                    <button 
+                                        type="submit" 
+                                        className="px-4 py-2 border border-transparent rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+                                    >
+                                        💾 {t('userManagement.buttons.updateUser')}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+    
+            {/* DELETE CONFIRMATION MODAL */}
+            {showDeleteConfirm && userToDelete && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-2xl border w-full max-w-md mx-4 transition-colors duration-300`}>
+                        <div className="p-6">
+                            <div className="flex items-center mb-4">
+                                <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                                    <span className="text-red-600 text-2xl">⚠️</span>
+                                </div>
+                            </div>
+                            <div className="text-center">
+                                <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} mb-2`}>
+                                    {t('userManagement.modals.deleteUser.title')}
+                                </h3>
+                                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} mb-6`}>
+                                    {t('userManagement.modals.deleteUser.message')} <strong>"{userToDelete.firstName} {userToDelete.lastName}"</strong> ({userToDelete.email})?
+                                    <br />
+                                    <span className="text-red-500 font-medium">{t('userManagement.modals.deleteUser.warning')}</span>
+                                </p>
+                            </div>
+                            <div className="flex justify-center space-x-4">
+                                <button
+                                    onClick={() => {
+                                        console.log('❌ Cancel delete clicked');
+                                        setShowDeleteConfirm(false);
+                                        setUserToDelete(null);
+                                    }}
+                                    className={`px-4 py-2 border rounded-lg transition-colors ${
+                                        isDarkMode 
+                                            ? 'border-gray-600 text-gray-300 bg-gray-700 hover:bg-gray-600' 
+                                            : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                                    }`}
+                                >
+                                    {t('userManagement.buttons.cancel')}
+                                </button>
+                                <button
+                                    onClick={confirmDeleteUser}
+                                    className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                                >
+                                    🗑️ {t('userManagement.buttons.yesDelete')}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+    
+            {/* Users Table */}
+            <div className={`rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300 ${
+                isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'
+            }`}>
+                <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead className={`transition-colors duration-300 ${
+                            isDarkMode ? 'bg-gradient-to-r from-gray-800 to-gray-700' : 'bg-gradient-to-r from-gray-50 to-gray-100'
+                        }`}>
+                            <tr>
+                                <th className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider transition-colors duration-300 ${
+                                    isDarkMode ? 'text-gray-300' : 'text-gray-500'
+                                }`}>
+                                    <div className="flex items-center space-x-1">
+                                        <span>👤 {t('userManagement.table.headers.user')}</span>
+                                        <span className={`transition-colors duration-300 ${
+                                            isDarkMode ? 'text-gray-500' : 'text-gray-400'
+                                        }`}>↕️</span>
+                                    </div>
+                                </th>
+                                <th className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider transition-colors duration-300 ${
+                                    isDarkMode ? 'text-gray-300' : 'text-gray-500'
+                                }`}>
+                                    <div className="flex items-center space-x-1">
+                                        <span>📧 {t('userManagement.table.headers.contact')}</span>
+                                    </div>
+                                </th>
+                                <th className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider transition-colors duration-300 ${
+                                    isDarkMode ? 'text-gray-300' : 'text-gray-500'
+                                }`}>
+                                    <div className="flex items-center space-x-1">
+                                        <span>🎭 {t('userManagement.table.headers.role')}</span>
+                                    </div>
+                                </th>
+                                <th className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider transition-colors duration-300 ${
+                                    isDarkMode ? 'text-gray-300' : 'text-gray-500'
+                                }`}>
+                                    <div className="flex items-center space-x-1">
+                                        <span>📊 {t('userManagement.table.headers.status')}</span>
+                                    </div>
+                                </th>
+                                <th className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider transition-colors duration-300 ${
+                                    isDarkMode ? 'text-gray-300' : 'text-gray-500'
+                                }`}>
+                                    <div className="flex items-center space-x-1">
+                                        <span>📅 {t('userManagement.table.headers.joined')}</span>
+                                    </div>
+                                </th>
+                                <th className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider transition-colors duration-300 ${
+                                    isDarkMode ? 'text-gray-300' : 'text-gray-500'
+                                }`}>
+                                    ⚡ {t('userManagement.table.headers.actions')}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody className={`transition-colors duration-300 ${
+                            isDarkMode ? 'bg-gray-800 divide-gray-700' : 'bg-white divide-gray-200'
+                        }`}>
+                            {getFilteredUsers().map((user, index) => (
+                                <tr key={user._id} className={`transition-colors duration-200 ${
+                                    isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'
+                                } ${!user.isApproved ? (isDarkMode ? 'bg-orange-900/30 border-l-4 border-orange-500' : 'bg-orange-25 border-l-4 border-orange-400') : ''}`}>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="flex items-center space-x-4">
+                                            <div className="relative">
+                                                <div className={`h-12 w-12 rounded-full flex items-center justify-center text-white font-semibold ${
+                                                    user.role === 'admin' ? 'bg-gradient-to-br from-purple-400 to-pink-500' :
+                                                    user.role === 'teacher' ? 'bg-gradient-to-br from-green-400 to-blue-500' :
+                                                    'bg-gradient-to-br from-blue-400 to-purple-500'
+                                                }`}>
+                                                    {user.firstName?.charAt(0)}{user.lastName?.charAt(0)}
+                                                </div>
+                                                <div className={`absolute -bottom-1 -right-1 h-4 w-4 border-2 rounded-full transition-colors duration-300 ${
+                                                    isDarkMode ? 'border-gray-800' : 'border-white'
+                                                } ${user.isApproved ? 'bg-green-400' : 'bg-orange-400'}`}></div>
+                                            </div>
+                                            <div className="space-y-1">
+                                                <div className={`text-sm font-semibold transition-colors duration-300 ${
+                                                    isDarkMode ? 'text-gray-100' : 'text-gray-900'
+                                                }`}>
+                                                    {user.firstName} {user.lastName}
+                                                </div>
+                                                <div className={`text-xs transition-colors duration-300 ${
+                                                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                                                }`}>
+                                                    ID: {user._id.slice(-8)}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="space-y-1">
+                                            <div className={`text-sm transition-colors duration-300 ${
+                                                isDarkMode ? 'text-gray-100' : 'text-gray-900'
+                                            }`}>{user.email}</div>
+                                            {user.phone && (
+                                                <div className={`text-xs transition-colors duration-300 ${
+                                                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                                                }`}>📱 {user.phone}</div>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium transition-colors duration-300 ${
+                                            user.role === 'admin' ? (isDarkMode ? 'bg-purple-900/50 text-purple-300 border border-purple-700/50' : 'bg-purple-100 text-purple-800') :
+                                            user.role === 'teacher' ? (isDarkMode ? 'bg-green-900/50 text-green-300 border border-green-700/50' : 'bg-green-100 text-green-800') :
+                                            (isDarkMode ? 'bg-blue-900/50 text-blue-300 border border-blue-700/50' : 'bg-blue-100 text-blue-800')
+                                        }`}>
+                                            <span className="mr-1">
+                                                {user.role === 'admin' ? '👨‍💼' : 
+                                                user.role === 'teacher' ? '👨‍🏫' : '👨‍🎓'}
+                                            </span>
+                                            {t(`userManagement.roles.${user.role}`)}
+                                        </span>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="space-y-1">
+                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors duration-300 ${
+                                                user.isApproved ? (isDarkMode ? 'bg-green-900/50 text-green-300 border border-green-700/50' : 'bg-green-100 text-green-800') : (isDarkMode ? 'bg-orange-900/50 text-orange-300 border border-orange-700/50' : 'bg-orange-100 text-orange-800')
+                                            }`}>
+                                                <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
+                                                    user.isApproved ? 'bg-green-400' : 'bg-orange-400'
+                                                }`}></span>
+                                                {user.isApproved ? t('userManagement.status.approved') : t('userManagement.status.pending')}
+                                            </span>
+                                            {!user.isApproved && (
+                                                <div className={`text-xs font-medium transition-colors duration-300 ${
+                                                    isDarkMode ? 'text-orange-400' : 'text-orange-600'
+                                                }`}>
+                                                    ⚠️ {t('userManagement.status.needsReview')}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td className={`px-6 py-4 whitespace-nowrap text-sm transition-colors duration-300 ${
+                                        isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                                    }`}>
+                                        <div className="space-y-1">
+                                            <div className={`font-medium transition-colors duration-300 ${
+                                                isDarkMode ? 'text-gray-100' : 'text-gray-900'
+                                            }`}>
+                                                {new Date(user.createdAt || Date.now()).toLocaleDateString()}
+                                            </div>
+                                            <div className="text-xs">
+                                                {(() => {
+                                                    const days = Math.floor((Date.now() - new Date(user.createdAt || Date.now())) / (1000 * 60 * 60 * 24));
+                                                    return days === 0 ? t('userManagement.table.timeago.today') : `${days} ${t('userManagement.table.timeago.daysAgo')}`;
+                                                })()}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div className="flex items-center space-x-2">
+                                            {!user.isApproved ? (
+                                                <>
+                                                    <button 
+                                                        className={`inline-flex items-center p-2 border border-transparent rounded-lg text-green-600 transition-colors duration-200 ${
+                                                            isDarkMode ? 'hover:bg-green-900/30' : 'hover:bg-green-100'
+                                                        }`}
+                                                        onClick={() => handleUserApproval(user._id, true)}
+                                                        title={t('userManagement.table.actions.approve')}
+                                                    >
+                                                        ✅
+                                                    </button>
+                                                    <button 
+                                                        className={`inline-flex items-center p-2 border border-transparent rounded-lg text-red-600 transition-colors duration-200 ${
+                                                            isDarkMode ? 'hover:bg-red-900/30' : 'hover:bg-red-100'
+                                                        }`}
+                                                        onClick={() => handleUserApproval(user._id, false)}
+                                                        title={t('userManagement.table.actions.reject')}
+                                                    >
+                                                        ❌
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <button 
+                                                        className={`inline-flex items-center p-2 border border-transparent rounded-lg text-blue-600 transition-colors duration-200 ${
+                                                            isDarkMode ? 'hover:bg-blue-900/30' : 'hover:bg-blue-100'
+                                                        }`}
+                                                        onClick={() => handleEditUser(user)}
+                                                        title={t('userManagement.table.actions.edit')}
+                                                    >
+                                                        📝
+                                                    </button>
+                                                    <button 
+                                                        className={`inline-flex items-center p-2 border border-transparent rounded-lg text-red-600 transition-colors duration-200 ${
+                                                            isDarkMode ? 'hover:bg-red-900/30' : 'hover:bg-red-100'
+                                                        }`}
+                                                        onClick={() => handleDeleteUser(user)}
+                                                        title={t('userManagement.table.actions.delete')}
+                                                    >
+                                                        🗑️
+                                                    </button>
+                                                </>
+                                            )}
+                                            
+                                            {/* More Actions Dropdown */}
+                                            <div className="relative group">
+                                                <button className={`inline-flex items-center p-2 border border-transparent rounded-lg transition-colors duration-200 ${
+                                                    isDarkMode ? 'text-gray-400 hover:bg-gray-700/50' : 'text-gray-600 hover:bg-gray-100'
+                                                }`}>
+                                                    ⋮
+                                                </button>
+                                                <div className={`absolute right-0 mt-2 w-48 rounded-lg shadow-lg border z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 ${
+                                                    isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+                                                }`}>
+                                                    <div className="py-1">
+                                                        <button 
+                                                            className={`flex items-center w-full px-4 py-2 text-sm transition-colors duration-200 ${
+                                                                isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'
+                                                            }`}
+                                                            onClick={() => handleEditUser(user)}
+                                                        >
+                                                            <span className="mr-2">📝</span>
+                                                            {t('userManagement.dropdown.editUser')}
+                                                        </button>
+                                                        <hr className={`my-1 ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`} />
+                                                        <button 
+                                                            className={`flex items-center w-full px-4 py-2 text-sm text-red-600 transition-colors duration-200 ${
+                                                                isDarkMode ? 'hover:bg-red-900/30' : 'hover:bg-red-50'
+                                                            }`}
+                                                            onClick={() => handleDeleteUser(user)}
+                                                        >
+                                                            <span className="mr-2">🗑️</span>
+                                                            {t('userManagement.dropdown.deleteUser')}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+    
+                {/* Table Footer */}
+                <div className={`px-6 py-3 flex items-center justify-between border-t transition-colors duration-300 ${
+                    isDarkMode ? 'bg-gray-750 border-gray-700' : 'bg-gray-50 border-gray-200'
+                }`}>
+                    <div className={`text-sm transition-colors duration-300 ${
+                        isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
+                        {t('userManagement.footer.showing')} {getFilteredUsers().length} {t('userManagement.footer.of')} {allUsers.length} {t('userManagement.footer.users')}
+                        {(searchTerm || selectedRole || selectedStatus) && (
+                            <span className={`ml-2 font-medium transition-colors duration-300 ${
+                                isDarkMode ? 'text-blue-400' : 'text-blue-600'
+                            }`}>
+                                {t('userManagement.footer.filtered')}
+                            </span>
+                        )}
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <button className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${
+                            isDarkMode 
+                                ? 'border-gray-600 text-gray-400 bg-gray-800 hover:bg-gray-700' 
+                                : 'border-gray-300 text-gray-500 bg-white hover:bg-gray-50'
+                        }`} disabled>
+                            {t('userManagement.footer.previous')}
+                        </button>
+                        <div className="flex space-x-1">
+                            <button className={`px-3 py-1 rounded-lg text-sm text-white transition-colors duration-200 ${
+                                isDarkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-600 hover:bg-blue-700'
+                            }`}>1</button>
+                        </div>
+                        <button className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${
+                            isDarkMode 
+                                ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' 
+                                : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                        }`}>
+                            {t('userManagement.footer.next')}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+
     const renderAdminOverview = () => (
         <div className="space-y-8">
             {/* System Health Header - Enhanced Dark Mode */}
@@ -5649,14 +6963,14 @@ const Dashboard = () => {
                                 <div className="absolute inset-0 flex items-center justify-center">
                                     <div className="text-center">
                                         <div className="text-3xl font-bold text-white">{dashboardData.admin.systemHealth}%</div>
-                                        <div className="text-xs text-white/80 font-medium">HEALTHY</div>
+                                        <div className="text-xs text-white/80 font-medium">{t('admin.systemHealth.status')}</div>
                                     </div>
                                 </div>
                             </div>
-                            <h2 className="text-2xl font-bold text-white mb-2">System Health Monitor</h2>
-                            <p className="text-white/80 text-center lg:text-left">All systems operating optimally</p>
+                            <h2 className="text-2xl font-bold text-white mb-2">{t('admin.systemHealth.title')}</h2>
+                            <p className="text-white/80 text-center lg:text-left">{t('admin.systemHealth.description')}</p>
                         </div>
-    
+
                         {/* Real-time Metrics */}
                         <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
@@ -5666,13 +6980,13 @@ const Dashboard = () => {
                                             <span className="text-green-400 text-xl">🖥️</span>
                                         </div>
                                         <div>
-                                            <h3 className="text-white font-semibold">Server Load</h3>
-                                            <p className="text-white/60 text-sm">CPU utilization</p>
+                                            <h3 className="text-white font-semibold">{t('admin.metrics.serverLoad.title')}</h3>
+                                            <p className="text-white/60 text-sm">{t('admin.metrics.serverLoad.subtitle')}</p>
                                         </div>
                                     </div>
                                     <div className="text-right">
                                         <div className="text-2xl font-bold text-white">{dashboardData.admin.serverLoad}%</div>
-                                        <div className="text-green-400 text-sm font-medium">↗ Optimal</div>
+                                        <div className="text-green-400 text-sm font-medium">↗ {t('admin.status.optimal')}</div>
                                     </div>
                                 </div>
                                 <div className="w-full bg-white/20 rounded-full h-2">
@@ -5682,7 +6996,7 @@ const Dashboard = () => {
                                     ></div>
                                 </div>
                             </div>
-    
+
                             <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="flex items-center space-x-3">
@@ -5690,13 +7004,13 @@ const Dashboard = () => {
                                             <span className="text-orange-400 text-xl">💾</span>
                                         </div>
                                         <div>
-                                            <h3 className="text-white font-semibold">Storage Used</h3>
-                                            <p className="text-white/60 text-sm">Database & files</p>
+                                            <h3 className="text-white font-semibold">{t('admin.metrics.storage.title')}</h3>
+                                            <p className="text-white/60 text-sm">{t('admin.metrics.storage.subtitle')}</p>
                                         </div>
                                     </div>
                                     <div className="text-right">
                                         <div className="text-2xl font-bold text-white">{dashboardData.admin.storageUsed}%</div>
-                                        <div className="text-orange-400 text-sm font-medium">📈 Growing</div>
+                                        <div className="text-orange-400 text-sm font-medium">📈 {t('admin.status.growing')}</div>
                                     </div>
                                 </div>
                                 <div className="w-full bg-white/20 rounded-full h-2">
@@ -5706,7 +7020,7 @@ const Dashboard = () => {
                                     ></div>
                                 </div>
                             </div>
-    
+
                             <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="flex items-center space-x-3">
@@ -5714,13 +7028,13 @@ const Dashboard = () => {
                                             <span className="text-blue-400 text-xl">⚡</span>
                                         </div>
                                         <div>
-                                            <h3 className="text-white font-semibold">Response Time</h3>
-                                            <p className="text-white/60 text-sm">Average API speed</p>
+                                            <h3 className="text-white font-semibold">{t('admin.metrics.response.title')}</h3>
+                                            <p className="text-white/60 text-sm">{t('admin.metrics.response.subtitle')}</p>
                                         </div>
                                     </div>
                                     <div className="text-right">
                                         <div className="text-2xl font-bold text-white">142ms</div>
-                                        <div className="text-blue-400 text-sm font-medium">⚡ Fast</div>
+                                        <div className="text-blue-400 text-sm font-medium">⚡ {t('admin.status.fast')}</div>
                                     </div>
                                 </div>
                                 <div className="flex space-x-1">
@@ -5732,7 +7046,7 @@ const Dashboard = () => {
                                     ))}
                                 </div>
                             </div>
-    
+
                             <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="flex items-center space-x-3">
@@ -5740,13 +7054,13 @@ const Dashboard = () => {
                                             <span className="text-purple-400 text-xl">🌐</span>
                                         </div>
                                         <div>
-                                            <h3 className="text-white font-semibold">Active Sessions</h3>
-                                            <p className="text-white/60 text-sm">Current users online</p>
+                                            <h3 className="text-white font-semibold">{t('admin.metrics.sessions.title')}</h3>
+                                            <p className="text-white/60 text-sm">{t('admin.metrics.sessions.subtitle')}</p>
                                         </div>
                                     </div>
                                     <div className="text-right">
                                         <div className="text-2xl font-bold text-white">247</div>
-                                        <div className="text-purple-400 text-sm font-medium">👥 Active</div>
+                                        <div className="text-purple-400 text-sm font-medium">👥 {t('admin.status.active')}</div>
                                     </div>
                                 </div>
                                 <div className="flex items-center space-x-2">
@@ -5755,17 +7069,19 @@ const Dashboard = () => {
                                         <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse delay-75"></div>
                                         <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse delay-150"></div>
                                     </div>
-                                    <span className="text-white/60 text-sm">Live monitoring</span>
+                                    <span className="text-white/60 text-sm">{t('admin.status.liveMonitoring')}</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-    
-            {/* Key Metrics Dashboard - Dark Mode */}
+
+            {/* Key Metrics Dashboard */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
+                <div className={`rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300 ${
+                    isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'
+                }`}>
                     <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-6 text-white">
                         <div className="flex items-center justify-between">
                             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -5773,28 +7089,38 @@ const Dashboard = () => {
                             </div>
                             <div className="text-right">
                                 <div className="text-3xl font-bold">{allUsers.length}</div>
-                                <div className="text-blue-100 text-sm font-medium">Total Users</div>
+                                <div className="text-blue-100 text-sm font-medium">{t('admin.metrics.totalUsers')}</div>
                             </div>
                         </div>
                     </div>
-                    <div className={`p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} transition-colors duration-300`}>
+                    <div className={`p-6 transition-colors duration-300 ${
+                        isDarkMode ? 'bg-gray-800' : 'bg-white'
+                    }`}>
                         <div className="flex items-center justify-between text-sm">
-                            <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>Pending approval</span>
+                            <span className={`transition-colors duration-300 ${
+                                isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                            }`}>{t('admin.metrics.pendingApproval')}</span>
                             <span className="font-semibold text-orange-600">{pendingUsers.length}</span>
                         </div>
-                        <div className={`mt-4 rounded-full h-2 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} transition-colors duration-300`}>
+                        <div className={`mt-4 rounded-full h-2 transition-colors duration-300 ${
+                            isDarkMode ? 'bg-gray-700' : 'bg-gray-200'
+                        }`}>
                             <div 
                                 className="bg-blue-500 h-2 rounded-full transition-all duration-1000"
                                 style={{ width: `${(allUsers.filter(u => u.isApproved).length / allUsers.length) * 100}%` }}
                             ></div>
                         </div>
-                        <div className={`mt-2 text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-500'} transition-colors duration-300`}>
-                            {Math.round((allUsers.filter(u => u.isApproved).length / allUsers.length) * 100)}% approved
+                        <div className={`mt-2 text-xs transition-colors duration-300 ${
+                            isDarkMode ? 'text-gray-500' : 'text-gray-500'
+                        }`}>
+                            {Math.round((allUsers.filter(u => u.isApproved).length / allUsers.length) * 100)}% {t('admin.status.approved')}
                         </div>
                     </div>
                 </div>
-    
-                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
+
+                <div className={`rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300 ${
+                    isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'
+                }`}>
                     <div className="bg-gradient-to-br from-green-500 to-green-600 p-6 text-white">
                         <div className="flex items-center justify-between">
                             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -5802,28 +7128,38 @@ const Dashboard = () => {
                             </div>
                             <div className="text-right">
                                 <div className="text-3xl font-bold">{applicationSubmissions.length}</div>
-                                <div className="text-green-100 text-sm font-medium">Applications</div>
+                                <div className="text-green-100 text-sm font-medium">{t('admin.metrics.applications')}</div>
                             </div>
                         </div>
                     </div>
-                    <div className={`p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} transition-colors duration-300`}>
+                    <div className={`p-6 transition-colors duration-300 ${
+                        isDarkMode ? 'bg-gray-800' : 'bg-white'
+                    }`}>
                         <div className="flex items-center justify-between text-sm">
-                            <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>Pending review</span>
+                            <span className={`transition-colors duration-300 ${
+                                isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                            }`}>{t('admin.metrics.pendingReview')}</span>
                             <span className="font-semibold text-orange-600">{dashboardData.admin.pendingApplications || 0}</span>
                         </div>
-                        <div className={`mt-4 rounded-full h-2 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} transition-colors duration-300`}>
+                        <div className={`mt-4 rounded-full h-2 transition-colors duration-300 ${
+                            isDarkMode ? 'bg-gray-700' : 'bg-gray-200'
+                        }`}>
                             <div 
                                 className="bg-green-500 h-2 rounded-full transition-all duration-1000"
                                 style={{ width: `${applicationSubmissions.length > 0 ? ((applicationSubmissions.filter(app => app.status === 'approved').length / applicationSubmissions.length) * 100) : 0}%` }}
                             ></div>
                         </div>
-                        <div className={`mt-2 text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-500'} transition-colors duration-300`}>
-                            {applicationSubmissions.filter(app => app.status === 'approved').length} approved
+                        <div className={`mt-2 text-xs transition-colors duration-300 ${
+                            isDarkMode ? 'text-gray-500' : 'text-gray-500'
+                        }`}>
+                            {applicationSubmissions.filter(app => app.status === 'approved').length} {t('admin.status.approved')}
                         </div>
                     </div>
                 </div>
-    
-                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
+
+                <div className={`rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300 ${
+                    isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'
+                }`}>
                     <div className="bg-gradient-to-br from-orange-500 to-orange-600 p-6 text-white">
                         <div className="flex items-center justify-between">
                             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -5831,28 +7167,38 @@ const Dashboard = () => {
                             </div>
                             <div className="text-right">
                                 <div className="text-3xl font-bold">{contactSubmissions.length}</div>
-                                <div className="text-orange-100 text-sm font-medium">Messages</div>
+                                <div className="text-orange-100 text-sm font-medium">{t('admin.metrics.messages')}</div>
                             </div>
                         </div>
                     </div>
-                    <div className={`p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} transition-colors duration-300`}>
+                    <div className={`p-6 transition-colors duration-300 ${
+                        isDarkMode ? 'bg-gray-800' : 'bg-white'
+                    }`}>
                         <div className="flex items-center justify-between text-sm">
-                            <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>Needs response</span>
+                            <span className={`transition-colors duration-300 ${
+                                isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                            }`}>{t('admin.metrics.needsResponse')}</span>
                             <span className="font-semibold text-red-600">{dashboardData.admin.pendingContacts || 0}</span>
                         </div>
-                        <div className={`mt-4 rounded-full h-2 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} transition-colors duration-300`}>
+                        <div className={`mt-4 rounded-full h-2 transition-colors duration-300 ${
+                            isDarkMode ? 'bg-gray-700' : 'bg-gray-200'
+                        }`}>
                             <div 
                                 className="bg-orange-500 h-2 rounded-full transition-all duration-1000"
                                 style={{ width: `${contactSubmissions.length > 0 ? ((contactSubmissions.filter(contact => contact.status === 'resolved').length / contactSubmissions.length) * 100) : 0}%` }}
                             ></div>
                         </div>
-                        <div className={`mt-2 text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-500'} transition-colors duration-300`}>
-                            {contactSubmissions.filter(contact => contact.status === 'resolved').length} resolved
+                        <div className={`mt-2 text-xs transition-colors duration-300 ${
+                            isDarkMode ? 'text-gray-500' : 'text-gray-500'
+                        }`}>
+                            {contactSubmissions.filter(contact => contact.status === 'resolved').length} {t('admin.status.resolved')}
                         </div>
                     </div>
                 </div>
-    
-                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
+
+                <div className={`rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300 ${
+                    isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'
+                }`}>
                     <div className="bg-gradient-to-br from-purple-500 to-purple-600 p-6 text-white">
                         <div className="flex items-center justify-between">
                             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -5860,35 +7206,51 @@ const Dashboard = () => {
                             </div>
                             <div className="text-right">
                                 <div className="text-3xl font-bold">99.9%</div>
-                                <div className="text-purple-100 text-sm font-medium">Uptime</div>
+                                <div className="text-purple-100 text-sm font-medium">{t('admin.metrics.uptime')}</div>
                             </div>
                         </div>
                     </div>
-                    <div className={`p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} transition-colors duration-300`}>
+                    <div className={`p-6 transition-colors duration-300 ${
+                        isDarkMode ? 'bg-gray-800' : 'bg-white'
+                    }`}>
                         <div className="flex items-center justify-between text-sm">
-                            <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>Last 30 days</span>
-                            <span className="font-semibold text-green-600">Excellent</span>
+                            <span className={`transition-colors duration-300 ${
+                                isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                            }`}>{t('admin.metrics.last30Days')}</span>
+                            <span className="font-semibold text-green-600">{t('admin.status.excellent')}</span>
                         </div>
-                        <div className={`mt-4 rounded-full h-2 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} transition-colors duration-300`}>
+                        <div className={`mt-4 rounded-full h-2 transition-colors duration-300 ${
+                            isDarkMode ? 'bg-gray-700' : 'bg-gray-200'
+                        }`}>
                             <div className="bg-purple-500 h-2 rounded-full transition-all duration-1000" style={{ width: '99.9%' }}></div>
                         </div>
-                        <div className={`mt-2 text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-500'} transition-colors duration-300`}>
-                            43.2 minutes downtime
+                        <div className={`mt-2 text-xs transition-colors duration-300 ${
+                            isDarkMode ? 'text-gray-500' : 'text-gray-500'
+                        }`}>
+                            43.2 {t('admin.metrics.downtime')}
                         </div>
                     </div>
                 </div>
             </div>
-    
-            {/* Main Content Grid - Dark Mode */}
+
+            {/* Main Content Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* User Role Distribution - Dark Mode */}
-                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
-                    <div className={`p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
-                        <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
+                {/* User Role Distribution */}
+                <div className={`rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300 ${
+                    isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'
+                }`}>
+                    <div className={`p-6 border-b transition-colors duration-300 ${
+                        isDarkMode ? 'border-gray-700' : 'border-gray-200'
+                    }`}>
+                        <h3 className={`text-lg font-semibold flex items-center transition-colors duration-300 ${
+                            isDarkMode ? 'text-gray-100' : 'text-gray-900'
+                        }`}>
                             <span className="mr-2">📊</span>
-                            User Distribution
+                            {t('admin.userDistribution.title')}
                         </h3>
-                        <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mt-1 transition-colors duration-300`}>Platform user breakdown by role</p>
+                        <p className={`text-sm mt-1 transition-colors duration-300 ${
+                            isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                        }`}>{t('admin.userDistribution.subtitle')}</p>
                     </div>
                     <div className="p-6">
                         <div className="space-y-4">
@@ -5900,8 +7262,12 @@ const Dashboard = () => {
                                         <span className="text-white text-sm font-bold">👨‍🎓</span>
                                     </div>
                                     <div>
-                                        <div className={`font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>Students</div>
-                                        <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>Active learners</div>
+                                        <div className={`font-semibold transition-colors duration-300 ${
+                                            isDarkMode ? 'text-gray-100' : 'text-gray-900'
+                                        }`}>{t('admin.roles.students')}</div>
+                                        <div className={`text-sm transition-colors duration-300 ${
+                                            isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                                        }`}>{t('admin.roles.studentsDesc')}</div>
                                     </div>
                                 </div>
                                 <div className="text-right">
@@ -5911,7 +7277,7 @@ const Dashboard = () => {
                                     </div>
                                 </div>
                             </div>
-    
+
                             <div className={`flex items-center justify-between p-4 rounded-xl border transition-colors ${
                                 isDarkMode ? 'bg-green-900/20 border-green-700/50' : 'bg-green-50 border-green-200'
                             }`}>
@@ -5920,8 +7286,12 @@ const Dashboard = () => {
                                         <span className="text-white text-sm font-bold">👨‍🏫</span>
                                     </div>
                                     <div>
-                                        <div className={`font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>Teachers</div>
-                                        <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>Course instructors</div>
+                                        <div className={`font-semibold transition-colors duration-300 ${
+                                            isDarkMode ? 'text-gray-100' : 'text-gray-900'
+                                        }`}>{t('admin.roles.teachers')}</div>
+                                        <div className={`text-sm transition-colors duration-300 ${
+                                            isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                                        }`}>{t('admin.roles.teachersDesc')}</div>
                                     </div>
                                 </div>
                                 <div className="text-right">
@@ -5931,7 +7301,7 @@ const Dashboard = () => {
                                     </div>
                                 </div>
                             </div>
-    
+
                             <div className={`flex items-center justify-between p-4 rounded-xl border transition-colors ${
                                 isDarkMode ? 'bg-purple-900/20 border-purple-700/50' : 'bg-purple-50 border-purple-200'
                             }`}>
@@ -5940,8 +7310,12 @@ const Dashboard = () => {
                                         <span className="text-white text-sm font-bold">👨‍💼</span>
                                     </div>
                                     <div>
-                                        <div className={`font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>Administrators</div>
-                                        <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>System managers</div>
+                                        <div className={`font-semibold transition-colors duration-300 ${
+                                            isDarkMode ? 'text-gray-100' : 'text-gray-900'
+                                        }`}>{t('admin.roles.administrators')}</div>
+                                        <div className={`text-sm transition-colors duration-300 ${
+                                            isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                                        }`}>{t('admin.roles.administratorsDesc')}</div>
                                     </div>
                                 </div>
                                 <div className="text-right">
@@ -5952,41 +7326,57 @@ const Dashboard = () => {
                                 </div>
                             </div>
                         </div>
-    
+
                         <div className={`mt-6 p-4 rounded-xl transition-colors ${
                             isDarkMode ? 'bg-gradient-to-r from-gray-700 to-gray-600' : 'bg-gradient-to-r from-gray-50 to-gray-100'
                         }`}>
                             <div className="flex items-center justify-between">
-                                <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>Total Active Users</span>
-                                <span className={`text-lg font-bold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>{allUsers.filter(u => u.isApproved).length}</span>
+                                <span className={`text-sm font-medium transition-colors duration-300 ${
+                                    isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                                }`}>{t('admin.metrics.totalActiveUsers')}</span>
+                                <span className={`text-lg font-bold transition-colors duration-300 ${
+                                    isDarkMode ? 'text-gray-100' : 'text-gray-900'
+                                }`}>{allUsers.filter(u => u.isApproved).length}</span>
                             </div>
-                            <div className={`mt-2 text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
-                                Growth rate: +{Math.floor(Math.random() * 15) + 5}% this month
+                            <div className={`mt-2 text-xs transition-colors duration-300 ${
+                                isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                            }`}>
+                                {t('admin.metrics.growthRate')}: +{Math.floor(Math.random() * 15) + 5}% {t('admin.metrics.thisMonth')}
                             </div>
                         </div>
                     </div>
                 </div>
-    
-                {/* Recent Activity Feed - Dark Mode */}
-                <div className={`lg:col-span-2 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
-                    <div className={`p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
+
+                {/* Recent Activity Feed */}
+                <div className={`lg:col-span-2 rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300 ${
+                    isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'
+                }`}>
+                    <div className={`p-6 border-b transition-colors duration-300 ${
+                        isDarkMode ? 'border-gray-700' : 'border-gray-200'
+                    }`}>
                         <div className="flex items-center justify-between">
                             <div>
-                                <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
+                                <h3 className={`text-lg font-semibold flex items-center transition-colors duration-300 ${
+                                    isDarkMode ? 'text-gray-100' : 'text-gray-900'
+                                }`}>
                                     <span className="mr-2">⚡</span>
-                                    Real-time Activity
+                                    {t('admin.activity.title')}
                                 </h3>
-                                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mt-1 transition-colors duration-300`}>Live system events and user actions</p>
+                                <p className={`text-sm mt-1 transition-colors duration-300 ${
+                                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                                }`}>{t('admin.activity.subtitle')}</p>
                             </div>
                             <div className="flex items-center space-x-2">
                                 <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                                <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>Live</span>
+                                <span className={`text-sm transition-colors duration-300 ${
+                                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                                }`}>{t('admin.status.live')}</span>
                             </div>
                         </div>
                     </div>
                     <div className="p-6">
                         <div className="space-y-4">
-                            {/* Pending User Approvals - Dark Mode */}
+                            {/* Pending User Approvals */}
                             {pendingUsers.length > 0 && pendingUsers.slice(0, 3).map(user => (
                                 <div key={user._id} className={`flex items-start space-x-4 p-4 border rounded-xl transition-colors ${
                                     isDarkMode 
@@ -6003,15 +7393,21 @@ const Dashboard = () => {
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center justify-between">
-                                            <h4 className={`text-sm font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>
-                                                New {user.role} registration
+                                            <h4 className={`text-sm font-semibold transition-colors duration-300 ${
+                                                isDarkMode ? 'text-gray-100' : 'text-gray-900'
+                                            }`}>
+                                                {t('admin.activity.newRegistration', { role: user.role })}
                                             </h4>
-                                            <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
+                                            <span className={`text-xs transition-colors duration-300 ${
+                                                isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                                            }`}>
                                                 {new Date(user.createdAt || Date.now()).toLocaleDateString()}
                                             </span>
                                         </div>
-                                        <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>
-                                            {user.firstName} {user.lastName} ({user.email}) awaiting approval
+                                        <p className={`text-sm transition-colors duration-300 ${
+                                            isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                                        }`}>
+                                            {user.firstName} {user.lastName} ({user.email}) {t('admin.activity.awaitingApproval')}
                                         </p>
                                         <div className="flex space-x-2 mt-3">
                                             <button 
@@ -6022,7 +7418,7 @@ const Dashboard = () => {
                                                 }`}
                                                 onClick={() => handleUserApproval(user._id, true)}
                                             >
-                                                ✅ Approve
+                                                ✅ {t('admin.actions.approve')}
                                             </button>
                                             <button 
                                                 className={`inline-flex items-center px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
@@ -6032,14 +7428,14 @@ const Dashboard = () => {
                                                 }`}
                                                 onClick={() => handleUserApproval(user._id, false)}
                                             >
-                                                ❌ Reject
+                                                ❌ {t('admin.actions.reject')}
                                             </button>
                                         </div>
                                     </div>
                                 </div>
                             ))}
-    
-                            {/* Recent Contact Messages - Dark Mode */}
+
+                            {/* Recent Contact Messages */}
                             {contactSubmissions.length > 0 && contactSubmissions.filter(c => c.status === 'pending').slice(0, 2).map(contact => (
                                 <div key={contact._id} className={`flex items-start space-x-4 p-4 border rounded-xl transition-colors ${
                                     isDarkMode 
@@ -6051,12 +7447,18 @@ const Dashboard = () => {
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center justify-between">
-                                            <h4 className={`text-sm font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>New contact message</h4>
-                                            <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
+                                            <h4 className={`text-sm font-semibold transition-colors duration-300 ${
+                                                isDarkMode ? 'text-gray-100' : 'text-gray-900'
+                                            }`}>{t('admin.activity.newContactMessage')}</h4>
+                                            <span className={`text-xs transition-colors duration-300 ${
+                                                isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                                            }`}>
                                                 {new Date(contact.createdAt || Date.now()).toLocaleDateString()}
                                             </span>
                                         </div>
-                                        <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>
+                                        <p className={`text-sm transition-colors duration-300 ${
+                                            isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                                        }`}>
                                             {contact.name} - {contact.subject}
                                         </p>
                                         <div className="flex space-x-2 mt-3">
@@ -6068,7 +7470,7 @@ const Dashboard = () => {
                                                 }`}
                                                 onClick={() => handleContactAction(contact._id, 'approved')}
                                             >
-                                                🔥 Priority
+                                                🔥 {t('admin.actions.priority')}
                                             </button>
                                             <button 
                                                 className={`inline-flex items-center px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
@@ -6078,14 +7480,14 @@ const Dashboard = () => {
                                                 }`}
                                                 onClick={() => handleContactAction(contact._id, 'resolved')}
                                             >
-                                                ✅ Resolve
+                                                ✅ {t('admin.actions.resolve')}
                                             </button>
                                         </div>
                                     </div>
                                 </div>
                             ))}
-    
-                            {/* System Events - Dark Mode */}
+
+                            {/* System Events */}
                             <div className={`flex items-start space-x-4 p-4 border rounded-xl transition-colors ${
                                 isDarkMode 
                                     ? 'bg-green-900/20 border-green-700/50' 
@@ -6096,18 +7498,24 @@ const Dashboard = () => {
                                 </div>
                                 <div className="flex-1">
                                     <div className="flex items-center justify-between">
-                                        <h4 className={`text-sm font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>Security scan completed</h4>
-                                        <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>5 minutes ago</span>
+                                        <h4 className={`text-sm font-semibold transition-colors duration-300 ${
+                                            isDarkMode ? 'text-gray-100' : 'text-gray-900'
+                                        }`}>{t('admin.activity.securityScan')}</h4>
+                                        <span className={`text-xs transition-colors duration-300 ${
+                                            isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                                        }`}>{t('admin.time.fiveMinutesAgo')}</span>
                                     </div>
-                                    <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>No threats detected. All systems secure.</p>
+                                    <p className={`text-sm transition-colors duration-300 ${
+                                        isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                                    }`}>{t('admin.activity.noThreats')}</p>
                                     <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium mt-2 transition-colors ${
                                         isDarkMode ? 'bg-green-900/50 text-green-300 border border-green-700/50' : 'bg-green-100 text-green-800'
                                     }`}>
-                                        ✅ All Clear
+                                        ✅ {t('admin.status.allClear')}
                                     </span>
                                 </div>
                             </div>
-    
+
                             <div className={`flex items-start space-x-4 p-4 border rounded-xl transition-colors ${
                                 isDarkMode 
                                     ? 'bg-purple-900/20 border-purple-700/50' 
@@ -6118,24 +7526,32 @@ const Dashboard = () => {
                                 </div>
                                 <div className="flex-1">
                                     <div className="flex items-center justify-between">
-                                        <h4 className={`text-sm font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>Database backup completed</h4>
-                                        <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>1 hour ago</span>
+                                        <h4 className={`text-sm font-semibold transition-colors duration-300 ${
+                                            isDarkMode ? 'text-gray-100' : 'text-gray-900'
+                                        }`}>{t('admin.activity.databaseBackup')}</h4>
+                                        <span className={`text-xs transition-colors duration-300 ${
+                                            isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                                        }`}>{t('admin.time.oneHourAgo')}</span>
                                     </div>
-                                    <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>Daily backup successful. 2.4GB archived.</p>
+                                    <p className={`text-sm transition-colors duration-300 ${
+                                        isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                                    }`}>{t('admin.activity.backupSuccess')}</p>
                                     <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium mt-2 transition-colors ${
                                         isDarkMode ? 'bg-purple-900/50 text-purple-300 border border-purple-700/50' : 'bg-purple-100 text-purple-800'
                                     }`}>
-                                        📊 Automated
+                                        📊 {t('admin.status.automated')}
                                     </span>
                                 </div>
                             </div>
                         </div>
-    
-                        {/* Quick Actions - Dark Mode */}
+
+                        {/* Quick Actions */}
                         <div className={`mt-8 p-6 rounded-xl transition-colors ${
                             isDarkMode ? 'bg-gradient-to-r from-gray-700 to-gray-600' : 'bg-gradient-to-r from-gray-50 to-gray-100'
                         }`}>
-                            <h4 className={`text-sm font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-900'} mb-4 transition-colors duration-300`}>Quick Administration</h4>
+                            <h4 className={`text-sm font-semibold mb-4 transition-colors duration-300 ${
+                                isDarkMode ? 'text-gray-200' : 'text-gray-900'
+                            }`}>{t('admin.quickActions.title')}</h4>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                                 <button className={`flex flex-col items-center p-3 rounded-lg border transition-all group ${
                                     isDarkMode 
@@ -6145,7 +7561,7 @@ const Dashboard = () => {
                                     <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">👥</span>
                                     <span className={`text-xs font-medium transition-colors ${
                                         isDarkMode ? 'text-gray-300 group-hover:text-blue-300' : 'text-gray-700 group-hover:text-blue-700'
-                                    }`}>Manage Users</span>
+                                    }`}>{t('admin.quickActions.manageUsers')}</span>
                                 </button>
                                 <button className={`flex flex-col items-center p-3 rounded-lg border transition-all group ${
                                     isDarkMode 
@@ -6155,7 +7571,7 @@ const Dashboard = () => {
                                     <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">📋</span>
                                     <span className={`text-xs font-medium transition-colors ${
                                         isDarkMode ? 'text-gray-300 group-hover:text-green-300' : 'text-gray-700 group-hover:text-green-700'
-                                    }`}>Applications</span>
+                                    }`}>{t('admin.quickActions.applications')}</span>
                                 </button>
                                 <button className={`flex flex-col items-center p-3 rounded-lg border transition-all group ${
                                     isDarkMode 
@@ -6165,7 +7581,7 @@ const Dashboard = () => {
                                     <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">📧</span>
                                     <span className={`text-xs font-medium transition-colors ${
                                         isDarkMode ? 'text-gray-300 group-hover:text-orange-300' : 'text-gray-700 group-hover:text-orange-700'
-                                    }`}>Messages</span>
+                                    }`}>{t('admin.quickActions.messages')}</span>
                                 </button>
                                 <button className={`flex flex-col items-center p-3 rounded-lg border transition-all group ${
                                     isDarkMode 
@@ -6175,23 +7591,31 @@ const Dashboard = () => {
                                     <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">⚙️</span>
                                     <span className={`text-xs font-medium transition-colors ${
                                         isDarkMode ? 'text-gray-300 group-hover:text-purple-300' : 'text-gray-700 group-hover:text-purple-700'
-                                    }`}>Settings</span>
+                                    }`}>{t('admin.quickActions.settings')}</span>
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-    
-            {/* System Alerts & Notifications - Dark Mode */}
+
+            {/* System Alerts & Notifications */}
             {dashboardData.admin.recentAlerts && dashboardData.admin.recentAlerts.length > 0 && (
-                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
-                    <div className={`p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
-                        <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
+                <div className={`rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300 ${
+                    isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'
+                }`}>
+                    <div className={`p-6 border-b transition-colors duration-300 ${
+                        isDarkMode ? 'border-gray-700' : 'border-gray-200'
+                    }`}>
+                        <h3 className={`text-lg font-semibold flex items-center transition-colors duration-300 ${
+                            isDarkMode ? 'text-gray-100' : 'text-gray-900'
+                        }`}>
                             <span className="mr-2">🚨</span>
-                            System Alerts
+                            {t('admin.alerts.title')}
                         </h3>
-                        <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mt-1 transition-colors duration-300`}>Recent system notifications and alerts</p>
+                        <p className={`text-sm mt-1 transition-colors duration-300 ${
+                            isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                        }`}>{t('admin.alerts.subtitle')}</p>
                     </div>
                     <div className="p-6">
                         <div className="space-y-3">
@@ -6209,10 +7633,16 @@ const Dashboard = () => {
                                         </span>
                                     </div>
                                     <div className="flex-1">
-                                        <p className={`text-sm font-medium ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>{alert.message}</p>
-                                        <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mt-1 transition-colors duration-300`}>{alert.time}</p>
+                                        <p className={`text-sm font-medium transition-colors duration-300 ${
+                                            isDarkMode ? 'text-gray-100' : 'text-gray-900'
+                                        }`}>{alert.message}</p>
+                                        <p className={`text-xs mt-1 transition-colors duration-300 ${
+                                            isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                                        }`}>{alert.time}</p>
                                     </div>
-                                    <button className={`transition-colors ${isDarkMode ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'}`}>
+                                    <button className={`transition-colors ${
+                                        isDarkMode ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
+                                    }`}>
                                         <span className="text-lg">✕</span>
                                     </button>
                                 </div>
@@ -6223,622 +7653,1303 @@ const Dashboard = () => {
             )}
         </div>
     );
-
-    const renderUserManagement = () => (
-        <div className="space-y-8">
-            {/* Header */}
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                <div className="space-y-2">
-                    <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
-                        <span className="mr-2">👥</span>
-                        User Management
-                    </h2>
-                    <div className="flex flex-wrap gap-4 text-sm">
-                        <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
-                            <span className={`font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>{allUsers.length}</span> Total Users
-                        </span>
-                        <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
-                            <span className="font-semibold text-orange-600">{pendingUsers.length}</span> Pending
-                        </span>
-                        <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
-                            <span className="font-semibold text-green-600">{allUsers.filter(u => u.isApproved).length}</span> Approved
-                        </span>
-                    </div>
-                </div>
     
-                <div className="flex flex-col sm:flex-row gap-3">
-                    <div className="flex flex-col sm:flex-row gap-2">
-                        <input 
-                            type="text" 
-                            placeholder="🔍 Search users..." 
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className={`px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                                isDarkMode 
-                                    ? 'border-gray-600 bg-gray-800 text-gray-100 placeholder-gray-400' 
-                                    : 'border-gray-300 bg-white text-gray-900'
-                            }`}
-                        />
-                        <select 
-                            value={selectedRole}
-                            onChange={(e) => setSelectedRole(e.target.value)}
-                            className={`px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                                isDarkMode 
-                                    ? 'border-gray-600 bg-gray-800 text-gray-100' 
-                                    : 'border-gray-300 bg-white text-gray-900'
-                            }`}
-                        >
-                            <option value="">All Roles</option>
-                            <option value="student">Students</option>
-                            <option value="teacher">Teachers</option>
-                            <option value="admin">Admins</option>
-                        </select>
-                        <select 
-                            value={selectedStatus}
-                            onChange={(e) => setSelectedStatus(e.target.value)}
-                            className={`px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                                isDarkMode 
-                                    ? 'border-gray-600 bg-gray-800 text-gray-100' 
-                                    : 'border-gray-300 bg-white text-gray-900'
-                            }`}
-                        >
-                            <option value="">All Status</option>
-                            <option value="approved">Approved</option>
-                            <option value="pending">Pending</option>
-                        </select>
-                    </div>
-                    <button 
-                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors"
-                        onClick={() => setShowCreateUserForm(true)}
-                    >
-                        ➕ Create New User
-                    </button>
-                </div>
-            </div>
+    // const renderUserManagement = () => (
+    //     <div className="space-y-8">
+    //         {/* Header */}
+    //         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+    //             <div className="space-y-2">
+    //                 <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
+    //                     <span className="mr-2">👥</span>
+    //                     User Management
+    //                 </h2>
+    //                 <div className="flex flex-wrap gap-4 text-sm">
+    //                     <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
+    //                         <span className={`font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>{allUsers.length}</span> Total Users
+    //                     </span>
+    //                     <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
+    //                         <span className="font-semibold text-orange-600">{pendingUsers.length}</span> Pending
+    //                     </span>
+    //                     <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
+    //                         <span className="font-semibold text-green-600">{allUsers.filter(u => u.isApproved).length}</span> Approved
+    //                     </span>
+    //                 </div>
+    //             </div>
     
-            {/* Create User Modal - Dark Mode */}
-            {showCreateUserForm && (
-                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
-                    <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-2xl border w-full max-w-2xl mx-4 transition-colors duration-300`}>
-                        <div className={`flex items-center justify-between p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
-                            <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
-                                <span className="mr-2">✨</span>
-                                Create New User
-                            </h3>
-                            <button 
-                                className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
-                                onClick={() => setShowCreateUserForm(false)}
-                            >
-                                <span className={`${isDarkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-400 hover:text-gray-600'} text-xl transition-colors`}>✕</span>
-                            </button>
-                        </div>
-                        <div className="p-6">
-                            <form onSubmit={handleCreateUser} className="space-y-6">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>First Name</label>
-                                        <input
-                                            type="text"
-                                            placeholder="Enter first name"
-                                            value={newUserData.firstName}
-                                            onChange={(e) => setNewUserData({...newUserData, firstName: e.target.value})}
-                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                                                isDarkMode 
-                                                    ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
-                                                    : 'border-gray-300 bg-white text-gray-900'
-                                            }`}
-                                            required
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>Last Name</label>
-                                        <input
-                                            type="text"
-                                            placeholder="Enter last name"
-                                            value={newUserData.lastName}
-                                            onChange={(e) => setNewUserData({...newUserData, lastName: e.target.value})}
-                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                                                isDarkMode 
-                                                    ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
-                                                    : 'border-gray-300 bg-white text-gray-900'
-                                            }`}
-                                            required
-                                        />
-                                    </div>
-                                    <div className="md:col-span-2 space-y-2">
-                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>Email Address</label>
-                                        <input
-                                            type="email"
-                                            placeholder="Enter email address"
-                                            value={newUserData.email}
-                                            onChange={(e) => setNewUserData({...newUserData, email: e.target.value})}
-                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                                                isDarkMode 
-                                                    ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
-                                                    : 'border-gray-300 bg-white text-gray-900'
-                                            }`}
-                                            required
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>Password</label>
-                                        <input
-                                            type="password"
-                                            placeholder="Enter password"
-                                            value={newUserData.password}
-                                            onChange={(e) => setNewUserData({...newUserData, password: e.target.value})}
-                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                                                isDarkMode 
-                                                    ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
-                                                    : 'border-gray-300 bg-white text-gray-900'
-                                            }`}
-                                            required
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>Role</label>
-                                        <select
-                                            value={newUserData.role}
-                                            onChange={(e) => setNewUserData({...newUserData, role: e.target.value})}
-                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                                                isDarkMode 
-                                                    ? 'border-gray-600 bg-gray-700 text-gray-100' 
-                                                    : 'border-gray-300 bg-white text-gray-900'
-                                            }`}
-                                        >
-                                            <option value="student">👨‍🎓 Student</option>
-                                            <option value="teacher">👨‍🏫 Teacher</option>
-                                            <option value="admin">👨‍💼 Admin</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className={`flex justify-end space-x-3 pt-4 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
-                                    <button 
-                                        type="button" 
-                                        className={`px-4 py-2 border rounded-lg transition-colors ${
-                                            isDarkMode 
-                                                ? 'border-gray-600 text-gray-300 bg-gray-700 hover:bg-gray-600' 
-                                                : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
-                                        }`}
-                                        onClick={() => setShowCreateUserForm(false)}
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button 
-                                        type="submit" 
-                                        className="px-4 py-2 border border-transparent rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors"
-                                    >
-                                        ✨ Create User
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {showEditUserForm && editingUser && (
-                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
-                    <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-2xl border w-full max-w-2xl mx-4 transition-colors duration-300`}>
-                        <div className={`flex items-center justify-between p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
-                            <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
-                                <span className="mr-2">📝</span>
-                                Edit User: {editingUser.firstName} {editingUser.lastName}
-                            </h3>
-                            <button 
-                                className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
-                                onClick={() => {
-                                    setShowEditUserForm(false);
-                                    setEditingUser(null);
-                                    setNewUserData({
-                                        firstName: '',
-                                        lastName: '',
-                                        email: '',
-                                        password: '',
-                                        role: 'student'
-                                    });
-                                }}
-                            >
-                                <span className={`${isDarkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-400 hover:text-gray-600'} text-xl transition-colors`}>✕</span>
-                            </button>
-                        </div>
-                        <div className="p-6">
-                            <form onSubmit={handleUpdateUser} className="space-y-6">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>First Name</label>
-                                        <input
-                                            type="text"
-                                            placeholder="Enter first name"
-                                            value={newUserData.firstName}
-                                            onChange={(e) => setNewUserData({...newUserData, firstName: e.target.value})}
-                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                                                isDarkMode 
-                                                    ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
-                                                    : 'border-gray-300 bg-white text-gray-900'
-                                            }`}
-                                            required
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>Last Name</label>
-                                        <input
-                                            type="text"
-                                            placeholder="Enter last name"
-                                            value={newUserData.lastName}
-                                            onChange={(e) => setNewUserData({...newUserData, lastName: e.target.value})}
-                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                                                isDarkMode 
-                                                    ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
-                                                    : 'border-gray-300 bg-white text-gray-900'
-                                            }`}
-                                            required
-                                        />
-                                    </div>
-                                    <div className="md:col-span-2 space-y-2">
-                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>Email Address</label>
-                                        <input
-                                            type="email"
-                                            placeholder="Enter email address"
-                                            value={newUserData.email}
-                                            onChange={(e) => setNewUserData({...newUserData, email: e.target.value})}
-                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                                                isDarkMode 
-                                                    ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
-                                                    : 'border-gray-300 bg-white text-gray-900'
-                                            }`}
-                                            required
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>New Password</label>
-                                        <input
-                                            type="password"
-                                            placeholder="Leave blank to keep current password"
-                                            value={newUserData.password}
-                                            onChange={(e) => setNewUserData({...newUserData, password: e.target.value})}
-                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                                                isDarkMode 
-                                                    ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
-                                                    : 'border-gray-300 bg-white text-gray-900'
-                                            }`}
-                                        />
-                                        <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                                            Leave blank to keep the current password
-                                        </p>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>Role</label>
-                                        <select
-                                            value={newUserData.role}
-                                            onChange={(e) => setNewUserData({...newUserData, role: e.target.value})}
-                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                                                isDarkMode 
-                                                    ? 'border-gray-600 bg-gray-700 text-gray-100' 
-                                                    : 'border-gray-300 bg-white text-gray-900'
-                                            }`}
-                                        >
-                                            <option value="student">👨‍🎓 Student</option>
-                                            <option value="teacher">👨‍🏫 Teacher</option>
-                                            <option value="admin">👨‍💼 Admin</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className={`flex justify-end space-x-3 pt-4 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
-                                    <button 
-                                        type="button" 
-                                        className={`px-4 py-2 border rounded-lg transition-colors ${
-                                            isDarkMode 
-                                                ? 'border-gray-600 text-gray-300 bg-gray-700 hover:bg-gray-600' 
-                                                : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
-                                        }`}
-                                        onClick={() => {
-                                            setShowEditUserForm(false);
-                                            setEditingUser(null);
-                                            setNewUserData({
-                                                firstName: '',
-                                                lastName: '',
-                                                email: '',
-                                                password: '',
-                                                role: 'student'
-                                            });
-                                        }}
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button 
-                                        type="submit" 
-                                        className="px-4 py-2 border border-transparent rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors"
-                                    >
-                                        💾 Update User
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* ✅ ADD DELETE CONFIRMATION MODAL HERE */}
-            {showDeleteConfirm && userToDelete && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-2xl border w-full max-w-md mx-4 transition-colors duration-300`}>
-                        <div className="p-6">
-                            <div className="flex items-center mb-4">
-                                <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
-                                    <span className="text-red-600 text-2xl">⚠️</span>
-                                </div>
-                            </div>
-                            <div className="text-center">
-                                <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} mb-2`}>
-                                    Confirm Delete User
-                                </h3>
-                                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} mb-6`}>
-                                    Are you sure you want to delete user <strong>"{userToDelete.firstName} {userToDelete.lastName}"</strong> ({userToDelete.email})?
-                                    <br />
-                                    <span className="text-red-500 font-medium">This action cannot be undone.</span>
-                                </p>
-                            </div>
-                            <div className="flex justify-center space-x-4">
-                                <button
-                                    onClick={() => {
-                                        console.log('❌ Cancel delete clicked');
-                                        setShowDeleteConfirm(false);
-                                        setUserToDelete(null);
-                                    }}
-                                    className={`px-4 py-2 border rounded-lg transition-colors ${
-                                        isDarkMode 
-                                            ? 'border-gray-600 text-gray-300 bg-gray-700 hover:bg-gray-600' 
-                                            : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
-                                    }`}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    onClick={confirmDeleteUser}
-                                    className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-                                >
-                                    🗑️ Yes, Delete
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
+    //             <div className="flex flex-col sm:flex-row gap-3">
+    //                 <div className="flex flex-col sm:flex-row gap-2">
+    //                     <input 
+    //                         type="text" 
+    //                         placeholder="🔍 Search users..." 
+    //                         value={searchTerm}
+    //                         onChange={(e) => setSearchTerm(e.target.value)}
+    //                         className={`px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+    //                             isDarkMode 
+    //                                 ? 'border-gray-600 bg-gray-800 text-gray-100 placeholder-gray-400' 
+    //                                 : 'border-gray-300 bg-white text-gray-900'
+    //                         }`}
+    //                     />
+    //                     <select 
+    //                         value={selectedRole}
+    //                         onChange={(e) => setSelectedRole(e.target.value)}
+    //                         className={`px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+    //                             isDarkMode 
+    //                                 ? 'border-gray-600 bg-gray-800 text-gray-100' 
+    //                                 : 'border-gray-300 bg-white text-gray-900'
+    //                         }`}
+    //                     >
+    //                         <option value="">All Roles</option>
+    //                         <option value="student">Students</option>
+    //                         <option value="teacher">Teachers</option>
+    //                         <option value="admin">Admins</option>
+    //                     </select>
+    //                     <select 
+    //                         value={selectedStatus}
+    //                         onChange={(e) => setSelectedStatus(e.target.value)}
+    //                         className={`px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+    //                             isDarkMode 
+    //                                 ? 'border-gray-600 bg-gray-800 text-gray-100' 
+    //                                 : 'border-gray-300 bg-white text-gray-900'
+    //                         }`}
+    //                     >
+    //                         <option value="">All Status</option>
+    //                         <option value="approved">Approved</option>
+    //                         <option value="pending">Pending</option>
+    //                     </select>
+    //                 </div>
+    //                 <button 
+    //                     className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+    //                     onClick={() => setShowCreateUserForm(true)}
+    //                 >
+    //                     ➕ Create New User
+    //                 </button>
+    //             </div>
+    //         </div>
     
-            {/* Users Table - Dark Mode */}
-            <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
-                <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead className={`${isDarkMode ? 'bg-gradient-to-r from-gray-800 to-gray-700' : 'bg-gradient-to-r from-gray-50 to-gray-100'} transition-colors duration-300`}>
-                            <tr>
-                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
-                                    <div className="flex items-center space-x-1">
-                                        <span>👤 User</span>
-                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
-                                    </div>
-                                </th>
-                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
-                                    <div className="flex items-center space-x-1">
-                                        <span>📧 Contact</span>
-                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
-                                    </div>
-                                </th>
-                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
-                                    <div className="flex items-center space-x-1">
-                                        <span>🎭 Role</span>
-                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
-                                    </div>
-                                </th>
-                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
-                                    <div className="flex items-center space-x-1">
-                                        <span>📊 Status</span>
-                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
-                                    </div>
-                                </th>
-                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
-                                    <div className="flex items-center space-x-1">
-                                        <span>📅 Joined</span>
-                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
-                                    </div>
-                                </th>
-                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
-                                    ⚡ Actions
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody className={`${isDarkMode ? 'bg-gray-800 divide-gray-700' : 'bg-white divide-gray-200'} transition-colors duration-300`}>
-                            {getFilteredUsers().map((user, index) => (
-                                <tr key={user._id} className={`${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'} transition-colors duration-200 ${!user.isApproved ? (isDarkMode ? 'bg-orange-900/30 border-l-4 border-orange-500' : 'bg-orange-25 border-l-4 border-orange-400') : ''}`}>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="flex items-center space-x-4">
-                                            <div className="relative">
-                                                <div className={`h-12 w-12 rounded-full flex items-center justify-center text-white font-semibold ${
-                                                    user.role === 'admin' ? 'bg-gradient-to-br from-purple-400 to-pink-500' :
-                                                    user.role === 'teacher' ? 'bg-gradient-to-br from-green-400 to-blue-500' :
-                                                    'bg-gradient-to-br from-blue-400 to-purple-500'
-                                                }`}>
-                                                    {user.firstName?.charAt(0)}{user.lastName?.charAt(0)}
-                                                </div>
-                                                <div className={`absolute -bottom-1 -right-1 h-4 w-4 border-2 ${isDarkMode ? 'border-gray-800' : 'border-white'} rounded-full ${
-                                                    user.isApproved ? 'bg-green-400' : 'bg-orange-400'
-                                                } transition-colors duration-300`}></div>
-                                            </div>
-                                            <div className="space-y-1">
-                                                <div className={`text-sm font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>
-                                                    {user.firstName} {user.lastName}
-                                                </div>
-                                                <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
-                                                    ID: {user._id.slice(-8)}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="space-y-1">
-                                            <div className={`text-sm ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>{user.email}</div>
-                                            {user.phone && (
-                                                <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>📱 {user.phone}</div>
-                                            )}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium transition-colors duration-300 ${
-                                            user.role === 'admin' ? (isDarkMode ? 'bg-purple-900/50 text-purple-300 border border-purple-700/50' : 'bg-purple-100 text-purple-800') :
-                                            user.role === 'teacher' ? (isDarkMode ? 'bg-green-900/50 text-green-300 border border-green-700/50' : 'bg-green-100 text-green-800') :
-                                            (isDarkMode ? 'bg-blue-900/50 text-blue-300 border border-blue-700/50' : 'bg-blue-100 text-blue-800')
-                                        }`}>
-                                            <span className="mr-1">
-                                                {user.role === 'admin' ? '👨‍💼' : 
-                                                user.role === 'teacher' ? '👨‍🏫' : '👨‍🎓'}
-                                            </span>
-                                            {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="space-y-1">
-                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors duration-300 ${
-                                                user.isApproved ? (isDarkMode ? 'bg-green-900/50 text-green-300 border border-green-700/50' : 'bg-green-100 text-green-800') : (isDarkMode ? 'bg-orange-900/50 text-orange-300 border border-orange-700/50' : 'bg-orange-100 text-orange-800')
-                                            }`}>
-                                                <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
-                                                    user.isApproved ? 'bg-green-400' : 'bg-orange-400'
-                                                }`}></span>
-                                                {user.isApproved ? 'Approved' : 'Pending'}
-                                            </span>
-                                            {!user.isApproved && (
-                                                <div className={`text-xs font-medium ${isDarkMode ? 'text-orange-400' : 'text-orange-600'} transition-colors duration-300`}>
-                                                    ⚠️ Needs Review
-                                                </div>
-                                            )}
-                                        </div>
-                                    </td>
-                                    <td className={`px-6 py-4 whitespace-nowrap text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
-                                        <div className="space-y-1">
-                                            <div className={`font-medium ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>
-                                                {new Date(user.createdAt || Date.now()).toLocaleDateString()}
-                                            </div>
-                                            <div className="text-xs">
-                                                {(() => {
-                                                    const days = Math.floor((Date.now() - new Date(user.createdAt || Date.now())) / (1000 * 60 * 60 * 24));
-                                                    return days === 0 ? 'Today' : `${days} days ago`;
-                                                })()}
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        <div className="flex items-center space-x-2">
-                                            {!user.isApproved ? (
-                                                <>
-                                                    <button 
-                                                        className={`inline-flex items-center p-2 border border-transparent rounded-lg text-green-600 ${isDarkMode ? 'hover:bg-green-900/30' : 'hover:bg-green-100'} transition-colors duration-200`}
-                                                        onClick={() => handleUserApproval(user._id, true)}
-                                                        title="Approve User"
-                                                    >
-                                                        ✅
-                                                    </button>
-                                                    <button 
-                                                        className={`inline-flex items-center p-2 border border-transparent rounded-lg text-red-600 ${isDarkMode ? 'hover:bg-red-900/30' : 'hover:bg-red-100'} transition-colors duration-200`}
-                                                        onClick={() => handleUserApproval(user._id, false)}
-                                                        title="Reject User"
-                                                    >
-                                                        ❌
-                                                    </button>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <button 
-                                                        className={`inline-flex items-center p-2 border border-transparent rounded-lg text-blue-600 ${isDarkMode ? 'hover:bg-blue-900/30' : 'hover:bg-blue-100'} transition-colors duration-200`}
-                                                        onClick={() => handleEditUser(user)}
-                                                        title="Edit User"
-                                                    >
-                                                        📝
-                                                    </button>
-                                                    <button 
-                                                        className={`inline-flex items-center p-2 border border-transparent rounded-lg text-red-600 ${isDarkMode ? 'hover:bg-red-900/30' : 'hover:bg-red-100'} transition-colors duration-200`}
-                                                        onClick={() => handleDeleteUser(user)}
-                                                        title="Delete User"
-                                                    >
-                                                        🗑️
-                                                    </button>
-                                                </>
-                                            )}
+    //         {/* Create User Modal - Dark Mode */}
+    //         {showCreateUserForm && (
+    //             <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+    //                 <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-2xl border w-full max-w-2xl mx-4 transition-colors duration-300`}>
+    //                     <div className={`flex items-center justify-between p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
+    //                         <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
+    //                             <span className="mr-2">✨</span>
+    //                             Create New User
+    //                         </h3>
+    //                         <button 
+    //                             className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+    //                             onClick={() => setShowCreateUserForm(false)}
+    //                         >
+    //                             <span className={`${isDarkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-400 hover:text-gray-600'} text-xl transition-colors`}>✕</span>
+    //                         </button>
+    //                     </div>
+    //                     <div className="p-6">
+    //                         <form onSubmit={handleCreateUser} className="space-y-6">
+    //                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    //                                 <div className="space-y-2">
+    //                                     <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>First Name</label>
+    //                                     <input
+    //                                         type="text"
+    //                                         placeholder="Enter first name"
+    //                                         value={newUserData.firstName}
+    //                                         onChange={(e) => setNewUserData({...newUserData, firstName: e.target.value})}
+    //                                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+    //                                             isDarkMode 
+    //                                                 ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+    //                                                 : 'border-gray-300 bg-white text-gray-900'
+    //                                         }`}
+    //                                         required
+    //                                     />
+    //                                 </div>
+    //                                 <div className="space-y-2">
+    //                                     <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>Last Name</label>
+    //                                     <input
+    //                                         type="text"
+    //                                         placeholder="Enter last name"
+    //                                         value={newUserData.lastName}
+    //                                         onChange={(e) => setNewUserData({...newUserData, lastName: e.target.value})}
+    //                                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+    //                                             isDarkMode 
+    //                                                 ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+    //                                                 : 'border-gray-300 bg-white text-gray-900'
+    //                                         }`}
+    //                                         required
+    //                                     />
+    //                                 </div>
+    //                                 <div className="md:col-span-2 space-y-2">
+    //                                     <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>Email Address</label>
+    //                                     <input
+    //                                         type="email"
+    //                                         placeholder="Enter email address"
+    //                                         value={newUserData.email}
+    //                                         onChange={(e) => setNewUserData({...newUserData, email: e.target.value})}
+    //                                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+    //                                             isDarkMode 
+    //                                                 ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+    //                                                 : 'border-gray-300 bg-white text-gray-900'
+    //                                         }`}
+    //                                         required
+    //                                     />
+    //                                 </div>
+    //                                 <div className="space-y-2">
+    //                                     <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>Password</label>
+    //                                     <input
+    //                                         type="password"
+    //                                         placeholder="Enter password"
+    //                                         value={newUserData.password}
+    //                                         onChange={(e) => setNewUserData({...newUserData, password: e.target.value})}
+    //                                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+    //                                             isDarkMode 
+    //                                                 ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+    //                                                 : 'border-gray-300 bg-white text-gray-900'
+    //                                         }`}
+    //                                         required
+    //                                     />
+    //                                 </div>
+    //                                 <div className="space-y-2">
+    //                                     <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>Role</label>
+    //                                     <select
+    //                                         value={newUserData.role}
+    //                                         onChange={(e) => setNewUserData({...newUserData, role: e.target.value})}
+    //                                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+    //                                             isDarkMode 
+    //                                                 ? 'border-gray-600 bg-gray-700 text-gray-100' 
+    //                                                 : 'border-gray-300 bg-white text-gray-900'
+    //                                         }`}
+    //                                     >
+    //                                         <option value="student">👨‍🎓 Student</option>
+    //                                         <option value="teacher">👨‍🏫 Teacher</option>
+    //                                         <option value="admin">👨‍💼 Admin</option>
+    //                                     </select>
+    //                                 </div>
+    //                             </div>
+    //                             <div className={`flex justify-end space-x-3 pt-4 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
+    //                                 <button 
+    //                                     type="button" 
+    //                                     className={`px-4 py-2 border rounded-lg transition-colors ${
+    //                                         isDarkMode 
+    //                                             ? 'border-gray-600 text-gray-300 bg-gray-700 hover:bg-gray-600' 
+    //                                             : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+    //                                     }`}
+    //                                     onClick={() => setShowCreateUserForm(false)}
+    //                                 >
+    //                                     Cancel
+    //                                 </button>
+    //                                 <button 
+    //                                     type="submit" 
+    //                                     className="px-4 py-2 border border-transparent rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+    //                                 >
+    //                                     ✨ Create User
+    //                                 </button>
+    //                             </div>
+    //                         </form>
+    //                     </div>
+    //                 </div>
+    //             </div>
+    //         )}
+
+    //         {showEditUserForm && editingUser && (
+    //             <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+    //                 <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-2xl border w-full max-w-2xl mx-4 transition-colors duration-300`}>
+    //                     <div className={`flex items-center justify-between p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
+    //                         <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
+    //                             <span className="mr-2">📝</span>
+    //                             Edit User: {editingUser.firstName} {editingUser.lastName}
+    //                         </h3>
+    //                         <button 
+    //                             className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+    //                             onClick={() => {
+    //                                 setShowEditUserForm(false);
+    //                                 setEditingUser(null);
+    //                                 setNewUserData({
+    //                                     firstName: '',
+    //                                     lastName: '',
+    //                                     email: '',
+    //                                     password: '',
+    //                                     role: 'student'
+    //                                 });
+    //                             }}
+    //                         >
+    //                             <span className={`${isDarkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-400 hover:text-gray-600'} text-xl transition-colors`}>✕</span>
+    //                         </button>
+    //                     </div>
+    //                     <div className="p-6">
+    //                         <form onSubmit={handleUpdateUser} className="space-y-6">
+    //                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    //                                 <div className="space-y-2">
+    //                                     <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>First Name</label>
+    //                                     <input
+    //                                         type="text"
+    //                                         placeholder="Enter first name"
+    //                                         value={newUserData.firstName}
+    //                                         onChange={(e) => setNewUserData({...newUserData, firstName: e.target.value})}
+    //                                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+    //                                             isDarkMode 
+    //                                                 ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+    //                                                 : 'border-gray-300 bg-white text-gray-900'
+    //                                         }`}
+    //                                         required
+    //                                     />
+    //                                 </div>
+    //                                 <div className="space-y-2">
+    //                                     <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>Last Name</label>
+    //                                     <input
+    //                                         type="text"
+    //                                         placeholder="Enter last name"
+    //                                         value={newUserData.lastName}
+    //                                         onChange={(e) => setNewUserData({...newUserData, lastName: e.target.value})}
+    //                                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+    //                                             isDarkMode 
+    //                                                 ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+    //                                                 : 'border-gray-300 bg-white text-gray-900'
+    //                                         }`}
+    //                                         required
+    //                                     />
+    //                                 </div>
+    //                                 <div className="md:col-span-2 space-y-2">
+    //                                     <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>Email Address</label>
+    //                                     <input
+    //                                         type="email"
+    //                                         placeholder="Enter email address"
+    //                                         value={newUserData.email}
+    //                                         onChange={(e) => setNewUserData({...newUserData, email: e.target.value})}
+    //                                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+    //                                             isDarkMode 
+    //                                                 ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+    //                                                 : 'border-gray-300 bg-white text-gray-900'
+    //                                         }`}
+    //                                         required
+    //                                     />
+    //                                 </div>
+    //                                 <div className="space-y-2">
+    //                                     <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>New Password</label>
+    //                                     <input
+    //                                         type="password"
+    //                                         placeholder="Leave blank to keep current password"
+    //                                         value={newUserData.password}
+    //                                         onChange={(e) => setNewUserData({...newUserData, password: e.target.value})}
+    //                                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+    //                                             isDarkMode 
+    //                                                 ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+    //                                                 : 'border-gray-300 bg-white text-gray-900'
+    //                                         }`}
+    //                                     />
+    //                                     <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+    //                                         Leave blank to keep the current password
+    //                                     </p>
+    //                                 </div>
+    //                                 <div className="space-y-2">
+    //                                     <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>Role</label>
+    //                                     <select
+    //                                         value={newUserData.role}
+    //                                         onChange={(e) => setNewUserData({...newUserData, role: e.target.value})}
+    //                                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+    //                                             isDarkMode 
+    //                                                 ? 'border-gray-600 bg-gray-700 text-gray-100' 
+    //                                                 : 'border-gray-300 bg-white text-gray-900'
+    //                                         }`}
+    //                                     >
+    //                                         <option value="student">👨‍🎓 Student</option>
+    //                                         <option value="teacher">👨‍🏫 Teacher</option>
+    //                                         <option value="admin">👨‍💼 Admin</option>
+    //                                     </select>
+    //                                 </div>
+    //                             </div>
+    //                             <div className={`flex justify-end space-x-3 pt-4 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
+    //                                 <button 
+    //                                     type="button" 
+    //                                     className={`px-4 py-2 border rounded-lg transition-colors ${
+    //                                         isDarkMode 
+    //                                             ? 'border-gray-600 text-gray-300 bg-gray-700 hover:bg-gray-600' 
+    //                                             : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+    //                                     }`}
+    //                                     onClick={() => {
+    //                                         setShowEditUserForm(false);
+    //                                         setEditingUser(null);
+    //                                         setNewUserData({
+    //                                             firstName: '',
+    //                                             lastName: '',
+    //                                             email: '',
+    //                                             password: '',
+    //                                             role: 'student'
+    //                                         });
+    //                                     }}
+    //                                 >
+    //                                     Cancel
+    //                                 </button>
+    //                                 <button 
+    //                                     type="submit" 
+    //                                     className="px-4 py-2 border border-transparent rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+    //                                 >
+    //                                     💾 Update User
+    //                                 </button>
+    //                             </div>
+    //                         </form>
+    //                     </div>
+    //                 </div>
+    //             </div>
+    //         )}
+
+    //         {/* ✅ ADD DELETE CONFIRMATION MODAL HERE */}
+    //         {showDeleteConfirm && userToDelete && (
+    //             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    //                 <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-2xl border w-full max-w-md mx-4 transition-colors duration-300`}>
+    //                     <div className="p-6">
+    //                         <div className="flex items-center mb-4">
+    //                             <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+    //                                 <span className="text-red-600 text-2xl">⚠️</span>
+    //                             </div>
+    //                         </div>
+    //                         <div className="text-center">
+    //                             <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} mb-2`}>
+    //                                 Confirm Delete User
+    //                             </h3>
+    //                             <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} mb-6`}>
+    //                                 Are you sure you want to delete user <strong>"{userToDelete.firstName} {userToDelete.lastName}"</strong> ({userToDelete.email})?
+    //                                 <br />
+    //                                 <span className="text-red-500 font-medium">This action cannot be undone.</span>
+    //                             </p>
+    //                         </div>
+    //                         <div className="flex justify-center space-x-4">
+    //                             <button
+    //                                 onClick={() => {
+    //                                     console.log('❌ Cancel delete clicked');
+    //                                     setShowDeleteConfirm(false);
+    //                                     setUserToDelete(null);
+    //                                 }}
+    //                                 className={`px-4 py-2 border rounded-lg transition-colors ${
+    //                                     isDarkMode 
+    //                                         ? 'border-gray-600 text-gray-300 bg-gray-700 hover:bg-gray-600' 
+    //                                         : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+    //                                 }`}
+    //                             >
+    //                                 Cancel
+    //                             </button>
+    //                             <button
+    //                                 onClick={confirmDeleteUser}
+    //                                 className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+    //                             >
+    //                                 🗑️ Yes, Delete
+    //                             </button>
+    //                         </div>
+    //                     </div>
+    //                 </div>
+    //             </div>
+    //         )}
+    
+    //         {/* Users Table - Dark Mode */}
+    //         <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+    //             <div className="overflow-x-auto">
+    //                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+    //                     <thead className={`${isDarkMode ? 'bg-gradient-to-r from-gray-800 to-gray-700' : 'bg-gradient-to-r from-gray-50 to-gray-100'} transition-colors duration-300`}>
+    //                         <tr>
+    //                             <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
+    //                                 <div className="flex items-center space-x-1">
+    //                                     <span>👤 User</span>
+    //                                     <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
+    //                                 </div>
+    //                             </th>
+    //                             <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
+    //                                 <div className="flex items-center space-x-1">
+    //                                     <span>📧 Contact</span>
+    //                                     <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
+    //                                 </div>
+    //                             </th>
+    //                             <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
+    //                                 <div className="flex items-center space-x-1">
+    //                                     <span>🎭 Role</span>
+    //                                     <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
+    //                                 </div>
+    //                             </th>
+    //                             <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
+    //                                 <div className="flex items-center space-x-1">
+    //                                     <span>📊 Status</span>
+    //                                     <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
+    //                                 </div>
+    //                             </th>
+    //                             <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
+    //                                 <div className="flex items-center space-x-1">
+    //                                     <span>📅 Joined</span>
+    //                                     <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
+    //                                 </div>
+    //                             </th>
+    //                             <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
+    //                                 ⚡ Actions
+    //                             </th>
+    //                         </tr>
+    //                     </thead>
+    //                     <tbody className={`${isDarkMode ? 'bg-gray-800 divide-gray-700' : 'bg-white divide-gray-200'} transition-colors duration-300`}>
+    //                         {getFilteredUsers().map((user, index) => (
+    //                             <tr key={user._id} className={`${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'} transition-colors duration-200 ${!user.isApproved ? (isDarkMode ? 'bg-orange-900/30 border-l-4 border-orange-500' : 'bg-orange-25 border-l-4 border-orange-400') : ''}`}>
+    //                                 <td className="px-6 py-4 whitespace-nowrap">
+    //                                     <div className="flex items-center space-x-4">
+    //                                         <div className="relative">
+    //                                             <div className={`h-12 w-12 rounded-full flex items-center justify-center text-white font-semibold ${
+    //                                                 user.role === 'admin' ? 'bg-gradient-to-br from-purple-400 to-pink-500' :
+    //                                                 user.role === 'teacher' ? 'bg-gradient-to-br from-green-400 to-blue-500' :
+    //                                                 'bg-gradient-to-br from-blue-400 to-purple-500'
+    //                                             }`}>
+    //                                                 {user.firstName?.charAt(0)}{user.lastName?.charAt(0)}
+    //                                             </div>
+    //                                             <div className={`absolute -bottom-1 -right-1 h-4 w-4 border-2 ${isDarkMode ? 'border-gray-800' : 'border-white'} rounded-full ${
+    //                                                 user.isApproved ? 'bg-green-400' : 'bg-orange-400'
+    //                                             } transition-colors duration-300`}></div>
+    //                                         </div>
+    //                                         <div className="space-y-1">
+    //                                             <div className={`text-sm font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>
+    //                                                 {user.firstName} {user.lastName}
+    //                                             </div>
+    //                                             <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
+    //                                                 ID: {user._id.slice(-8)}
+    //                                             </div>
+    //                                         </div>
+    //                                     </div>
+    //                                 </td>
+    //                                 <td className="px-6 py-4 whitespace-nowrap">
+    //                                     <div className="space-y-1">
+    //                                         <div className={`text-sm ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>{user.email}</div>
+    //                                         {user.phone && (
+    //                                             <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>📱 {user.phone}</div>
+    //                                         )}
+    //                                     </div>
+    //                                 </td>
+    //                                 <td className="px-6 py-4 whitespace-nowrap">
+    //                                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium transition-colors duration-300 ${
+    //                                         user.role === 'admin' ? (isDarkMode ? 'bg-purple-900/50 text-purple-300 border border-purple-700/50' : 'bg-purple-100 text-purple-800') :
+    //                                         user.role === 'teacher' ? (isDarkMode ? 'bg-green-900/50 text-green-300 border border-green-700/50' : 'bg-green-100 text-green-800') :
+    //                                         (isDarkMode ? 'bg-blue-900/50 text-blue-300 border border-blue-700/50' : 'bg-blue-100 text-blue-800')
+    //                                     }`}>
+    //                                         <span className="mr-1">
+    //                                             {user.role === 'admin' ? '👨‍💼' : 
+    //                                             user.role === 'teacher' ? '👨‍🏫' : '👨‍🎓'}
+    //                                         </span>
+    //                                         {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+    //                                     </span>
+    //                                 </td>
+    //                                 <td className="px-6 py-4 whitespace-nowrap">
+    //                                     <div className="space-y-1">
+    //                                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors duration-300 ${
+    //                                             user.isApproved ? (isDarkMode ? 'bg-green-900/50 text-green-300 border border-green-700/50' : 'bg-green-100 text-green-800') : (isDarkMode ? 'bg-orange-900/50 text-orange-300 border border-orange-700/50' : 'bg-orange-100 text-orange-800')
+    //                                         }`}>
+    //                                             <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
+    //                                                 user.isApproved ? 'bg-green-400' : 'bg-orange-400'
+    //                                             }`}></span>
+    //                                             {user.isApproved ? 'Approved' : 'Pending'}
+    //                                         </span>
+    //                                         {!user.isApproved && (
+    //                                             <div className={`text-xs font-medium ${isDarkMode ? 'text-orange-400' : 'text-orange-600'} transition-colors duration-300`}>
+    //                                                 ⚠️ Needs Review
+    //                                             </div>
+    //                                         )}
+    //                                     </div>
+    //                                 </td>
+    //                                 <td className={`px-6 py-4 whitespace-nowrap text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
+    //                                     <div className="space-y-1">
+    //                                         <div className={`font-medium ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>
+    //                                             {new Date(user.createdAt || Date.now()).toLocaleDateString()}
+    //                                         </div>
+    //                                         <div className="text-xs">
+    //                                             {(() => {
+    //                                                 const days = Math.floor((Date.now() - new Date(user.createdAt || Date.now())) / (1000 * 60 * 60 * 24));
+    //                                                 return days === 0 ? 'Today' : `${days} days ago`;
+    //                                             })()}
+    //                                         </div>
+    //                                     </div>
+    //                                 </td>
+    //                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+    //                                     <div className="flex items-center space-x-2">
+    //                                         {!user.isApproved ? (
+    //                                             <>
+    //                                                 <button 
+    //                                                     className={`inline-flex items-center p-2 border border-transparent rounded-lg text-green-600 ${isDarkMode ? 'hover:bg-green-900/30' : 'hover:bg-green-100'} transition-colors duration-200`}
+    //                                                     onClick={() => handleUserApproval(user._id, true)}
+    //                                                     title="Approve User"
+    //                                                 >
+    //                                                     ✅
+    //                                                 </button>
+    //                                                 <button 
+    //                                                     className={`inline-flex items-center p-2 border border-transparent rounded-lg text-red-600 ${isDarkMode ? 'hover:bg-red-900/30' : 'hover:bg-red-100'} transition-colors duration-200`}
+    //                                                     onClick={() => handleUserApproval(user._id, false)}
+    //                                                     title="Reject User"
+    //                                                 >
+    //                                                     ❌
+    //                                                 </button>
+    //                                             </>
+    //                                         ) : (
+    //                                             <>
+    //                                                 <button 
+    //                                                     className={`inline-flex items-center p-2 border border-transparent rounded-lg text-blue-600 ${isDarkMode ? 'hover:bg-blue-900/30' : 'hover:bg-blue-100'} transition-colors duration-200`}
+    //                                                     onClick={() => handleEditUser(user)}
+    //                                                     title="Edit User"
+    //                                                 >
+    //                                                     📝
+    //                                                 </button>
+    //                                                 <button 
+    //                                                     className={`inline-flex items-center p-2 border border-transparent rounded-lg text-red-600 ${isDarkMode ? 'hover:bg-red-900/30' : 'hover:bg-red-100'} transition-colors duration-200`}
+    //                                                     onClick={() => handleDeleteUser(user)}
+    //                                                     title="Delete User"
+    //                                                 >
+    //                                                     🗑️
+    //                                                 </button>
+    //                                             </>
+    //                                         )}
                                             
-                                            {/* More Actions Dropdown */}
-                                            <div className="relative group">
-                                                <button className={`inline-flex items-center p-2 border border-transparent rounded-lg ${isDarkMode ? 'text-gray-400 hover:bg-gray-700/50' : 'text-gray-600 hover:bg-gray-100'} transition-colors duration-200`}>
-                                                    ⋮
-                                                </button>
-                                                <div className={`absolute right-0 mt-2 w-48 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} rounded-lg shadow-lg border z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200`}>
-                                                    <div className="py-1">
-                                                        <button 
-                                                            className={`flex items-center w-full px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors duration-200`}
-                                                            onClick={() => handleEditUser(user)}
-                                                        >
-                                                            <span className="mr-2">📝</span>
-                                                            Edit User
-                                                        </button>
-                                                        <button className={`flex items-center w-full px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors duration-200`}>
-                                                            <span className="mr-2">📧</span>
-                                                            Send Message
-                                                        </button>
-                                                        <button className={`flex items-center w-full px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors duration-200`}>
-                                                            <span className="mr-2">🔒</span>
-                                                            Reset Password
-                                                        </button>
-                                                        <hr className={`my-1 ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`} />
-                                                        <button 
-                                                            className={`flex items-center w-full px-4 py-2 text-sm text-red-600 ${isDarkMode ? 'hover:bg-red-900/30' : 'hover:bg-red-50'} transition-colors duration-200`}
-                                                            onClick={() => handleDeleteUser(user)}
-                                                        >
-                                                            <span className="mr-2">🗑️</span>
-                                                            Delete User
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+    //                                         {/* More Actions Dropdown */}
+    //                                         <div className="relative group">
+    //                                             <button className={`inline-flex items-center p-2 border border-transparent rounded-lg ${isDarkMode ? 'text-gray-400 hover:bg-gray-700/50' : 'text-gray-600 hover:bg-gray-100'} transition-colors duration-200`}>
+    //                                                 ⋮
+    //                                             </button>
+    //                                             <div className={`absolute right-0 mt-2 w-48 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} rounded-lg shadow-lg border z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200`}>
+    //                                                 <div className="py-1">
+    //                                                     <button 
+    //                                                         className={`flex items-center w-full px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors duration-200`}
+    //                                                         onClick={() => handleEditUser(user)}
+    //                                                     >
+    //                                                         <span className="mr-2">📝</span>
+    //                                                         Edit User
+    //                                                     </button>
+    //                                                     <button className={`flex items-center w-full px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors duration-200`}>
+    //                                                         <span className="mr-2">📧</span>
+    //                                                         Send Message
+    //                                                     </button>
+    //                                                     <button className={`flex items-center w-full px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors duration-200`}>
+    //                                                         <span className="mr-2">🔒</span>
+    //                                                         Reset Password
+    //                                                     </button>
+    //                                                     <hr className={`my-1 ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`} />
+    //                                                     <button 
+    //                                                         className={`flex items-center w-full px-4 py-2 text-sm text-red-600 ${isDarkMode ? 'hover:bg-red-900/30' : 'hover:bg-red-50'} transition-colors duration-200`}
+    //                                                         onClick={() => handleDeleteUser(user)}
+    //                                                     >
+    //                                                         <span className="mr-2">🗑️</span>
+    //                                                         Delete User
+    //                                                     </button>
+    //                                                 </div>
+    //                                             </div>
+    //                                         </div>
+    //                                     </div>
+    //                                 </td>
+    //                             </tr>
+    //                         ))}
+    //                     </tbody>
+    //                 </table>
+    //             </div>
     
-                {/* Table Footer with Dark Mode */}
-                <div className={`${isDarkMode ? 'bg-gray-750 border-gray-700' : 'bg-gray-50 border-gray-200'} px-6 py-3 flex items-center justify-between border-t transition-colors duration-300`}>
-                    <div className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
-                        Showing {getFilteredUsers().length} of {allUsers.length} users
-                        {(searchTerm || selectedRole || selectedStatus) && (
-                            <span className={`ml-2 font-medium ${isDarkMode ? 'text-blue-400' : 'text-blue-600'} transition-colors duration-300`}>
-                                (filtered)
-                            </span>
-                        )}
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        <button className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${
-                            isDarkMode 
-                                ? 'border-gray-600 text-gray-400 bg-gray-800 hover:bg-gray-700' 
-                                : 'border-gray-300 text-gray-500 bg-white hover:bg-gray-50'
-                        }`} disabled>
-                            ← Previous
-                        </button>
-                        <div className="flex space-x-1">
-                            <button className={`px-3 py-1 rounded-lg text-sm text-white transition-colors duration-200 ${isDarkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-600 hover:bg-blue-700'}`}>1</button>
-                            <button className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${isDarkMode ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'}`}>2</button>
-                            <button className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${isDarkMode ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'}`}>3</button>
-                        </div>
-                        <button className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${
-                            isDarkMode 
-                                ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' 
-                                : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
-                        }`}>
-                            Next →
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
+    //             {/* Table Footer with Dark Mode */}
+    //             <div className={`${isDarkMode ? 'bg-gray-750 border-gray-700' : 'bg-gray-50 border-gray-200'} px-6 py-3 flex items-center justify-between border-t transition-colors duration-300`}>
+    //                 <div className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
+    //                     Showing {getFilteredUsers().length} of {allUsers.length} users
+    //                     {(searchTerm || selectedRole || selectedStatus) && (
+    //                         <span className={`ml-2 font-medium ${isDarkMode ? 'text-blue-400' : 'text-blue-600'} transition-colors duration-300`}>
+    //                             (filtered)
+    //                         </span>
+    //                     )}
+    //                 </div>
+    //                 <div className="flex items-center space-x-2">
+    //                     <button className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${
+    //                         isDarkMode 
+    //                             ? 'border-gray-600 text-gray-400 bg-gray-800 hover:bg-gray-700' 
+    //                             : 'border-gray-300 text-gray-500 bg-white hover:bg-gray-50'
+    //                     }`} disabled>
+    //                         ← Previous
+    //                     </button>
+    //                     <div className="flex space-x-1">
+    //                         <button className={`px-3 py-1 rounded-lg text-sm text-white transition-colors duration-200 ${isDarkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-600 hover:bg-blue-700'}`}>1</button>
+    //                         <button className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${isDarkMode ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'}`}>2</button>
+    //                         <button className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${isDarkMode ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'}`}>3</button>
+    //                     </div>
+    //                     <button className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${
+    //                         isDarkMode 
+    //                             ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' 
+    //                             : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+    //                     }`}>
+    //                         Next →
+    //                     </button>
+    //                 </div>
+    //             </div>
+    //         </div>
+    //     </div>
+    // );
+
+    // const renderUserManagement = () => (
+    //     <div className="space-y-8">
+    //         {/* Header Section */}
+    //         <div className={`rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300 ${
+    //             isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'
+    //         }`}>
+    //             <div className={`p-6 border-b transition-colors duration-300 ${
+    //                 isDarkMode ? 'border-gray-700' : 'border-gray-200'
+    //             }`}>
+    //                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+    //                     <div>
+    //                         <h2 className={`text-2xl font-bold flex items-center transition-colors duration-300 ${
+    //                             isDarkMode ? 'text-gray-100' : 'text-gray-900'
+    //                         }`}>
+    //                             <span className="mr-3">👥</span>
+    //                             {t('userManagement.title')}
+    //                         </h2>
+    //                         <div className="flex flex-wrap gap-4 text-sm mt-2">
+    //                             <span className={`transition-colors duration-300 ${
+    //                                 isDarkMode ? 'text-gray-400' : 'text-gray-600'
+    //                             }`}>
+    //                                 <span className={`font-semibold transition-colors duration-300 ${
+    //                                     isDarkMode ? 'text-gray-100' : 'text-gray-900'
+    //                                 }`}>{allUsers.length}</span> Total Users
+    //                             </span>
+    //                             <span className={`transition-colors duration-300 ${
+    //                                 isDarkMode ? 'text-gray-400' : 'text-gray-600'
+    //                             }`}>
+    //                                 <span className="font-semibold text-orange-600">{pendingUsers.length}</span> Pending
+    //                             </span>
+    //                             <span className={`transition-colors duration-300 ${
+    //                                 isDarkMode ? 'text-gray-400' : 'text-gray-600'
+    //                             }`}>
+    //                                 <span className="font-semibold text-green-600">{allUsers.filter(u => u.isApproved).length}</span> Approved
+    //                             </span>
+    //                         </div>
+    //                     </div>
+    
+    //                     <div className="flex flex-col sm:flex-row gap-3">
+    //                         <div className="flex flex-col sm:flex-row gap-2">
+    //                             <input 
+    //                                 type="text" 
+    //                                 placeholder="🔍 Search users..." 
+    //                                 value={searchTerm}
+    //                                 onChange={(e) => setSearchTerm(e.target.value)}
+    //                                 className={`px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+    //                                     isDarkMode 
+    //                                         ? 'border-gray-600 bg-gray-800 text-gray-100 placeholder-gray-400' 
+    //                                         : 'border-gray-300 bg-white text-gray-900'
+    //                                 }`}
+    //                             />
+    //                             <select 
+    //                                 value={selectedRole}
+    //                                 onChange={(e) => setSelectedRole(e.target.value)}
+    //                                 className={`px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+    //                                     isDarkMode 
+    //                                         ? 'border-gray-600 bg-gray-800 text-gray-100' 
+    //                                         : 'border-gray-300 bg-white text-gray-900'
+    //                                 }`}
+    //                             >
+    //                                 <option value="">All Roles</option>
+    //                                 <option value="student">Students</option>
+    //                                 <option value="teacher">Teachers</option>
+    //                                 <option value="admin">Admins</option>
+    //                             </select>
+    //                             <select 
+    //                                 value={selectedStatus}
+    //                                 onChange={(e) => setSelectedStatus(e.target.value)}
+    //                                 className={`px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+    //                                     isDarkMode 
+    //                                         ? 'border-gray-600 bg-gray-800 text-gray-100' 
+    //                                         : 'border-gray-300 bg-white text-gray-900'
+    //                                 }`}
+    //                             >
+    //                                 <option value="">All Status</option>
+    //                                 <option value="approved">Approved</option>
+    //                                 <option value="pending">Pending</option>
+    //                             </select>
+    //                         </div>
+    //                         <button 
+    //                             className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+    //                             onClick={() => setShowCreateUserForm(true)}
+    //                         >
+    //                             ➕ Create New User
+    //                         </button>
+    //                     </div>
+    //                 </div>
+    //             </div>
+    //         </div>
+    
+    //         {/* ALL YOUR EXISTING MODALS - KEEP EXACTLY AS THEY WERE */}
+    //         {showCreateUserForm && (
+    //             <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+    //                 <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-2xl border w-full max-w-2xl mx-4 transition-colors duration-300`}>
+    //                     <div className={`flex items-center justify-between p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
+    //                         <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
+    //                             <span className="mr-2">✨</span>
+    //                             Create New User
+    //                         </h3>
+    //                         <button 
+    //                             className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+    //                             onClick={() => setShowCreateUserForm(false)}
+    //                         >
+    //                             <span className={`${isDarkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-400 hover:text-gray-600'} text-xl transition-colors`}>✕</span>
+    //                         </button>
+    //                     </div>
+    //                     <div className="p-6">
+    //                         <form onSubmit={handleCreateUser} className="space-y-6">
+    //                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    //                                 <div className="space-y-2">
+    //                                     <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>First Name</label>
+    //                                     <input
+    //                                         type="text"
+    //                                         placeholder="Enter first name"
+    //                                         value={newUserData.firstName}
+    //                                         onChange={(e) => setNewUserData({...newUserData, firstName: e.target.value})}
+    //                                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+    //                                             isDarkMode 
+    //                                                 ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+    //                                                 : 'border-gray-300 bg-white text-gray-900'
+    //                                         }`}
+    //                                         required
+    //                                     />
+    //                                 </div>
+    //                                 <div className="space-y-2">
+    //                                     <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>Last Name</label>
+    //                                     <input
+    //                                         type="text"
+    //                                         placeholder="Enter last name"
+    //                                         value={newUserData.lastName}
+    //                                         onChange={(e) => setNewUserData({...newUserData, lastName: e.target.value})}
+    //                                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+    //                                             isDarkMode 
+    //                                                 ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+    //                                                 : 'border-gray-300 bg-white text-gray-900'
+    //                                         }`}
+    //                                         required
+    //                                     />
+    //                                 </div>
+    //                                 <div className="md:col-span-2 space-y-2">
+    //                                     <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>Email Address</label>
+    //                                     <input
+    //                                         type="email"
+    //                                         placeholder="Enter email address"
+    //                                         value={newUserData.email}
+    //                                         onChange={(e) => setNewUserData({...newUserData, email: e.target.value})}
+    //                                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+    //                                             isDarkMode 
+    //                                                 ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+    //                                                 : 'border-gray-300 bg-white text-gray-900'
+    //                                         }`}
+    //                                         required
+    //                                     />
+    //                                 </div>
+    //                                 <div className="space-y-2">
+    //                                     <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>Password</label>
+    //                                     <input
+    //                                         type="password"
+    //                                         placeholder="Enter password"
+    //                                         value={newUserData.password}
+    //                                         onChange={(e) => setNewUserData({...newUserData, password: e.target.value})}
+    //                                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+    //                                             isDarkMode 
+    //                                                 ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+    //                                                 : 'border-gray-300 bg-white text-gray-900'
+    //                                         }`}
+    //                                         required
+    //                                     />
+    //                                 </div>
+    //                                 <div className="space-y-2">
+    //                                     <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>Role</label>
+    //                                     <select
+    //                                         value={newUserData.role}
+    //                                         onChange={(e) => setNewUserData({...newUserData, role: e.target.value})}
+    //                                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+    //                                             isDarkMode 
+    //                                                 ? 'border-gray-600 bg-gray-700 text-gray-100' 
+    //                                                 : 'border-gray-300 bg-white text-gray-900'
+    //                                         }`}
+    //                                     >
+    //                                         <option value="student">👨‍🎓 Student</option>
+    //                                         <option value="teacher">👨‍🏫 Teacher</option>
+    //                                         <option value="admin">👨‍💼 Admin</option>
+    //                                     </select>
+    //                                 </div>
+    //                             </div>
+    //                             <div className={`flex justify-end space-x-3 pt-4 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
+    //                                 <button 
+    //                                     type="button" 
+    //                                     className={`px-4 py-2 border rounded-lg transition-colors ${
+    //                                         isDarkMode 
+    //                                             ? 'border-gray-600 text-gray-300 bg-gray-700 hover:bg-gray-600' 
+    //                                             : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+    //                                     }`}
+    //                                     onClick={() => setShowCreateUserForm(false)}
+    //                                 >
+    //                                     Cancel
+    //                                 </button>
+    //                                 <button 
+    //                                     type="submit" 
+    //                                     className="px-4 py-2 border border-transparent rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+    //                                 >
+    //                                     ✨ Create User
+    //                                 </button>
+    //                             </div>
+    //                         </form>
+    //                     </div>
+    //                 </div>
+    //             </div>
+    //         )}
+
+    //         {/* EDIT USER MODAL - Only adding SweetAlert2 confirmations */}
+    //         {showEditUserForm && editingUser && (
+    //             <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+    //                 <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-2xl border w-full max-w-2xl mx-4 transition-colors duration-300`}>
+    //                     <div className={`flex items-center justify-between p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
+    //                         <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
+    //                             <span className="mr-2">📝</span>
+    //                             Edit User: {editingUser.firstName} {editingUser.lastName}
+    //                         </h3>
+    //                         <button 
+    //                             className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+    //                             onClick={() => {
+    //                                 setShowEditUserForm(false);
+    //                                 setEditingUser(null);
+    //                                 setNewUserData({
+    //                                     firstName: '',
+    //                                     lastName: '',
+    //                                     email: '',
+    //                                     password: '',
+    //                                     role: 'student'
+    //                                 });
+    //                             }}
+    //                         >
+    //                             <span className={`${isDarkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-400 hover:text-gray-600'} text-xl transition-colors`}>✕</span>
+    //                         </button>
+    //                     </div>
+    //                     <div className="p-6">
+    //                         <form onSubmit={handleUpdateUser} className="space-y-6">
+    //                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    //                                 <div className="space-y-2">
+    //                                     <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>First Name</label>
+    //                                     <input
+    //                                         type="text"
+    //                                         placeholder="Enter first name"
+    //                                         value={newUserData.firstName}
+    //                                         onChange={(e) => setNewUserData({...newUserData, firstName: e.target.value})}
+    //                                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+    //                                             isDarkMode 
+    //                                                 ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+    //                                                 : 'border-gray-300 bg-white text-gray-900'
+    //                                         }`}
+    //                                         required
+    //                                     />
+    //                                 </div>
+    //                                 <div className="space-y-2">
+    //                                     <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>Last Name</label>
+    //                                     <input
+    //                                         type="text"
+    //                                         placeholder="Enter last name"
+    //                                         value={newUserData.lastName}
+    //                                         onChange={(e) => setNewUserData({...newUserData, lastName: e.target.value})}
+    //                                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+    //                                             isDarkMode 
+    //                                                 ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+    //                                                 : 'border-gray-300 bg-white text-gray-900'
+    //                                         }`}
+    //                                         required
+    //                                     />
+    //                                 </div>
+    //                                 <div className="md:col-span-2 space-y-2">
+    //                                     <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>Email Address</label>
+    //                                     <input
+    //                                         type="email"
+    //                                         placeholder="Enter email address"
+    //                                         value={newUserData.email}
+    //                                         onChange={(e) => setNewUserData({...newUserData, email: e.target.value})}
+    //                                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+    //                                             isDarkMode 
+    //                                                 ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+    //                                                 : 'border-gray-300 bg-white text-gray-900'
+    //                                         }`}
+    //                                         required
+    //                                     />
+    //                                 </div>
+    //                                 <div className="space-y-2">
+    //                                     <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>New Password</label>
+    //                                     <input
+    //                                         type="password"
+    //                                         placeholder="Leave blank to keep current password"
+    //                                         value={newUserData.password}
+    //                                         onChange={(e) => setNewUserData({...newUserData, password: e.target.value})}
+    //                                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+    //                                             isDarkMode 
+    //                                                 ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+    //                                                 : 'border-gray-300 bg-white text-gray-900'
+    //                                         }`}
+    //                                     />
+    //                                     <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+    //                                         Leave blank to keep the current password
+    //                                     </p>
+    //                                 </div>
+    //                                 <div className="space-y-2">
+    //                                     <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>Role</label>
+    //                                     <select
+    //                                         value={newUserData.role}
+    //                                         onChange={(e) => setNewUserData({...newUserData, role: e.target.value})}
+    //                                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+    //                                             isDarkMode 
+    //                                                 ? 'border-gray-600 bg-gray-700 text-gray-100' 
+    //                                                 : 'border-gray-300 bg-white text-gray-900'
+    //                                         }`}
+    //                                     >
+    //                                         <option value="student">👨‍🎓 Student</option>
+    //                                         <option value="teacher">👨‍🏫 Teacher</option>
+    //                                         <option value="admin">👨‍💼 Admin</option>
+    //                                     </select>
+    //                                 </div>
+    //                             </div>
+    //                             <div className={`flex justify-end space-x-3 pt-4 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
+    //                                 <button 
+    //                                     type="button" 
+    //                                     className={`px-4 py-2 border rounded-lg transition-colors ${
+    //                                         isDarkMode 
+    //                                             ? 'border-gray-600 text-gray-300 bg-gray-700 hover:bg-gray-600' 
+    //                                             : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+    //                                     }`}
+    //                                     onClick={() => {
+    //                                         setShowEditUserForm(false);
+    //                                         setEditingUser(null);
+    //                                         setNewUserData({
+    //                                             firstName: '',
+    //                                             lastName: '',
+    //                                             email: '',
+    //                                             password: '',
+    //                                             role: 'student'
+    //                                         });
+    //                                     }}
+    //                                 >
+    //                                     Cancel
+    //                                 </button>
+    //                                 <button 
+    //                                     type="submit" 
+    //                                     className="px-4 py-2 border border-transparent rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+    //                                 >
+    //                                     💾 Update User
+    //                                 </button>
+    //                             </div>
+    //                         </form>
+    //                     </div>
+    //                 </div>
+    //             </div>
+    //         )}
+    
+    //         {/* DELETE CONFIRMATION MODAL - Keep your existing delete modal exactly as it was */}
+    //         {showDeleteConfirm && userToDelete && (
+    //             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    //                 <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-2xl border w-full max-w-md mx-4 transition-colors duration-300`}>
+    //                     <div className="p-6">
+    //                         <div className="flex items-center mb-4">
+    //                             <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+    //                                 <span className="text-red-600 text-2xl">⚠️</span>
+    //                             </div>
+    //                         </div>
+    //                         <div className="text-center">
+    //                             <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} mb-2`}>
+    //                                 Confirm Delete User
+    //                             </h3>
+    //                             <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} mb-6`}>
+    //                                 Are you sure you want to delete user <strong>"{userToDelete.firstName} {userToDelete.lastName}"</strong> ({userToDelete.email})?
+    //                                 <br />
+    //                                 <span className="text-red-500 font-medium">This action cannot be undone.</span>
+    //                             </p>
+    //                         </div>
+    //                         <div className="flex justify-center space-x-4">
+    //                             <button
+    //                                 onClick={() => {
+    //                                     console.log('❌ Cancel delete clicked');
+    //                                     setShowDeleteConfirm(false);
+    //                                     setUserToDelete(null);
+    //                                 }}
+    //                                 className={`px-4 py-2 border rounded-lg transition-colors ${
+    //                                     isDarkMode 
+    //                                         ? 'border-gray-600 text-gray-300 bg-gray-700 hover:bg-gray-600' 
+    //                                         : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+    //                                 }`}
+    //                             >
+    //                                 Cancel
+    //                             </button>
+    //                             <button
+    //                                 onClick={confirmDeleteUser}
+    //                                 className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+    //                             >
+    //                                 🗑️ Yes, Delete
+    //                             </button>
+    //                         </div>
+    //                     </div>
+    //                 </div>
+    //             </div>
+    //         )}
+    
+    //         {/* Users Table - Using your existing getFilteredUsers() function */}
+    //         <div className={`rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300 ${
+    //             isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'
+    //         }`}>
+    //             <div className="overflow-x-auto">
+    //                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+    //                     <thead className={`transition-colors duration-300 ${
+    //                         isDarkMode ? 'bg-gradient-to-r from-gray-800 to-gray-700' : 'bg-gradient-to-r from-gray-50 to-gray-100'
+    //                     }`}>
+    //                         <tr>
+    //                             <th className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider transition-colors duration-300 ${
+    //                                 isDarkMode ? 'text-gray-300' : 'text-gray-500'
+    //                             }`}>
+    //                                 <div className="flex items-center space-x-1">
+    //                                     <span>👤 User</span>
+    //                                     <span className={`transition-colors duration-300 ${
+    //                                         isDarkMode ? 'text-gray-500' : 'text-gray-400'
+    //                                     }`}>↕️</span>
+    //                                 </div>
+    //                             </th>
+    //                             <th className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider transition-colors duration-300 ${
+    //                                 isDarkMode ? 'text-gray-300' : 'text-gray-500'
+    //                             }`}>
+    //                                 <div className="flex items-center space-x-1">
+    //                                     <span>📧 Contact</span>
+    //                                 </div>
+    //                             </th>
+    //                             <th className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider transition-colors duration-300 ${
+    //                                 isDarkMode ? 'text-gray-300' : 'text-gray-500'
+    //                             }`}>
+    //                                 <div className="flex items-center space-x-1">
+    //                                     <span>🎭 Role</span>
+    //                                 </div>
+    //                             </th>
+    //                             <th className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider transition-colors duration-300 ${
+    //                                 isDarkMode ? 'text-gray-300' : 'text-gray-500'
+    //                             }`}>
+    //                                 <div className="flex items-center space-x-1">
+    //                                     <span>📊 Status</span>
+    //                                 </div>
+    //                             </th>
+    //                             <th className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider transition-colors duration-300 ${
+    //                                 isDarkMode ? 'text-gray-300' : 'text-gray-500'
+    //                             }`}>
+    //                                 <div className="flex items-center space-x-1">
+    //                                     <span>📅 Joined</span>
+    //                                 </div>
+    //                             </th>
+    //                             <th className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider transition-colors duration-300 ${
+    //                                 isDarkMode ? 'text-gray-300' : 'text-gray-500'
+    //                             }`}>
+    //                                 ⚡ Actions
+    //                             </th>
+    //                         </tr>
+    //                     </thead>
+    //                     <tbody className={`transition-colors duration-300 ${
+    //                         isDarkMode ? 'bg-gray-800 divide-gray-700' : 'bg-white divide-gray-200'
+    //                     }`}>
+    //                         {getFilteredUsers().map((user, index) => (
+    //                             <tr key={user._id} className={`transition-colors duration-200 ${
+    //                                 isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'
+    //                             } ${!user.isApproved ? (isDarkMode ? 'bg-orange-900/30 border-l-4 border-orange-500' : 'bg-orange-25 border-l-4 border-orange-400') : ''}`}>
+    //                                 <td className="px-6 py-4 whitespace-nowrap">
+    //                                     <div className="flex items-center space-x-4">
+    //                                         <div className="relative">
+    //                                             <div className={`h-12 w-12 rounded-full flex items-center justify-center text-white font-semibold ${
+    //                                                 user.role === 'admin' ? 'bg-gradient-to-br from-purple-400 to-pink-500' :
+    //                                                 user.role === 'teacher' ? 'bg-gradient-to-br from-green-400 to-blue-500' :
+    //                                                 'bg-gradient-to-br from-blue-400 to-purple-500'
+    //                                             }`}>
+    //                                                 {user.firstName?.charAt(0)}{user.lastName?.charAt(0)}
+    //                                             </div>
+    //                                             <div className={`absolute -bottom-1 -right-1 h-4 w-4 border-2 rounded-full transition-colors duration-300 ${
+    //                                                 isDarkMode ? 'border-gray-800' : 'border-white'
+    //                                             } ${user.isApproved ? 'bg-green-400' : 'bg-orange-400'}`}></div>
+    //                                         </div>
+    //                                         <div className="space-y-1">
+    //                                             <div className={`text-sm font-semibold transition-colors duration-300 ${
+    //                                                 isDarkMode ? 'text-gray-100' : 'text-gray-900'
+    //                                             }`}>
+    //                                                 {user.firstName} {user.lastName}
+    //                                             </div>
+    //                                             <div className={`text-xs transition-colors duration-300 ${
+    //                                                 isDarkMode ? 'text-gray-400' : 'text-gray-500'
+    //                                             }`}>
+    //                                                 ID: {user._id.slice(-8)}
+    //                                             </div>
+    //                                         </div>
+    //                                     </div>
+    //                                 </td>
+    //                                 <td className="px-6 py-4 whitespace-nowrap">
+    //                                     <div className="space-y-1">
+    //                                         <div className={`text-sm transition-colors duration-300 ${
+    //                                             isDarkMode ? 'text-gray-100' : 'text-gray-900'
+    //                                         }`}>{user.email}</div>
+    //                                         {user.phone && (
+    //                                             <div className={`text-xs transition-colors duration-300 ${
+    //                                                 isDarkMode ? 'text-gray-400' : 'text-gray-500'
+    //                                             }`}>📱 {user.phone}</div>
+    //                                         )}
+    //                                     </div>
+    //                                 </td>
+    //                                 <td className="px-6 py-4 whitespace-nowrap">
+    //                                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium transition-colors duration-300 ${
+    //                                         user.role === 'admin' ? (isDarkMode ? 'bg-purple-900/50 text-purple-300 border border-purple-700/50' : 'bg-purple-100 text-purple-800') :
+    //                                         user.role === 'teacher' ? (isDarkMode ? 'bg-green-900/50 text-green-300 border border-green-700/50' : 'bg-green-100 text-green-800') :
+    //                                         (isDarkMode ? 'bg-blue-900/50 text-blue-300 border border-blue-700/50' : 'bg-blue-100 text-blue-800')
+    //                                     }`}>
+    //                                         <span className="mr-1">
+    //                                             {user.role === 'admin' ? '👨‍💼' : 
+    //                                             user.role === 'teacher' ? '👨‍🏫' : '👨‍🎓'}
+    //                                         </span>
+    //                                         {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+    //                                     </span>
+    //                                 </td>
+    //                                 <td className="px-6 py-4 whitespace-nowrap">
+    //                                     <div className="space-y-1">
+    //                                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors duration-300 ${
+    //                                             user.isApproved ? (isDarkMode ? 'bg-green-900/50 text-green-300 border border-green-700/50' : 'bg-green-100 text-green-800') : (isDarkMode ? 'bg-orange-900/50 text-orange-300 border border-orange-700/50' : 'bg-orange-100 text-orange-800')
+    //                                         }`}>
+    //                                             <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
+    //                                                 user.isApproved ? 'bg-green-400' : 'bg-orange-400'
+    //                                             }`}></span>
+    //                                             {user.isApproved ? 'Approved' : 'Pending'}
+    //                                         </span>
+    //                                         {!user.isApproved && (
+    //                                             <div className={`text-xs font-medium transition-colors duration-300 ${
+    //                                                 isDarkMode ? 'text-orange-400' : 'text-orange-600'
+    //                                             }`}>
+    //                                                 ⚠️ Needs Review
+    //                                             </div>
+    //                                         )}
+    //                                     </div>
+    //                                 </td>
+    //                                 <td className={`px-6 py-4 whitespace-nowrap text-sm transition-colors duration-300 ${
+    //                                     isDarkMode ? 'text-gray-400' : 'text-gray-500'
+    //                                 }`}>
+    //                                     <div className="space-y-1">
+    //                                         <div className={`font-medium transition-colors duration-300 ${
+    //                                             isDarkMode ? 'text-gray-100' : 'text-gray-900'
+    //                                         }`}>
+    //                                             {new Date(user.createdAt || Date.now()).toLocaleDateString()}
+    //                                         </div>
+    //                                         <div className="text-xs">
+    //                                             {(() => {
+    //                                                 const days = Math.floor((Date.now() - new Date(user.createdAt || Date.now())) / (1000 * 60 * 60 * 24));
+    //                                                 return days === 0 ? 'Today' : `${days} days ago`;
+    //                                             })()}
+    //                                         </div>
+    //                                     </div>
+    //                                 </td>
+    //                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+    //                                     <div className="flex items-center space-x-2">
+    //                                         {!user.isApproved ? (
+    //                                             <>
+    //                                                 <button 
+    //                                                     className={`inline-flex items-center p-2 border border-transparent rounded-lg text-green-600 transition-colors duration-200 ${
+    //                                                         isDarkMode ? 'hover:bg-green-900/30' : 'hover:bg-green-100'
+    //                                                     }`}
+    //                                                     onClick={() => handleUserApproval(user._id, true)}
+    //                                                     title="Approve User"
+    //                                                 >
+    //                                                     ✅
+    //                                                 </button>
+    //                                                 <button 
+    //                                                     className={`inline-flex items-center p-2 border border-transparent rounded-lg text-red-600 transition-colors duration-200 ${
+    //                                                         isDarkMode ? 'hover:bg-red-900/30' : 'hover:bg-red-100'
+    //                                                     }`}
+    //                                                     onClick={() => handleUserApproval(user._id, false)}
+    //                                                     title="Reject User"
+    //                                                 >
+    //                                                     ❌
+    //                                                 </button>
+    //                                             </>
+    //                                         ) : (
+    //                                             <>
+    //                                                 <button 
+    //                                                     className={`inline-flex items-center p-2 border border-transparent rounded-lg text-blue-600 transition-colors duration-200 ${
+    //                                                         isDarkMode ? 'hover:bg-blue-900/30' : 'hover:bg-blue-100'
+    //                                                     }`}
+    //                                                     onClick={() => handleEditUser(user)}
+    //                                                     title="Edit User"
+    //                                                 >
+    //                                                     📝
+    //                                                 </button>
+    //                                                 <button 
+    //                                                     className={`inline-flex items-center p-2 border border-transparent rounded-lg text-red-600 transition-colors duration-200 ${
+    //                                                         isDarkMode ? 'hover:bg-red-900/30' : 'hover:bg-red-100'
+    //                                                     }`}
+    //                                                     onClick={() => handleDeleteUser(user)}
+    //                                                     title="Delete User"
+    //                                                 >
+    //                                                     🗑️
+    //                                                 </button>
+    //                                             </>
+    //                                         )}
+                                            
+    //                                         {/* More Actions Dropdown */}
+    //                                         <div className="relative group">
+    //                                             <button className={`inline-flex items-center p-2 border border-transparent rounded-lg transition-colors duration-200 ${
+    //                                                 isDarkMode ? 'text-gray-400 hover:bg-gray-700/50' : 'text-gray-600 hover:bg-gray-100'
+    //                                             }`}>
+    //                                                 ⋮
+    //                                             </button>
+    //                                             <div className={`absolute right-0 mt-2 w-48 rounded-lg shadow-lg border z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 ${
+    //                                                 isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+    //                                             }`}>
+    //                                                 <div className="py-1">
+    //                                                     <button 
+    //                                                         className={`flex items-center w-full px-4 py-2 text-sm transition-colors duration-200 ${
+    //                                                             isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'
+    //                                                         }`}
+    //                                                         onClick={() => handleEditUser(user)}
+    //                                                     >
+    //                                                         <span className="mr-2">📝</span>
+    //                                                         Edit User
+    //                                                     </button>
+    //                                                     <hr className={`my-1 ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`} />
+    //                                                     <button 
+    //                                                         className={`flex items-center w-full px-4 py-2 text-sm text-red-600 transition-colors duration-200 ${
+    //                                                             isDarkMode ? 'hover:bg-red-900/30' : 'hover:bg-red-50'
+    //                                                         }`}
+    //                                                         onClick={() => handleDeleteUser(user)}
+    //                                                     >
+    //                                                         <span className="mr-2">🗑️</span>
+    //                                                         Delete User
+    //                                                     </button>
+    //                                                 </div>
+    //                                             </div>
+    //                                         </div>
+    //                                     </div>
+    //                                 </td>
+    //                             </tr>
+    //                         ))}
+    //                     </tbody>
+    //                 </table>
+    //             </div>
+    
+    //             {/* Table Footer */}
+    //             <div className={`px-6 py-3 flex items-center justify-between border-t transition-colors duration-300 ${
+    //                 isDarkMode ? 'bg-gray-750 border-gray-700' : 'bg-gray-50 border-gray-200'
+    //             }`}>
+    //                 <div className={`text-sm transition-colors duration-300 ${
+    //                     isDarkMode ? 'text-gray-300' : 'text-gray-700'
+    //                 }`}>
+    //                     Showing {getFilteredUsers().length} of {allUsers.length} users
+    //                     {(searchTerm || selectedRole || selectedStatus) && (
+    //                         <span className={`ml-2 font-medium transition-colors duration-300 ${
+    //                             isDarkMode ? 'text-blue-400' : 'text-blue-600'
+    //                         }`}>
+    //                             (filtered)
+    //                         </span>
+    //                     )}
+    //                 </div>
+    //                 <div className="flex items-center space-x-2">
+    //                     <button className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${
+    //                         isDarkMode 
+    //                             ? 'border-gray-600 text-gray-400 bg-gray-800 hover:bg-gray-700' 
+    //                             : 'border-gray-300 text-gray-500 bg-white hover:bg-gray-50'
+    //                     }`} disabled>
+    //                         ← Previous
+    //                     </button>
+    //                     <div className="flex space-x-1">
+    //                         <button className={`px-3 py-1 rounded-lg text-sm text-white transition-colors duration-200 ${
+    //                             isDarkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-600 hover:bg-blue-700'
+    //                         }`}>1</button>
+    //                     </div>
+    //                     <button className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${
+    //                         isDarkMode 
+    //                             ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' 
+    //                             : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+    //                     }`}>
+    //                         Next →
+    //                     </button>
+    //                 </div>
+    //             </div>
+    //         </div>
+    //     </div>
+    // );
 
     const renderApplicationManagement = () => (
         <div className="space-y-8">
