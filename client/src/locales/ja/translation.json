@@ -1851,5 +1851,373 @@
         }
       }
     }
+  },
+  "admin": {
+    "systemHealth": {
+      "title": "システムヘルスモニター",
+      "description": "全システムが最適に稼働中",
+      "status": "正常"
+    },
+    "metrics": {
+      "serverLoad": {
+        "title": "サーバー負荷",
+        "subtitle": "CPU使用率"
+      },
+      "storage": {
+        "title": "ストレージ使用量",
+        "subtitle": "データベース・ファイル"
+      },
+      "response": {
+        "title": "応答時間",
+        "subtitle": "平均API速度"
+      },
+      "sessions": {
+        "title": "アクティブセッション",
+        "subtitle": "現在のオンラインユーザー"
+      },
+      "totalUsers": "総ユーザー数",
+      "applications": "申請",
+      "messages": "メッセージ",
+      "uptime": "稼働時間",
+      "pendingApproval": "承認待ち",
+      "pendingReview": "審査待ち",
+      "needsResponse": "返信が必要",
+      "last30Days": "過去30日間",
+      "downtime": "分のダウンタイム",
+      "totalActiveUsers": "総アクティブユーザー数",
+      "growthRate": "成長率",
+      "thisMonth": "今月"
+    },
+    "status": {
+      "optimal": "最適",
+      "growing": "成長中",
+      "fast": "高速",
+      "active": "アクティブ",
+      "liveMonitoring": "リアルタイム監視",
+      "approved": "承認済み",
+      "resolved": "解決済み",
+      "excellent": "優秀",
+      "live": "ライブ",
+      "allClear": "問題なし",
+      "automated": "自動化"
+    },
+    "userDistribution": {
+      "title": "ユーザー分布",
+      "subtitle": "役割別プラットフォームユーザー内訳"
+    },
+    "roles": {
+      "students": "学生",
+      "studentsDesc": "アクティブな学習者",
+      "teachers": "教師",
+      "teachersDesc": "コース講師",
+      "administrators": "管理者",
+      "administratorsDesc": "システム管理者"
+    },
+    "activity": {
+      "title": "リアルタイムアクティビティ",
+      "subtitle": "ライブシステムイベントとユーザーアクション",
+      "newRegistration": "新しい{{role}}登録",
+      "awaitingApproval": "承認待ち",
+      "newContactMessage": "新しいお問い合わせメッセージ",
+      "securityScan": "セキュリティスキャン完了",
+      "noThreats": "脅威は検出されませんでした。全システム安全です。",
+      "databaseBackup": "データベースバックアップ完了",
+      "backupSuccess": "日次バックアップが成功しました。2.4GBアーカイブ済み。"
+    },
+    "actions": {
+      "approve": "承認",
+      "reject": "拒否",
+      "priority": "優先",
+      "resolve": "解決"
+    },
+    "quickActions": {
+      "title": "クイック管理",
+      "manageUsers": "ユーザー管理",
+      "applications": "申請",
+      "messages": "メッセージ",
+      "settings": "設定"
+    },
+    "alerts": {
+      "title": "システムアラート",
+      "subtitle": "最近のシステム通知とアラート"
+    },
+    "time": {
+      "fiveMinutesAgo": "5分前",
+      "oneHourAgo": "1時間前"
+    }
+  },
+  "userManagement": {
+    "title": "ユーザー管理",
+    "stats": {
+      "totalUsers": "総ユーザー数",
+      "pending": "保留中",
+      "approved": "承認済み"
+    },
+    "search": {
+      "placeholder": "🔍 ユーザーを検索...",
+      "allRoles": "すべての役割",
+      "allStatus": "すべてのステータス"
+    },
+    "roles": {
+      "student": "学生",
+      "teacher": "教師",
+      "admin": "管理者",
+      "students": "学生",
+      "teachers": "教師",
+      "admins": "管理者"
+    },
+    "status": {
+      "approved": "承認済み",
+      "pending": "保留中",
+      "needsReview": "要確認"
+    },
+    "buttons": {
+      "createNewUser": "新しいユーザーを作成",
+      "cancel": "キャンセル",
+      "createUser": "ユーザー作成",
+      "updateUser": "ユーザー更新",
+      "yesDelete": "はい、削除"
+    },
+    "modals": {
+      "createUser": {
+        "title": "新しいユーザーを作成"
+      },
+      "editUser": {
+        "title": "ユーザー編集"
+      },
+      "deleteUser": {
+        "title": "ユーザー削除の確認",
+        "message": "ユーザーを削除してもよろしいですか",
+        "warning": "この操作は元に戻せません。"
+      }
+    },
+    "form": {
+      "firstName": "名前",
+      "lastName": "苗字",
+      "email": "メールアドレス",
+      "password": "パスワード",
+      "newPassword": "新しいパスワード",
+      "role": "役割",
+      "placeholders": {
+        "firstName": "名前を入力",
+        "lastName": "苗字を入力",
+        "email": "メールアドレスを入力",
+        "password": "パスワードを入力",
+        "newPassword": "現在のパスワードを保持する場合は空白"
+      },
+      "notes": {
+        "passwordKeep": "現在のパスワードを保持する場合は空白のままにしてください"
+      }
+    },
+    "table": {
+      "headers": {
+        "user": "ユーザー",
+        "contact": "連絡先",
+        "role": "役割",
+        "status": "ステータス",
+        "joined": "参加日",
+        "actions": "操作"
+      },
+      "actions": {
+        "approve": "ユーザー承認",
+        "reject": "ユーザー拒否",
+        "edit": "ユーザー編集",
+        "delete": "ユーザー削除",
+        "editAction": "ユーザー編集",
+        "deleteAction": "ユーザー削除"
+      },
+      "timeago": {
+        "today": "今日",
+        "daysAgo": "日前"
+      }
+    },
+    "footer": {
+      "showing": "表示中",
+      "of": "/",
+      "users": "ユーザー",
+      "filtered": "（フィルタ済み）",
+      "previous": "← 前へ",
+      "next": "次へ →"
+    },
+    "dropdown": {
+      "editUser": "ユーザー編集",
+      "deleteUser": "ユーザー削除"
+    }
+  },
+    "newsPage": {
+      "hero": {
+        "badge": "最新情報",
+        "title": {
+          "part1": "キャンパス",
+          "highlight": "ニュース"
+        },
+        "description": "活気あふれる学術コミュニティからの最新の発表、イベント、成果をご覧ください。",
+        "trending": {
+          "label": "注目",
+          "tags": {
+            "techSymposium": "技術シンポジウム",
+            "hackathon": "ハッカソン",
+            "newCourses": "新コース"
+          }
+        },
+        "stats": {
+          "upcomingEvents": "今後のイベント",
+          "recentAnnouncements": "最新の発表",
+          "studentAchievements": "学生の成果"
+        }
+      },
+      "filters": {
+        "all": "全てのニュース",
+        "events": "イベント",
+        "announcements": "お知らせ",
+        "achievements": "成果"
+      },
+      "sectionTitles": {
+        "all": "最新ニュース＆アップデート",
+        "events": "今後のイベント",
+        "announcements": "公式発表",
+        "achievements": "学生の成果"
+      },
+      "categoryLabels": {
+        "event": "イベント",
+        "announcement": "お知らせ",
+        "achievement": "成果"
+      },
+      "itemCount": {
+        "singular": "件",
+        "plural": "件"
+      },
+      "featured": {
+        "tag": "注目",
+        "title": "国際技術シンポジウム2024",
+        "excerpt": "人工知能、ロボティクス、量子コンピューティングの第一線で活躍する専門家による画期的なシンポジウムにご参加ください。業界のプロフェッショナルとネットワークを築き、未来を形作る最新のイノベーションを発見しましょう。"
+      },
+      "buttons": {
+        "learnMore": "詳細を見る",
+        "registerNow": "今すぐ登録",
+        "readMore": "続きを読む"
+      },
+      "items": {
+        "techSymposium": {
+          "date": "2024年3月15日",
+          "title": "国際技術シンポジウム2024",
+          "excerpt": "AI、ロボティクス、量子コンピューティングの第一線の専門家と共に、革新と発見に満ちた刺激的な一日をお過ごしください。"
+        },
+        "industryPartnership": {
+          "date": "2024年3月10日",
+          "title": "新産業パートナーシップ発表",
+          "excerpt": "学生の機会を向上させるため、主要テクノロジー企業との新しいコラボレーションを発表いたします。"
+        },
+        "springOpenHouse": {
+          "date": "2024年4月5日",
+          "title": "春のオープンハウスイベント",
+          "excerpt": "キャンパスを探索し、教員と出会い、テクノロジーの未来を形作るプログラムを発見してください。"
+        },
+        "hackathonWinners": {
+          "date": "2024年2月28日",
+          "title": "学生ハッカソン受賞者発表",
+          "excerpt": "年次ハッカソン競技会で革新的なソリューションを披露した才能ある学生たちにおめでとうございます。"
+        },
+        "quantumCourse": {
+          "date": "2024年3月20日",
+          "title": "新量子コンピューティングコース開講",
+          "excerpt": "新しく開講された量子コンピューティング専門プログラムで、コンピューティングの未来に飛び込みましょう。"
+        },
+        "aiEthicsLecture": {
+          "date": "2024年4月12日",
+          "title": "AI倫理ゲスト講義シリーズ",
+          "excerpt": "著名な専門家が人工知能の倫理的含意と未来について議論する講義にご参加ください。"
+        }
+      },
+      "noResults": {
+        "title": "ニュースが見つかりません：",
+        "items": "全カテゴリ",
+        "description": "フィルターを調整するか、後ほど新しい更新をご確認ください。"
+      },
+      "loading": "読み込み中...",
+      "videoNotSupported": "お使いのブラウザはビデオタグをサポートしていません。"
+    },
+    "campusLife": {
+      "badge": "キャンパス体験",
+      "title": "キャンパスライフ",
+      "subtitle": "活気あるコミュニティ、最新の施設、そして学びと成長に最適な環境を提供する無限の機会を発見してください。",
+      "items": {
+        "studentLife": {
+          "title": "学生生活",
+          "description": "多様な学生組織、文化イベント、社会活動で学術的な旅路を豊かにする活気あるコミュニティ。"
+        },
+        "clubs": {
+          "title": "クラブ・活動",
+          "description": "テクノロジー協会から文化グループ、スポーツチームまで、50以上の学生クラブや組織に参加しましょう。"
+        },
+        "dining": {
+          "title": "キャンパス食堂",
+          "description": "新潟の地元特産品と国際料理を取り入れた美味しく多様な食事オプションをお楽しみください。"
+        },
+        "sports": {
+          "title": "スポーツ・レクリエーション",
+          "description": "モダンな体育館、フィットネスセンター、あらゆるスキルレベルに対応する様々なスポーツ施設でアクティブに過ごしましょう。"
+        }
+      },
+      "map": {
+        "title": "キャンパスマップ・アクセス",
+        "description": "キャンパス内を簡単にナビゲートし、新潟のどこからでも最適なルートを見つけてください。"
+      },
+      "dining": {
+        "gallery": "キャンパス食堂体験",
+        "galleryDesc": "地元の多様な料理と国際料理で新潟の本格的な味を体験してください。"
+      }
+    },
+    "facilities": {
+      "badge": "世界クラスの施設",
+      "title": "施設紹介",
+      "subtitle": "学術的・個人的成長をサポートするために設計された最先端技術と現代的なインフラストラクチャを体験してください。",
+      "items": {
+        "campus": {
+          "tag": "キャンパスツアー",
+          "title": "最新キャンパス施設",
+          "description": "最先端のキャンパスには、21世紀の学習のために設計された現代的な教室、先進的な実験室、コラボレーションスペースが揃っています。",
+          "features": {
+            "modernBuildings": "現代建築",
+            "laboratories": "先進実験室",
+            "library": "デジタル図書館",
+            "sportsFacilities": "スポーツ複合施設"
+          }
+        },
+        "niigataLife": {
+          "tag": "都市生活",
+          "title": "新潟での生活",
+          "description": "文化、料理、季節の魅力に富んだ新潟で、都市の利便性と自然の美しさの完璧な調和を体験してください。",
+          "features": {
+            "culturalSites": "文化遺産",
+            "localCuisine": "地元料理",
+            "naturalBeauty": "自然の美しさ",
+            "festivals": "季節の祭り"
+          }
+        }
+      }
+    },
+    "niigataLife": {
+      "badge": "新潟を発見",
+      "title": "新潟での生活",
+      "subtitle": "日本の伝統文化と現代のイノベーションが出会う新潟の独特な魅力を体験してください。自然の美しさ、美味しい料理、温かいおもてなしで知られる街です。",
+      "items": {
+        "nature": {
+          "title": "自然の美しさ",
+          "description": "美しい海岸線から雄大な山々まで、新潟は四季を通じて息をのむような景観を提供します。"
+        },
+        "culture": {
+          "title": "豊かな文化",
+          "description": "伝統的な祭り、地元の工芸品、歴史的な場所で本格的な日本文化に触れてください。"
+        },
+        "transportation": {
+          "title": "便利なアクセス",
+          "description": "新幹線と在来線による優れた交通網で東京や他の主要都市とつながっています。"
+        },
+        "seasons": {
+          "title": "四季",
+          "description": "春の桜から冬の世界クラスのスキーまで、日本の四季の違いを体験してください。"
+        }
+      }
+    }
   }
-}
