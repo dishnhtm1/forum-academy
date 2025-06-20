@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import heroImage from '../assets/images/png13.jpg';
+import heroImage from '../assets/student/hero3.jpg';
 
 const Hero = () => {
     const { t } = useTranslation();
@@ -113,12 +113,21 @@ const Hero = () => {
                 }}
             ></div>
             
-            {/* Grid Pattern */}
+            {/* Grid Pattern
             <div className="absolute inset-0 opacity-15">
                 <div className="absolute inset-0" style={{
                     backgroundImage: `linear-gradient(rgba(96, 165, 250, 0.3) 1px, transparent 1px),
                                      linear-gradient(90deg, rgba(96, 165, 250, 0.3) 1px, transparent 1px)`,
                     backgroundSize: '40px 40px'
+                }}></div>
+            </div> */}
+
+            {/* Grid Pattern */}
+            <div className="absolute inset-0 opacity-15">
+                <div className="absolute inset-0" style={{
+                    backgroundImage: `linear-gradient(rgba(96, 165, 250, 0.3) 1px, transparent 1px),
+                                     linear-gradient(90deg, rgba(96, 165, 250, 0.3) 1px, transparent 1px)`,
+                    backgroundSize: '80px 80px'  // Changed from '40px 40px' to '80px 80px' for bigger grid
                 }}></div>
             </div>
             
@@ -220,7 +229,17 @@ const Hero = () => {
                                     {/* Glow Effect */}
                                     <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-400 to-purple-500 rounded-2xl sm:rounded-3xl blur opacity-30 group-hover:opacity-50 transition-opacity duration-500"></div>
                                     
-                                    <div className="relative p-3 sm:p-4">
+                                    {/* <div className="relative p-3 sm:p-4">
+                                        <img 
+                                            src={heroImage} 
+                                            alt={t('hero.imageAlt') || 'Technology Education'}
+                                            className="w-full h-auto rounded-xl sm:rounded-2xl shadow-xl transform group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                        
+                                        Image Overlay
+                                        <div className="absolute inset-3 sm:inset-4 bg-gradient-to-t from-blue-200/20 via-transparent to-transparent rounded-xl sm:rounded-2xl"></div>
+                                    </div> */}
+                                    <div className="relative p-3 sm:p-4 max-w-2xl mx-auto"> {/* Constrains container width */}
                                         <img 
                                             src={heroImage} 
                                             alt={t('hero.imageAlt') || 'Technology Education'}

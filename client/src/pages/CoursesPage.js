@@ -113,21 +113,24 @@ const CoursesPage = () => {
                         </div>
                         
                         <div className="hero-image-wrapper">
-                            <div className="image-card">
-                                <img 
-                                    src={require('../assets/images/png5.jpg')} 
-                                    alt={t('courses.hero.imageAlt')} 
-                                    className="hero-image" 
-                                />
-                                <div className="image-overlay"></div>
-                                <div className="tech-tag-group">
-                                    <div className="tech-tag">{t('courses.webDevelopment')}</div>
-                                    <div className="tech-tag">{t('courses.dataScience')}</div>
-                                    <div className="tech-tag">{t('courses.cybersecurity')}</div>
-                                    <div className="tech-tag">{t('courses.cloudComputing')}</div>
+                            <div className="relative group max-w-3xl mx-auto lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl">
+                                
+                                {/* Main Image Container - Clean, no shadows */}
+                                <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-transparent transition-all duration-500">
+                                    
+                                    {/* Image Container - Clean PNG display */}
+                                    <div className="relative">
+                                        <img 
+                                            src={require('../assets/student/hero1.png')} 
+                                            alt={t('courses.hero.imageAlt')} 
+                                            className="w-full h-auto min-h-[500px] sm:min-h-[600px] lg:min-h-[700px] xl:min-h-[800px] object-contain transform group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>
+
+                        
                     </div>
                 </div>
             </section>

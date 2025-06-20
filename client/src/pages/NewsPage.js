@@ -9,6 +9,25 @@ import data4Video from '../assets/videos/vid4.mp4';
 import data5Video from '../assets/videos/vid5.mp4';
 import data6Video from '../assets/videos/vid6.mp4';
 
+import facilitiesImg from '../assets/facilities/facilities.jpg';
+import niigataLifeImg from '../assets/facilities/niigatalife.jpg';
+import facilitiesImg1 from '../assets/facilities/facilities.jpg';
+import accessImg from '../assets/facilities/access.jpg';
+import campusMap from '../assets/facilities/map.jpg';
+
+import foodImg1 from '../assets/foods/mabomen.jpg'; 
+import foodImg2 from '../assets/foods/rice.jpg'; 
+import foodImg3 from '../assets/foods/peach.jpg'; 
+import foodImg4 from '../assets/foods/sushi.jpg'; 
+import foodImg5 from '../assets/foods/kane.jpg'; 
+import foodImg6 from '../assets/foods/tare.jpg';
+import foodImg7 from '../assets/foods/edamame.jpg';
+import foodImg8 from '../assets/foods/dango.jpg';
+import foodImg9 from '../assets/foods/kenchinjirusoysauce.jpg';
+import foodImg10 from '../assets/foods/soba.jpg';
+import foodImg11 from '../assets/foods/shasheme.jpg';
+import foodImg12 from '../assets/foods/sushi2.jpg';
+
 const NewsPage = () => {
     const { t } = useTranslation();
     const [activeCategory, setActiveCategory] = useState('all');
@@ -444,8 +463,8 @@ const NewsPage = () => {
                     </div>
                 </div>
             </section>
-
-            {/* Campus Life Section - Modern Grid Design */}
+            
+            {/* Campus Life Section */}
             <section className="py-20 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-950 dark:via-indigo-950 dark:to-purple-950">
                 <div className="container mx-auto px-4">
                     <div className="max-w-7xl mx-auto">
@@ -464,14 +483,51 @@ const NewsPage = () => {
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                             {[
-                                { icon: 'groups', titleKey: 'campusLife.items.studentLife.title', descKey: 'campusLife.items.studentLife.description', gradient: 'from-blue-500 to-cyan-500', shadowColor: 'blue' },
-                                { icon: 'sports_esports', titleKey: 'campusLife.items.clubs.title', descKey: 'campusLife.items.clubs.description', gradient: 'from-purple-500 to-pink-500', shadowColor: 'purple' },
-                                { icon: 'restaurant', titleKey: 'campusLife.items.dining.title', descKey: 'campusLife.items.dining.description', gradient: 'from-green-500 to-emerald-500', shadowColor: 'green' },
-                                { icon: 'fitness_center', titleKey: 'campusLife.items.sports.title', descKey: 'campusLife.items.sports.description', gradient: 'from-orange-500 to-red-500', shadowColor: 'orange' }
+                                { 
+                                    icon: 'groups', 
+                                    titleKey: 'campusLife.items.studentLife.title', 
+                                    descKey: 'campusLife.items.studentLife.description', 
+                                    gradient: 'from-blue-500 to-cyan-500', 
+                                    shadowColor: 'blue',
+                                    image: facilitiesImg1
+                                },
+                                { 
+                                    icon: 'sports_esports', 
+                                    titleKey: 'campusLife.items.clubs.title', 
+                                    descKey: 'campusLife.items.clubs.description', 
+                                    gradient: 'from-purple-500 to-pink-500', 
+                                    shadowColor: 'purple',
+                                    image: facilitiesImg1
+                                },
+                                { 
+                                    icon: 'restaurant', 
+                                    titleKey: 'campusLife.items.dining.title', 
+                                    descKey: 'campusLife.items.dining.description', 
+                                    gradient: 'from-green-500 to-emerald-500', 
+                                    shadowColor: 'green',
+                                    image: foodImg1
+                                },
+                                { 
+                                    icon: 'fitness_center', 
+                                    titleKey: 'campusLife.items.sports.title', 
+                                    descKey: 'campusLife.items.sports.description', 
+                                    gradient: 'from-orange-500 to-red-500', 
+                                    shadowColor: 'orange',
+                                    image: facilitiesImg1
+                                }
                             ].map((item, index) => (
-                                <div key={item.titleKey} className={`group relative bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-4 border border-white/20 dark:border-slate-700/50 overflow-hidden`}>
-                                    <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}></div>
-                                    <div className="relative z-10">
+                                <div key={item.titleKey} className={`group relative bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-4 border border-white/20 dark:border-slate-700/50`}>
+                                    {/* Background Image */}
+                                    <div className="absolute inset-0">
+                                        <img 
+                                            src={item.image} 
+                                            alt={t(item.titleKey)}
+                                            className="w-full h-full object-cover opacity-20 group-hover:opacity-30 transition-opacity duration-500"
+                                        />
+                                        <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-10 group-hover:opacity-20 transition-opacity duration-500`}></div>
+                                    </div>
+                                    
+                                    <div className="relative z-10 p-8">
                                         <div className={`w-16 h-16 bg-gradient-to-br ${item.gradient} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300 shadow-lg`}>
                                             <span className="material-icons text-white text-3xl">{item.icon}</span>
                                         </div>
@@ -486,11 +542,290 @@ const NewsPage = () => {
                                 </div>
                             ))}
                         </div>
+                        
+                        {/* Campus Map Section */}
+                        <div className="mt-16">
+                            <div className="relative">
+                                {/* Enhanced Background with Animation */}
+                                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/15 to-indigo-500/20 rounded-3xl blur-3xl animate-pulse"></div>
+                                <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/10 via-blue-500/10 to-purple-600/10 rounded-3xl"></div>
+                                
+                                <div className="relative bg-white/95 dark:bg-slate-800/95 backdrop-blur-2xl rounded-3xl shadow-2xl overflow-hidden">
+                                    {/* Floating Decorative Elements */}
+                                    <div className="absolute -top-10 -right-10 w-40 h-40 bg-gradient-to-bl from-blue-400/30 to-purple-500/20 rounded-full blur-2xl animate-float"></div>
+                                    <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-gradient-to-tr from-indigo-400/25 to-cyan-500/20 rounded-full blur-xl animate-float-delay"></div>
+                                    
+                                    {/* Header Section with Enhanced Typography */}
+                                    <div className="relative z-10 text-center pt-12 pb-8 px-8">
+                                        <div className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/40 dark:to-indigo-900/40 rounded-full text-blue-700 dark:text-blue-300 text-sm font-bold mb-8 shadow-xl">
+                                            <span className="material-icons text-xl mr-3 animate-pulse">map</span>
+                                            Campus Navigation Hub
+                                        </div>
+                                        <h3 className="text-5xl lg:text-6xl font-black bg-gradient-to-r from-slate-900 via-blue-700 to-purple-700 dark:from-slate-100 dark:via-blue-300 dark:to-purple-300 bg-clip-text text-transparent mb-6 leading-tight">
+                                            {t('campusLife.map.title') || 'Discover Our Campus'}
+                                        </h3>
+                                        <p className="text-xl lg:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed font-light">
+                                            {t('campusLife.map.description') || 'Your comprehensive guide to navigating our world-class educational facilities'}
+                                        </p>
+                                    </div>
+                        
+                                    {/* Access Image Section */}
+                                    <div className="relative px-8 pb-6">
+                                        <div className="relative overflow-hidden">
+                                            <img 
+                                                src={accessImg} 
+                                                alt="Campus Access"
+                                                className="w-full h-auto object-contain bg-gray-50 dark:bg-slate-700"
+                                            />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent"></div>
+                                        </div>
+                                    </div>
+                        
+                                    {/* Map Display Area */}
+                                    <div className="relative px-8 pb-8">
+                                        <div className="relative">
+                                            {/* Premium Map Container */}
+                                            <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-800 dark:to-slate-900 rounded-2xl p-6 shadow-inner">
+                                                {/* Map Header */}
+                                                <div className="flex items-center justify-between mb-6">
+                                                    <div className="flex items-center space-x-3">
+                                                        <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                                                        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Live Campus Map</span>
+                                                    </div>
+                                                    <div className="flex items-center space-x-2">
+                                                        <span className="text-xs text-gray-500 dark:text-gray-400">Updated Today</span>
+                                                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                                    </div>
+                                                </div>
+                                    
+                                                {/* Main Map Image */}
+                                                <div className="relative rounded-xl overflow-hidden shadow-2xl bg-white dark:bg-slate-800">
+                                                    <img 
+                                                        src={campusMap} 
+                                                        alt="Detailed Campus Map"
+                                                        className="w-full h-auto object-contain"
+                                                        style={{ minHeight: '600px', maxHeight: '800px' }}
+                                                    />
+                                                    
+                                                    {/* Status Indicator */}
+                                                    <div className="absolute top-4 left-4">
+                                                        <div className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm px-4 py-2 rounded-xl shadow-lg">
+                                                            <div className="flex items-center space-x-2">
+                                                                <span className="material-icons text-green-500 text-sm">location_on</span>
+                                                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">You are here</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {/* Food Gallery Section */}
+                        <div className="mt-16">
+                            <div className="text-center mb-8">
+                                <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-800/30 dark:to-emerald-800/30 rounded-full text-green-800 dark:text-green-300 text-sm font-semibold mb-4 shadow-lg">
+                                    <span className="material-icons text-base mr-2">restaurant</span>
+                                    Campus Dining
+                                </div>
+                                <h3 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-gray-900 via-green-700 to-emerald-700 dark:from-gray-100 dark:via-green-400 dark:to-emerald-400 bg-clip-text text-transparent mb-4">
+                                    {t('campusLife.dining.gallery') || 'Dining Experience'}
+                                </h3>
+                                <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                                    {t('campusLife.dining.galleryDesc') || 'Delicious meals and dining options on campus'}
+                                </p>
+                            </div>
+                            
+                            {/* Smaller Food Box Grid */}
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+                                {/* Food Box 1 - Niigata Ramen */}
+                                <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
+                                    <div className="relative h-40 overflow-hidden">
+                                        <img 
+                                            src={foodImg1} 
+                                            alt="Niigata Ramen"
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+                                    </div>
+                                    <div className="p-3 text-center">
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">Mabomen</h4>
+                                    </div>
+                                </div>
+                        
+                                {/* Food Box 2 - Niigata Rice */}
+                                <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
+                                    <div className="relative h-40 overflow-hidden">
+                                        <img 
+                                            src={foodImg2} 
+                                            alt="Niigata Rice"
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+                                    </div>
+                                    <div className="p-3 text-center">
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">Rice</h4>
+                                    </div>
+                                </div>
+                        
+                                {/* Food Box 3 - Fresh Peach */}
+                                <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
+                                    <div className="relative h-40 overflow-hidden">
+                                        <img 
+                                            src={foodImg3} 
+                                            alt="Fresh Peach"
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+                                    </div>
+                                    <div className="p-3 text-center">
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">Pear</h4>
+                                    </div>
+                                </div>
+                        
+                                {/* Food Box 4 - Fresh Sushi */}
+                                <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
+                                    <div className="relative h-40 overflow-hidden">
+                                        <img 
+                                            src={foodImg4} 
+                                            alt="Fresh Sushi"
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+                                    </div>
+                                    <div className="p-3 text-center">
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">Kiwami Sushi</h4>
+                                    </div>
+                                </div>
+                        
+                                {/* Food Box 5 - Tare Katsu */}
+                                <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
+                                    <div className="relative h-40 overflow-hidden">
+                                        <img 
+                                            src={foodImg5} 
+                                            alt="Tare Katsu"
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+                                    </div>
+                                    <div className="p-3 text-center">
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">Matsuba Crab</h4>
+                                    </div>
+                                </div>
+                        
+                                {/* Food Box 6 - Chicken Katsu */}
+                                <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
+                                    <div className="relative h-40 overflow-hidden">
+                                        <img 
+                                            src={foodImg6} 
+                                            alt="Chicken Katsu"
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+                                    </div>
+                                    <div className="p-3 text-center">
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">Tare Katsudon</h4>
+                                    </div>
+                                </div>
+                        
+                                {/* Food Box 7 - Tempura */}
+                                <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
+                                    <div className="relative h-40 overflow-hidden">
+                                        <img 
+                                            src={foodImg7} 
+                                            alt="Tempura"
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+                                    </div>
+                                    <div className="p-3 text-center">
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">Edamame</h4>
+                                    </div>
+                                </div>
+                        
+                                {/* Food Box 8 - Miso Soup */}
+                                <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
+                                    <div className="relative h-40 overflow-hidden">
+                                        <img 
+                                            src={foodImg8} 
+                                            alt="Miso Soup"
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+                                    </div>
+                                    <div className="p-3 text-center">
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">Sasa Dango</h4>
+                                    </div>
+                                </div>
+                        
+                                {/* Food Box 9 - Udon */}
+                                <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
+                                    <div className="relative h-40 overflow-hidden">
+                                        <img 
+                                            src={foodImg9} 
+                                            alt="Udon"
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+                                    </div>
+                                    <div className="p-3 text-center">
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">Kenchin-jiru</h4>
+                                    </div>
+                                </div>
+                        
+                                {/* Food Box 10 - Onigiri */}
+                                <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
+                                    <div className="relative h-40 overflow-hidden">
+                                        <img 
+                                            src={foodImg10} 
+                                            alt="Onigiri"
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+                                    </div>
+                                    <div className="p-3 text-center">
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">Hegi Soba</h4>
+                                    </div>
+                                </div>
+                        
+                                {/* Food Box 11 - Bento Box */}
+                                <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
+                                    <div className="relative h-40 overflow-hidden">
+                                        <img 
+                                            src={foodImg11} 
+                                            alt="Bento Box"
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+                                    </div>
+                                    <div className="p-3 text-center">
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">Kei Kaisendon</h4>
+                                    </div>
+                                </div>
+                        
+                                {/* Food Box 12 - Green Tea */}
+                                <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
+                                    <div className="relative h-40 overflow-hidden">
+                                        <img 
+                                            src={foodImg12} 
+                                            alt="Green Tea"
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+                                    </div>
+                                    <div className="p-3 text-center">
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">Tomi Sushi</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            {/* Facility Introduction Section - Light Redesigned */}
             <section className="py-20 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-blue-900 dark:to-indigo-900 relative overflow-hidden">
                 {/* Animated Background Elements */}
                 <div className="absolute inset-0">
@@ -539,40 +874,28 @@ const NewsPage = () => {
                         <div className="space-y-32">
                             {[
                                 { 
-                                    video: data1Video, 
-                                    icon: 'science', 
-                                    tag: 'facilities.items.labs.tag', 
-                                    titleKey: 'facilities.items.labs.title', 
-                                    descKey: 'facilities.items.labs.description', 
-                                    features: ['ai', 'robotics', 'networking'], 
-                                    featureKeyPrefix: 'facilities.items.labs.features', 
+                                    image: facilitiesImg, 
+                                    icon: 'apartment', 
+                                    tag: 'facilities.items.campus.tag', 
+                                    titleKey: 'facilities.items.campus.title', 
+                                    descKey: 'facilities.items.campus.description', 
+                                    features: ['modernBuildings', 'laboratories', 'library', 'sportsFacilities'], 
+                                    featureKeyPrefix: 'facilities.items.campus.features', 
                                     gradient: 'from-blue-400/30 to-cyan-400/30 dark:from-blue-500/20 dark:to-purple-500/20', 
                                     tagColor: 'blue',
                                     cardBg: 'from-blue-50/80 to-cyan-50/80 dark:from-blue-900/20 dark:to-cyan-900/20'
                                 },
                                 { 
-                                    video: data2Video, 
-                                    icon: 'local_library', 
-                                    tag: 'facilities.items.library.tag', 
-                                    titleKey: 'facilities.items.library.title', 
-                                    descKey: 'facilities.items.library.description', 
-                                    features: ['books', 'digitalResources', 'studySpaces'], 
-                                    featureKeyPrefix: 'facilities.items.library.features', 
-                                    gradient: 'from-purple-400/30 to-pink-400/30 dark:from-purple-500/20 dark:to-pink-500/20', 
-                                    tagColor: 'purple', 
-                                    reversed: true,
-                                    cardBg: 'from-purple-50/80 to-pink-50/80 dark:from-purple-900/20 dark:to-pink-900/20'
-                                },
-                                { 
-                                    video: data3Video, 
-                                    icon: 'home', 
-                                    tag: 'facilities.items.dormitories.tag', 
-                                    titleKey: 'facilities.items.dormitories.title', 
-                                    descKey: 'facilities.items.dormitories.description', 
-                                    features: ['furnished', 'wifi', 'communitySpaces'], 
-                                    featureKeyPrefix: 'facilities.items.dormitories.features', 
+                                    image: niigataLifeImg, 
+                                    icon: 'location_city', 
+                                    tag: 'facilities.items.niigataLife.tag', 
+                                    titleKey: 'facilities.items.niigataLife.title', 
+                                    descKey: 'facilities.items.niigataLife.description', 
+                                    features: ['culturalSites', 'localCuisine', 'naturalBeauty', 'festivals'], 
+                                    featureKeyPrefix: 'facilities.items.niigataLife.features', 
                                     gradient: 'from-emerald-400/30 to-teal-400/30 dark:from-green-500/20 dark:to-blue-500/20', 
-                                    tagColor: 'emerald',
+                                    tagColor: 'emerald', 
+                                    reversed: true,
                                     cardBg: 'from-emerald-50/80 to-teal-50/80 dark:from-emerald-900/20 dark:to-teal-900/20'
                                 }
                             ].map((facility, index) => (
@@ -581,58 +904,43 @@ const NewsPage = () => {
                                     className="group transform transition-all duration-1000 hover:scale-[1.02]"
                                     style={{ animationDelay: `${index * 200}ms` }}
                                 >
-                                    <div className={`bg-gradient-to-br ${facility.cardBg} backdrop-blur-xl rounded-3xl p-8 md:p-12 shadow-xl hover:shadow-2xl border border-white/50 dark:border-white/10 transition-all duration-700 hover:border-white/80 dark:hover:border-white/20`}>
-                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-                                            {/* Video Section with Enhanced Effects */}
-                                            <div className={`relative group/video ${facility.reversed ? 'lg:order-2' : ''}`}>
-                                                {/* Animated Glow Effect */}
-                                                <div className={`absolute -inset-6 bg-gradient-to-r ${facility.gradient} rounded-3xl blur-2xl group-hover:blur-3xl transition-all duration-700 opacity-40 group-hover:opacity-70 animate-pulse-slow`}></div>
-                                                
-                                                {/* Decorative Corner Elements */}
-                                                <div className="absolute -top-4 -left-4 w-8 h-8 bg-gradient-to-br from-white/60 to-blue-200/60 dark:from-white/20 dark:to-blue-400/20 rounded-full animate-ping"></div>
-                                                <div className="absolute -bottom-4 -right-4 w-6 h-6 bg-gradient-to-br from-purple-200/60 to-pink-200/60 dark:from-purple-400/20 dark:to-pink-400/20 rounded-full animate-ping animation-delay-1000"></div>
-                                                
-                                                {/* Video Container */}
-                                                <div className="relative overflow-hidden rounded-2xl shadow-2xl aspect-video bg-white/40 dark:bg-white/5 backdrop-blur-sm border-2 border-white/60 dark:border-white/20 group-hover/video:border-white/80 dark:group-hover/video:border-white/30 transition-all duration-500 group-hover/video:scale-105 group-hover/video:rotate-1">
-                                                    <video 
-                                                        autoPlay 
-                                                        muted 
-                                                        loop 
-                                                        className="w-full h-full object-cover group-hover/video:scale-110 transition-transform duration-700"
-                                                    >
-                                                        <source src={facility.video} type="video/mp4" />
-                                                        {t('common.videoNotSupported')}
-                                                    </video>
-                                                    
-                                                    {/* Video Overlay */}
-                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent group-hover/video:from-black/20 transition-all duration-500"></div>
-                                                    
-                                                    {/* Enhanced Tag */}
-                                                    <div className={`absolute top-6 left-6 group-hover/video:scale-110 transition-all duration-300`}>
-                                                        <div className={`inline-flex items-center px-4 py-2 bg-white/90 dark:bg-${facility.tagColor}-500/20 backdrop-blur-lg rounded-full text-${facility.tagColor}-700 dark:text-${facility.tagColor}-300 text-sm font-bold shadow-lg border border-${facility.tagColor}-200/50 dark:border-${facility.tagColor}-400/30 hover:shadow-xl transition-all duration-300`}>
-                                                            <span className="material-icons text-lg mr-2 animate-bounce-subtle">{facility.icon}</span>
-                                                            {t(facility.tag)}
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    {/* Play Icon Overlay */}
-                                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/video:opacity-100 transition-all duration-500">
-                                                        <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30 group-hover/video:scale-110 transition-transform duration-300">
-                                                            <span className="material-icons text-4xl text-white">play_arrow</span>
-                                                        </div>
+                                    {/* Large Card with Background Image */}
+                                    <div 
+                                        className="relative rounded-3xl shadow-2xl hover:shadow-3xl border border-white/30 dark:border-white/20 transition-all duration-700 hover:border-white/50 dark:hover:border-white/30 overflow-hidden min-h-[800px]"
+                                        style={{
+                                            backgroundImage: `url(${facility.image})`,
+                                            backgroundSize: 'cover',
+                                            backgroundPosition: 'center',
+                                            backgroundRepeat: 'no-repeat'
+                                        }}
+                                    >
+                                        {/* Animated Glow Effect */}
+                                        <div className={`absolute -inset-6 bg-gradient-to-r ${facility.gradient} rounded-3xl blur-2xl group-hover:blur-3xl transition-all duration-700 opacity-40 group-hover:opacity-70 animate-pulse-slow`}></div>
+                                        
+                                        {/* Decorative Corner Elements */}
+                                        <div className="absolute -top-4 -left-4 w-8 h-8 bg-gradient-to-br from-white/60 to-blue-200/60 dark:from-white/20 dark:to-blue-400/20 rounded-full animate-ping z-10"></div>
+                                        <div className="absolute -bottom-4 -right-4 w-6 h-6 bg-gradient-to-br from-purple-200/60 to-pink-200/60 dark:from-purple-400/20 dark:to-pink-400/20 rounded-full animate-ping animation-delay-1000 z-10"></div>
+                                        
+                                        <div className="relative z-10 h-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center p-8 md:p-12">
+                                            {/* Tag Section - Visible on image */}
+                                            <div className={`relative ${facility.reversed ? 'lg:order-2' : ''} flex items-start justify-start h-full`}>
+                                                <div className="group-hover:scale-110 transition-all duration-300">
+                                                    <div className={`inline-flex items-center px-6 py-3 bg-white/95 dark:bg-${facility.tagColor}-500/95 backdrop-blur-md rounded-full text-${facility.tagColor}-700 dark:text-white text-base font-bold shadow-xl border-2 border-${facility.tagColor}-200/60 dark:border-${facility.tagColor}-400/40 hover:shadow-2xl transition-all duration-300`}>
+                                                        <span className="material-icons text-xl mr-3 animate-bounce-subtle">{facility.icon}</span>
+                                                        {t(facility.tag)}
                                                     </div>
                                                 </div>
                                             </div>
                                             
-                                            {/* Content Section with Animations */}
-                                            <div className={`space-y-8 ${facility.reversed ? 'lg:order-1' : ''}`}>
+                                            {/* Content Section - Blurred Background for Text */}
+                                            <div className={`space-y-8 ${facility.reversed ? 'lg:order-1' : ''} bg-white/20 dark:bg-black/30 backdrop-blur-xl rounded-3xl p-8 border border-white/30 dark:border-white/20 shadow-2xl`}>
                                                 {/* Title with Gradient Animation */}
-                                                <h3 className="text-4xl md:text-6xl font-black bg-gradient-to-r from-slate-800 via-blue-600 to-purple-600 dark:from-white dark:via-blue-300 dark:to-purple-300 bg-clip-text text-transparent group-hover:from-blue-600 group-hover:via-purple-600 group-hover:to-pink-600 dark:group-hover:from-blue-300 dark:group-hover:via-purple-300 dark:group-hover:to-pink-300 transition-all duration-700 leading-tight transform group-hover:scale-105">
+                                                <h3 className="text-4xl md:text-6xl font-black bg-gradient-to-r from-slate-900 via-blue-700 to-purple-700 dark:from-white dark:via-blue-200 dark:to-purple-200 bg-clip-text text-transparent group-hover:from-blue-700 group-hover:via-purple-700 group-hover:to-pink-700 dark:group-hover:from-blue-200 dark:group-hover:via-purple-200 dark:group-hover:to-pink-200 transition-all duration-700 leading-tight transform group-hover:scale-105">
                                                     {t(facility.titleKey)}
                                                 </h3>
                                                 
                                                 {/* Description */}
-                                                <p className="text-lg md:text-xl text-slate-600 dark:text-gray-300 leading-relaxed font-light group-hover:text-slate-800 dark:group-hover:text-gray-100 transition-colors duration-500">
+                                                <p className="text-lg md:text-xl text-slate-800 dark:text-gray-100 leading-relaxed font-semibold group-hover:text-slate-900 dark:group-hover:text-white transition-colors duration-500 bg-white/30 dark:bg-black/30 backdrop-blur-sm rounded-2xl p-6 border border-white/40 dark:border-white/20 shadow-lg">
                                                     {t(facility.descKey)}
                                                 </p>
                                                 
@@ -641,15 +949,15 @@ const NewsPage = () => {
                                                     {facility.features.map((feature, fIndex) => (
                                                         <div 
                                                             key={fIndex} 
-                                                            className="group/feature flex items-center text-slate-700 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white transition-all duration-300 bg-white/60 dark:bg-white/5 backdrop-blur-lg rounded-2xl p-5 border border-white/60 dark:border-white/10 hover:border-white/80 dark:hover:border-white/20 shadow-lg hover:shadow-xl transform hover:scale-105 hover:-translate-y-1"
+                                                            className="group/feature flex items-center text-slate-800 dark:text-gray-100 hover:text-slate-900 dark:hover:text-white transition-all duration-300 bg-white/90 dark:bg-black/60 backdrop-blur-lg rounded-2xl p-5 border border-white/70 dark:border-white/30 hover:border-white/90 dark:hover:border-white/50 shadow-lg hover:shadow-xl transform hover:scale-105 hover:-translate-y-1"
                                                             style={{ animationDelay: `${fIndex * 100}ms` }}
                                                         >
-                                                            <div className={`w-4 h-4 bg-gradient-to-r from-${facility.tagColor}-400 to-${facility.tagColor}-600 rounded-full mr-4 shadow-lg flex-shrink-0 group-hover/feature:scale-125 group-hover/feature:rotate-180 transition-all duration-500`}></div>
-                                                            <span className="text-sm md:text-base font-semibold group-hover/feature:font-bold transition-all duration-300">
+                                                            <div className={`w-4 h-4 bg-gradient-to-r from-${facility.tagColor}-500 to-${facility.tagColor}-700 rounded-full mr-4 shadow-lg flex-shrink-0 group-hover/feature:scale-125 group-hover/feature:rotate-180 transition-all duration-500`}></div>
+                                                            <span className="text-sm md:text-base font-bold group-hover/feature:font-black transition-all duration-300">
                                                                 {t(`${facility.featureKeyPrefix}.${feature}`)}
                                                             </span>
                                                             <div className="ml-auto opacity-0 group-hover/feature:opacity-100 transition-opacity duration-300">
-                                                                <span className="material-icons text-lg text-blue-500">check_circle</span>
+                                                                <span className="material-icons text-lg text-blue-600 dark:text-blue-400">check_circle</span>
                                                             </div>
                                                         </div>
                                                     ))}
@@ -657,9 +965,9 @@ const NewsPage = () => {
                                                 
                                                 {/* Call to Action Button */}
                                                 <div className="pt-6">
-                                                    <button className="group/btn inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-105 hover:-translate-y-1 border border-white/20">
+                                                    <button className="group/btn inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-105 hover:-translate-y-1 border-2 border-white/30">
                                                         <span className="material-icons mr-3 group-hover/btn:rotate-12 transition-transform duration-300">explore</span>
-                                                        <span>Explore More</span>
+                                                        <span className="text-lg">Explore More</span>
                                                         <span className="material-icons ml-3 group-hover/btn:translate-x-2 transition-transform duration-300">arrow_forward</span>
                                                     </button>
                                                 </div>
@@ -716,84 +1024,6 @@ const NewsPage = () => {
                         animation-delay: 1s;
                     }
                 `}</style>
-            </section>
-            
-            {/* Campus Life in Niigata Section - Modern Design */}
-            <section className="py-20 bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 dark:from-emerald-900/30 dark:via-slate-900 dark:to-cyan-900/30 relative overflow-hidden">
-                <div className="absolute inset-0 opacity-10 dark:opacity-[0.04]">
-                    <div className="absolute top-20 left-20 w-64 h-64 bg-emerald-400 rounded-full blur-3xl animate-blob"></div>
-                    <div className="absolute bottom-20 right-20 w-80 h-80 bg-cyan-400 rounded-full blur-3xl animate-blob animation-delay-2000"></div>
-                </div>
-                
-                <div className="container mx-auto px-4 relative z-10">
-                    <div className="max-w-7xl mx-auto">
-                        <div className="text-center mb-16">
-                            <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-100 to-cyan-100 dark:from-emerald-800/30 dark:to-cyan-800/30 rounded-full text-emerald-800 dark:text-emerald-300 text-sm font-medium mb-6 shadow-lg">
-                                <span className="material-icons text-lg mr-2">location_city</span>
-                                {t('niigataLife.badge')}
-                            </div>
-                            <h2 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-emerald-700 via-teal-600 to-cyan-700 dark:from-emerald-300 dark:via-teal-300 dark:to-cyan-300 bg-clip-text text-transparent mb-6">
-                                {t('niigataLife.title')}
-                            </h2>
-                            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-                                {t('niigataLife.subtitle')}
-                            </p>
-                        </div>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
-                            {[
-                                { icon: 'landscape', titleKey: 'niigataLife.items.nature.title', descKey: 'niigataLife.items.nature.description', gradient: 'from-emerald-500 to-teal-500', bgColor: 'emerald' },
-                                { icon: 'ramen_dining', titleKey: 'niigataLife.items.culture.title', descKey: 'niigataLife.items.culture.description', gradient: 'from-orange-500 to-red-500', bgColor: 'orange' },
-                                { icon: 'train', titleKey: 'niigataLife.items.transportation.title', descKey: 'niigataLife.items.transportation.description', gradient: 'from-blue-500 to-indigo-500', bgColor: 'blue' },
-                                { icon: 'ac_unit', titleKey: 'niigataLife.items.seasons.title', descKey: 'niigataLife.items.seasons.description', gradient: 'from-cyan-500 to-blue-500', bgColor: 'cyan' }
-                            ].map((item, index) => (
-                                <div key={item.titleKey} className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-4 border border-white/50 dark:border-slate-700/50 overflow-hidden">
-                                    <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}></div>
-                                    <div className="relative z-10">
-                                        <div className={`w-16 h-16 bg-gradient-to-br ${item.gradient} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-[-6deg] transition-transform duration-300 shadow-lg`}>
-                                            <span className="material-icons text-white text-3xl">{item.icon}</span>
-                                        </div>
-                                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                                            {t(item.titleKey)}
-                                        </h3>
-                                        <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-sm">
-                                            {t(item.descKey)}
-                                        </p>
-                                        <div className={`mt-6 w-full h-1 bg-gradient-to-r ${item.gradient} rounded-full opacity-30 group-hover:opacity-100 transition-opacity duration-300`}></div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        
-                        <div className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-white/30 dark:border-slate-700/50">
-                            <div className="text-center mb-12">
-                                <h3 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-900 to-emerald-700 dark:from-gray-100 dark:to-emerald-400 bg-clip-text text-transparent">
-                                    {t('niigataLife.gallery.title')}
-                                </h3>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                {[
-                                    { video: data4Video, labelKey: 'niigataLife.gallery.items.cityView' },
-                                    { video: data5Video, labelKey: 'niigataLife.gallery.items.festivals' },
-                                    { video: data6Video, labelKey: 'niigataLife.gallery.items.winterScenes' }
-                                ].map((galleryItem, index) => (
-                                    <div key={index} className="group relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 aspect-[4/3] bg-white/10 backdrop-blur-sm border border-white/20">
-                                        <video autoPlay muted loop className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                                            <source src={galleryItem.video} type="video/mp4" />
-                                            {t('common.videoNotSupported')}
-                                        </video>
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent group-hover:from-black/50 transition-all duration-500"></div>
-                                        <div className="absolute bottom-6 left-6 right-6">
-                                            <div className="bg-white/20 dark:bg-black/40 backdrop-blur-sm rounded-xl px-4 py-3 border border-white/30 dark:border-white/20">
-                                                <span className="text-white font-semibold text-lg">{t(galleryItem.labelKey)}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </section>
         </div>
     );
