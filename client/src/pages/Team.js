@@ -37,8 +37,8 @@ import teacher13 from '../assets/teachers/亀山先生.jpg';
 import teacher14 from '../assets/teachers/大瀧先生.jpg';
 import teacher15 from '../assets/teachers/渡邊先生.jpg';
 import teacher16 from '../assets/teachers/中野先生.jpg';
-import teacher17 from '../assets/teachers/水野先生.jpg';
-import teacher18 from '../assets/teachers/深見先生.jpg';
+import teacher18 from '../assets/teachers/水野先生.jpg';
+import teacher17 from '../assets/teachers/深見先生.jpg';
 
 const Team = () => {
     const { t } = useTranslation();
@@ -167,63 +167,6 @@ const Team = () => {
         return paths[iconName] || paths['Star'];
     };
 
-    // const createHeroAnimatedElements = () => {
-    //     const container = document.querySelector('.about-hero-elements');
-    //     if (!container) return;
-        
-    //     while (container.firstChild) {
-    //         container.removeChild(container.firstChild);
-    //     }
-        
-    //     for (let i = 0; i < 20; i++) {
-    //         const shape = document.createElement('div');
-    //         shape.className = 'about-shape';
-            
-    //         const shapes = ['circle', 'triangle', 'square', 'plus'];
-    //         const shapeType = shapes[Math.floor(Math.random() * shapes.length)];
-    //         shape.classList.add(`shape-${shapeType}`);
-            
-    //         const x = Math.random() * 100;
-    //         const y = Math.random() * 100;
-    //         const size = Math.random() * 30 + 10;
-    //         const opacity = Math.random() * 0.5 + 0.1;
-    //         const animationDelay = Math.random() * 5;
-    //         const animationDuration = Math.random() * 20 + 10;
-            
-    //         shape.style.left = `${x}%`;
-    //         shape.style.top = `${y}%`;
-    //         shape.style.width = `${size}px`;
-    //         shape.style.height = `${size}px`;
-    //         shape.style.opacity = opacity;
-    //         shape.style.animationDelay = `${animationDelay}s`;
-    //         shape.style.animationDuration = `${animationDuration}s`;
-            
-    //         container.appendChild(shape);
-    //     }
-        
-    //     const icons = ['people', 'school', 'groups', 'emoji_people', 'psychology', 'supervisor_account'];
-    //     for (let i = 0; i < 6; i++) {
-    //         const iconWrapper = document.createElement('div');
-    //         iconWrapper.className = 'about-hero-icon';
-            
-    //         const x = 10 + (Math.random() * 80);
-    //         const y = 10 + (Math.random() * 80);
-    //         const delay = Math.random() * 5;
-            
-    //         iconWrapper.style.left = `${x}%`;
-    //         iconWrapper.style.top = `${y}%`;
-    //         iconWrapper.style.animationDelay = `${delay}s`;
-            
-    //         const icon = document.createElement('span');
-    //         icon.className = 'material-icons';
-    //         icon.textContent = icons[i % icons.length];
-            
-    //         iconWrapper.appendChild(icon);
-    //         container.appendChild(iconWrapper);
-    //     }
-    // };
-
-    // Combined all team members data
     const allTeamMembers = [
         // Teachers
         {
@@ -326,7 +269,7 @@ const Team = () => {
         {
             id: 9,
             name: 'Asano Umahiko Sensei',
-            nameJapanese: '浅野 馬彦 先生',
+            nameJapanese: '浅野 篤彦 先生',
             role: 'Career Services Directo Tokyo Office, School information sessions, Interviews (東京事務所・学校説明会・面談)',
             interest: ' Travel, Sports viewing (旅行・スポーツ観戦)',
             message: {
