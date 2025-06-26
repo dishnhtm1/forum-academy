@@ -268,7 +268,7 @@ const Team = () => {
         },
         {
             id: 9,
-            name: 'Asano Umahiko Sensei',
+            name: 'Asano Atsuhiko Sensei',
             nameJapanese: '浅野 篤彦 先生',
             role: 'Career Services Directo Tokyo Office, School information sessions, Interviews (東京事務所・学校説明会・面談)',
             interest: ' Travel, Sports viewing (旅行・スポーツ観戦)',
@@ -342,7 +342,7 @@ const Team = () => {
         {
             id: 15,
             name: 'Watanabe Kumi Sensei',
-            nameJapanese: '渡邉 久美 先生',
+            nameJapanese: '渡邊 久美 先生',
             role: ' Administrative Office, General affairs (事務局・事務局 庶務)',
             interest: 'Morning yoga, Stretching (朝ヨガ・ストレッチ)',
             message: {
