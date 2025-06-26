@@ -8,6 +8,8 @@ import Footer from './components/Footer';
 import Preloader from './components/Preloader';
 import LoginModal from './components/LoginModal';
 import RegisterPage from './components/RegisterPage';
+import OTPVerification from './components/OTPVerification';
+import ResetPassword from './components/ResetPassword';
 import HomePage from './pages/HomePage';
 import CoursesPage from './pages/CoursesPage';
 import AboutPage from './pages/AboutPage';
@@ -85,11 +87,10 @@ function App() {
                     <Route path="/dashboard" component={Dashboard} />
                     <Route path="/student/dashboard" component={Dashboard} />
                     <Route path="/faculty/dashboard" component={Dashboard} />
-                    
-                    {/* Password Reset Routes - No Header/Footer */}
-                    {/* <Route path="/verify-otp" component={VerifyOTPPage} />
-                    <Route path="/reset-password" component={ResetPasswordPage} /> */}
-                    
+
+                    <Route path="/verify-otp" component={OTPVerification} />
+                    <Route path="/reset-password" component={ResetPassword} />
+                
                     {/* All other routes with Header/Footer */}
                     <Route>
                         <Header onLoginClick={openLoginModal} />
@@ -103,6 +104,7 @@ function App() {
                                 <Route path="/apply" component={ApplyPage} />
                                 <Route path="/contact" component={ContactPage} />
                                 <Route path="/team" component={Team} />
+                                
                                 
                                 <Route path="/register" render={(props) => {
                                     if (!registerModalOpen) {
