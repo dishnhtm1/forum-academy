@@ -464,7 +464,6 @@ const NewsPage = () => {
                 </div>
             </section>
             
-            {/* Campus Life Section */}
             <section className="py-20 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-950 dark:via-indigo-950 dark:to-purple-950">
                 <div className="container mx-auto px-4">
                     <div className="max-w-7xl mx-auto">
@@ -559,13 +558,13 @@ const NewsPage = () => {
                                     <div className="relative z-10 text-center pt-12 pb-8 px-8">
                                         <div className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/40 dark:to-indigo-900/40 rounded-full text-blue-700 dark:text-blue-300 text-sm font-bold mb-8 shadow-xl">
                                             <span className="material-icons text-xl mr-3 animate-pulse">map</span>
-                                            Campus Navigation Hub
+                                            {t('newsPage.navigation.campusNavigationHub')}
                                         </div>
                                         <h3 className="text-5xl lg:text-6xl font-black bg-gradient-to-r from-slate-900 via-blue-700 to-purple-700 dark:from-slate-100 dark:via-blue-300 dark:to-purple-300 bg-clip-text text-transparent mb-6 leading-tight">
-                                            {t('campusLife.map.title') || 'Discover Our Campus'}
+                                            {t('campusLife.map.title')}
                                         </h3>
                                         <p className="text-xl lg:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed font-light">
-                                            {t('campusLife.map.description') || 'Your comprehensive guide to navigating our world-class educational facilities'}
+                                            {t('campusLife.map.description')}
                                         </p>
                                     </div>
                         
@@ -590,10 +589,10 @@ const NewsPage = () => {
                                                 <div className="flex items-center justify-between mb-6">
                                                     <div className="flex items-center space-x-3">
                                                         <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                                                        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Live Campus Map</span>
+                                                        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('newsPage.navigation.liveMap')}</span>
                                                     </div>
                                                     <div className="flex items-center space-x-2">
-                                                        <span className="text-xs text-gray-500 dark:text-gray-400">Updated Today</span>
+                                                        <span className="text-xs text-gray-500 dark:text-gray-400">{t('newsPage.navigation.updatedToday')}</span>
                                                         <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                                                     </div>
                                                 </div>
@@ -612,7 +611,7 @@ const NewsPage = () => {
                                                         <div className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm px-4 py-2 rounded-xl shadow-lg">
                                                             <div className="flex items-center space-x-2">
                                                                 <span className="material-icons text-green-500 text-sm">location_on</span>
-                                                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">You are here</span>
+                                                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('newsPage.navigation.youAreHere')}</span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -624,12 +623,12 @@ const NewsPage = () => {
                             </div>
                         </div>
                         
-                        {/* Food Gallery Section */}
+                        {/* Food Gallery Section - Already using translation keys correctly */}
                         <div className="mt-16">
                             <div className="text-center mb-8">
                                 <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-800/30 dark:to-emerald-800/30 rounded-full text-green-800 dark:text-green-300 text-sm font-semibold mb-4 shadow-lg">
                                     <span className="material-icons text-base mr-2">restaurant</span>
-                                    Campus Dining
+                                    {t('campusLife.dining.title')}
                                 </div>
                                 <h3 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-gray-900 via-green-700 to-emerald-700 dark:from-gray-100 dark:via-green-400 dark:to-emerald-400 bg-clip-text text-transparent mb-4">
                                     {t('campusLife.dining.gallery') || 'Dining Experience'}
@@ -641,183 +640,183 @@ const NewsPage = () => {
                             
                             {/* Smaller Food Box Grid */}
                             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-                                {/* Food Box 1 - Niigata Ramen */}
+                                {/* Food Box 1 - Mabomen */}
                                 <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
                                     <div className="relative h-40 overflow-hidden">
                                         <img 
                                             src={foodImg1} 
-                                            alt="Niigata Ramen"
+                                            alt="Mabomen"
                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
                                     </div>
                                     <div className="p-3 text-center">
-                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">Mabomen</h4>
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">{t('campusLife.dining.foods.mabomen')}</h4>
                                     </div>
                                 </div>
                         
-                                {/* Food Box 2 - Niigata Rice */}
+                                {/* Food Box 2 - Rice */}
                                 <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
                                     <div className="relative h-40 overflow-hidden">
                                         <img 
                                             src={foodImg2} 
-                                            alt="Niigata Rice"
+                                            alt="Rice"
                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
                                     </div>
                                     <div className="p-3 text-center">
-                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">Rice</h4>
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">{t('campusLife.dining.foods.rice')}</h4>
                                     </div>
                                 </div>
                         
-                                {/* Food Box 3 - Fresh Peach */}
+                                {/* Food Box 3 - Pear */}
                                 <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
                                     <div className="relative h-40 overflow-hidden">
                                         <img 
                                             src={foodImg3} 
-                                            alt="Fresh Peach"
+                                            alt="Pear"
                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
                                     </div>
                                     <div className="p-3 text-center">
-                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">Pear</h4>
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">{t('campusLife.dining.foods.pear')}</h4>
                                     </div>
                                 </div>
                         
-                                {/* Food Box 4 - Fresh Sushi */}
+                                {/* Food Box 4 - Kiwami Sushi */}
                                 <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
                                     <div className="relative h-40 overflow-hidden">
                                         <img 
                                             src={foodImg4} 
-                                            alt="Fresh Sushi"
+                                            alt="Kiwami Sushi"
                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
                                     </div>
                                     <div className="p-3 text-center">
-                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">Kiwami Sushi</h4>
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">{t('campusLife.dining.foods.kiwamiSushi')}</h4>
                                     </div>
                                 </div>
                         
-                                {/* Food Box 5 - Tare Katsu */}
+                                {/* Food Box 5 - Matsuba Crab */}
                                 <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
                                     <div className="relative h-40 overflow-hidden">
                                         <img 
                                             src={foodImg5} 
-                                            alt="Tare Katsu"
+                                            alt="Matsuba Crab"
                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
                                     </div>
                                     <div className="p-3 text-center">
-                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">Matsuba Crab</h4>
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">{t('campusLife.dining.foods.matsubaCrab')}</h4>
                                     </div>
                                 </div>
                         
-                                {/* Food Box 6 - Chicken Katsu */}
+                                {/* Food Box 6 - Tare Katsudon */}
                                 <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
                                     <div className="relative h-40 overflow-hidden">
                                         <img 
                                             src={foodImg6} 
-                                            alt="Chicken Katsu"
+                                            alt="Tare Katsudon"
                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
                                     </div>
                                     <div className="p-3 text-center">
-                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">Tare Katsudon</h4>
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">{t('campusLife.dining.foods.tareKatsudon')}</h4>
                                     </div>
                                 </div>
                         
-                                {/* Food Box 7 - Tempura */}
+                                {/* Food Box 7 - Edamame */}
                                 <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
                                     <div className="relative h-40 overflow-hidden">
                                         <img 
                                             src={foodImg7} 
-                                            alt="Tempura"
+                                            alt="Edamame"
                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
                                     </div>
                                     <div className="p-3 text-center">
-                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">Edamame</h4>
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">{t('campusLife.dining.foods.edamame')}</h4>
                                     </div>
                                 </div>
                         
-                                {/* Food Box 8 - Miso Soup */}
+                                {/* Food Box 8 - Sasa Dango */}
                                 <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
                                     <div className="relative h-40 overflow-hidden">
                                         <img 
                                             src={foodImg8} 
-                                            alt="Miso Soup"
+                                            alt="Sasa Dango"
                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
                                     </div>
                                     <div className="p-3 text-center">
-                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">Sasa Dango</h4>
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">{t('campusLife.dining.foods.sasaDango')}</h4>
                                     </div>
                                 </div>
                         
-                                {/* Food Box 9 - Udon */}
+                                {/* Food Box 9 - Kenchin-jiru */}
                                 <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
                                     <div className="relative h-40 overflow-hidden">
                                         <img 
                                             src={foodImg9} 
-                                            alt="Udon"
+                                            alt="Kenchin-jiru"
                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
                                     </div>
                                     <div className="p-3 text-center">
-                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">Kenchin-jiru</h4>
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">{t('campusLife.dining.foods.kenchinJiru')}</h4>
                                     </div>
                                 </div>
                         
-                                {/* Food Box 10 - Onigiri */}
+                                {/* Food Box 10 - Hegi Soba */}
                                 <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
                                     <div className="relative h-40 overflow-hidden">
                                         <img 
                                             src={foodImg10} 
-                                            alt="Onigiri"
+                                            alt="Hegi Soba"
                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
                                     </div>
                                     <div className="p-3 text-center">
-                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">Hegi Soba</h4>
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">{t('campusLife.dining.foods.hegiSoba')}</h4>
                                     </div>
                                 </div>
                         
-                                {/* Food Box 11 - Bento Box */}
+                                {/* Food Box 11 - Kei Kaisendon */}
                                 <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
                                     <div className="relative h-40 overflow-hidden">
                                         <img 
                                             src={foodImg11} 
-                                            alt="Bento Box"
+                                            alt="Kei Kaisendon"
                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
                                     </div>
                                     <div className="p-3 text-center">
-                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">Kei Kaisendon</h4>
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">{t('campusLife.dining.foods.keiKaisendon')}</h4>
                                     </div>
                                 </div>
                         
-                                {/* Food Box 12 - Green Tea */}
+                                {/* Food Box 12 - Tomi Sushi */}
                                 <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
                                     <div className="relative h-40 overflow-hidden">
                                         <img 
                                             src={foodImg12} 
-                                            alt="Green Tea"
+                                            alt="Tomi Sushi"
                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
                                     </div>
                                     <div className="p-3 text-center">
-                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">Tomi Sushi</h4>
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">{t('campusLife.dining.foods.tomiSushi')}</h4>
                                     </div>
                                 </div>
                             </div>

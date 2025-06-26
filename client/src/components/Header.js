@@ -238,7 +238,7 @@ const Header = ({ onLoginClick }) => {
                                         ? 'bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent'
                                         : 'text-white'
                                 }`}>
-                                    Forum Academy
+                                    {t('header.academy')}
                                 </h1>
                             </div>
                         </Link>
@@ -262,7 +262,7 @@ const Header = ({ onLoginClick }) => {
                                     <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 rounded-xl"></div>
                                     
                                     <span className="font-semibold text-sm relative z-10">
-                                        {t('navigation.programs') || 'Programs'}
+                                        {t('header.programs.title')}
                                     </span>
                                     <ChevronDown className={`w-4 h-4 transition-all duration-500 relative z-10 ${
                                         dropdownOpen === 'courses' ? 'rotate-180 text-blue-500' : ''
@@ -291,10 +291,10 @@ const Header = ({ onLoginClick }) => {
                                                     </div>
                                                     <div>
                                                         <h3 className="text-lg font-bold text-gray-900">
-                                                            {t('Our Programs') || 'Our Programs'}
+                                                            {t('header.programs.subtitle')}
                                                         </h3>
                                                         <p className="text-xs text-gray-600 mt-0.5">
-                                                            Choose your path to success
+                                                            {t('header.programs.subtitle')}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -339,7 +339,7 @@ const Header = ({ onLoginClick }) => {
                                                                         <span className="text-lg transform group-hover:scale-125 transition-transform duration-300">{course.emoji}</span>
                                                                     </div>
                                                                     <p className="text-xs text-gray-500 group-hover:text-gray-700 transition-colors duration-300">
-                                                                        Industry-certified • Professional track
+                                                                        {t('header.programs.certifiedTrack')}
                                                                     </p>
                                                                     
                                                                     {/* Progress indicator */}
@@ -435,10 +435,10 @@ const Header = ({ onLoginClick }) => {
                                                     </div>
                                                     <div>
                                                         <h3 className="text-lg font-bold text-gray-900">
-                                                            {t('About Us') || 'About Us'}
+                                                            {t('header.about.title')}
                                                         </h3>
                                                         <p className="text-xs text-gray-600 mt-0.5">
-                                                            Discover our story and mission
+                                                            {t('header.about.subtitle')}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -483,7 +483,7 @@ const Header = ({ onLoginClick }) => {
                                                                         <span className="text-lg transform group-hover:scale-125 transition-transform duration-300">{link.emoji}</span>
                                                                     </div>
                                                                     <p className="text-xs text-gray-500 group-hover:text-gray-700 transition-colors duration-300">
-                                                                        Learn more about our story
+                                                                        {t('header.about.description')}
                                                                     </p>
                                                                     
                                                                     {/* Progress indicator - Same as Programs */}
@@ -518,7 +518,7 @@ const Header = ({ onLoginClick }) => {
                                                     
                                                     <Info className="w-5 h-5 mr-3 group-hover:rotate-180 transition-transform duration-500 relative z-10" />
                                                     <span className="relative z-10 group-hover:text-yellow-100 transition-colors duration-300">
-                                                        {t('Learn More About Us') || 'Learn More About Us'}
+                                                        {t('header.about.learnMore')}
                                                     </span>
                                                     <ArrowRight className="w-5 h-5 ml-3 group-hover:translate-x-2 group-hover:scale-110 transition-all duration-500 relative z-10" />
                                                     

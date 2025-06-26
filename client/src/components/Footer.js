@@ -314,7 +314,7 @@ const Footer = () => {
                 <div className="mt-12 pt-8 border-t border-slate-200">
                     <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
                         <p className="text-slate-600 text-sm">
-                            {t('footer.copyright') || `© ${currentYear} Forum Information Academy. All rights reserved.`}
+                            {t('footer.copyright', { year: currentYear })}
                         </p>
                         
                         <div className="flex items-center space-x-6">
