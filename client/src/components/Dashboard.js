@@ -119,39 +119,39 @@ const Dashboard = () => {
         recipient: null
     });
 
-    // ✅ Application Management Functions
-    const handleViewApplication = (application) => {
-        console.log('👁️ View application clicked:', application);
-        setSelectedApplication(application);
-        setShowViewApplicationModal(true);
-    };
+    // // ✅ Application Management Functions
+    // const handleViewApplication = (application) => {
+    //     console.log('👁️ View application clicked:', application);
+    //     setSelectedApplication(application);
+    //     setShowViewApplicationModal(true);
+    // };
     
-    const handleDeleteApplication = (application) => {
-        console.log('🗑️ Delete application clicked:', application);
-        setApplicationToDelete(application);
-        setShowDeleteApplicationConfirm(true);
-    };
+    // const handleDeleteApplication = (application) => {
+    //     console.log('🗑️ Delete application clicked:', application);
+    //     setApplicationToDelete(application);
+    //     setShowDeleteApplicationConfirm(true);
+    // };
     
+    // // const handleSendMessage = (application) => {
+    // //     console.log('📧 Send message clicked:', application);
+    // //     setMessageData({
+    // //         subject: `Regarding your application for ${application.programInterested}`,
+    // //         message: '',
+    // //         recipient: application
+    // //     });
+    // //     setShowSendMessageModal(true);
+    // // };
+
+    // // ✅ FIXED: Update the handleSendMessage function to use correct field name
     // const handleSendMessage = (application) => {
     //     console.log('📧 Send message clicked:', application);
     //     setMessageData({
-    //         subject: `Regarding your application for ${application.programInterested}`,
+    //         subject: `Regarding your application for ${application.program}`, // ✅ Changed from programInterested to program
     //         message: '',
     //         recipient: application
     //     });
     //     setShowSendMessageModal(true);
     // };
-
-    // ✅ FIXED: Update the handleSendMessage function to use correct field name
-    const handleSendMessage = (application) => {
-        console.log('📧 Send message clicked:', application);
-        setMessageData({
-            subject: `Regarding your application for ${application.program}`, // ✅ Changed from programInterested to program
-            message: '',
-            recipient: application
-        });
-        setShowSendMessageModal(true);
-    };
 
     // ✅ FIXED: Update the confirmDeleteApplication function
     // const confirmDeleteApplication = async () => {
@@ -213,6 +213,43 @@ const Dashboard = () => {
 
         // Update the confirmDeleteApplication function (around line 172):
     
+
+// ✅ View full application modal
+    const handleViewApplication = (application) => {
+        console.log('👁️ View application clicked:', application);
+        setSelectedApplication(application);
+        setShowViewApplicationModal(true);
+    };
+
+    // ✅ Open confirmation modal to delete an application
+    const handleDeleteApplication = (application) => {
+        console.log('🗑️ Delete application clicked:', application);
+        setApplicationToDelete(application);
+        setShowDeleteApplicationConfirm(true);
+    };
+
+    // ✅ Open send-message modal with pre-filled subject
+    const handleSendMessage = (application) => {
+        console.log('📧 Send message clicked:', application);
+        const subjectLine = `Regarding your application for ${application.program || 'the selected program'}`;
+        
+        setMessageData({
+            subject: subjectLine,
+            message: '',
+            recipient: application
+        });
+        setShowSendMessageModal(true);
+    };
+
+    // ✅ New: Approve/Reject handler (replaces undefined handleUpdateApplicationStatus)
+    const handleApplicationStatusChange = (application, status) => {
+        if (!application || !application._id) return;
+
+        console.log(`🔁 Changing status of ${application.email} to ${status}`);
+        handleApplicationAction(application._id, status); // This function is already defined elsewhere
+    };
+
+
     const confirmDeleteApplication = async () => {
         console.log('🔥 DELETE APPLICATION CONFIRMATION CLICKED!');
         console.log('Application to delete:', applicationToDelete);
