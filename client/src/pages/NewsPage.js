@@ -1,791 +1,3 @@
-// import React, { useState, useEffect, useRef } from 'react';
-// import { useTranslation } from 'react-i18next'; // Add this import only
-// import '../styles/NewsPage.css';
-
-// import data1Video from '../assets/videos/vid2.mp4';
-// import data2Video from '../assets/videos/vid2.mp4';
-// import data3Video from '../assets/videos/vid3.mp4';
-// import data4Video from '../assets/videos/vid4.mp4';
-// import data5Video from '../assets/videos/vid5.mp4';
-// import data6Video from '../assets/videos/vid6.mp4';
-
-// const NewsPage = () => {
-//     const { t } = useTranslation(); // Add this line only
-//     // State to track which category is active
-//     const [activeCategory, setActiveCategory] = useState('all');
-//     const [isHeroVisible, setIsHeroVisible] = useState(false);
-//     const [loadedVideos, setLoadedVideos] = useState({});
-//     const heroRef = useRef(null);
-    
-//     // Keep ALL your existing animation code exactly as is
-//     useEffect(() => {
-//         // Make hero visible with animation
-//         setIsHeroVisible(true);
-        
-//         // Initialize the animated background elements
-//         createBackgroundElements();
-        
-//         // Animate news items
-//         const newsItems = document.querySelectorAll('.news-item');
-//         newsItems.forEach((item, index) => {
-//             setTimeout(() => {
-//                 item.classList.add('visible');
-//             }, 100 * index);
-//         });
-        
-//         // Cleanup function to remove particles when component unmounts
-//         return () => {
-//             const particles = document.querySelector('.news-particles');
-//             if (particles) {
-//                 while (particles.firstChild) {
-//                     particles.removeChild(particles.firstChild);
-//                 }
-//             }
-//         };
-//     }, []);
-    
-//     // Keep ALL your particle creation code exactly as is
-//     const createBackgroundElements = () => {
-//         const particles = document.querySelector('.news-particles');
-//         if (!particles) return;
-        
-//         // Clear existing particles
-//         while (particles.firstChild) {
-//             particles.removeChild(particles.firstChild);
-//         }
-        
-//         // Create floating particles
-//         for (let i = 0; i < 30; i++) {
-//             const particle = document.createElement('div');
-//             particle.className = 'news-particle';
-            
-//             // Random size and position
-//             const size = Math.random() * 8 + 4;
-//             const x = Math.random() * 100;
-//             const y = Math.random() * 100;
-            
-//             particle.style.width = `${size}px`;
-//             particle.style.height = `${size}px`;
-//             particle.style.left = `${x}%`;
-//             particle.style.top = `${y}%`;
-//             particle.style.animationDelay = `${Math.random() * 5}s`;
-//             particle.style.animationDuration = `${Math.random() * 15 + 10}s`;
-            
-//             particles.appendChild(particle);
-//         }
-        
-//         // Create floating news icons
-//         const iconTypes = ['event_note', 'announcement', 'celebration', 'campaign'];
-        
-//         for (let i = 0; i < 6; i++) {
-//             const newsIcon = document.createElement('div');
-//             newsIcon.className = 'floating-news-icon';
-            
-//             // Random position on screen
-//             const x = (Math.random() * 80) + 10;
-//             const y = (Math.random() * 70) + 10;
-//             const delay = Math.random() * 3;
-            
-//             newsIcon.style.left = `${x}%`;
-//             newsIcon.style.top = `${y}%`;
-//             newsIcon.style.animationDelay = `${delay}s`;
-            
-//             // Add random icon
-//             const icon = document.createElement('span');
-//             icon.className = 'material-icons';
-//             icon.textContent = iconTypes[Math.floor(Math.random() * iconTypes.length)];
-//             newsIcon.appendChild(icon);
-            
-//             particles.appendChild(newsIcon);
-//         }
-//     };
-
-//     // Keep ALL your video loading code exactly as is
-//     const handleVideoLoad = (id) => {
-//         setLoadedVideos(prev => ({...prev, [id]: true}));
-//     };
-
-//     // Keep your news data structure - only replace text values
-//     const newsItems = [
-//         {
-//             id: 1,
-//             date: t('newsPage.items.techSymposium.date'),
-//             title: t('newsPage.items.techSymposium.title'),
-//             excerpt: t('newsPage.items.techSymposium.excerpt'),
-//             videoSrc: data1Video,
-//             fullContent: "/news/tech-symposium",
-//             category: "events"
-//         },
-//         {
-//             id: 2,
-//             date: t('newsPage.items.industryPartnership.date'),
-//             title: t('newsPage.items.industryPartnership.title'),
-//             excerpt: t('newsPage.items.industryPartnership.excerpt'),
-//             videoSrc: data2Video,
-//             fullContent: "/news/industry-partnership",
-//             category: "announcements"
-//         },
-//         {
-//             id: 3,
-//             date: t('newsPage.items.springOpenHouse.date'),
-//             title: t('newsPage.items.springOpenHouse.title'),
-//             excerpt: t('newsPage.items.springOpenHouse.excerpt'),
-//             videoSrc: data3Video,
-//             fullContent: "/news/spring-open-house",
-//             category: "events"
-//         },
-//         {
-//             id: 4,
-//             date: t('newsPage.items.hackathonWinners.date'),
-//             title: t('newsPage.items.hackathonWinners.title'),
-//             excerpt: t('newsPage.items.hackathonWinners.excerpt'),
-//             videoSrc: data4Video,
-//             fullContent: "/news/hackathon-winners",
-//             category: "achievements"
-//         },
-//         {
-//             id: 5,
-//             date: t('newsPage.items.quantumCourse.date'),
-//             title: t('newsPage.items.quantumCourse.title'),
-//             excerpt: t('newsPage.items.quantumCourse.excerpt'),
-//             videoSrc: data5Video,
-//             fullContent: "/news/quantum-computing-course",
-//             category: "announcements"
-//         },
-//         {
-//             id: 6,
-//             date: t('newsPage.items.aiEthicsLecture.date'),
-//             title: t('newsPage.items.aiEthicsLecture.title'),
-//             excerpt: t('newsPage.items.aiEthicsLecture.excerpt'),
-//             videoSrc: data6Video,
-//             fullContent: "/news/ai-ethics-lecture",
-//             category: "events"
-//         }
-//     ];
-
-//     // Keep ALL your filtering logic exactly as is
-//     const filterNews = (category) => {
-//         setActiveCategory(category);
-//     };
-
-//     // Get filtered news items
-//     const filteredNews = activeCategory === 'all' 
-//         ? newsItems 
-//         : newsItems.filter(item => item.category === activeCategory);
-
-//     const handleSearchSubmit = (e) => {
-//         e.preventDefault();
-//         // Handle search functionality
-//         console.log("Search submitted");
-//     };
-
-//     // Get section title based on active category
-//     const getSectionTitle = () => {
-//         switch(activeCategory) {
-//             case 'events': return t('newsPage.sectionTitles.events');
-//             case 'announcements': return t('newsPage.sectionTitles.announcements');
-//             case 'achievements': return t('newsPage.sectionTitles.achievements');
-//             default: return t('newsPage.sectionTitles.all');
-//         }
-//     };
-
-//     // Get category label
-//     const getCategoryLabel = (category) => {
-//         switch(category) {
-//             case 'events': return t('newsPage.categoryLabels.event');
-//             case 'announcements': return t('newsPage.categoryLabels.announcement');
-//             case 'achievements': return t('newsPage.categoryLabels.achievement');
-//             default: return '';
-//         }
-//     };
-
-//     return (
-//         <div className="news-page">
-//             {/* Enhanced Hero section - Keep ALL animations exactly as is */}
-//             <section 
-//                 ref={heroRef} 
-//                 className={`news-hero ${isHeroVisible ? 'visible' : ''}`}
-//             >
-//                 {/* Animated background */}
-//                 <div className="news-hero-bg">
-//                     <div className="news-particles"></div>
-//                     <div className="news-glow news-glow-1"></div>
-//                     <div className="news-glow news-glow-2"></div>
-//                 </div>
-                
-//                 <div className="container">
-//                     <div className="news-hero-content">
-//                         <div className="news-hero-badge">
-//                             <span className="material-icons">campaign</span>
-//                             {t('newsPage.hero.badge')}
-//                         </div>
-                        
-//                         <h1 className="animated-heading">
-//                             {t('newsPage.hero.title.part1')} <span className="highlight-text">{t('newsPage.hero.title.highlight')}</span>
-//                         </h1>
-                        
-//                         <p className="news-hero-description">
-//                             {t('newsPage.hero.description')}
-//                         </p>
-                        
-//                         {/* Search bar */}
-//                         <div className="news-search-container">
-//                             <form onSubmit={handleSearchSubmit} className="news-search-form">
-//                                 <input 
-//                                     type="text" 
-//                                     placeholder={t('newsPage.hero.searchPlaceholder')}
-//                                     className="news-search-input"
-//                                 />
-//                                 <button type="submit" className="news-search-btn">
-//                                     <span className="material-icons">search</span>
-//                                 </button>
-//                             </form>
-                            
-//                             <div className="trending-topics">
-//                                 <span className="trending-label">{t('newsPage.hero.trending.label')}:</span>
-//                                 <div className="trending-tags">
-//                                     <a href="#tech-symposium" className="trending-tag">{t('newsPage.hero.trending.tags.techSymposium')}</a>
-//                                     <a href="#hackathon" className="trending-tag">{t('newsPage.hero.trending.tags.hackathon')}</a>
-//                                     <a href="#new-courses" className="trending-tag">{t('newsPage.hero.trending.tags.newCourses')}</a>
-//                                 </div>
-//                             </div>
-//                         </div>
-                        
-//                         {/* Quick stats */}
-//                         <div className="news-stats">
-//                             <div className="news-stat">
-//                                 <div className="news-stat-number">25+</div>
-//                                 <div className="news-stat-label">{t('newsPage.hero.stats.upcomingEvents')}</div>
-//                             </div>
-//                             <div className="news-stat">
-//                                 <div className="news-stat-number">12</div>
-//                                 <div className="news-stat-label">{t('newsPage.hero.stats.recentAnnouncements')}</div>
-//                             </div>
-//                             <div className="news-stat">
-//                                 <div className="news-stat-number">8</div>
-//                                 <div className="news-stat-label">{t('newsPage.hero.stats.studentAchievements')}</div>
-//                             </div>
-//                         </div>
-//                     </div>
-//                 </div>
-                
-//                 {/* Scroll indicator */}
-//                 <div className="scroll-indicator">
-//                     <a href="#news-filters">
-//                         <span>{t('newsPage.hero.scrollIndicator')}</span>
-//                         <span className="material-icons">keyboard_arrow_down</span>
-//                     </a>
-//                 </div>
-//             </section>
-            
-//             {/* Filter categories */}
-//             <section id="news-filters" className="news-page-filters">
-//                 <div className="container">
-//                     <div className="filter-buttons">
-//                         <button 
-//                             className={`filter-btn ${activeCategory === 'all' ? 'active' : ''}`}
-//                             onClick={() => filterNews('all')}
-//                         >
-//                             <span className="material-icons">view_list</span>
-//                             {t('newsPage.filters.all')}
-//                         </button>
-//                         <button 
-//                             className={`filter-btn ${activeCategory === 'events' ? 'active' : ''}`}
-//                             onClick={() => filterNews('events')}
-//                         >
-//                             <span className="material-icons">event</span>
-//                             {t('newsPage.filters.events')}
-//                         </button>
-//                         <button 
-//                             className={`filter-btn ${activeCategory === 'announcements' ? 'active' : ''}`}
-//                             onClick={() => filterNews('announcements')}
-//                         >
-//                             <span className="material-icons">campaign</span>
-//                             {t('newsPage.filters.announcements')}
-//                         </button>
-//                         <button 
-//                             className={`filter-btn ${activeCategory === 'achievements' ? 'active' : ''}`}
-//                             onClick={() => filterNews('achievements')}
-//                         >
-//                             <span className="material-icons">emoji_events</span>
-//                             {t('newsPage.filters.achievements')}
-//                         </button>
-//                     </div>
-//                 </div>
-//             </section>
-            
-//             {/* Featured news */}
-//             <section className="featured-news">
-//                 <div className="container">
-//                     <div className="featured-news-item">
-//                         <div className="featured-news-image">
-//                             <video autoPlay muted loop>
-//                                 <source src={data2Video} type="video/mp4" />
-//                                 {t('newsPage.videoNotSupported')}
-//                             </video>
-//                             <div className="featured-tag">
-//                                 <span className="material-icons">star</span>
-//                                 {t('newsPage.featured.tag')}
-//                             </div>
-//                         </div>
-//                         <div className="featured-news-content">
-//                             <div className="news-meta">
-//                                 <span className="news-category events">
-//                                     <span className="material-icons">event</span>
-//                                     {t('newsPage.categoryLabels.event')}
-//                                 </span>
-//                                 <span className="news-date">{t('newsPage.items.techSymposium.date')}</span>
-//                             </div>
-//                             <h2 className="featured-news-title">{t('newsPage.featured.title')}</h2>
-//                             <p className="featured-news-excerpt">
-//                                 {t('newsPage.featured.excerpt')}
-//                             </p>
-//                             <div className="news-cta">
-//                                 <a href="/news/tech-symposium" className="btn btn-primary">
-//                                     <span className="material-icons">read_more</span>
-//                                     {t('newsPage.buttons.learnMore')}
-//                                 </a>
-//                                 <a href="/events/register" className="btn btn-outline">
-//                                     <span className="material-icons">how_to_reg</span>
-//                                     {t('newsPage.buttons.registerNow')}
-//                                 </a>
-//                             </div>
-//                         </div>
-//                     </div>
-//                 </div>
-//             </section>
-            
-//             {/* News grid */}
-//             <section className="main-news-section">
-//                 <div className="container">
-//                     <div className="section-header">
-//                         <h2 className="section-title">
-//                             {getSectionTitle()}
-//                         </h2>
-//                         <p className="section-subtitle">
-//                             {filteredNews.length} {filteredNews.length === 1 ? t('newsPage.itemCount.singular') : t('newsPage.itemCount.plural')}
-//                         </p>
-//                     </div>
-                    
-//                     <div className="news-grid">
-//                         {filteredNews.map((item, index) => (
-//                             <div 
-//                                 key={item.id}
-//                                 className="news-item"
-//                                 style={{
-//                                     animationDelay: `${index * 0.1}s`
-//                                 }}
-//                             >
-//                                 <div className="news-img">
-//                                     {item.videoSrc ? (
-//                                         <>
-//                                             {!loadedVideos[item.id] && (
-//                                                 <div className="news-placeholder">
-//                                                     <div className="loading-spinner"></div>
-//                                                     <span>{t('newsPage.loading')}</span>
-//                                                 </div>
-//                                             )}
-//                                             <video 
-//                                                 controls 
-//                                                 autoPlay 
-//                                                 muted 
-//                                                 loop
-//                                                 onLoadedData={() => handleVideoLoad(item.id)}
-//                                                 style={{opacity: loadedVideos[item.id] ? 1 : 0}}
-//                                             >
-//                                                 <source src={item.videoSrc} type="video/mp4" />
-//                                                 {t('newsPage.videoNotSupported')}
-//                                             </video>
-//                                         </>
-//                                     ) : (
-//                                         <img src={item.imageSrc} alt={item.title} />
-//                                     )}
-//                                 </div>
-//                                 <div className="news-content">
-//                                     <div className="news-meta">
-//                                         <span className={`news-category ${item.category}`}>
-//                                             <span className="material-icons">
-//                                                 {item.category === 'events' ? 'event' : 
-//                                                     item.category === 'announcements' ? 'campaign' : 
-//                                                     'emoji_events'}
-//                                             </span>
-//                                             {getCategoryLabel(item.category)}
-//                                         </span>
-//                                         <span className="news-date">{item.date}</span>
-//                                     </div>
-//                                     <h3 className="news-title">{item.title}</h3>
-//                                     <p className="news-excerpt">{item.excerpt}</p>
-//                                     <a href={item.fullContent} className="btn btn-outline">
-//                                         <span className="material-icons">read_more</span>
-//                                         {t('newsPage.buttons.readMore')}
-//                                     </a>
-//                                 </div>
-//                             </div>
-//                         ))}
-//                     </div>
-                    
-//                     {/* Show message if no items found */}
-//                     {filteredNews.length === 0 && (
-//                         <div className="no-results">
-//                             <span className="material-icons">search_off</span>
-//                             <h3>{t('newsPage.noResults.title')} {activeCategory === 'all' ? t('newsPage.noResults.items') : getCategoryLabel(activeCategory)}</h3>
-//                             <p>{t('newsPage.noResults.description')}</p>
-//                         </div>
-//                     )}
-//                 </div>
-//             </section>
-
-            
-//             {/* Campus Life Section */}
-//             <section className="py-20 bg-gradient-to-br from-indigo-50 via-white to-purple-50 relative overflow-hidden">
-//                 {/* Background decorations */}
-//                 <div className="absolute inset-0 opacity-5">
-//                     <div className="absolute top-10 left-10 w-72 h-72 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full blur-3xl"></div>
-//                     <div className="absolute bottom-10 right-10 w-96 h-96 bg-gradient-to-r from-pink-400 to-orange-500 rounded-full blur-3xl"></div>
-//                 </div>
-                
-//                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-//                     <div className="text-center mb-16">
-//                         <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full text-blue-800 text-sm font-medium mb-4">
-//                             <span className="material-icons text-lg mr-2">groups</span>
-//                             Campus Experience
-//                         </div>
-//                         <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-6">
-//                             {t('newsPage.campusLife.title')}
-//                         </h2>
-//                         <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-//                             {t('newsPage.campusLife.subtitle')}
-//                         </p>
-//                     </div>
-                    
-//                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-//                         <div className="group bg-white/70 backdrop-blur-sm rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-white/20">
-//                             <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-//                                 <span className="material-icons text-white text-2xl">groups</span>
-//                             </div>
-//                             <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-blue-600 transition-colors">
-//                                 {t('newsPage.campusLife.studentLife.title')}
-//                             </h3>
-//                             <p className="text-gray-600 leading-relaxed">
-//                                 {t('newsPage.campusLife.studentLife.description')}
-//                             </p>
-//                             <div className="mt-6 w-full h-1 bg-gradient-to-r from-blue-500 to-transparent rounded-full"></div>
-//                         </div>
-                        
-//                         <div className="group bg-white/70 backdrop-blur-sm rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-white/20">
-//                             <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-//                                 <span className="material-icons text-white text-2xl">sports_esports</span>
-//                             </div>
-//                             <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-purple-600 transition-colors">
-//                                 {t('newsPage.campusLife.clubs.title')}
-//                             </h3>
-//                             <p className="text-gray-600 leading-relaxed">
-//                                 {t('newsPage.campusLife.clubs.description')}
-//                             </p>
-//                             <div className="mt-6 w-full h-1 bg-gradient-to-r from-purple-500 to-transparent rounded-full"></div>
-//                         </div>
-                        
-//                         <div className="group bg-white/70 backdrop-blur-sm rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-white/20">
-//                             <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-//                                 <span className="material-icons text-white text-2xl">restaurant</span>
-//                             </div>
-//                             <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-green-600 transition-colors">
-//                                 {t('newsPage.campusLife.dining.title')}
-//                             </h3>
-//                             <p className="text-gray-600 leading-relaxed">
-//                                 {t('newsPage.campusLife.dining.description')}
-//                             </p>
-//                             <div className="mt-6 w-full h-1 bg-gradient-to-r from-green-500 to-transparent rounded-full"></div>
-//                         </div>
-                        
-//                         <div className="group bg-white/70 backdrop-blur-sm rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-white/20">
-//                             <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-//                                 <span className="material-icons text-white text-2xl">fitness_center</span>
-//                             </div>
-//                             <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-orange-600 transition-colors">
-//                                 {t('newsPage.campusLife.sports.title')}
-//                             </h3>
-//                             <p className="text-gray-600 leading-relaxed">
-//                                 {t('newsPage.campusLife.sports.description')}
-//                             </p>
-//                             <div className="mt-6 w-full h-1 bg-gradient-to-r from-orange-500 to-transparent rounded-full"></div>
-//                         </div>
-//                     </div>
-//                 </div>
-//             </section>
-
-//             {/* Facility Introduction Section */}
-//             <section className="py-20 bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 relative overflow-hidden">
-//                 {/* Animated background elements */}
-//                 <div className="absolute inset-0">
-//                     <div className="absolute top-0 left-1/4 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-//                     <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-//                 </div>
-                
-//                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-//                     <div className="text-center mb-16">
-//                         <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-white text-sm font-medium mb-4">
-//                             <span className="material-icons text-lg mr-2">apartment</span>
-//                             World-Class Facilities
-//                         </div>
-//                         <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-//                             {t('newsPage.facilities.title')}
-//                         </h2>
-//                         <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-//                             {t('newsPage.facilities.subtitle')}
-//                         </p>
-//                     </div>
-                    
-//                     <div className="space-y-24">
-//                         {/* Modern Labs */}
-//                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-//                             <div className="relative group">
-//                                 <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
-//                                 <div className="relative overflow-hidden rounded-3xl shadow-2xl">
-//                                     <video autoPlay muted loop className="w-full h-80 object-cover">
-//                                         <source src={data1Video} type="video/mp4" />
-//                                         {t('newsPage.videoNotSupported')}
-//                                     </video>
-//                                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-//                                 </div>
-//                             </div>
-//                             <div className="space-y-6">
-//                                 <div className="inline-flex items-center px-4 py-2 bg-blue-500/20 rounded-full text-blue-300 text-sm font-medium">
-//                                     <span className="material-icons text-lg mr-2">science</span>
-//                                     Technology Hub
-//                                 </div>
-//                                 <h3 className="text-3xl md:text-4xl font-bold text-white">
-//                                     {t('newsPage.facilities.modernLabs.title')}
-//                                 </h3>
-//                                 <p className="text-lg text-gray-300 leading-relaxed">
-//                                     {t('newsPage.facilities.modernLabs.description')}
-//                                 </p>
-//                                 <div className="space-y-3">
-//                                     <div className="flex items-center text-gray-300">
-//                                         <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
-//                                         {t('newsPage.facilities.modernLabs.features.ai')}
-//                                     </div>
-//                                     <div className="flex items-center text-gray-300">
-//                                         <div className="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
-//                                         {t('newsPage.facilities.modernLabs.features.robotics')}
-//                                     </div>
-//                                     <div className="flex items-center text-gray-300">
-//                                         <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-//                                         {t('newsPage.facilities.modernLabs.features.networking')}
-//                                     </div>
-//                                 </div>
-//                             </div>
-//                         </div>
-                        
-//                         {/* Library - Reversed layout */}
-//                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-//                             <div className="space-y-6 lg:order-2">
-//                                 <div className="inline-flex items-center px-4 py-2 bg-purple-500/20 rounded-full text-purple-300 text-sm font-medium">
-//                                     <span className="material-icons text-lg mr-2">local_library</span>
-//                                     Knowledge Center
-//                                 </div>
-//                                 <h3 className="text-3xl md:text-4xl font-bold text-white">
-//                                     {t('newsPage.facilities.library.title')}
-//                                 </h3>
-//                                 <p className="text-lg text-gray-300 leading-relaxed">
-//                                     {t('newsPage.facilities.library.description')}
-//                                 </p>
-//                                 <div className="space-y-3">
-//                                     <div className="flex items-center text-gray-300">
-//                                         <div className="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
-//                                         {t('newsPage.facilities.library.features.books')}
-//                                     </div>
-//                                     <div className="flex items-center text-gray-300">
-//                                         <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
-//                                         {t('newsPage.facilities.library.features.digitalResources')}
-//                                     </div>
-//                                     <div className="flex items-center text-gray-300">
-//                                         <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-//                                         {t('newsPage.facilities.library.features.studySpaces')}
-//                                     </div>
-//                                 </div>
-//                             </div>
-//                             <div className="relative group lg:order-1">
-//                                 <div className="absolute -inset-4 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
-//                                 <div className="relative overflow-hidden rounded-3xl shadow-2xl">
-//                                     <video autoPlay muted loop className="w-full h-80 object-cover">
-//                                         <source src={data2Video} type="video/mp4" />
-//                                         {t('newsPage.videoNotSupported')}
-//                                     </video>
-//                                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-//                                 </div>
-//                             </div>
-//                         </div>
-                        
-//                         {/* Dormitories */}
-//                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-//                             <div className="relative group">
-//                                 <div className="absolute -inset-4 bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
-//                                 <div className="relative overflow-hidden rounded-3xl shadow-2xl">
-//                                     <video autoPlay muted loop className="w-full h-80 object-cover">
-//                                         <source src={data3Video} type="video/mp4" />
-//                                         {t('newsPage.videoNotSupported')}
-//                                     </video>
-//                                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-//                                 </div>
-//                             </div>
-//                             <div className="space-y-6">
-//                                 <div className="inline-flex items-center px-4 py-2 bg-green-500/20 rounded-full text-green-300 text-sm font-medium">
-//                                     <span className="material-icons text-lg mr-2">home</span>
-//                                     Student Housing
-//                                 </div>
-//                                 <h3 className="text-3xl md:text-4xl font-bold text-white">
-//                                     {t('newsPage.facilities.dormitories.title')}
-//                                 </h3>
-//                                 <p className="text-lg text-gray-300 leading-relaxed">
-//                                     {t('newsPage.facilities.dormitories.description')}
-//                                 </p>
-//                                 <div className="space-y-3">
-//                                     <div className="flex items-center text-gray-300">
-//                                         <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-//                                         {t('newsPage.facilities.dormitories.features.furnished')}
-//                                     </div>
-//                                     <div className="flex items-center text-gray-300">
-//                                         <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
-//                                         {t('newsPage.facilities.dormitories.features.wifi')}
-//                                     </div>
-//                                     <div className="flex items-center text-gray-300">
-//                                         <div className="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
-//                                         {t('newsPage.facilities.dormitories.features.communitySpaces')}
-//                                     </div>
-//                                 </div>
-//                             </div>
-//                         </div>
-//                     </div>
-//                 </div>
-//             </section>
-
-//             {/* Campus Life in Niigata Section */}
-//             <section className="py-20 bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 relative overflow-hidden">
-//                 {/* Background decorations */}
-//                 <div className="absolute inset-0 opacity-10">
-//                     <div className="absolute top-20 left-20 w-64 h-64 bg-emerald-400 rounded-full blur-3xl animate-bounce"></div>
-//                     <div className="absolute bottom-20 right-20 w-80 h-80 bg-cyan-400 rounded-full blur-3xl animate-bounce delay-1000"></div>
-//                 </div>
-                
-//                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-//                     <div className="text-center mb-16">
-//                         <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-100 to-cyan-100 rounded-full text-emerald-800 text-sm font-medium mb-4">
-//                             <span className="material-icons text-lg mr-2">location_city</span>
-//                             Discover Niigata
-//                         </div>
-//                         <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-emerald-800 via-teal-700 to-cyan-800 bg-clip-text text-transparent mb-6">
-//                             {t('newsPage.niigataLife.title')}
-//                         </h2>
-//                         <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-//                             {t('newsPage.niigataLife.subtitle')}
-//                         </p>
-//                     </div>
-                    
-//                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
-//                         <div className="group bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-emerald-100">
-//                             <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-//                                 <span className="material-icons text-white text-2xl">landscape</span>
-//                             </div>
-//                             <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-emerald-600 transition-colors">
-//                                 {t('newsPage.niigataLife.nature.title')}
-//                             </h3>
-//                             <p className="text-gray-600 leading-relaxed">
-//                                 {t('newsPage.niigataLife.nature.description')}
-//                             </p>
-//                         </div>
-                        
-//                         <div className="group bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-orange-100">
-//                             <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-//                                 <span className="material-icons text-white text-2xl">ramen_dining</span>
-//                             </div>
-//                             <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-orange-600 transition-colors">
-//                                 {t('newsPage.niigataLife.culture.title')}
-//                             </h3>
-//                             <p className="text-gray-600 leading-relaxed">
-//                                 {t('newsPage.niigataLife.culture.description')}
-//                             </p>
-//                         </div>
-                        
-//                         <div className="group bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-blue-100">
-//                             <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-//                                 <span className="material-icons text-white text-2xl">train</span>
-//                             </div>
-//                             <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-blue-600 transition-colors">
-//                                 {t('newsPage.niigataLife.transportation.title')}
-//                             </h3>
-//                             <p className="text-gray-600 leading-relaxed">
-//                                 {t('newsPage.niigataLife.transportation.description')}
-//                             </p>
-//                         </div>
-                        
-//                         <div className="group bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-cyan-100">
-//                             <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-//                                 <span className="material-icons text-white text-2xl">ac_unit</span>
-//                             </div>
-//                             <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-cyan-600 transition-colors">
-//                                 {t('newsPage.niigataLife.seasons.title')}
-//                             </h3>
-//                             <p className="text-gray-600 leading-relaxed">
-//                                 {t('newsPage.niigataLife.seasons.description')}
-//                             </p>
-//                         </div>
-//                     </div>
-                    
-//                     <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-8 shadow-2xl border border-white/20">
-//                         <div className="text-center mb-12">
-//                             <h3 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-gray-900 to-emerald-800 bg-clip-text text-transparent">
-//                                 {t('newsPage.niigataLife.gallery.title')}
-//                             </h3>
-//                         </div>
-//                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-//                             <div className="group relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500">
-//                                 <video autoPlay muted loop className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-700">
-//                                     <source src={data4Video} type="video/mp4" />
-//                                     {t('newsPage.videoNotSupported')}
-//                                 </video>
-//                                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent group-hover:from-black/50 transition-all duration-500"></div>
-//                                 <div className="absolute bottom-6 left-6 right-6">
-//                                     <div className="bg-white/20 backdrop-blur-sm rounded-xl px-4 py-3 border border-white/30">
-//                                         <span className="text-white font-semibold text-lg">{t('newsPage.niigataLife.gallery.cityView')}</span>
-//                                     </div>
-//                                 </div>
-//                             </div>
-//                             <div className="group relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500">
-//                                 <video autoPlay muted loop className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-700">
-//                                     <source src={data5Video} type="video/mp4" />
-//                                     {t('newsPage.videoNotSupported')}
-//                                 </video>
-//                                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent group-hover:from-black/50 transition-all duration-500"></div>
-//                                 <div className="absolute bottom-6 left-6 right-6">
-//                                     <div className="bg-white/20 backdrop-blur-sm rounded-xl px-4 py-3 border border-white/30">
-//                                         <span className="text-white font-semibold text-lg">{t('newsPage.niigataLife.gallery.festivals')}</span>
-//                                     </div>
-//                                 </div>
-//                             </div>
-//                             <div className="group relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500">
-//                                 <video autoPlay muted loop className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-700">
-//                                     <source src={data6Video} type="video/mp4" />
-//                                     {t('newsPage.videoNotSupported')}
-//                                 </video>
-//                                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent group-hover:from-black/50 transition-all duration-500"></div>
-//                                 <div className="absolute bottom-6 left-6 right-6">
-//                                     <div className="bg-white/20 backdrop-blur-sm rounded-xl px-4 py-3 border border-white/30">
-//                                         <span className="text-white font-semibold text-lg">{t('newsPage.niigataLife.gallery.winterScenes')}</span>
-//                                     </div>
-//                                 </div>
-//                             </div>
-//                         </div>
-//                     </div>
-//                 </div>
-//             </section>
-//         </div>
-//     );
-// };
-
-// export default NewsPage;
-
-// ...existing code...
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import '../styles/NewsPage.css';
@@ -797,6 +9,25 @@ import data4Video from '../assets/videos/vid4.mp4';
 import data5Video from '../assets/videos/vid5.mp4';
 import data6Video from '../assets/videos/vid6.mp4';
 
+import facilitiesImg from '../assets/facilities/facilities.jpg';
+import niigataLifeImg from '../assets/facilities/niigatalife.jpg';
+import facilitiesImg1 from '../assets/facilities/facilities.jpg';
+import accessImg from '../assets/facilities/access.jpg';
+import campusMap from '../assets/facilities/map.jpg';
+
+import foodImg1 from '../assets/foods/mabomen.jpg'; 
+import foodImg2 from '../assets/foods/rice.jpg'; 
+import foodImg3 from '../assets/foods/peach.jpg'; 
+import foodImg4 from '../assets/foods/sushi.jpg'; 
+import foodImg5 from '../assets/foods/kane.jpg'; 
+import foodImg6 from '../assets/foods/tare.jpg';
+import foodImg7 from '../assets/foods/edamame.jpg';
+import foodImg8 from '../assets/foods/dango.jpg';
+import foodImg9 from '../assets/foods/kenchinjirusoysauce.jpg';
+import foodImg10 from '../assets/foods/soba.jpg';
+import foodImg11 from '../assets/foods/shasheme.jpg';
+import foodImg12 from '../assets/foods/sushi2.jpg';
+
 const NewsPage = () => {
     const { t } = useTranslation();
     const [activeCategory, setActiveCategory] = useState('all');
@@ -807,7 +38,7 @@ const NewsPage = () => {
     useEffect(() => {
         setIsHeroVisible(true);
         createBackgroundElements();
-        const newsItems = document.querySelectorAll('.news-item-animate'); // Target animation class
+        const newsItems = document.querySelectorAll('.news-item-animate');
         newsItems.forEach((item, index) => {
             setTimeout(() => {
                 item.classList.add('visible');
@@ -962,22 +193,20 @@ const NewsPage = () => {
         }
     };
 
-
     return (
         <div className="news-page bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200">
-            {/* Hero section - CSS for 3D effects, Tailwind for content styling */}
+            {/* Hero section - Keep the same */}
             <section
                 ref={heroRef}
-                className={`news-hero ${isHeroVisible ? 'visible' : ''}`} // Keep for existing JS animation
+                className={`news-hero ${isHeroVisible ? 'visible' : ''}`}
             >
-                {/* Animated background (CSS controlled) */}
                 <div className="news-hero-bg">
                     <div className="news-particles"></div>
                     <div className="news-glow news-glow-1"></div>
                     <div className="news-glow news-glow-2"></div>
                 </div>
 
-                <div className="container mx-auto px-4 relative z-10"> {/* Tailwind container */}
+                <div className="container mx-auto px-4 relative z-10">
                     <div className="max-w-3xl mx-auto text-center py-16 md:py-24">
                         <div className="inline-flex items-center bg-sky-500/10 dark:bg-sky-400/20 border border-sky-500/30 dark:border-sky-400/40 rounded-full px-4 py-2 mb-6 text-sm font-medium text-sky-600 dark:text-sky-300 animate-fade-in-up">
                             <span className="material-icons text-lg mr-2">campaign</span>
@@ -996,16 +225,6 @@ const NewsPage = () => {
                         </p>
 
                         <div className="max-w-xl mx-auto mb-10 animate-fade-in-up animation-delay-600">
-                            <form onSubmit={handleSearchSubmit} className="flex relative shadow-2xl rounded-full overflow-hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-                                <input
-                                    type="text"
-                                    placeholder={t('newsPage.hero.searchPlaceholder')}
-                                    className="flex-grow border-none py-4 px-6 text-base bg-transparent focus:ring-0 dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
-                                />
-                                <button type="submit" className="bg-sky-500 hover:bg-sky-600 text-white p-4 flex items-center justify-center transition-colors duration-300">
-                                    <span className="material-icons">search</span>
-                                </button>
-                            </form>
 
                             <div className="mt-6 flex items-center justify-center flex-wrap gap-x-4 gap-y-2">
                                 <span className="text-sm font-medium text-slate-500 dark:text-slate-400">{t('newsPage.hero.trending.label')}:</span>
@@ -1038,338 +257,720 @@ const NewsPage = () => {
                         </div>
                     </div>
                 </div>
-
-                <div className="scroll-indicator"> {/* CSS controlled animation */}
-                    <a href="#news-filters" className="flex flex-col items-center text-slate-500 dark:text-slate-400 hover:text-sky-500 dark:hover:text-sky-400 transition-colors duration-300">
-                        <span>{t('newsPage.hero.scrollIndicator')}</span>
-                        <span className="material-icons text-2xl">keyboard_arrow_down</span>
-                    </a>
-                </div>
             </section>
 
-            {/* Filter categories - CSS controlled */}
-            <section id="news-filters" className="news-page-filters sticky top-0 z-[99] bg-white/80 dark:bg-slate-800/80 backdrop-blur-md shadow-lg">
-                <div className="container mx-auto px-4">
-                    <div className="filter-buttons py-3">
-                        {[
-                            { category: 'all', icon: 'view_list', labelKey: 'newsPage.filters.all' },
-                            { category: 'events', icon: 'event', labelKey: 'newsPage.filters.events' },
-                            { category: 'announcements', icon: 'campaign', labelKey: 'newsPage.filters.announcements' },
-                            { category: 'achievements', icon: 'emoji_events', labelKey: 'newsPage.filters.achievements' }
-                        ].map(btn => (
-                            <button
-                                key={btn.category}
-                                className={`filter-btn ${activeCategory === btn.category ? 'active' : ''}`}
-                                onClick={() => filterNews(btn.category)}
-                            >
-                                <span className="material-icons mr-2">{btn.icon}</span>
-                                {t(btn.labelKey)}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* Featured news - Tailwind */}
-            <section className="py-16 md:py-24 bg-gradient-to-br from-slate-100 to-sky-100 dark:from-slate-800 dark:to-sky-900">
-                <div className="container mx-auto px-4">
-                    <div className="grid md:grid-cols-5 gap-8 lg:gap-12 bg-white dark:bg-slate-800/50 rounded-3xl overflow-hidden shadow-2xl transform transition-all duration-500 hover:scale-[1.01] hover:shadow-sky-500/20">
-                        <div className="md:col-span-3 relative min-h-[300px] md:min-h-[450px] overflow-hidden group">
-                            <video autoPlay muted loop className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110">
-                                <source src={data2Video} type="video/mp4" />
-                                {t('newsPage.videoNotSupported')}
-                            </video>
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-                            <div className="absolute top-6 left-6 bg-gradient-to-r from-amber-400 to-orange-500 text-white px-4 py-1.5 rounded-lg text-xs font-semibold shadow-md flex items-center gap-1.5">
-                                <span className="material-icons text-sm">star</span>
-                                {t('newsPage.featured.tag')}
-                            </div>
+            {/* Modern Filter Section - Redesigned */}
+            <section id="news-filters" className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 border-b border-gray-200/50 dark:border-slate-700/50 shadow-lg">
+                <div className="container mx-auto px-4 py-6">
+                    <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
+                        <div className="flex items-center space-x-3">
+                            <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-pulse"></div>
+                            <h3 className="text-lg font-bold text-gray-800 dark:text-white">
+                                {getSectionTitle()}
+                            </h3>
+                            <span className="text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-slate-700 px-3 py-1 rounded-full">
+                                {filteredNews.length} {filteredNews.length === 1 ? t('newsPage.itemCount.singular') : t('newsPage.itemCount.plural')}
+                            </span>
                         </div>
-                        <div className="md:col-span-2 p-6 md:p-10 flex flex-col justify-center">
-                            <div className="flex items-center gap-3 mb-4">
-                                <span className="text-sky-600 dark:text-sky-400 font-semibold text-xs uppercase tracking-wider flex items-center gap-1.5 py-1 px-2.5 bg-sky-500/10 rounded-md">
-                                    <span className="material-icons text-base">event</span>
-                                    {t('newsPage.categoryLabels.event')}
-                                </span>
-                                <span className="text-slate-500 dark:text-slate-400 text-xs">{t('newsPage.items.techSymposium.date')}</span>
-                            </div>
-                            <h2 className="text-2xl lg:text-3xl font-bold text-slate-800 dark:text-white mb-4 leading-tight group-hover:text-sky-600 transition-colors duration-300">
-                                {t('newsPage.featured.title')}
-                            </h2>
-                            <p className="text-slate-600 dark:text-slate-300 mb-8 leading-relaxed text-sm md:text-base">
-                                {t('newsPage.featured.excerpt')}
-                            </p>
-                            <div className="flex flex-col sm:flex-row gap-3 mt-auto">
-                                <a href="/news/tech-symposium" className="bg-sky-500 hover:bg-sky-600 text-white font-medium py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 flex items-center justify-center gap-2 text-sm">
-                                    <span className="material-icons text-lg">read_more</span>
-                                    {t('newsPage.buttons.learnMore')}
-                                </a>
-                                <a href="/events/register" className="border border-sky-500 text-sky-500 hover:bg-sky-500/10 font-medium py-3 px-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5 flex items-center justify-center gap-2 text-sm">
-                                    <span className="material-icons text-lg">how_to_reg</span>
-                                    {t('newsPage.buttons.registerNow')}
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* News grid - Tailwind */}
-            <section className="main-news-section py-16 md:py-24 bg-slate-50 dark:bg-slate-900/70">
-                <div className="container mx-auto px-4">
-                    <div className="text-center mb-12 md:mb-16">
-                        <h2 className="text-3xl md:text-4xl font-bold text-slate-800 dark:text-white mb-3">
-                            {getSectionTitle()}
-                        </h2>
-                        <p className="text-slate-500 dark:text-slate-400">
-                            {filteredNews.length} {filteredNews.length === 1 ? t('newsPage.itemCount.singular') : t('newsPage.itemCount.plural')}
-                        </p>
-                    </div>
-
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-8">
-                        {filteredNews.map((item, index) => (
-                            <div
-                                key={item.id}
-                                className="news-item-animate bg-white dark:bg-slate-800 rounded-xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1.5 group"
-                                style={{ animationDelay: `${index * 0.05}s` }} // Keep for staggered animation if desired, or remove if handled by news-item-animate
-                            >
-                                <div className="h-52 relative overflow-hidden">
-                                    {item.videoSrc ? (
-                                        <>
-                                            {!loadedVideos[item.id] && (
-                                                <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400">
-                                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-500 mb-2"></div>
-                                                    <span>{t('newsPage.loading')}</span>
-                                                </div>
-                                            )}
-                                            <video
-                                                controls
-                                                autoPlay
-                                                muted
-                                                loop
-                                                onLoadedData={() => handleVideoLoad(item.id)}
-                                                className="w-full h-full object-cover transition-opacity duration-500 group-hover:scale-105"
-                                                style={{ opacity: loadedVideos[item.id] ? 1 : 0 }}
-                                            >
-                                                <source src={item.videoSrc} type="video/mp4" />
-                                                {t('newsPage.videoNotSupported')}
-                                            </video>
-                                        </>
-                                    ) : (
-                                        <img src={item.imageSrc} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                        
+                        <div className="flex items-center space-x-2 bg-gray-100 dark:bg-slate-800 p-1.5 rounded-xl shadow-inner">
+                            {[
+                                { category: 'all', icon: 'view_list', labelKey: 'newsPage.filters.all', color: 'blue' },
+                                { category: 'events', icon: 'event', labelKey: 'newsPage.filters.events', color: 'purple' },
+                                { category: 'announcements', icon: 'campaign', labelKey: 'newsPage.filters.announcements', color: 'teal' },
+                                { category: 'achievements', icon: 'emoji_events', labelKey: 'newsPage.filters.achievements', color: 'amber' }
+                            ].map(btn => (
+                                <button
+                                    key={btn.category}
+                                    className={`relative flex items-center px-4 py-2.5 rounded-lg font-medium text-sm transition-all duration-300 ${
+                                        activeCategory === btn.category
+                                            ? `bg-white dark:bg-slate-700 text-${btn.color}-600 dark:text-${btn.color}-400 shadow-lg transform scale-105`
+                                            : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-white/50 dark:hover:bg-slate-700/50'
+                                    }`}
+                                    onClick={() => filterNews(btn.category)}
+                                >
+                                    <span className={`material-icons text-lg mr-2 ${
+                                        activeCategory === btn.category ? 'animate-bounce' : ''
+                                    }`}>{btn.icon}</span>
+                                    <span className="hidden sm:inline">{t(btn.labelKey)}</span>
+                                    {activeCategory === btn.category && (
+                                        <div className={`absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-${btn.color}-500 rounded-full`}></div>
                                     )}
-                                </div>
-                                <div className="p-5 md:p-6">
-                                    <div className="flex items-center justify-between mb-3 text-xs">
-                                        <span className={`font-semibold uppercase tracking-wider flex items-center gap-1.5 py-1 px-2 rounded-md ${getCategorySpecificClasses(item.category)}`}>
-                                            <span className="material-icons text-sm">
-                                                {item.category === 'events' ? 'event' :
-                                                    item.category === 'announcements' ? 'campaign' :
-                                                        'emoji_events'}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Featured News - Modern Card Design */}
+            <section className="py-20 bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-indigo-950 dark:via-slate-900 dark:to-purple-950">
+                <div className="container mx-auto px-4">
+                    <div className="max-w-7xl mx-auto">
+                        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+                            <div className="relative group">
+                                <div className="absolute -inset-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-3xl blur-xl opacity-20 group-hover:opacity-30 transition-opacity duration-500"></div>
+                                <div className="relative overflow-hidden rounded-2xl shadow-2xl bg-white dark:bg-slate-800">
+                                    <div className="aspect-video relative">
+                                        <video autoPlay muted loop className="w-full h-full object-cover">
+                                            <source src={data2Video} type="video/mp4" />
+                                            {t('newsPage.videoNotSupported')}
+                                        </video>
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                                        <div className="absolute top-4 left-4">
+                                            <span className="bg-gradient-to-r from-amber-400 to-orange-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg flex items-center gap-1.5">
+                                                <span className="material-icons text-sm">star</span>
+                                                {t('newsPage.featured.tag')}
                                             </span>
-                                            {getCategoryLabel(item.category)}
-                                        </span>
-                                        <span className="text-slate-500 dark:text-slate-400">{item.date}</span>
+                                        </div>
+                                        <div className="absolute bottom-4 left-4 right-4">
+                                            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/20">
+                                                <span className="text-white text-sm font-medium">{t('newsPage.items.techSymposium.date')}</span>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-2 leading-snug group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors duration-200">
-                                        {item.title}
-                                    </h3>
-                                    <p className="text-sm text-slate-600 dark:text-slate-300 mb-4 leading-relaxed line-clamp-3">
-                                        {item.excerpt}
-                                    </p>
-                                    <a href={item.fullContent} className="text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 font-medium text-sm inline-flex items-center gap-1.5 group/link">
-                                        {t('newsPage.buttons.readMore')}
-                                        <span className="material-icons text-base transition-transform duration-300 group-hover/link:translate-x-1">arrow_forward</span>
+                                </div>
+                            </div>
+                            
+                            <div className="space-y-6">
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center">
+                                        <span className="material-icons text-white text-lg">auto_awesome</span>
+                                    </div>
+                                    <span className="text-indigo-600 dark:text-indigo-400 font-semibold text-sm uppercase tracking-wider">
+                                        {t('newsPage.featured.tag')}
+                                    </span>
+                                </div>
+                                
+                                <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white leading-tight">
+                                    {t('newsPage.featured.title')}
+                                </h2>
+                                
+                                <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
+                                    {t('newsPage.featured.excerpt')}
+                                </p>
+                                
+                                <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                                    <a href="/news/tech-symposium" className="group bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center space-x-2">
+                                        <span className="material-icons">read_more</span>
+                                        <span>{t('newsPage.buttons.learnMore')}</span>
+                                        <span className="material-icons text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                    </a>
+                                    <a href="/apply" className="group border-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 font-semibold py-4 px-8 rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center space-x-2">
+                                        <span className="material-icons">how_to_reg</span>
+                                        <span>{t('newsPage.buttons.registerNow')}</span>
                                     </a>
                                 </div>
                             </div>
-                        ))}
-                    </div>
-
-                    {filteredNews.length === 0 && (
-                        <div className="text-center py-16">
-                            <span className="material-icons text-7xl text-slate-400 dark:text-slate-500 mb-6">search_off</span>
-                            <h3 className="text-2xl font-semibold text-slate-700 dark:text-slate-200 mb-2">
-                                {t('newsPage.noResults.title')} {activeCategory === 'all' ? t('newsPage.noResults.items') : getCategoryLabel(activeCategory)}
-                            </h3>
-                            <p className="text-slate-500 dark:text-slate-400">{t('newsPage.noResults.description')}</p>
                         </div>
-                    )}
+                    </div>
                 </div>
             </section>
 
-            {/* Campus Life Section - Existing Tailwind, minor enhancements */}
-            <section className="py-16 md:py-20 bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-indigo-900/30 dark:via-slate-900 dark:to-purple-900/30 relative overflow-hidden">
-                <div className="absolute inset-0 opacity-5 dark:opacity-[0.03]">
-                    <div className="absolute top-10 left-10 w-72 h-72 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full blur-3xl animate-pulse"></div>
-                    <div className="absolute bottom-10 right-10 w-96 h-96 bg-gradient-to-r from-pink-400 to-orange-500 rounded-full blur-3xl animate-pulse animation-delay-2000"></div>
-                </div>
-                
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                    <div className="text-center mb-12 md:mb-16">
-                        <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-800/30 dark:to-purple-800/30 rounded-full text-blue-800 dark:text-blue-300 text-sm font-medium mb-4 shadow">
-                            <span className="material-icons text-lg mr-2">groups</span>
-                            Campus Experience
-                        </div>
-                        <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-900 via-blue-700 to-purple-700 dark:from-gray-100 dark:via-blue-400 dark:to-purple-400 bg-clip-text text-transparent mb-6">
-                            {t('newsPage.campusLife.title')}
-                        </h2>
-                        <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-                            {t('newsPage.campusLife.subtitle')}
-                        </p>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                        {[
-                            { icon: 'groups', titleKey: 'newsPage.campusLife.studentLife.title', descKey: 'newsPage.campusLife.studentLife.description', gradient: 'from-blue-500 to-blue-600', hoverColor: 'blue' },
-                            { icon: 'sports_esports', titleKey: 'newsPage.campusLife.clubs.title', descKey: 'newsPage.campusLife.clubs.description', gradient: 'from-purple-500 to-purple-600', hoverColor: 'purple' },
-                            { icon: 'restaurant', titleKey: 'newsPage.campusLife.dining.title', descKey: 'newsPage.campusLife.dining.description', gradient: 'from-green-500 to-green-600', hoverColor: 'green' },
-                            { icon: 'fitness_center', titleKey: 'newsPage.campusLife.sports.title', descKey: 'newsPage.campusLife.sports.description', gradient: 'from-orange-500 to-orange-600', hoverColor: 'orange' }
-                        ].map(item => (
-                            <div key={item.titleKey} className={`group bg-white/70 dark:bg-slate-800/50 backdrop-blur-md rounded-3xl p-8 shadow-xl hover:shadow-2xl dark:hover:shadow-${item.hoverColor}-500/30 transition-all duration-500 hover:-translate-y-2 border border-white/20 dark:border-slate-700/50`}>
-                                <div className={`w-16 h-16 bg-gradient-to-br ${item.gradient} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-[-3deg] transition-transform duration-300 shadow-lg`}>
-                                    <span className="material-icons text-white text-3xl">{item.icon}</span>
+            {/* News Grid - Modern Masonry Layout */}
+            <section className="py-20 bg-gray-50 dark:bg-slate-900">
+                <div className="container mx-auto px-4">
+                    <div className="max-w-7xl mx-auto">
+                        {filteredNews.length === 0 ? (
+                            <div className="text-center py-20">
+                                <div className="inline-flex items-center justify-center w-24 h-24 bg-gray-200 dark:bg-slate-700 rounded-full mb-6">
+                                    <span className="material-icons text-4xl text-gray-400 dark:text-gray-500">search_off</span>
                                 </div>
-                                <h3 className={`text-2xl font-bold text-gray-900 dark:text-white mb-4 group-hover:text-${item.hoverColor}-600 dark:group-hover:text-${item.hoverColor}-400 transition-colors`}>
-                                    {t(item.titleKey)}
+                                <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2">
+                                    {t('newsPage.noResults.title')} {activeCategory === 'all' ? t('newsPage.noResults.items') : getCategoryLabel(activeCategory)}
                                 </h3>
-                                <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-sm">
-                                    {t(item.descKey)}
-                                </p>
-                                <div className={`mt-6 w-full h-1 bg-gradient-to-r ${item.gradient} to-transparent rounded-full opacity-50 group-hover:opacity-100 transition-opacity duration-300`}></div>
+                                <p className="text-gray-600 dark:text-gray-400">{t('newsPage.noResults.description')}</p>
                             </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* Facility Introduction Section - Existing Tailwind, minor enhancements */}
-            <section className="py-16 md:py-20 bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 dark:from-gray-900 dark:via-blue-900 dark:to-purple-900 relative overflow-hidden">
-                <div className="absolute inset-0">
-                    <div className="absolute top-0 left-1/4 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-                    <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse animation-delay-1000"></div>
-                </div>
-                
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                    <div className="text-center mb-12 md:mb-16">
-                        <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-white text-sm font-medium mb-4 shadow">
-                            <span className="material-icons text-lg mr-2">apartment</span>
-                            World-Class Facilities
-                        </div>
-                        <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-                            {t('newsPage.facilities.title')}
-                        </h2>
-                        <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-                            {t('newsPage.facilities.subtitle')}
-                        </p>
-                    </div>
-                    
-                    <div className="space-y-20 md:space-y-24">
-                        {[
-                            { video: data1Video, icon: 'science', tag: 'Technology Hub', titleKey: 'newsPage.facilities.modernLabs.title', descKey: 'newsPage.facilities.modernLabs.description', features: ['ai', 'robotics', 'networking'], featureKeyPrefix: 'newsPage.facilities.modernLabs.features', gradient: 'from-blue-500/20 to-purple-500/20', tagColor: 'blue' },
-                            { video: data2Video, icon: 'local_library', tag: 'Knowledge Center', titleKey: 'newsPage.facilities.library.title', descKey: 'newsPage.facilities.library.description', features: ['books', 'digitalResources', 'studySpaces'], featureKeyPrefix: 'newsPage.facilities.library.features', gradient: 'from-purple-500/20 to-pink-500/20', tagColor: 'purple', reversed: true },
-                            { video: data3Video, icon: 'home', tag: 'Student Housing', titleKey: 'newsPage.facilities.dormitories.title', descKey: 'newsPage.facilities.dormitories.description', features: ['furnished', 'wifi', 'communitySpaces'], featureKeyPrefix: 'newsPage.facilities.dormitories.features', gradient: 'from-green-500/20 to-blue-500/20', tagColor: 'green' }
-                        ].map((facility, index) => (
-                            <div key={index} className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-12 items-center">
-                                <div className={`relative group ${facility.reversed ? 'lg:order-2' : ''}`}>
-                                    <div className={`absolute -inset-3 md:-inset-4 bg-gradient-to-r ${facility.gradient} rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-70 group-hover:opacity-100`}></div>
-                                    <div className="relative overflow-hidden rounded-3xl shadow-2xl aspect-video">
-                                        <video autoPlay muted loop className="w-full h-full object-cover">
-                                            <source src={facility.video} type="video/mp4" />
-                                            {t('newsPage.videoNotSupported')}
-                                        </video>
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                                    </div>
-                                </div>
-                                <div className={`space-y-5 md:space-y-6 ${facility.reversed ? 'lg:order-1' : ''}`}>
-                                    <div className={`inline-flex items-center px-4 py-1.5 bg-${facility.tagColor}-500/20 rounded-full text-${facility.tagColor}-300 text-sm font-medium`}>
-                                        <span className="material-icons text-lg mr-2">{facility.icon}</span>
-                                        {facility.tag}
-                                    </div>
-                                    <h3 className="text-3xl md:text-4xl font-bold text-white">
-                                        {t(facility.titleKey)}
-                                    </h3>
-                                    <p className="text-lg text-gray-300 leading-relaxed">
-                                        {t(facility.descKey)}
-                                    </p>
-                                    <div className="space-y-2.5">
-                                        {facility.features.map((feature, fIndex) => (
-                                            <div key={fIndex} className="flex items-center text-gray-300 hover:text-white transition-colors duration-200">
-                                                <div className={`w-2.5 h-2.5 bg-${facility.tagColor}-500 rounded-full mr-3 shadow-sm`}></div>
-                                                {t(`${facility.featureKeyPrefix}.${feature}`)}
+                        ) : (
+                            <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
+                                {filteredNews.map((item, index) => (
+                                    <div
+                                        key={item.id}
+                                        className="break-inside-avoid news-item-animate bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 group border border-gray-100 dark:border-slate-700"
+                                        style={{ animationDelay: `${index * 0.1}s` }}
+                                    >
+                                        <div className="relative overflow-hidden">
+                                            <div className="aspect-video relative">
+                                                {!loadedVideos[item.id] && (
+                                                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-200 dark:bg-slate-700 text-gray-500 dark:text-gray-400">
+                                                        <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mb-2"></div>
+                                                        <span className="text-sm">{t('newsPage.loading')}</span>
+                                                    </div>
+                                                )}
+                                                <video
+                                                    controls
+                                                    autoPlay
+                                                    muted
+                                                    loop
+                                                    onLoadedData={() => handleVideoLoad(item.id)}
+                                                    className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
+                                                    style={{ opacity: loadedVideos[item.id] ? 1 : 0 }}
+                                                >
+                                                    <source src={item.videoSrc} type="video/mp4" />
+                                                    {t('newsPage.videoNotSupported')}
+                                                </video>
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                             </div>
-                                        ))}
+                                            
+                                            <div className="absolute top-4 left-4">
+                                                <span className={`text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg backdrop-blur-sm border ${getCategorySpecificClasses(item.category)} bg-white/90 dark:bg-slate-800/90`}>
+                                                    {getCategoryLabel(item.category)}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="p-6">
+                                            <div className="flex items-center justify-between mb-3">
+                                                <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-md">
+                                                    {item.date}
+                                                </span>
+                                                <div className="flex items-center space-x-1">
+                                                    <span className="material-icons text-sm text-gray-400">schedule</span>
+                                                    <span className="text-xs text-gray-400">5 min read</span>
+                                                </div>
+                                            </div>
+                                            
+                                            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 leading-tight group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-300">
+                                                {item.title}
+                                            </h3>
+                                            
+                                            <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mb-4 line-clamp-3">
+                                                {item.excerpt}
+                                            </p>
+                                            
+                                            <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-slate-700">
+                                                <a 
+                                                    href={item.fullContent} 
+                                                    className="group/link inline-flex items-center text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-semibold text-sm transition-colors duration-200"
+                                                >
+                                                    {t('newsPage.buttons.readMore')}
+                                                    <span className="material-icons text-lg ml-1 transition-transform duration-300 group-hover/link:translate-x-1">arrow_forward</span>
+                                                </a>
+                                                <div className="flex items-center space-x-2 text-gray-400">
+                                                    <button className="hover:text-red-500 transition-colors">
+                                                        <span className="material-icons text-lg">favorite_border</span>
+                                                    </button>
+                                                    <button className="hover:text-blue-500 transition-colors">
+                                                        <span className="material-icons text-lg">share</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </section>
+            
+            <section className="py-20 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-950 dark:via-indigo-950 dark:to-purple-950">
+                <div className="container mx-auto px-4">
+                    <div className="max-w-7xl mx-auto">
+                        <div className="text-center mb-16">
+                            <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-800/30 dark:to-purple-800/30 rounded-full text-blue-800 dark:text-blue-300 text-sm font-medium mb-6 shadow-lg">
+                                <span className="material-icons text-lg mr-2">groups</span>
+                                {t('campusLife.badge')}
+                            </div>
+                            <h2 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-gray-900 via-blue-700 to-purple-700 dark:from-gray-100 dark:via-blue-400 dark:to-purple-400 bg-clip-text text-transparent mb-6">
+                                {t('campusLife.title')}
+                            </h2>
+                            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
+                                {t('campusLife.subtitle')}
+                            </p>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                            {[
+                                { 
+                                    icon: 'groups', 
+                                    titleKey: 'campusLife.items.studentLife.title', 
+                                    descKey: 'campusLife.items.studentLife.description', 
+                                    gradient: 'from-blue-500 to-cyan-500', 
+                                    shadowColor: 'blue',
+                                    image: facilitiesImg1
+                                },
+                                { 
+                                    icon: 'sports_esports', 
+                                    titleKey: 'campusLife.items.clubs.title', 
+                                    descKey: 'campusLife.items.clubs.description', 
+                                    gradient: 'from-purple-500 to-pink-500', 
+                                    shadowColor: 'purple',
+                                    image: facilitiesImg1
+                                },
+                                { 
+                                    icon: 'restaurant', 
+                                    titleKey: 'campusLife.items.dining.title', 
+                                    descKey: 'campusLife.items.dining.description', 
+                                    gradient: 'from-green-500 to-emerald-500', 
+                                    shadowColor: 'green',
+                                    image: foodImg1
+                                },
+                                { 
+                                    icon: 'fitness_center', 
+                                    titleKey: 'campusLife.items.sports.title', 
+                                    descKey: 'campusLife.items.sports.description', 
+                                    gradient: 'from-orange-500 to-red-500', 
+                                    shadowColor: 'orange',
+                                    image: facilitiesImg1
+                                }
+                            ].map((item, index) => (
+                                <div key={item.titleKey} className={`group relative bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-4 border border-white/20 dark:border-slate-700/50`}>
+                                    {/* Background Image */}
+                                    <div className="absolute inset-0">
+                                        <img 
+                                            src={item.image} 
+                                            alt={t(item.titleKey)}
+                                            className="w-full h-full object-cover opacity-20 group-hover:opacity-30 transition-opacity duration-500"
+                                        />
+                                        <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-10 group-hover:opacity-20 transition-opacity duration-500`}></div>
+                                    </div>
+                                    
+                                    <div className="relative z-10 p-8">
+                                        <div className={`w-16 h-16 bg-gradient-to-br ${item.gradient} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300 shadow-lg`}>
+                                            <span className="material-icons text-white text-3xl">{item.icon}</span>
+                                        </div>
+                                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-purple-600 transition-all duration-300">
+                                            {t(item.titleKey)}
+                                        </h3>
+                                        <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-sm">
+                                            {t(item.descKey)}
+                                        </p>
+                                        <div className={`mt-6 w-full h-1 bg-gradient-to-r ${item.gradient} rounded-full opacity-30 group-hover:opacity-100 transition-opacity duration-300`}></div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        
+                        {/* Campus Map Section */}
+                        <div className="mt-16">
+                            <div className="relative">
+                                {/* Enhanced Background with Animation */}
+                                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/15 to-indigo-500/20 rounded-3xl blur-3xl animate-pulse"></div>
+                                <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/10 via-blue-500/10 to-purple-600/10 rounded-3xl"></div>
+                                
+                                <div className="relative bg-white/95 dark:bg-slate-800/95 backdrop-blur-2xl rounded-3xl shadow-2xl overflow-hidden">
+                                    {/* Floating Decorative Elements */}
+                                    <div className="absolute -top-10 -right-10 w-40 h-40 bg-gradient-to-bl from-blue-400/30 to-purple-500/20 rounded-full blur-2xl animate-float"></div>
+                                    <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-gradient-to-tr from-indigo-400/25 to-cyan-500/20 rounded-full blur-xl animate-float-delay"></div>
+                                    
+                                    {/* Header Section with Enhanced Typography */}
+                                    <div className="relative z-10 text-center pt-12 pb-8 px-8">
+                                        <div className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/40 dark:to-indigo-900/40 rounded-full text-blue-700 dark:text-blue-300 text-sm font-bold mb-8 shadow-xl">
+                                            <span className="material-icons text-xl mr-3 animate-pulse">map</span>
+                                            {t('newsPage.navigation.campusNavigationHub')}
+                                        </div>
+                                        <h3 className="text-5xl lg:text-6xl font-black bg-gradient-to-r from-slate-900 via-blue-700 to-purple-700 dark:from-slate-100 dark:via-blue-300 dark:to-purple-300 bg-clip-text text-transparent mb-6 leading-tight">
+                                            {t('campusLife.map.title')}
+                                        </h3>
+                                        <p className="text-xl lg:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed font-light">
+                                            {t('campusLife.map.description')}
+                                        </p>
+                                    </div>
+                        
+                                    {/* Access Image Section */}
+                                    <div className="relative px-8 pb-6">
+                                        <div className="relative overflow-hidden">
+                                            <img 
+                                                src={accessImg} 
+                                                alt="Campus Access"
+                                                className="w-full h-auto object-contain bg-gray-50 dark:bg-slate-700"
+                                            />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent"></div>
+                                        </div>
+                                    </div>
+                        
+                                    {/* Map Display Area */}
+                                    <div className="relative px-8 pb-8">
+                                        <div className="relative">
+                                            {/* Premium Map Container */}
+                                            <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-800 dark:to-slate-900 rounded-2xl p-6 shadow-inner">
+                                                {/* Map Header */}
+                                                <div className="flex items-center justify-between mb-6">
+                                                    <div className="flex items-center space-x-3">
+                                                        <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                                                        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('newsPage.navigation.liveMap')}</span>
+                                                    </div>
+                                                    <div className="flex items-center space-x-2">
+                                                        <span className="text-xs text-gray-500 dark:text-gray-400">{t('newsPage.navigation.updatedToday')}</span>
+                                                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                                    </div>
+                                                </div>
+                                    
+                                                {/* Main Map Image */}
+                                                <div className="relative rounded-xl overflow-hidden shadow-2xl bg-white dark:bg-slate-800">
+                                                    <img 
+                                                        src={campusMap} 
+                                                        alt="Detailed Campus Map"
+                                                        className="w-full h-auto object-contain"
+                                                        style={{ minHeight: '600px', maxHeight: '800px' }}
+                                                    />
+                                                    
+                                                    {/* Status Indicator */}
+                                                    <div className="absolute top-4 left-4">
+                                                        <div className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm px-4 py-2 rounded-xl shadow-lg">
+                                                            <div className="flex items-center space-x-2">
+                                                                <span className="material-icons text-green-500 text-sm">location_on</span>
+                                                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('newsPage.navigation.youAreHere')}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        ))}
+                        </div>
+                        
+                        {/* Food Gallery Section - Already using translation keys correctly */}
+                        <div className="mt-16">
+                            <div className="text-center mb-8">
+                                <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-800/30 dark:to-emerald-800/30 rounded-full text-green-800 dark:text-green-300 text-sm font-semibold mb-4 shadow-lg">
+                                    <span className="material-icons text-base mr-2">restaurant</span>
+                                    {t('campusLife.dining.title')}
+                                </div>
+                                <h3 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-gray-900 via-green-700 to-emerald-700 dark:from-gray-100 dark:via-green-400 dark:to-emerald-400 bg-clip-text text-transparent mb-4">
+                                    {t('campusLife.dining.gallery') || 'Dining Experience'}
+                                </h3>
+                                <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                                    {t('campusLife.dining.galleryDesc') || 'Delicious meals and dining options on campus'}
+                                </p>
+                            </div>
+                            
+                            {/* Smaller Food Box Grid */}
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+                                {/* Food Box 1 - Mabomen */}
+                                <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
+                                    <div className="relative h-40 overflow-hidden">
+                                        <img 
+                                            src={foodImg1} 
+                                            alt="Mabomen"
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+                                    </div>
+                                    <div className="p-3 text-center">
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">{t('campusLife.dining.foods.mabomen')}</h4>
+                                    </div>
+                                </div>
+                        
+                                {/* Food Box 2 - Rice */}
+                                <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
+                                    <div className="relative h-40 overflow-hidden">
+                                        <img 
+                                            src={foodImg2} 
+                                            alt="Rice"
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+                                    </div>
+                                    <div className="p-3 text-center">
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">{t('campusLife.dining.foods.rice')}</h4>
+                                    </div>
+                                </div>
+                        
+                                {/* Food Box 3 - Pear */}
+                                <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
+                                    <div className="relative h-40 overflow-hidden">
+                                        <img 
+                                            src={foodImg3} 
+                                            alt="Pear"
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+                                    </div>
+                                    <div className="p-3 text-center">
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">{t('campusLife.dining.foods.pear')}</h4>
+                                    </div>
+                                </div>
+                        
+                                {/* Food Box 4 - Kiwami Sushi */}
+                                <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
+                                    <div className="relative h-40 overflow-hidden">
+                                        <img 
+                                            src={foodImg4} 
+                                            alt="Kiwami Sushi"
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+                                    </div>
+                                    <div className="p-3 text-center">
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">{t('campusLife.dining.foods.kiwamiSushi')}</h4>
+                                    </div>
+                                </div>
+                        
+                                {/* Food Box 5 - Matsuba Crab */}
+                                <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
+                                    <div className="relative h-40 overflow-hidden">
+                                        <img 
+                                            src={foodImg5} 
+                                            alt="Matsuba Crab"
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+                                    </div>
+                                    <div className="p-3 text-center">
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">{t('campusLife.dining.foods.matsubaCrab')}</h4>
+                                    </div>
+                                </div>
+                        
+                                {/* Food Box 6 - Tare Katsudon */}
+                                <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
+                                    <div className="relative h-40 overflow-hidden">
+                                        <img 
+                                            src={foodImg6} 
+                                            alt="Tare Katsudon"
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+                                    </div>
+                                    <div className="p-3 text-center">
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">{t('campusLife.dining.foods.tareKatsudon')}</h4>
+                                    </div>
+                                </div>
+                        
+                                {/* Food Box 7 - Edamame */}
+                                <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
+                                    <div className="relative h-40 overflow-hidden">
+                                        <img 
+                                            src={foodImg7} 
+                                            alt="Edamame"
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+                                    </div>
+                                    <div className="p-3 text-center">
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">{t('campusLife.dining.foods.edamame')}</h4>
+                                    </div>
+                                </div>
+                        
+                                {/* Food Box 8 - Sasa Dango */}
+                                <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
+                                    <div className="relative h-40 overflow-hidden">
+                                        <img 
+                                            src={foodImg8} 
+                                            alt="Sasa Dango"
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+                                    </div>
+                                    <div className="p-3 text-center">
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">{t('campusLife.dining.foods.sasaDango')}</h4>
+                                    </div>
+                                </div>
+                        
+                                {/* Food Box 9 - Kenchin-jiru */}
+                                <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
+                                    <div className="relative h-40 overflow-hidden">
+                                        <img 
+                                            src={foodImg9} 
+                                            alt="Kenchin-jiru"
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+                                    </div>
+                                    <div className="p-3 text-center">
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">{t('campusLife.dining.foods.kenchinJiru')}</h4>
+                                    </div>
+                                </div>
+                        
+                                {/* Food Box 10 - Hegi Soba */}
+                                <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
+                                    <div className="relative h-40 overflow-hidden">
+                                        <img 
+                                            src={foodImg10} 
+                                            alt="Hegi Soba"
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+                                    </div>
+                                    <div className="p-3 text-center">
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">{t('campusLife.dining.foods.hegiSoba')}</h4>
+                                    </div>
+                                </div>
+                        
+                                {/* Food Box 11 - Kei Kaisendon */}
+                                <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
+                                    <div className="relative h-40 overflow-hidden">
+                                        <img 
+                                            src={foodImg11} 
+                                            alt="Kei Kaisendon"
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+                                    </div>
+                                    <div className="p-3 text-center">
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">{t('campusLife.dining.foods.keiKaisendon')}</h4>
+                                    </div>
+                                </div>
+                        
+                                {/* Food Box 12 - Tomi Sushi */}
+                                <div className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-400 hover:-translate-y-2 border border-white/50 dark:border-slate-700/50">
+                                    <div className="relative h-40 overflow-hidden">
+                                        <img 
+                                            src={foodImg12} 
+                                            alt="Tomi Sushi"
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+                                    </div>
+                                    <div className="p-3 text-center">
+                                        <h4 className="text-sm font-bold text-gray-800 dark:text-white">{t('campusLife.dining.foods.tomiSushi')}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            {/* Campus Life in Niigata Section - Existing Tailwind, minor enhancements */}
-            <section className="py-16 md:py-20 bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 dark:from-emerald-900/30 dark:via-slate-900 dark:to-cyan-900/30 relative overflow-hidden">
-                <div className="absolute inset-0 opacity-10 dark:opacity-[0.04]">
-                    <div className="absolute top-20 left-20 w-64 h-64 bg-emerald-400 rounded-full blur-3xl animate-blob"></div>
-                    <div className="absolute bottom-20 right-20 w-80 h-80 bg-cyan-400 rounded-full blur-3xl animate-blob animation-delay-2000"></div>
+            <section className="py-20 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-blue-900 dark:to-indigo-900 relative overflow-hidden">
+                {/* Animated Background Elements */}
+                <div className="absolute inset-0">
+                    <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-blue-200/30 to-purple-200/30 dark:from-blue-500/10 dark:to-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
+                    <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-r from-indigo-200/30 to-pink-200/30 dark:from-indigo-500/10 dark:to-pink-500/10 rounded-full blur-3xl animate-pulse animation-delay-1000"></div>
+                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-cyan-200/20 to-blue-200/20 dark:from-cyan-500/5 dark:to-blue-500/5 rounded-full blur-2xl animate-bounce-slow"></div>
                 </div>
                 
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                    <div className="text-center mb-12 md:mb-16">
-                        <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-100 to-cyan-100 dark:from-emerald-800/30 dark:to-cyan-800/30 rounded-full text-emerald-800 dark:text-emerald-300 text-sm font-medium mb-4 shadow">
-                            <span className="material-icons text-lg mr-2">location_city</span>
-                            Discover Niigata
-                        </div>
-                        <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-emerald-700 via-teal-600 to-cyan-700 dark:from-emerald-300 dark:via-teal-300 dark:to-cyan-300 bg-clip-text text-transparent mb-6">
-                            {t('newsPage.niigataLife.title')}
-                        </h2>
-                        <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-                            {t('newsPage.niigataLife.subtitle')}
-                        </p>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12 md:mb-16">
-                        {[
-                            { icon: 'landscape', titleKey: 'newsPage.niigataLife.nature.title', descKey: 'newsPage.niigataLife.nature.description', gradient: 'from-emerald-500 to-teal-500', hoverColor: 'emerald', borderColor: 'border-emerald-100 dark:border-emerald-800/50' },
-                            { icon: 'ramen_dining', titleKey: 'newsPage.niigataLife.culture.title', descKey: 'newsPage.niigataLife.culture.description', gradient: 'from-orange-500 to-red-500', hoverColor: 'orange', borderColor: 'border-orange-100 dark:border-orange-800/50' },
-                            { icon: 'train', titleKey: 'newsPage.niigataLife.transportation.title', descKey: 'newsPage.niigataLife.transportation.description', gradient: 'from-blue-500 to-indigo-500', hoverColor: 'blue', borderColor: 'border-blue-100 dark:border-blue-800/50' },
-                            { icon: 'ac_unit', titleKey: 'newsPage.niigataLife.seasons.title', descKey: 'newsPage.niigataLife.seasons.description', gradient: 'from-cyan-500 to-blue-500', hoverColor: 'cyan', borderColor: 'border-cyan-100 dark:border-cyan-800/50' }
-                        ].map(item => (
-                            <div key={item.titleKey} className={`group bg-white/80 dark:bg-slate-800/60 backdrop-blur-md rounded-3xl p-8 shadow-xl hover:shadow-2xl dark:hover:shadow-${item.hoverColor}-500/20 transition-all duration-500 hover:-translate-y-2 ${item.borderColor} border`}>
-                                <div className={`w-16 h-16 bg-gradient-to-br ${item.gradient} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-[-3deg] transition-transform duration-300 shadow-lg`}>
-                                    <span className="material-icons text-white text-3xl">{item.icon}</span>
-                                </div>
-                                <h3 className={`text-2xl font-bold text-gray-900 dark:text-white mb-4 group-hover:text-${item.hoverColor}-600 dark:group-hover:text-${item.hoverColor}-400 transition-colors`}>
-                                    {t(item.titleKey)}
-                                </h3>
-                                <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-sm">
-                                    {t(item.descKey)}
-                                </p>
+                {/* Floating Particles */}
+                <div className="absolute inset-0 overflow-hidden">
+                    {[...Array(15)].map((_, i) => (
+                        <div
+                            key={i}
+                            className="absolute animate-float-random bg-gradient-to-r from-blue-300/20 to-purple-300/20 dark:from-blue-400/10 dark:to-purple-400/10 rounded-full"
+                            style={{
+                                left: `${Math.random() * 100}%`,
+                                top: `${Math.random() * 100}%`,
+                                width: `${Math.random() * 8 + 4}px`,
+                                height: `${Math.random() * 8 + 4}px`,
+                                animationDelay: `${Math.random() * 10}s`,
+                                animationDuration: `${Math.random() * 20 + 15}s`
+                            }}
+                        ></div>
+                    ))}
+                </div>
+                
+                <div className="container mx-auto px-4 relative z-10">
+                    <div className="max-w-7xl mx-auto">
+                        {/* Header Section with Enhanced Animations */}
+                        <div className="text-center mb-20 transform transition-all duration-1000 hover:scale-105">
+                            <div className="inline-flex items-center px-6 py-3 bg-white/80 dark:bg-white/10 backdrop-blur-lg rounded-full text-blue-700 dark:text-white text-sm font-semibold mb-8 shadow-xl border border-blue-200/50 dark:border-white/20 hover:shadow-2xl hover:scale-110 transition-all duration-500 group">
+                                <span className="material-icons text-xl mr-3 group-hover:rotate-12 transition-transform duration-300">apartment</span>
+                                <span className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-300 dark:to-purple-300 bg-clip-text text-transparent">
+                                    {t('facilities.badge')}
+                                </span>
                             </div>
-                        ))}
-                    </div>
-                    
-                    <div className="bg-white/60 dark:bg-slate-800/40 backdrop-blur-md rounded-3xl p-6 md:p-8 shadow-2xl border border-white/20 dark:border-slate-700/50">
-                        <div className="text-center mb-8 md:mb-12">
-                            <h3 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-gray-900 to-emerald-700 dark:from-gray-100 dark:to-emerald-400 bg-clip-text text-transparent">
-                                {t('newsPage.niigataLife.gallery.title')}
-                            </h3>
+                            <h2 className="text-5xl md:text-7xl font-black bg-gradient-to-r from-slate-800 via-blue-600 to-purple-600 dark:from-white dark:via-blue-300 dark:to-purple-300 bg-clip-text text-transparent mb-8 hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 transition-all duration-700 transform hover:scale-105">
+                                {t('facilities.title')}
+                            </h2>
+                            <p className="text-xl md:text-2xl text-slate-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed font-light">
+                                {t('facilities.subtitle')}
+                            </p>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+                        
+                        {/* Facilities Grid with Staggered Animations */}
+                        <div className="space-y-32">
                             {[
-                                { video: data4Video, labelKey: 'newsPage.niigataLife.gallery.cityView' },
-                                { video: data5Video, labelKey: 'newsPage.niigataLife.gallery.festivals' },
-                                { video: data6Video, labelKey: 'newsPage.niigataLife.gallery.winterScenes' }
-                            ].map((galleryItem, index) => (
-                                <div key={index} className="group relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 aspect-[4/3]">
-                                    <video autoPlay muted loop className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                                        <source src={galleryItem.video} type="video/mp4" />
-                                        {t('newsPage.videoNotSupported')}
-                                    </video>
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent group-hover:from-black/50 transition-all duration-500"></div>
-                                    <div className="absolute bottom-4 left-4 right-4 md:bottom-6 md:left-6 md:right-6">
-                                        <div className="bg-white/20 dark:bg-black/30 backdrop-blur-sm rounded-xl px-4 py-3 border border-white/30 dark:border-white/20">
-                                            <span className="text-white font-semibold text-sm md:text-lg">{t(galleryItem.labelKey)}</span>
+                                { 
+                                    image: facilitiesImg, 
+                                    icon: 'apartment', 
+                                    tag: 'facilities.items.campus.tag', 
+                                    titleKey: 'facilities.items.campus.title', 
+                                    descKey: 'facilities.items.campus.description', 
+                                    features: ['modernBuildings', 'laboratories', 'library', 'sportsFacilities'], 
+                                    featureKeyPrefix: 'facilities.items.campus.features', 
+                                    gradient: 'from-blue-400/30 to-cyan-400/30 dark:from-blue-500/20 dark:to-purple-500/20', 
+                                    tagColor: 'blue',
+                                    cardBg: 'from-blue-50/80 to-cyan-50/80 dark:from-blue-900/20 dark:to-cyan-900/20'
+                                },
+                                { 
+                                    image: niigataLifeImg, 
+                                    icon: 'location_city', 
+                                    tag: 'facilities.items.niigataLife.tag', 
+                                    titleKey: 'facilities.items.niigataLife.title', 
+                                    descKey: 'facilities.items.niigataLife.description', 
+                                    features: ['culturalSites', 'localCuisine', 'naturalBeauty', 'festivals'], 
+                                    featureKeyPrefix: 'facilities.items.niigataLife.features', 
+                                    gradient: 'from-emerald-400/30 to-teal-400/30 dark:from-green-500/20 dark:to-blue-500/20', 
+                                    tagColor: 'emerald', 
+                                    reversed: true,
+                                    cardBg: 'from-emerald-50/80 to-teal-50/80 dark:from-emerald-900/20 dark:to-teal-900/20'
+                                }
+                            ].map((facility, index) => (
+                                <div 
+                                    key={index} 
+                                    className="group transform transition-all duration-1000 hover:scale-[1.02]"
+                                    style={{ animationDelay: `${index * 200}ms` }}
+                                >
+                                    {/* Large Card with Background Image */}
+                                    <div 
+                                        className="relative rounded-3xl shadow-2xl hover:shadow-3xl border border-white/30 dark:border-white/20 transition-all duration-700 hover:border-white/50 dark:hover:border-white/30 overflow-hidden min-h-[800px]"
+                                        style={{
+                                            backgroundImage: `url(${facility.image})`,
+                                            backgroundSize: 'cover',
+                                            backgroundPosition: 'center',
+                                            backgroundRepeat: 'no-repeat'
+                                        }}
+                                    >
+                                        {/* Animated Glow Effect */}
+                                        <div className={`absolute -inset-6 bg-gradient-to-r ${facility.gradient} rounded-3xl blur-2xl group-hover:blur-3xl transition-all duration-700 opacity-40 group-hover:opacity-70 animate-pulse-slow`}></div>
+                                        
+                                        {/* Decorative Corner Elements */}
+                                        <div className="absolute -top-4 -left-4 w-8 h-8 bg-gradient-to-br from-white/60 to-blue-200/60 dark:from-white/20 dark:to-blue-400/20 rounded-full animate-ping z-10"></div>
+                                        <div className="absolute -bottom-4 -right-4 w-6 h-6 bg-gradient-to-br from-purple-200/60 to-pink-200/60 dark:from-purple-400/20 dark:to-pink-400/20 rounded-full animate-ping animation-delay-1000 z-10"></div>
+                                        
+                                        <div className="relative z-10 h-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center p-8 md:p-12">
+                                            {/* Tag Section - Visible on image */}
+                                            <div className={`relative ${facility.reversed ? 'lg:order-2' : ''} flex items-start justify-start h-full`}>
+                                                <div className="group-hover:scale-110 transition-all duration-300">
+                                                    <div className={`inline-flex items-center px-6 py-3 bg-white/95 dark:bg-${facility.tagColor}-500/95 backdrop-blur-md rounded-full text-${facility.tagColor}-700 dark:text-white text-base font-bold shadow-xl border-2 border-${facility.tagColor}-200/60 dark:border-${facility.tagColor}-400/40 hover:shadow-2xl transition-all duration-300`}>
+                                                        <span className="material-icons text-xl mr-3 animate-bounce-subtle">{facility.icon}</span>
+                                                        {t(facility.tag)}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            {/* Content Section - Blurred Background for Text */}
+                                            <div className={`space-y-8 ${facility.reversed ? 'lg:order-1' : ''} bg-white/20 dark:bg-black/30 backdrop-blur-xl rounded-3xl p-8 border border-white/30 dark:border-white/20 shadow-2xl`}>
+                                                {/* Title with Gradient Animation */}
+                                                <h3 className="text-4xl md:text-6xl font-black bg-gradient-to-r from-slate-900 via-blue-700 to-purple-700 dark:from-white dark:via-blue-200 dark:to-purple-200 bg-clip-text text-transparent group-hover:from-blue-700 group-hover:via-purple-700 group-hover:to-pink-700 dark:group-hover:from-blue-200 dark:group-hover:via-purple-200 dark:group-hover:to-pink-200 transition-all duration-700 leading-tight transform group-hover:scale-105">
+                                                    {t(facility.titleKey)}
+                                                </h3>
+                                                
+                                                {/* Description */}
+                                                <p className="text-lg md:text-xl text-slate-800 dark:text-gray-100 leading-relaxed font-semibold group-hover:text-slate-900 dark:group-hover:text-white transition-colors duration-500 bg-white/30 dark:bg-black/30 backdrop-blur-sm rounded-2xl p-6 border border-white/40 dark:border-white/20 shadow-lg">
+                                                    {t(facility.descKey)}
+                                                </p>
+                                                
+                                                {/* Enhanced Features Grid */}
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                    {facility.features.map((feature, fIndex) => (
+                                                        <div 
+                                                            key={fIndex} 
+                                                            className="group/feature flex items-center text-slate-800 dark:text-gray-100 hover:text-slate-900 dark:hover:text-white transition-all duration-300 bg-white/90 dark:bg-black/60 backdrop-blur-lg rounded-2xl p-5 border border-white/70 dark:border-white/30 hover:border-white/90 dark:hover:border-white/50 shadow-lg hover:shadow-xl transform hover:scale-105 hover:-translate-y-1"
+                                                            style={{ animationDelay: `${fIndex * 100}ms` }}
+                                                        >
+                                                            <div className={`w-4 h-4 bg-gradient-to-r from-${facility.tagColor}-500 to-${facility.tagColor}-700 rounded-full mr-4 shadow-lg flex-shrink-0 group-hover/feature:scale-125 group-hover/feature:rotate-180 transition-all duration-500`}></div>
+                                                            <span className="text-sm md:text-base font-bold group-hover/feature:font-black transition-all duration-300">
+                                                                {t(`${facility.featureKeyPrefix}.${feature}`)}
+                                                            </span>
+                                                            <div className="ml-auto opacity-0 group-hover/feature:opacity-100 transition-opacity duration-300">
+                                                                <span className="material-icons text-lg text-blue-600 dark:text-blue-400">check_circle</span>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                
+                                                {/* Call to Action Button */}
+                                                <div className="pt-6">
+                                                    <button className="group/btn inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-105 hover:-translate-y-1 border-2 border-white/30">
+                                                        <span className="material-icons mr-3 group-hover/btn:rotate-12 transition-transform duration-300">explore</span>
+                                                        <span className="text-lg">Explore More</span>
+                                                        <span className="material-icons ml-3 group-hover/btn:translate-x-2 transition-transform duration-300">arrow_forward</span>
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -1377,10 +978,54 @@ const NewsPage = () => {
                         </div>
                     </div>
                 </div>
+                
+                {/* Custom Styles for Additional Animations */}
+                <style jsx>{`
+                    @keyframes float-random {
+                        0%, 100% { transform: translateY(0px) rotate(0deg); }
+                        25% { transform: translateY(-20px) rotate(5deg); }
+                        50% { transform: translateY(-10px) rotate(-5deg); }
+                        75% { transform: translateY(-15px) rotate(3deg); }
+                    }
+                    
+                    @keyframes bounce-slow {
+                        0%, 100% { transform: translateY(0px); }
+                        50% { transform: translateY(-10px); }
+                    }
+                    
+                    @keyframes pulse-slow {
+                        0%, 100% { opacity: 0.4; }
+                        50% { opacity: 0.8; }
+                    }
+                    
+                    @keyframes bounce-subtle {
+                        0%, 100% { transform: translateY(0px); }
+                        50% { transform: translateY(-2px); }
+                    }
+                    
+                    .animate-float-random {
+                        animation: float-random linear infinite;
+                    }
+                    
+                    .animate-bounce-slow {
+                        animation: bounce-slow 4s ease-in-out infinite;
+                    }
+                    
+                    .animate-pulse-slow {
+                        animation: pulse-slow 3s ease-in-out infinite;
+                    }
+                    
+                    .animate-bounce-subtle {
+                        animation: bounce-subtle 2s ease-in-out infinite;
+                    }
+                    
+                    .animation-delay-1000 {
+                        animation-delay: 1s;
+                    }
+                `}</style>
             </section>
         </div>
     );
 };
 
 export default NewsPage;
-// ...existing code...

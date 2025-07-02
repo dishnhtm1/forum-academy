@@ -19,42 +19,6 @@ ChartJS.register(
     ArcElement
 );
 
-
-// const Dashboard = () => {
-//     const { t, i18n } = useTranslation();
-//     const [user, setUser] = useState(null);
-//     const [activeTab, setActiveTab] = useState('overview');
-//     const [isLoading, setIsLoading] = useState(true);
-//     const [pendingUsers, setPendingUsers] = useState([]);
-//     const [applicationSubmissions, setApplicationSubmissions] = useState([]);
-//     const [contactSubmissions, setContactSubmissions] = useState([]);
-//     const [allUsers, setAllUsers] = useState([]);
-//     const [searchTerm, setSearchTerm] = useState('');
-//     const [selectedRole, setSelectedRole] = useState('');
-//     const [selectedStatus, setSelectedStatus] = useState('');
-//     const [searchTermApp, setSearchTermApp] = useState('');
-//     const [selectedProgram, setSelectedProgram] = useState('');
-//     const [selectedAppStatus, setSelectedAppStatus] = useState('');
-//     const [searchTermContact, setSearchTermContact] = useState('');
-//     const [selectedCategory, setSelectedCategory] = useState('');
-//     const [selectedContactStatus, setSelectedContactStatus] = useState('');
-//     const [editingUser, setEditingUser] = useState(null);
-//     const [showEditUserForm, setShowEditUserForm] = useState(false);
-//     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-//     const [userToDelete, setUserToDelete] = useState(null);
-//     const [showCreateUserForm, setShowCreateUserForm] = useState(false);
-//     const [currentLanguage, setCurrentLanguage] = useState('en');
-//     const [currentPage, setCurrentPage] = useState(1);
-//     const [itemsPerPage] = useState(10); // Adjust this number as needed
-//     const [isDarkMode, setIsDarkMode] = useState(false);
-//     const [newUserData, setNewUserData] = useState({
-//         firstName: '',
-//         lastName: '',
-//         email: '',
-//         password: '',
-//         role: 'student'
-//     });
-
 const Dashboard = () => {
     // ✅ Translation and Theme States
     const { t, i18n } = useTranslation();
@@ -126,6 +90,7 @@ const Dashboard = () => {
     //     setShowViewApplicationModal(true);
     // };
     
+<<<<<<< HEAD
     // const handleDeleteApplication = (application) => {
     //     console.log('🗑️ Delete application clicked:', application);
     //     setApplicationToDelete(application);
@@ -212,6 +177,24 @@ const Dashboard = () => {
     // };
 
         // Update the confirmDeleteApplication function (around line 172):
+=======
+    const handleDeleteApplication = (application) => {
+        console.log('🗑️ Delete application clicked:', application);
+        setApplicationToDelete(application);
+        setShowDeleteApplicationConfirm(true);
+    };
+
+    // ✅ FIXED: Update the handleSendMessage function to use correct field name
+    const handleSendMessage = (application) => {
+        console.log('📧 Send message clicked:', application);
+        setMessageData({
+            subject: `Regarding your application for ${application.program}`, // ✅ Changed from programInterested to program
+            message: '',
+            recipient: application
+        });
+        setShowSendMessageModal(true);
+    };
+>>>>>>> b37560737ece8646eb9a6c718f688d9557431c0f
     
 
 // ✅ View full application modal
@@ -319,59 +302,6 @@ const Dashboard = () => {
             alert('Error deleting application. Please try again.');
         }
     };
-    
-    // const confirmDeleteApplication = async () => {
-    //     console.log('🔥 DELETE APPLICATION CONFIRMATION CLICKED!');
-    //     console.log('Application to delete:', applicationToDelete);
-        
-    //     if (!applicationToDelete) {
-    //         alert('No application selected for deletion');
-    //         return;
-    //     }
-        
-    //     try {
-    //         const token = getToken();
-    //         if (!token) {
-    //             alert('No authentication token found');
-    //             return;
-    //         }
-            
-    //         console.log('🗑️ Attempting to delete application:', applicationToDelete._id);
-            
-    //         const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/applications/${applicationToDelete._id}`, {
-    //             method: 'DELETE',
-    //             headers: {
-    //                 'Authorization': `Bearer ${token}`,
-    //                 'Content-Type': 'application/json'
-    //             }
-    //         });
-    
-    //         console.log('Delete application response status:', response.status);
-    
-    //         if (response.ok) {
-    //             const result = await response.json();
-    //             console.log('Delete application successful:', result);
-                
-    //             // Remove application from local state
-    //             setApplicationSubmissions(prevApps => 
-    //                 prevApps.filter(app => app._id !== applicationToDelete._id)
-    //             );
-                
-    //             // Reset modal state
-    //             setShowDeleteApplicationConfirm(false);
-    //             setApplicationToDelete(null);
-                
-    //             alert('Application deleted successfully!');
-    //         } else {
-    //             const error = await response.json();
-    //             console.error('Delete application failed:', error);
-    //             alert(`Error deleting application: ${error.message || 'Unknown error'}`);
-    //         }
-    //     } catch (error) {
-    //         console.error('Error deleting application:', error);
-    //         alert('Error deleting application. Please try again.');
-    //     }
-    // };
     
     const handleSendMessageSubmit = async (e) => {
         e.preventDefault();
@@ -869,19 +799,6 @@ const Dashboard = () => {
         setShowEditUserForm(true);
     };
 
-
-    // const handleEditUser = (user) => {
-    //     setEditingUser(user);
-    //     setNewUserData({
-    //         firstName: user.firstName,
-    //         lastName: user.lastName,
-    //         email: user.email,
-    //         role: user.role,
-    //         password: '' // Don't populate password for security
-    //     });
-    //     setShowEditUserForm(true);
-    // };
-    
     const handleUpdateUser = async (e) => {
         e.preventDefault();
         try {
@@ -7088,7 +7005,7 @@ const Dashboard = () => {
                 </div>
             )}
             
-            {/* Send Message Modal */}
+                {/* //Send Message Modal */}
             {showSendMessageModal && messageData.recipient && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
                     <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-2xl border w-full max-w-2xl transition-colors duration-300`}>
@@ -7439,11 +7356,11 @@ const Dashboard = () => {
                     </table>
                 </div>
             
-                {/* Table Footer with Dark Mode */}
+                 {/* Table Footer with Dark Mode */}
                 <div className={`${isDarkMode ? 'bg-gray-750 border-gray-700' : 'bg-gray-50 border-gray-200'} px-6 py-3 flex items-center justify-between border-t transition-colors duration-300`}>
                     <div className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
                         Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, getFilteredApplications().length)} of {getFilteredApplications().length} applications
-                        {(searchTermApp || selectedProgram || selectedAppStatus) && (
+                            {(searchTermApp || selectedProgram || selectedAppStatus) && (
                             <span className={`ml-2 font-medium ${isDarkMode ? 'text-blue-400' : 'text-blue-600'} transition-colors duration-300`}>
                                 (filtered)
                             </span>

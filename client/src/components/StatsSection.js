@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Briefcase, Users, Award, GraduationCap } from "lucide-react";
-import { useTranslation } from 'react-i18next'; // Add this import only
-import "../styles/StatsSection.css"; // Assuming you have a CSS file for styling
+import { useTranslation } from 'react-i18next';
 
 function StatsSection() {
-    const { t } = useTranslation(); // Add this line only
+    const { t } = useTranslation();
     const [isVisible, setIsVisible] = useState(false);
     const sectionRef = useRef(null);
     const canvasRef = useRef(null);
@@ -58,28 +57,36 @@ function StatsSection() {
             suffix: "%",
             label: t('statsSection.stats.jobPlacement.label'),
             icon: <Briefcase size={32} />,
-            color: "#3b82f6",
+            color: "from-blue-500 to-blue-600",
+            glowColor: "blue-500/20",
+            bgGradient: "from-blue-50 to-blue-100",
         },
         {
             value: 50,
             suffix: "+",
             label: t('statsSection.stats.industryPartners.label'),
             icon: <Users size={32} />,
-            color: "#10b981",
+            color: "from-emerald-500 to-emerald-600",
+            glowColor: "emerald-500/20",
+            bgGradient: "from-emerald-50 to-emerald-100",
         },
         {
             value: 15,
             suffix: "+",
             label: t('statsSection.stats.programs.label'),
             icon: <Award size={32} />,
-            color: "#8b5cf6",
+            color: "from-purple-500 to-purple-600",
+            glowColor: "purple-500/20",
+            bgGradient: "from-purple-50 to-purple-100",
         },
         {
             value: 2000,
             suffix: "+",
             label: t('statsSection.stats.graduates.label'),
             icon: <GraduationCap size={32} />,
-            color: "#f59e0b",
+            color: "from-amber-500 to-amber-600",
+            glowColor: "amber-500/20",
+            bgGradient: "from-amber-50 to-amber-100",
         },
     ];
 
@@ -197,25 +204,59 @@ function StatsSection() {
     }, []);
 
     return (
-        <section ref={sectionRef} className="stats-section">
-            <canvas ref={canvasRef} className="stats-canvas" />
+        <section 
+            ref={sectionRef} 
+            className="relative py-24 bg-gradient-to-br from-slate-50 via-white to-indigo-50/50 overflow-hidden"
+        >
+            {/* Animated Canvas Background */}
+            <canvas 
+                ref={canvasRef} 
+                className="absolute inset-0 w-full h-full pointer-events-none z-0" 
+            />
 
-            {/* Keep ALL decorative elements exactly as is */}
-            <div className="stats-decoration stats-decoration-top-left"></div>
-            <div className="stats-decoration stats-decoration-bottom-right"></div>
+            {/* Enhanced Background Elements */}
+            <div className="absolute inset-0 overflow-hidden">
+                {/* Large Gradient Orbs */}
+                <div className="absolute -top-96 -left-96 w-[800px] h-[800px] bg-gradient-to-br from-blue-400/10 via-purple-400/5 to-transparent rounded-full blur-3xl animate-pulse"></div>
+                <div className="absolute -bottom-96 -right-96 w-[900px] h-[900px] bg-gradient-to-tl from-cyan-400/10 via-emerald-400/5 to-transparent rounded-full blur-3xl animate-pulse delay-1000"></div>
+                
+                {/* Floating Geometric Shapes */}
+                <div className="absolute top-20 left-20 w-6 h-6 bg-blue-400/20 rounded-full animate-bounce delay-1000"></div>
+                <div className="absolute top-32 right-32 w-8 h-8 bg-purple-400/20 rotate-45 animate-pulse delay-500"></div>
+                <div className="absolute bottom-40 left-1/4 w-4 h-4 bg-emerald-400/20 rounded-full animate-bounce delay-2000"></div>
+                <div className="absolute bottom-32 right-1/3 w-10 h-10 bg-amber-400/20 rotate-12 animate-pulse delay-1500"></div>
+                
+                {/* Grid Pattern Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"></div>
+            </div>
 
-            <div className="stats-container">
-                <div className="stats-header">
-                    <h2 className="stats-title">
-                        {t('statsSection.header.title')}
-                        <span className="stats-title-underline"></span>
+            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                {/* Enhanced Header Section */}
+                <div className={`text-center mb-20 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+                    <div className="relative inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white rounded-full text-sm font-bold mb-8 shadow-2xl transform hover:scale-105 transition-all duration-300">
+                        <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-full blur opacity-30 animate-pulse"></div>
+                        <span className="material-icons text-lg relative z-10">analytics</span>
+                        <span className="relative z-10">Our Success Metrics</span>
+                    </div>
+                    
+                    <h2 className="text-5xl md:text-6xl font-black text-gray-900 mb-6 leading-tight">
+                        <span className="bg-gradient-to-r from-indigo-600 via-purple-600 via-pink-600 to-cyan-600 bg-clip-text text-transparent drop-shadow-sm">
+                            {t('statsSection.header.title')}
+                        </span>
                     </h2>
-                    <p className="stats-subtitle">
+                    
+                    <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed font-medium">
                         {t('statsSection.header.subtitle')}
                     </p>
+                    
+                    {/* Decorative Line */}
+                    <div className="flex justify-center mt-8">
+                        <div className="w-24 h-1 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full"></div>
+                    </div>
                 </div>
 
-                <div className="stats-grid">
+                {/* Enhanced Stats Grid */}
+                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
                     {statsData.map((stat, index) => {
                         const animatedValue = useCounter(
                             isVisible ? stat.value : 0,
@@ -226,33 +267,93 @@ function StatsSection() {
                         return (
                             <div
                                 key={index}
-                                className={`stats-card ${isVisible ? "stats-card-visible" : ""}`}
-                                style={{
-                                    transitionDelay: `${index * 150}ms`,
-                                    "--stat-color": stat.color,
-                                }}
+                                className={`group relative transition-all duration-700 transform ${
+                                    isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-10 scale-95'
+                                }`}
+                                style={{ transitionDelay: `${index * 200}ms` }}
                             >
-                                {/* Keep ALL background gradient accent exactly as is */}
-                                <div className="stats-card-accent"></div>
-
-                                <div className="stats-card-content">
-                                    <div className="stats-icon-container">
-                                        <div className="stats-icon">{stat.icon}</div>
+                                {/* Main Card */}
+                                <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden border border-white/20 group-hover:border-white/40">
+                                    
+                                    {/* Gradient Background Overlay */}
+                                    <div className={`absolute inset-0 bg-gradient-to-br ${stat.bgGradient} opacity-0 group-hover:opacity-50 transition-opacity duration-500 rounded-3xl`}></div>
+                                    
+                                    {/* Glow Effect */}
+                                    <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500 rounded-3xl blur-xl`}></div>
+                                    
+                                    {/* Corner Accent */}
+                                    <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl ${stat.color} opacity-10 rounded-bl-3xl rounded-tr-3xl`}></div>
+                                    
+                                    <div className="relative z-10">
+                                        {/* Enhanced Icon Container */}
+                                        <div className="relative mb-6">
+                                            <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${stat.color} flex items-center justify-center mb-2 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg`}>
+                                                <div className="text-white drop-shadow-sm">
+                                                    {stat.icon}
+                                                </div>
+                                            </div>
+                                            {/* Icon Glow */}
+                                            <div className={`absolute top-0 left-0 w-20 h-20 rounded-2xl bg-gradient-to-br ${stat.color} opacity-30 blur-md group-hover:opacity-60 transition-opacity duration-500`}></div>
+                                            
+                                            {/* Floating Particles around Icon */}
+                                            <div className={`absolute -top-1 -right-1 w-2 h-2 bg-gradient-to-r ${stat.color} rounded-full opacity-60 animate-pulse delay-300`}></div>
+                                            <div className={`absolute -bottom-1 -left-1 w-1.5 h-1.5 bg-gradient-to-r ${stat.color} rounded-full opacity-40 animate-pulse delay-700`}></div>
+                                        </div>
+                                        
+                                        {/* Enhanced Counter Display */}
+                                        <div className="mb-4">
+                                            <div className="flex items-end justify-center">
+                                                <span className={`text-4xl md:text-5xl font-black bg-gradient-to-r ${stat.color} bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-300`}>
+                                                    {animatedValue}
+                                                </span>
+                                                <span className={`text-2xl md:text-3xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent ml-1 group-hover:scale-110 transition-transform duration-300`}>
+                                                    {stat.suffix}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        
+                                        {/* Enhanced Label */}
+                                        <p className="text-gray-700 font-semibold text-center text-sm md:text-base group-hover:text-gray-800 transition-colors duration-300 uppercase tracking-wider">
+                                            {stat.label}
+                                        </p>
+                                        
+                                        {/* Progress Bar Effect */}
+                                        <div className="mt-4 w-full h-1 bg-gray-200 rounded-full overflow-hidden">
+                                            <div 
+                                                className={`h-full bg-gradient-to-r ${stat.color} rounded-full transition-all duration-2000 ease-out`}
+                                                style={{ 
+                                                    width: isVisible ? '100%' : '0%',
+                                                    transitionDelay: `${index * 200 + 500}ms`
+                                                }}
+                                            ></div>
+                                        </div>
                                     </div>
 
-                                    <div className="stats-value">
-                                        <span className="stats-counter">{animatedValue}</span>
-                                        <span className="stats-suffix">{stat.suffix}</span>
+                                    {/* Hover Border Effect */}
+                                    <div className={`absolute inset-0 rounded-3xl border-2 border-transparent bg-gradient-to-r ${stat.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} 
+                                         style={{ 
+                                             mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)', 
+                                             maskComposite: 'xor',
+                                             WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                                             WebkitMaskComposite: 'xor'
+                                         }}>
                                     </div>
-
-                                    <p className="stats-label">{stat.label}</p>
                                 </div>
 
-                                {/* Keep ALL decorative corner accent exactly as is */}
-                                <div className="stats-card-corner"></div>
+                                {/* External Glow Effect */}
+                                <div className={`absolute inset-0 bg-gradient-to-r ${stat.color} opacity-0 group-hover:opacity-20 transition-opacity duration-500 rounded-3xl blur-xl -z-10`}></div>
                             </div>
                         );
                     })}
+                </div>
+
+                {/* Bottom Decorative Element */}
+                <div className={`mt-20 flex justify-center transition-all duration-1000 delay-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+                    <div className="flex space-x-2">
+                        <div className="w-3 h-3 bg-indigo-400 rounded-full animate-pulse"></div>
+                        <div className="w-3 h-3 bg-purple-400 rounded-full animate-pulse delay-200"></div>
+                        <div className="w-3 h-3 bg-pink-400 rounded-full animate-pulse delay-400"></div>
+                    </div>
                 </div>
             </div>
         </section>

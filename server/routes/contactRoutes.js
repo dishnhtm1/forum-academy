@@ -177,5 +177,56 @@ router.put('/:id/status', authenticate, authorizeRoles('admin'), async (req, res
     }
 });
 
+// Add this DELETE route with your existing routes
+router.delete('/:id', authenticate, authorizeRoles('admin'), async (req, res) => {
+    try {
+        const contactId = req.params.id;
+        console.log(`🗑️ DELETE request for contact ID: ${contactId}`);
+        
+        // Validate MongoDB ObjectId format
+        if (!contactId.match(/^[0-9a-fA-F]{24}$/)) {
+            console.log('❌ Invalid contact ID format');
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid contact ID format'
+            });
+        }
+        
+        const contact = await Contact.findById(contactId);
+        
+        if (!contact) {
+            console.log('❌ Contact not found in database');
+            return res.status(404).json({
+                success: false,
+                message: 'Contact not found'
+            });
+        }
+        
+        console.log(`👤 Found contact: ${contact.name} (${contact.email})`);
+        
+        await Contact.findByIdAndDelete(contactId);
+        
+        console.log(`✅ Contact deleted successfully`);
+        
+        res.json({
+            success: true,
+            message: 'Contact deleted successfully',
+            deletedContact: {
+                id: contact._id,
+                name: contact.name,
+                email: contact.email,
+                subject: contact.subject
+            }
+        });
+    } catch (error) {
+        console.error('❌ Error deleting contact:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error deleting contact',
+            error: error.message
+        });
+    }
+});
+
 console.log('✅ contactRoutes.js loaded successfully');
 module.exports = router;

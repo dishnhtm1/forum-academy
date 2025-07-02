@@ -1,15 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useTranslation } from 'react-i18next'; // Add this import only
+import { useTranslation } from 'react-i18next';
 import ApplicationForm from '../components/ApplicationForm';
-import { createApplication } from '../utils/api'; // Optional: If you prefer using your API utility
-import '../styles/ApplyPage.css';
+import '../styles/ApplyPage.css'; // Keep only for 3D hero effects
 
 import testimonialImage from '../assets/images/png4.jpg';
 import testimonial1Image from '../assets/images/png18.jpg';
 import testimonial2Image from '../assets/images/png16.jpg';
 
 const ApplyPage = () => {
-    const { t } = useTranslation(); // Add this line only
+    const { t } = useTranslation();
     const [activeStep, setActiveStep] = useState(0);
     const [formData, setFormData] = useState({
         personalInfo: {},
@@ -24,36 +23,28 @@ const ApplyPage = () => {
     useEffect(() => {
         setIsVisible(true);
         
-        // Create 3D elements
         const createAnimatedElements = () => {
-            // Create floating shapes
             const world = document.querySelector('.apply-world');
             if (!world) return;
             
-            // Create geometric shapes with different designs
             for (let i = 0; i < 10; i++) {
-                // Create shape container
                 const shape = document.createElement('div');
                 shape.className = 'apply-shape';
                 
-                // Randomize shape type
                 const shapeTypes = ['cube', 'pyramid', 'circle'];
                 const shapeType = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
                 shape.classList.add(`apply-${shapeType}`);
                 
-                // Random position
                 const x = (Math.random() - 0.5) * 1000;
                 const y = (Math.random() - 0.5) * 1000;
                 const z = (Math.random() - 0.5) * 1000;
                 
-                // Random size
                 const size = Math.random() * 60 + 30;
                 
                 shape.style.width = `${size}px`;
                 shape.style.height = `${size}px`;
                 shape.style.transform = `translate3d(${x}px, ${y}px, ${z}px)`;
                 
-                // For cubes, add faces
                 if (shapeType === 'cube') {
                     ['front', 'back', 'right', 'left', 'top', 'bottom'].forEach(face => {
                         const el = document.createElement('div');
@@ -65,24 +56,20 @@ const ApplyPage = () => {
                 world.appendChild(shape);
             }
             
-            // Create floating document icons
             for (let i = 0; i < 6; i++) {
                 const doc = document.createElement('div');
                 doc.className = 'apply-document';
                 
-                // Random position
                 const x = (Math.random() - 0.5) * 800;
                 const y = (Math.random() - 0.5) * 800;
                 const z = (Math.random() - 0.5) * 500;
                 
-                // Random rotation
                 const rotX = Math.random() * 360;
                 const rotY = Math.random() * 360;
                 const rotZ = Math.random() * 360;
                 
                 doc.style.transform = `translate3d(${x}px, ${y}px, ${z}px) rotateX(${rotX}deg) rotateY(${rotY}deg) rotateZ(${rotZ}deg)`;
                 
-                // Add document icon
                 const icon = document.createElement('span');
                 icon.className = 'material-icons';
                 icon.textContent = ['description', 'article', 'assignment', 'note_alt'][Math.floor(Math.random() * 4)];
@@ -91,14 +78,12 @@ const ApplyPage = () => {
                 world.appendChild(doc);
             }
             
-            // Create particles
             const particles = document.querySelector('.apply-particles');
             if (particles) {
                 for (let i = 0; i < 30; i++) {
                     const particle = document.createElement('div');
                     particle.className = 'apply-particle';
                     
-                    // Random size and position
                     const size = Math.random() * 6 + 2;
                     const x = Math.random() * 100;
                     const y = Math.random() * 100;
@@ -118,19 +103,11 @@ const ApplyPage = () => {
         createAnimatedElements();
         
         const heroContent = document.querySelector('.apply-hero-content');
-        const processSteps = document.querySelectorAll('.process-step');
         
         if (heroContent) {
             heroContent.classList.add('visible');
         }
         
-        processSteps.forEach((step, index) => {
-            setTimeout(() => {
-                step.classList.add('visible');
-            }, 300 * index);
-        });
-        
-        // Clean up function
         return () => {
             const world = document.querySelector('.apply-world');
             if (world) {
@@ -150,7 +127,6 @@ const ApplyPage = () => {
 
     // Keep ALL your existing form handling code exactly as is
     const handleNext = async (stepData) => {
-        // Store the current step's data
         const updatedFormData = { ...formData };
         
         switch (activeStep) {
@@ -165,10 +141,9 @@ const ApplyPage = () => {
                 break;
             case 3:
                 updatedFormData.additionalInfo = stepData;
-                // This is the final step - submit the form
                 try {
                     await handleSubmit(updatedFormData);
-                    return; // Don't proceed to next step if submission failed
+                    return;
                 } catch (error) {
                     console.error('Error submitting application:', error);
                     return;
@@ -178,7 +153,6 @@ const ApplyPage = () => {
         setFormData(updatedFormData);
         setActiveStep(activeStep + 1);
         
-        // Scroll to top of form
         const formElement = document.querySelector('.application-form');
         if (formElement) {
             formElement.scrollIntoView({ behavior: 'smooth' });
@@ -194,9 +168,7 @@ const ApplyPage = () => {
                 loading: true
             });
 
-            // Map form field names to server expected format
             const applicationData = {
-                // Personal Info
                 firstName: formData.personalInfo.fullName?.split(' ')[0] || '',
                 lastName: formData.personalInfo.fullName?.split(' ').slice(1).join(' ') || '',
                 email: formData.personalInfo.email,
@@ -204,7 +176,6 @@ const ApplyPage = () => {
                 dateOfBirth: formData.personalInfo.dateOfBirth,
                 address: formData.personalInfo.address || '',
                 
-                // Education Info
                 highestEducation: formData.educationInfo.highestEducation,
                 schoolName: formData.educationInfo.schoolName || '',
                 graduationYear: formData.educationInfo.graduationYear || '',
@@ -212,13 +183,11 @@ const ApplyPage = () => {
                 currentEmployment: formData.educationInfo.currentEmployment || '',
                 techExperience: formData.educationInfo.relevantExperience || '',
                 
-                // Course Selection
                 program: formData.courseSelection.course,
                 startDate: formData.courseSelection.startDate,
                 format: formData.courseSelection.studyFormat || '',
                 heardAboutUs: formData.additionalInfo.howDidYouHear || '',
                 
-                // Additional Info
                 goals: formData.additionalInfo.careerGoals || '',
                 whyThisProgram: formData.courseSelection.programInterest || '',
                 challenges: '',
@@ -228,16 +197,7 @@ const ApplyPage = () => {
 
             console.log('Submitting application:', applicationData);
 
-            // const response = await fetch('http://localhost:5000/api/application', {
-//            const response = await fetch('http://localhost:5000/api/applications', {
-//                method: 'POST',
-//                headers: {
-//                    'Content-Type': 'application/json',
-//                },
- //               body: JSON.stringify(applicationData)
- //           });
             const token = localStorage.getItem("token");
-
             const API_URL = process.env.REACT_APP_API_URL;
 
             const response = await fetch(`${API_URL}/api/applications`, {
@@ -245,10 +205,8 @@ const ApplyPage = () => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(applicationData) // ✅ Correct
+                body: JSON.stringify(applicationData)
              });
-
-
 
             const data = await response.json();
 
@@ -256,7 +214,6 @@ const ApplyPage = () => {
                 throw new Error(data.message || t('applyPage.submitError'));
             }
 
-            // Success case
             setFormStatus({
                 submitted: true,
                 error: false,
@@ -264,7 +221,6 @@ const ApplyPage = () => {
                 loading: false
             });
 
-            // Move to success step
             setActiveStep(4);
 
         } catch (error) {
@@ -285,12 +241,10 @@ const ApplyPage = () => {
         loading: false
     });
 
-    // Handle back navigation    
     const handleBack = () => {
         setActiveStep(activeStep - 1);
     };
     
-    // Keep testimonials data structure - only replace text values
     const testimonials = [
         {
             name: t('applyPage.testimonials.0.name'),
@@ -314,19 +268,13 @@ const ApplyPage = () => {
 
     return (
         <div className="apply-page">
-            {/* Enhanced 3D Hero Section */}
+            {/* Keep 3D Hero Section with CSS */}
             <section ref={sectionRef} className={`apply-hero ${isVisible ? 'visible' : ''}`}>
-                {/* Keep ALL 3D Scene exactly as is */}
                 <div className="apply-scene">
                     <div className="apply-world">
                         <div className="apply-floor"></div>
-                        {/* Shapes and documents will be added by JavaScript */}
                     </div>
-                    
-                    {/* Particles */}
                     <div className="apply-particles"></div>
-                    
-                    {/* Glowing effects */}
                     <div className="apply-glow apply-glow-1"></div>
                     <div className="apply-glow apply-glow-2"></div>
                     <div className="apply-glow apply-glow-3"></div>
@@ -370,122 +318,190 @@ const ApplyPage = () => {
                         </button>
                     </div>
                 </div>
-                
-                {/* Scroll indicator */}
-                <div className="apply-scroll-indicator">
-                    <a href="#application-process">
-                        <span>{t('applyPage.hero.scrollIndicator')}</span>
-                        <span className="material-icons">keyboard_arrow_down</span>
-                    </a>
-                </div>
             </section>
             
-            <div className="process-steps">
-                {[0, 1, 2, 3].map((stepIndex) => (
-                    <div 
-                        key={stepIndex}
-                        className={`process-step ${activeStep === stepIndex ? 'active' : ''} ${activeStep > stepIndex ? 'completed' : ''}`}
-                    >
-                        <div className="step-number">
-                            {activeStep > stepIndex ? (
-                                <span className="material-icons check-icon">check</span>
-                            ) : (
-                                stepIndex + 1
-                            )}
-                        </div>
-                        <div className="step-content">
-                            <h3>
-                                {stepIndex === 0 && t('applyPage.processSteps.0.title')}
-                                {stepIndex === 1 && t('applyPage.processSteps.1.title')}
-                                {stepIndex === 2 && t('applyPage.processSteps.2.title')}
-                                {stepIndex === 3 && t('applyPage.processSteps.3.title')}
-                            </h3>
-                            <p>
-                                {stepIndex === 0 && t('applyPage.processSteps.0.description')}
-                                {stepIndex === 1 && t('applyPage.processSteps.1.description')}
-                                {stepIndex === 2 && t('applyPage.processSteps.2.description')}
-                                {stepIndex === 3 && t('applyPage.processSteps.3.description')}
-                            </p>
-                        </div>
-                    </div>
-                ))}
-            </div>
-            
-            {/* Application Form */}
-            <section className="application-form-section">
-                <div className="container">
-                    <div className="form-container">
-                        <div className="form-card">
-                            {/* Show confirmation screen if application is complete */}
-                            {activeStep === 4 ? (
-                                <div className="application-confirmation">
-                                    <div className="confirmation-icon">
-                                        <span className="material-icons">check_circle</span>
+            {/* Application Form Section - Redesigned with Tailwind */}
+            <section className="application-form-section py-20 bg-gradient-to-br from-gray-50 to-blue-50 relative overflow-hidden">
+                {/* Background decorations */}
+                <div className="absolute inset-0 pointer-events-none">
+                    <div className="absolute top-20 left-10 w-64 h-64 bg-gradient-to-r from-blue-400/10 to-purple-400/10 rounded-full blur-3xl animate-pulse"></div>
+                    <div className="absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-r from-pink-400/10 to-orange-400/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+                </div>
+                
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                        {/* Main Form Container */}
+                        <div className="lg:col-span-3">
+                            <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+                                {activeStep === 4 ? (
+                                    // Success Page with Tailwind
+                                    <div className="p-12 text-center">
+                                        <div className="w-24 h-24 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-xl">
+                                            <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                        </div>
+                                        
+                                        <h2 className="text-4xl font-bold text-gray-800 mb-6">
+                                            {t('applyPage.confirmation.title')}
+                                        </h2>
+                                        
+                                        <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+                                            {t('applyPage.confirmation.message')}
+                                        </p>
+                                        
+                                        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 mb-8 border border-blue-100">
+                                            <p className="text-gray-700">
+                                                {t('applyPage.confirmation.emailSent')} 
+                                                <span className="font-semibold text-blue-600 mx-1">
+                                                    {formData.personalInfo.email}
+                                                </span> 
+                                                {t('applyPage.confirmation.emailDetails')}
+                                            </p>
+                                        </div>
+                                        
+                                        <div className="bg-white rounded-2xl p-8 mb-8 shadow-lg border border-gray-100">
+                                            <h3 className="text-2xl font-semibold text-gray-800 mb-6">
+                                                {t('applyPage.confirmation.nextSteps.title')}
+                                            </h3>
+                                            <div className="space-y-4">
+                                                {[
+                                                    t('applyPage.confirmation.nextSteps.step1'),
+                                                    t('applyPage.confirmation.nextSteps.step2'),
+                                                    t('applyPage.confirmation.nextSteps.step3')
+                                                ].map((step, index) => (
+                                                    <div key={index} className="flex items-start space-x-4">
+                                                        <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                                            <span className="text-white font-semibold text-sm">{index + 1}</span>
+                                                        </div>
+                                                        <p className="text-gray-700 leading-relaxed">{step}</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                            <a 
+                                                href="/courses" 
+                                                className="px-8 py-3 bg-white border-2 border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 font-medium"
+                                            >
+                                                {t('applyPage.confirmation.buttons.exploreCourses')}
+                                            </a>
+                                            <a 
+                                                href="/contact" 
+                                                className="px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 font-medium"
+                                            >
+                                                {t('applyPage.confirmation.buttons.contactAdmissions')}
+                                            </a>
+                                        </div>
                                     </div>
-                                    <h2>{t('applyPage.confirmation.title')}</h2>
-                                    <p>{t('applyPage.confirmation.message')}</p>
-                                    <p className="confirmation-info">{t('applyPage.confirmation.emailSent')} <strong>{formData.personalInfo.email}</strong> {t('applyPage.confirmation.emailDetails')}</p>
-                                    
-                                    <div className="next-steps">
-                                        <h3>{t('applyPage.confirmation.nextSteps.title')}</h3>
-                                        <ol>
-                                            <li>{t('applyPage.confirmation.nextSteps.step1')}</li>
-                                            <li>{t('applyPage.confirmation.nextSteps.step2')}</li>
-                                            <li>{t('applyPage.confirmation.nextSteps.step3')}</li>
-                                        </ol>
-                                    </div>
-                                    
-                                    <div className="confirmation-actions">
-                                        <a href="/courses" className="btn btn-outline">{t('applyPage.confirmation.buttons.exploreCourses')}</a>
-                                        <a href="/contact" className="btn btn-primary">{t('applyPage.confirmation.buttons.contactAdmissions')}</a>
-                                    </div>
-                                </div>
-                            ) : (
-                                <ApplicationForm 
-                                    step={activeStep} 
-                                    onNext={handleNext} 
-                                    onBack={handleBack} 
-                                    formData={formData}
-                                />
-                            )}
+                                ) : (
+                                    <ApplicationForm 
+                                        step={activeStep} 
+                                        onNext={handleNext} 
+                                        onBack={handleBack} 
+                                        formData={formData}
+                                    />
+                                )}
+                            </div>
                         </div>
                         
-                        {/* Side panel with information */}
-                        <div className="form-sidebar">
-                            <div className="sidebar-widget need-help">
-                                <h3>{t('applyPage.sidebar.needHelp.title')}</h3>
-                                <p>{t('applyPage.sidebar.needHelp.description')}</p>
-                                <div className="contact-options">
-                                    <a href="tel:+81123456789" className="contact-option">
-                                        <span className="material-icons">phone</span>
-                                        <span>+81-123-456-789</span>
+                        {/* Sidebar with Tailwind */}
+                        <div className="lg:col-span-1 space-y-6">
+                            {/* Need Help Widget */}
+                            <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-6">
+                                <div className="flex items-center space-x-3 mb-4">
+                                    <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <h3 className="text-lg font-semibold text-gray-800">
+                                        {t('applyPage.sidebar.needHelp.title')}
+                                    </h3>
+                                </div>
+                                
+                                <p className="text-gray-600 mb-6 leading-relaxed">
+                                    {t('applyPage.sidebar.needHelp.description')}
+                                </p>
+                                
+                                <div className="space-y-3">
+                                    <a 
+                                        href="tel:+81123456789" 
+                                        className="flex items-center space-x-3 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl hover:from-green-100 hover:to-emerald-100 transition-all duration-300 group"
+                                    >
+                                        <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                                            </svg>
+                                        </div>
+                                        <span className="text-gray-700 font-medium">+81-123-456-789</span>
                                     </a>
-                                    <a href="mailto:admissions@forumacademy.jp" className="contact-option">
-                                        <span className="material-icons">email</span>
-                                        <span>admissions@forumacademy.jp</span>
+                                    
+                                    <a 
+                                        href="mailto:admissions@forumacademy.jp" 
+                                        className="flex items-center space-x-3 p-3 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl hover:from-blue-100 hover:to-cyan-100 transition-all duration-300 group"
+                                    >
+                                        <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                            </svg>
+                                        </div>
+                                        <span className="text-gray-700 font-medium text-sm">forumacademy@jp.co</span>
                                     </a>
-                                    <a href="/faq" className="contact-option">
-                                        <span className="material-icons">help_outline</span>
-                                        <span>{t('applyPage.sidebar.needHelp.faq')}</span>
+                                    
+                                    <a 
+                                        href="/faq" 
+                                        className="flex items-center space-x-3 p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl hover:from-purple-100 hover:to-pink-100 transition-all duration-300 group"
+                                    >
+                                        <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                        </div>
+                                        <span className="text-gray-700 font-medium">{t('applyPage.sidebar.needHelp.faq')}</span>
                                     </a>
                                 </div>
                             </div>
                             
-                            <div className="sidebar-widget">
-                                <h3>{t('applyPage.sidebar.deadlines.title')}</h3>
-                                <div className="deadlines">
-                                    <div className="deadline-item">
-                                        <span className="deadline-date">{t('applyPage.sidebar.deadlines.summer.date')}</span>
-                                        <span className="deadline-label">{t('applyPage.sidebar.deadlines.summer.label')}</span>
+                            {/* Deadlines Widget */}
+                            <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-6">
+                                <div className="flex items-center space-x-3 mb-6">
+                                    <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
+                                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
                                     </div>
-                                    <div className="deadline-item">
-                                        <span className="deadline-date">{t('applyPage.sidebar.deadlines.fall.date')}</span>
-                                        <span className="deadline-label">{t('applyPage.sidebar.deadlines.fall.label')}</span>
-                                    </div>
-                                    <div className="deadline-item">
-                                        <span className="deadline-date">{t('applyPage.sidebar.deadlines.winter.date')}</span>
-                                        <span className="deadline-label">{t('applyPage.sidebar.deadlines.winter.label')}</span>
-                                    </div>
+                                    <h3 className="text-lg font-semibold text-gray-800">
+                                        {t('applyPage.sidebar.deadlines.title')}
+                                    </h3>
+                                </div>
+                                
+                                <div className="space-y-4">
+                                    {[
+                                        { 
+                                            date: t('applyPage.sidebar.deadlines.summer.date'), 
+                                            label: t('applyPage.sidebar.deadlines.summer.label'),
+                                            color: 'from-yellow-500 to-orange-500'
+                                        },
+                                        { 
+                                            date: t('applyPage.sidebar.deadlines.fall.date'), 
+                                            label: t('applyPage.sidebar.deadlines.fall.label'),
+                                            color: 'from-red-500 to-pink-500'
+                                        },
+                                        { 
+                                            date: t('applyPage.sidebar.deadlines.winter.date'), 
+                                            label: t('applyPage.sidebar.deadlines.winter.label'),
+                                            color: 'from-blue-500 to-cyan-500'
+                                        }
+                                    ].map((deadline, index) => (
+                                        <div key={index} className="p-4 bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl border border-gray-100">
+                                            <div className={`inline-block px-3 py-1 bg-gradient-to-r ${deadline.color} text-white text-sm font-semibold rounded-lg mb-2`}>
+                                                {deadline.date}
+                                            </div>
+                                            <p className="text-gray-700 font-medium">{deadline.label}</p>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         </div>
@@ -493,24 +509,50 @@ const ApplyPage = () => {
                 </div>
             </section>
             
-            {/* Testimonials Section */}
-            <section className="testimonials-section">
-                <div className="container">
-                    <h2 className="section-title">{t('applyPage.testimonialsSection.title')}</h2>
-                    <p className="section-subtitle">{t('applyPage.testimonialsSection.subtitle')}</p>
+            {/* Testimonials Section - Redesigned with Tailwind */}
+            <section className="py-20 bg-white relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-purple-50/50"></div>
+                
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    <div className="text-center mb-16">
+                        <h2 className="text-4xl font-bold text-gray-800 mb-4">
+                            {t('applyPage.testimonialsSection.title')}
+                        </h2>
+                        <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                            {t('applyPage.testimonialsSection.subtitle')}
+                        </p>
+                    </div>
                     
-                    <div className="testimonials-grid">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {testimonials.map((testimonial, index) => (
-                            <div className="testimonial-card" key={index}>
-                                <div className="testimonial-avatar">
-                                    <img src={testimonial.avatar} alt={testimonial.name} />
-                                </div>
-                                <div className="testimonial-content">
-                                    <p className="testimonial-quote">"{testimonial.quote}"</p>
-                                    <div className="testimonial-author">
-                                        <h4>{testimonial.name}</h4>
-                                        <p>{testimonial.program} {t('applyPage.testimonialsSection.graduateLabel')}</p>
+                            <div key={index} className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-8 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
+                                <div className="flex items-center space-x-4 mb-6">
+                                    <div className="w-16 h-16 rounded-full overflow-hidden border-4 border-gradient-to-r from-blue-500 to-purple-500 shadow-lg">
+                                        <img 
+                                            src={testimonial.avatar} 
+                                            alt={testimonial.name}
+                                            className="w-full h-full object-cover"
+                                        />
                                     </div>
+                                    <div>
+                                        <h4 className="text-lg font-semibold text-gray-800">{testimonial.name}</h4>
+                                        <p className="text-blue-600 font-medium">
+                                            {testimonial.program} {t('applyPage.testimonialsSection.graduateLabel')}
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <div className="mb-4">
+                                    <div className="flex text-yellow-400 mb-3">
+                                        {[...Array(5)].map((_, i) => (
+                                            <svg key={i} className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                            </svg>
+                                        ))}
+                                    </div>
+                                    <blockquote className="text-gray-700 leading-relaxed italic">
+                                        "{testimonial.quote}"
+                                    </blockquote>
                                 </div>
                             </div>
                         ))}
@@ -518,27 +560,57 @@ const ApplyPage = () => {
                 </div>
             </section>
             
-            {/* FAQs Section */}
-            <section className="faq-section">
-                <div className="container">
-                    <h2 className="section-title">{t('applyPage.faqSection.title')}</h2>
-                    <div className="faq-grid">
-                        <div className="faq-item">
-                            <h3>{t('applyPage.faqSection.items.requirements.question')}</h3>
-                            <p>{t('applyPage.faqSection.items.requirements.answer')}</p>
-                        </div>
-                        <div className="faq-item">
-                            <h3>{t('applyPage.faqSection.items.duration.question')}</h3>
-                            <p>{t('applyPage.faqSection.items.duration.answer')}</p>
-                        </div>
-                        <div className="faq-item">
-                            <h3>{t('applyPage.faqSection.items.payment.question')}</h3>
-                            <p>{t('applyPage.faqSection.items.payment.answer')}</p>
-                        </div>
-                        <div className="faq-item">
-                            <h3>{t('applyPage.faqSection.items.defer.question')}</h3>
-                            <p>{t('applyPage.faqSection.items.defer.answer')}</p>
-                        </div>
+            {/* FAQ Section - Redesigned with Tailwind */}
+            <section className="py-20 bg-gradient-to-br from-gray-50 to-blue-50 relative overflow-hidden">
+                <div className="absolute inset-0 pointer-events-none">
+                    <div className="absolute top-10 right-10 w-64 h-64 bg-gradient-to-r from-purple-400/10 to-pink-400/10 rounded-full blur-3xl animate-pulse"></div>
+                    <div className="absolute bottom-10 left-10 w-80 h-80 bg-gradient-to-r from-blue-400/10 to-cyan-400/10 rounded-full blur-3xl animate-pulse delay-500"></div>
+                </div>
+                
+                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    <div className="text-center mb-16">
+                        <h2 className="text-4xl font-bold text-gray-800 mb-4">
+                            {t('applyPage.faqSection.title')}
+                        </h2>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        {[
+                            { 
+                                question: t('applyPage.faqSection.items.requirements.question'),
+                                answer: t('applyPage.faqSection.items.requirements.answer'),
+                                icon: '🎓'
+                            },
+                            { 
+                                question: t('applyPage.faqSection.items.duration.question'),
+                                answer: t('applyPage.faqSection.items.duration.answer'),
+                                icon: '⏰'
+                            },
+                            { 
+                                question: t('applyPage.faqSection.items.payment.question'),
+                                answer: t('applyPage.faqSection.items.payment.answer'),
+                                icon: '💳'
+                            },
+                            { 
+                                question: t('applyPage.faqSection.items.defer.question'),
+                                answer: t('applyPage.faqSection.items.defer.answer'),
+                                icon: '📅'
+                            }
+                        ].map((faq, index) => (
+                            <div key={index} className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-8 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+                                <div className="flex items-start space-x-4">
+                                    <div className="text-3xl">{faq.icon}</div>
+                                    <div>
+                                        <h3 className="text-xl font-semibold text-gray-800 mb-4 leading-relaxed">
+                                            {faq.question}
+                                        </h3>
+                                        <p className="text-gray-600 leading-relaxed">
+                                            {faq.answer}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </section>
