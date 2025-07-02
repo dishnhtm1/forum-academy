@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { useHistory, useNavigate } from 'react-router-dom';
+import React, {useState, useEffect} from 'react';
+import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement,
     Title, Tooltip, Legend, ArcElement, } from 'chart.js';
 import { Bar, Line, Doughnut } from 'react-chartjs-2';
-import Swal from 'sweetalert2';
 
 
 ChartJS.register(
@@ -21,6 +19,25 @@ ChartJS.register(
 );
 
 const Dashboard = () => {
+    // ✅ Helper functions
+    // const getRoleDisplayName = (role) => {
+    //     const roleNames = {
+    //         student: 'Student',
+    //         teacher: 'Teacher',
+    //         admin: 'Administrator'
+    //     };
+    //     return roleNames[role] || 'User';
+    // };
+
+    // const getDashboardTitle = (role) => {
+    //     const titles = {
+    //         student: 'Learning Journey Tracker',
+    //         teacher: 'Classroom Pulse Dashboard',
+    //         admin: 'System Health Monitor'
+    //     };
+    //     return titles[role] || 'Dashboard';
+    // };
+
     // ✅ Translation and Theme States
     const { t, i18n } = useTranslation();
     const [currentLanguage, setCurrentLanguage] = useState('en');
@@ -50,11 +67,26 @@ const Dashboard = () => {
     const [searchTermApp, setSearchTermApp] = useState('');
     const [selectedProgram, setSelectedProgram] = useState('');
     const [selectedAppStatus, setSelectedAppStatus] = useState('');
+    const [dropdownOpen, setDropdownOpen] = useState(null); // For status update dropdown
 
     // ✅ Search and Filter States - Contact Forms
     const [searchTermContact, setSearchTermContact] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
     const [selectedContactStatus, setSelectedContactStatus] = useState('');
+    
+    // ✅ Contact Pagination States
+    const [contactCurrentPage, setContactCurrentPage] = useState(1);
+    const [contactItemsPerPage] = useState(8);
+    const [showContactModal, setShowContactModal] = useState(false);
+    const [selectedContact, setSelectedContact] = useState(null);
+    
+    // ✅ Contact Management States
+    const [showReplyModal, setShowReplyModal] = useState(false);
+    const [replyData, setReplyData] = useState({
+        subject: '',
+        message: '',
+        recipient: null
+    });
 
     // ✅ Modal and Form States
     const [showCreateUserForm, setShowCreateUserForm] = useState(false);
@@ -84,13 +116,6 @@ const Dashboard = () => {
         recipient: null
     });
 
-    // Add these state variables with your existing ones
-    // const [contactSubmissions, setContactSubmissions] = useState([]);
-    const [showContactDetails, setShowContactDetails] = useState(false);
-    const [selectedContact, setSelectedContact] = useState(null);
-    const [showDeleteContactConfirm, setShowDeleteContactConfirm] = useState(false);
-    const [contactToDelete, setContactToDelete] = useState(null);
-
     // ✅ Application Management Functions
     const handleViewApplication = (application) => {
         console.log('👁️ View application clicked:', application);
@@ -115,64 +140,14 @@ const Dashboard = () => {
         setShowSendMessageModal(true);
     };
 
-    const handleUpdateApplicationStatus = async (applicationId, newStatus) => {
-        try {
-            console.log(`🔄 Updating application ${applicationId} status to: ${newStatus}`);
-            
-            const token = getToken();
-            if (!token) {
-                alert('No authentication token found');
-                return;
-            }
-    
-            const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-            const response = await fetch(`${apiUrl}/api/applications/${applicationId}/status`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ status: newStatus })
-            });
-    
-            console.log('Update status response:', response.status);
-    
-            if (response.ok) {
-                const result = await response.json();
-                console.log('Status update successful:', result);
-                
-                if (result.success) {
-                    // Update the application in local state
-                    setApplicationSubmissions(prevApps => 
-                        prevApps.map(app => 
-                            app._id === applicationId 
-                                ? { ...app, status: newStatus, updatedAt: new Date().toISOString() }
-                                : app
-                        )
-                    );
-                    
-                    alert(`Application status updated to ${newStatus} successfully!`);
-                } else {
-                    alert(`Error: ${result.message}`);
-                }
-            } else {
-                const errorText = await response.text();
-                console.error('Status update failed:', errorText);
-                
-                let errorMessage;
-                try {
-                    const errorJson = JSON.parse(errorText);
-                    errorMessage = errorJson.message || 'Unknown error';
-                } catch {
-                    errorMessage = errorText || 'Unknown error';
-                }
-                
-                alert(`Error updating status: ${errorMessage}`);
-            }
-        } catch (error) {
-            console.error('Error updating application status:', error);
-            alert('Error updating application status. Please try again.');
-        }
+    const handleSendMessageToUser = (user) => {
+        console.log('📧 Send message to user clicked:', user);
+        setMessageData({
+            subject: '',
+            message: '',
+            recipient: user
+        });
+        setShowSendMessageModal(true);
     };
     
     const confirmDeleteApplication = async () => {
@@ -255,17 +230,23 @@ const Dashboard = () => {
                 return;
             }
             
+            // Check if this is an application or a user
+            const isApplication = messageData.recipient.program || messageData.recipient.applicationId;
+            
             const messagePayload = {
                 to: messageData.recipient.email,
                 subject: messageData.subject,
                 message: messageData.message,
-                applicantName: `${messageData.recipient.firstName} ${messageData.recipient.lastName}`,
-                applicationId: messageData.recipient._id
+                recipientName: `${messageData.recipient.firstName} ${messageData.recipient.lastName}`,
+                recipientId: messageData.recipient._id,
+                ...(isApplication && { applicationId: messageData.recipient._id })
             };
             
             console.log('📧 Sending message:', messagePayload);
             
-            const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/applications/send-message`, {
+            // Use different endpoint based on recipient type
+            const endpoint = isApplication ? 'applications/send-message' : 'auth/send-message';
+            const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/${endpoint}`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -297,626 +278,99 @@ const Dashboard = () => {
         }
     };
 
-    const fetchContacts = async () => {
+    const handleUpdateApplicationStatus = async (applicationId, newStatus) => {
         try {
-            const token = getToken();
-            if (!token) {
-                console.log('No token found for fetching contacts');
-                return;
-            }
-    
-            console.log('🔄 Fetching contacts...');
-            const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-            const response = await fetch(`${apiUrl}/api/contact`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-    
-            if (response.ok) {
-                const data = await response.json();
-                console.log('✅ Contacts fetched successfully:', data);
-                if (data.success && data.contacts) {
-                    setContactSubmissions(data.contacts);
-                }
-            } else {
-                console.error('❌ Failed to fetch contacts:', response.status);
-            }
-        } catch (error) {
-            console.error('❌ Error fetching contacts:', error);
-        }
-    };
-    
-    // Handle contact status update
-    const handleUpdateContactStatus = async (contactId, newStatus) => {
-        try {
-            console.log(`🔄 Updating contact ${contactId} status to: ${newStatus}`);
-            
             const token = getToken();
             if (!token) {
                 alert('No authentication token found');
                 return;
             }
-    
-            const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-            const response = await fetch(`${apiUrl}/api/contact/${contactId}/status`, {
-                method: 'PUT',
+
+            console.log(`🔄 Updating application ${applicationId} status to: ${newStatus}`);
+
+            const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/applications/${applicationId}/status`, {
+                method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ status: newStatus })
             });
-    
+
             if (response.ok) {
                 const result = await response.json();
-                
-                if (result.success) {
-                    // Update local state
-                    setContactSubmissions(prevContacts => 
-                        prevContacts.map(contact => 
-                            contact._id === contactId 
-                                ? { ...contact, status: newStatus, updatedAt: new Date().toISOString() }
-                                : contact
-                        )
-                    );
-                    
-                    alert(`Contact status updated to ${newStatus} successfully!`);
-                } else {
-                    alert(`Error: ${result.message}`);
-                }
+                console.log('Application status updated successfully:', result);
+
+                // Update local state
+                setApplicationSubmissions(prev => prev.map(app => 
+                    app._id === applicationId 
+                        ? { ...app, status: newStatus }
+                        : app
+                ));
+
+                // Close dropdown
+                setDropdownOpen(null);
+
+                // Show success message
+                const statusMessages = {
+                    'approved': t('admin.applicationApprovedSuccess') || 'Application approved successfully!',
+                    'rejected': t('admin.applicationRejectedSuccess') || 'Application rejected successfully!',
+                    'pending': t('admin.applicationPendingSuccess') || 'Application marked as pending successfully!'
+                };
+
+                alert(statusMessages[newStatus] || 'Application status updated successfully!');
             } else {
-                const errorData = await response.json();
-                alert(`Error updating status: ${errorData.message || 'Unknown error'}`);
+                const error = await response.json();
+                console.error('Failed to update application status:', error);
+                alert(`Error updating status: ${error.message || 'Unknown error'}`);
             }
         } catch (error) {
-            console.error('Error updating contact status:', error);
-            alert('Error updating contact status. Please try again.');
+            console.error('Error updating application status:', error);
+            alert('Error updating application status. Please try again.');
         }
-    };
-    
-    // View contact details
-    const viewContactDetails = (contact) => {
-        console.log('👁️ Viewing contact details:', contact);
-        setSelectedContact(contact);
-        setShowContactDetails(true);
-    };
-    
-    // Close contact details modal
-    const closeContactDetails = () => {
-        setShowContactDetails(false);
-        setSelectedContact(null);
-    };
-    
-    // Delete contact functions
-    const deleteContact = (contact) => {
-        console.log('🗑️ DELETE CONTACT CLICKED!');
-        console.log('Contact to delete:', contact);
-        setContactToDelete(contact);
-        setShowDeleteContactConfirm(true);
-    };
-    
-    const confirmDeleteContact = async () => {
-        console.log('🔥 DELETE CONTACT CONFIRMATION CLICKED!');
-        console.log('Contact to delete:', contactToDelete);
-        
-        if (!contactToDelete) {
-            alert('No contact selected for deletion');
-            return;
-        }
-        
-        try {
-            const token = getToken();
-            if (!token) {
-                alert('No authentication token found');
-                return;
-            }
-            
-            console.log('🗑️ Attempting to delete contact:', contactToDelete._id);
-            
-            const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-            const response = await fetch(`${apiUrl}/api/contact/${contactToDelete._id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-    
-            console.log('Delete contact response status:', response.status);
-    
-            if (response.ok) {
-                const result = await response.json();
-                console.log('Delete contact successful:', result);
-                
-                if (result.success) {
-                    // Remove contact from local state
-                    setContactSubmissions(prevContacts => 
-                        prevContacts.filter(contact => contact._id !== contactToDelete._id)
-                    );
-                    
-                    // Reset modal state
-                    setShowDeleteContactConfirm(false);
-                    setContactToDelete(null);
-                    
-                    alert('Contact deleted successfully!');
-                } else {
-                    alert(`Error: ${result.message}`);
-                }
-            } else {
-                const errorText = await response.text();
-                console.error('Delete contact failed:', errorText);
-                
-                let errorMessage;
-                try {
-                    const errorJson = JSON.parse(errorText);
-                    errorMessage = errorJson.message || 'Unknown error';
-                } catch {
-                    errorMessage = errorText || 'Unknown error';
-                }
-                
-                alert(`Error deleting contact: ${errorMessage}`);
-            }
-        } catch (error) {
-            console.error('Error deleting contact:', error);
-            alert('Error deleting contact. Please try again.');
-        }
-    };
-    
-    const cancelDeleteContact = () => {
-        setShowDeleteContactConfirm(false);
-        setContactToDelete(null);
     };
 
-    // Update your existing useEffect to include contacts
-    useEffect(() => {
-        if (user && user.role === 'admin') {
-            fetchContacts(); // Add this line
-        }
-    }, [user]);
-
-    // Update pagination helper functions
+    // Add these helper functions
     const getTotalPages = () => {
-        const filteredUsers = getFilteredUsers();
-        return Math.ceil(filteredUsers.length / itemsPerPage);
+        if (activeTab === 'users') {
+            const totalItems = getFilteredUsers().length;
+            return Math.ceil(totalItems / itemsPerPage);
+        } else {
+            const totalItems = getFilteredApplications().length;
+            return Math.ceil(totalItems / itemsPerPage);
+        }
     };
 
     const getCurrentPageItems = () => {
-        const filteredUsers = getFilteredUsers();
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        const endIndex = startIndex + itemsPerPage;
-        return filteredUsers.slice(startIndex, endIndex);
+        if (activeTab === 'users') {
+            const filteredItems = getFilteredUsers();
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            return filteredItems.slice(startIndex, endIndex);
+        } else {
+            const filteredItems = getFilteredApplications();
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            return filteredItems.slice(startIndex, endIndex);
+        }
     };
 
     const handlePageChange = (pageNumber) => {
-        if (pageNumber >= 1 && pageNumber <= getTotalPages()) {
-            setCurrentPage(pageNumber);
-            // Smooth scroll to top of table when page changes
-            document.querySelector('.overflow-x-auto')?.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'start' 
-            });
-        }
+        setCurrentPage(pageNumber);
     };
 
     const handlePreviousPage = () => {
         if (currentPage > 1) {
-            handlePageChange(currentPage - 1);
+            setCurrentPage(currentPage - 1);
         }
     };
 
     const handleNextPage = () => {
-        if (currentPage < getTotalPages()) {
-            handlePageChange(currentPage + 1);
+        const totalPages = activeTab === 'users' ? getUserTotalPages() : getTotalPages();
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1);
         }
     };
-
-    // Enhanced pagination component with better UX
-    const renderPagination = () => {
-        const totalPages = getTotalPages();
-        const filteredUsers = getFilteredUsers();
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        const endIndex = Math.min(startIndex + itemsPerPage, filteredUsers.length);
-        
-        if (totalPages <= 1) return null;
-
-        // Generate page numbers to show
-        const getPageNumbers = () => {
-            const pages = [];
-            const maxVisiblePages = 5;
-            
-            if (totalPages <= maxVisiblePages) {
-                // Show all pages if total pages is small
-                for (let i = 1; i <= totalPages; i++) {
-                    pages.push(i);
-                }
-            } else {
-                // Show smart pagination
-                const startPage = Math.max(1, currentPage - 2);
-                const endPage = Math.min(totalPages, currentPage + 2);
-                
-                // Always show first page
-                if (startPage > 1) {
-                    pages.push(1);
-                    if (startPage > 2) pages.push('...');
-                }
-                
-                // Show current range
-                for (let i = startPage; i <= endPage; i++) {
-                    pages.push(i);
-                }
-                
-                // Always show last page
-                if (endPage < totalPages) {
-                    if (endPage < totalPages - 1) pages.push('...');
-                    pages.push(totalPages);
-                }
-            }
-            
-            return pages;
-        };
-
-        return (
-            <div className={`px-6 py-4 flex flex-col sm:flex-row items-center justify-between border-t transition-all duration-300 ${
-                isDarkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-gray-50 border-gray-200'
-            }`}>
-                {/* Results Info */}
-                <div className={`text-sm mb-4 sm:mb-0 transition-colors duration-300 ${
-                    isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                }`}>
-                    <div className="flex items-center space-x-1">
-                        <span>{t('userManagement.footer.showing')}</span>
-                        <span className={`font-semibold px-2 py-1 rounded-lg transition-colors duration-300 ${
-                            isDarkMode ? 'bg-blue-900/50 text-blue-300' : 'bg-blue-100 text-blue-800'
-                        }`}>
-                            {startIndex + 1} - {endIndex}
-                        </span>
-                        <span>{t('userManagement.footer.of')}</span>
-                        <span className={`font-semibold px-2 py-1 rounded-lg transition-colors duration-300 ${
-                            isDarkMode ? 'bg-gray-700 text-gray-200' : 'bg-gray-200 text-gray-800'
-                        }`}>
-                            {filteredUsers.length}
-                        </span>
-                        <span>{t('userManagement.footer.users')}</span>
-                        {(searchTerm || selectedRole || selectedStatus) && (
-                            <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium transition-colors duration-300 ${
-                                isDarkMode ? 'bg-orange-900/50 text-orange-300 border border-orange-700/50' : 'bg-orange-100 text-orange-800'
-                            }`}>
-                                🔍 {t('userManagement.footer.filtered')}
-                            </span>
-                        )}
-                    </div>
-                </div>
-
-                {/* Pagination Controls */}
-                <div className="flex items-center space-x-2">
-                    {/* Previous Button */}
-                    <button 
-                        onClick={handlePreviousPage}
-                        disabled={currentPage === 1}
-                        className={`inline-flex items-center px-3 py-2 border rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105 ${
-                            currentPage === 1
-                                ? isDarkMode 
-                                    ? 'border-gray-700 text-gray-500 bg-gray-800 cursor-not-allowed opacity-50' 
-                                    : 'border-gray-300 text-gray-400 bg-gray-100 cursor-not-allowed opacity-50'
-                                : isDarkMode 
-                                    ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700 hover:border-blue-500 hover:text-blue-300' 
-                                    : 'border-gray-300 text-gray-700 bg-white hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700'
-                        }`}
-                        title={t('userManagement.footer.previous')}
-                    >
-                        <span className="mr-1">←</span>
-                        {t('userManagement.footer.previous')}
-                    </button>
-
-                    {/* Page Numbers */}
-                    <div className="flex items-center space-x-1">
-                        {getPageNumbers().map((page, index) => (
-                            <div key={index}>
-                                {page === '...' ? (
-                                    <span className={`px-3 py-2 text-sm transition-colors duration-300 ${
-                                        isDarkMode ? 'text-gray-500' : 'text-gray-400'
-                                    }`}>
-                                        ...
-                                    </span>
-                                ) : (
-                                    <button
-                                        onClick={() => handlePageChange(page)}
-                                        className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105 ${
-                                            currentPage === page
-                                                ? 'text-white bg-gradient-to-r from-blue-600 to-indigo-600 shadow-lg'
-                                                : isDarkMode 
-                                                    ? 'text-gray-300 bg-gray-800 border border-gray-600 hover:bg-gray-700 hover:border-blue-500 hover:text-blue-300' 
-                                                    : 'text-gray-700 bg-white border border-gray-300 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700'
-                                        }`}
-                                        title={`${t('userManagement.footer.goToPage')} ${page}`}
-                                    >
-                                        {page}
-                                    </button>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Next Button */}
-                    <button 
-                        onClick={handleNextPage}
-                        disabled={currentPage === totalPages}
-                        className={`inline-flex items-center px-3 py-2 border rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105 ${
-                            currentPage === totalPages
-                                ? isDarkMode 
-                                    ? 'border-gray-700 text-gray-500 bg-gray-800 cursor-not-allowed opacity-50' 
-                                    : 'border-gray-300 text-gray-400 bg-gray-100 cursor-not-allowed opacity-50'
-                                : isDarkMode 
-                                    ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700 hover:border-blue-500 hover:text-blue-300' 
-                                    : 'border-gray-300 text-gray-700 bg-white hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700'
-                        }`}
-                        title={t('userManagement.footer.next')}
-                    >
-                        {t('userManagement.footer.next')}
-                        <span className="ml-1">→</span>
-                    </button>
-                </div>
-
-                {/* Quick Jump (for large datasets) */}
-                {totalPages > 10 && (
-                    <div className="flex items-center space-x-2 mt-4 sm:mt-0 sm:ml-4">
-                        <span className={`text-sm transition-colors duration-300 ${
-                            isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                        }`}>
-                            {t('userManagement.footer.page')}:
-                        </span>
-                        <select
-                            value={currentPage}
-                            onChange={(e) => handlePageChange(parseInt(e.target.value))}
-                            className={`px-2 py-1 border rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                                isDarkMode 
-                                    ? 'border-gray-600 bg-gray-800 text-gray-300' 
-                                    : 'border-gray-300 bg-white text-gray-900'
-                            }`}
-                        >
-                            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                                <option key={page} value={page}>
-                                    {page}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                )}
-            </div>
-        );
-    };
-
-    // Add these helper functions for application pagination
-    const getCurrentPageApplications = () => {
-        const filteredApplications = getFilteredApplications();
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        const endIndex = startIndex + itemsPerPage;
-        return filteredApplications.slice(startIndex, endIndex);
-    };
-
-    const getTotalApplicationPages = () => {
-        const filteredApplications = getFilteredApplications();
-        return Math.ceil(filteredApplications.length / itemsPerPage);
-    };
-
-    const handleApplicationPageChange = (pageNumber) => {
-        if (pageNumber >= 1 && pageNumber <= getTotalApplicationPages()) {
-            setCurrentPage(pageNumber);
-            // Smooth scroll to top of table when page changes
-            document.querySelector('.overflow-x-auto')?.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'start' 
-            });
-        }
-    };
-
-    const handleApplicationPreviousPage = () => {
-        if (currentPage > 1) {
-            handleApplicationPageChange(currentPage - 1);
-        }
-    };
-
-    const handleApplicationNextPage = () => {
-        if (currentPage < getTotalApplicationPages()) {
-            handleApplicationPageChange(currentPage + 1);
-        }
-    };
-
-    const renderApplicationPagination = () => {
-        const totalPages = getTotalApplicationPages();
-        const filteredApplications = getFilteredApplications();
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        const endIndex = Math.min(startIndex + itemsPerPage, filteredApplications.length);
-        
-        if (totalPages <= 1) return null;
-    
-        // Generate page numbers to show
-        const getPageNumbers = () => {
-            const pages = [];
-            const maxVisiblePages = 5;
-            
-            if (totalPages <= maxVisiblePages) {
-                for (let i = 1; i <= totalPages; i++) {
-                    pages.push(i);
-                }
-            } else {
-                const startPage = Math.max(1, currentPage - 2);
-                const endPage = Math.min(totalPages, currentPage + 2);
-                
-                if (startPage > 1) {
-                    pages.push(1);
-                    if (startPage > 2) pages.push('...');
-                }
-                
-                for (let i = startPage; i <= endPage; i++) {
-                    pages.push(i);
-                }
-                
-                if (endPage < totalPages) {
-                    if (endPage < totalPages - 1) pages.push('...');
-                    pages.push(totalPages);
-                }
-            }
-            
-            return pages;
-        };
-        return (
-            <div className={`px-6 py-4 flex flex-col sm:flex-row items-center justify-between border-t ${
-                isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'
-            }`}>
-                {/* Results Info */}
-                {/* Results Info */}
-                <div className={`text-sm mb-4 sm:mb-0 ${
-                    isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                }`}>
-                    <div className="flex items-center space-x-2 flex-wrap">
-                        <span>
-                            {t('applicationManagement.pagination.showing') || 'Showing'}
-                        </span>
-                        <span className={`font-semibold px-2 py-1 rounded ${
-                            isDarkMode ? 'bg-blue-900 text-blue-300' : 'bg-blue-100 text-blue-800'
-                        }`}>
-                            {filteredApplications.length > 0 ? startIndex + 1 : 0} - {endIndex}
-                        </span>
-                        <span>
-                            {t('applicationManagement.pagination.of') || 'of'}
-                        </span>
-                        <span className={`font-semibold px-2 py-1 rounded ${
-                            isDarkMode ? 'bg-gray-700 text-gray-200' : 'bg-gray-200 text-gray-800'
-                        }`}>
-                            {filteredApplications.length}
-                        </span>
-                        <span>
-                            {t('applicationManagement.pagination.results') || 'applications'}
-                        </span>
-                        {(searchTermApp || selectedProgram || selectedAppStatus) && (
-                            <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${
-                                isDarkMode ? 'bg-orange-900 text-orange-300' : 'bg-orange-100 text-orange-800'
-                            }`}>
-                                🔍 {t('applicationManagement.pagination.filtered') || 'Filtered'}
-                            </span>
-                        )}
-                    </div>
-                </div>
-    
-                {/* Pagination Controls */}
-                <div className="flex items-center space-x-2">
-                    {/* Previous Button */}
-                    <button 
-                        onClick={handleApplicationPreviousPage}
-                        disabled={currentPage === 1}
-                        className={`inline-flex items-center px-3 py-2 border rounded-lg text-sm font-medium transition-colors ${
-                            currentPage === 1
-                                ? isDarkMode 
-                                    ? 'border-gray-700 text-gray-500 bg-gray-800 cursor-not-allowed opacity-50' 
-                                    : 'border-gray-300 text-gray-400 bg-gray-100 cursor-not-allowed opacity-50'
-                                : isDarkMode 
-                                    ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' 
-                                    : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
-                        }`}
-                    >
-                        <span className="mr-1">←</span>
-                        <span className="hidden sm:inline">
-                            {t('applicationManagement.pagination.previous') || 'Previous'}
-                        </span>
-                        <span className="sm:hidden">
-                            {t('applicationManagement.pagination.prev') || 'Prev'}
-                        </span>
-                    </button>
-    
-                    {/* Page Numbers */}
-                    <div className="flex items-center space-x-1">
-                        {getPageNumbers().map((page, index) => (
-                            <div key={index}>
-                                {page === '...' ? (
-                                    <span className={`px-3 py-2 text-sm ${
-                                        isDarkMode ? 'text-gray-500' : 'text-gray-400'
-                                    }`}>
-                                        ...
-                                    </span>
-                                ) : (
-                                    <button
-                                        onClick={() => handleApplicationPageChange(page)}
-                                        className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                                            currentPage === page
-                                                ? 'text-white bg-blue-600'
-                                                : isDarkMode 
-                                                    ? 'text-gray-300 bg-gray-800 border border-gray-600 hover:bg-gray-700' 
-                                                    : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50'
-                                        }`}
-                                    >
-                                        {page}
-                                    </button>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-    
-                    {/* Next Button */}
-                    <button 
-                        onClick={handleApplicationNextPage}
-                        disabled={currentPage === getTotalApplicationPages()}
-                        className={`inline-flex items-center px-3 py-2 border rounded-lg text-sm font-medium transition-colors ${
-                            currentPage === getTotalApplicationPages()
-                                ? isDarkMode 
-                                    ? 'border-gray-700 text-gray-500 bg-gray-800 cursor-not-allowed opacity-50' 
-                                    : 'border-gray-300 text-gray-400 bg-gray-100 cursor-not-allowed opacity-50'
-                                : isDarkMode 
-                                    ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' 
-                                    : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
-                        }`}
-                    >
-                        <span className="hidden sm:inline">
-                            {t('applicationManagement.pagination.next') || 'Next'}
-                        </span>
-                        <span className="sm:hidden">
-                            {t('applicationManagement.pagination.next') || 'Next'}
-                        </span>
-                        <span className="ml-1">→</span>
-                    </button>
-                </div>
-    
-                {/* Quick Jump for Large Datasets */}
-                {totalPages > 10 && (
-                    <div className="flex items-center space-x-2 mt-4 sm:mt-0 sm:ml-4">
-                        <span className={`text-sm ${
-                            isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                        }`}>
-                            {t('applicationManagement.pagination.page') || 'Page'}:
-                        </span>
-                        <select
-                            value={currentPage}
-                            onChange={(e) => handleApplicationPageChange(parseInt(e.target.value))}
-                            className={`px-2 py-1 border rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                                isDarkMode 
-                                    ? 'border-gray-600 bg-gray-800 text-gray-300' 
-                                    : 'border-gray-300 bg-white text-gray-900'
-                            }`}
-                        >
-                            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                                <option key={page} value={page}>
-                                    {page}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                )}
-            </div>
-        );
-    };
-
-    // Add useEffect to reset pagination when application filters change
-    useEffect(() => {
-        setCurrentPage(1); // Reset to first page when filters change
-    }, [searchTermApp, selectedProgram, selectedAppStatus]);
-
-    // Update the useEffect to reset pagination when filters change
-    useEffect(() => {
-        setCurrentPage(1); // Reset to first page when filters change
-    }, [searchTerm, selectedRole, selectedStatus]);
 
     const handleLanguageToggle = (language) => {
         setCurrentLanguage(language);
@@ -1105,7 +559,7 @@ const Dashboard = () => {
         }
     };
 
-    // Around line 102, update the fetchApplicationSubmissions function:
+        // Around line 102, update the fetchApplicationSubmissions function:
     const fetchApplicationSubmissions = async (token) => {
         try {
             console.log('Fetching application submissions...');
@@ -1248,14 +702,37 @@ const Dashboard = () => {
 
             if (response.ok) {
                 await fetchContactSubmissions(token);
-                alert(`Contact submission ${action} successfully!`);
+                
+                // Show success message with native alert
+                const statusMessages = {
+                    pending: currentLanguage === 'ja' ? '保留中' : 'Pending',
+                    approved: currentLanguage === 'ja' ? '優先度高' : 'Priority',
+                    resolved: currentLanguage === 'ja' ? '解決済み' : 'Resolved',
+                    ignored: currentLanguage === 'ja' ? '無視' : 'Ignored'
+                };
+
+                const successMessage = currentLanguage === 'ja' 
+                    ? `ステータスが「${statusMessages[action]}」に更新されました`
+                    : `Status updated to "${statusMessages[action]}"`;
+                
+                alert(successMessage);
             } else {
                 const errorData = await response.json();
-                alert(`Failed to ${action} contact: ${errorData.message || 'Unknown error'}`);
+                
+                const errorMessage = currentLanguage === 'ja' 
+                    ? 'エラー！ ステータスの更新に失敗しました。' 
+                    : 'Error! Failed to update status.';
+                
+                alert(errorMessage);
             }
         } catch (error) {
             console.error(`Failed to ${action} contact submission:`, error);
-            alert(`Error: Failed to ${action} contact submission`);
+            
+            const networkErrorMessage = currentLanguage === 'ja' 
+                ? 'エラー！ ネットワークエラーが発生しました。' 
+                : 'Error! A network error occurred.';
+            
+            alert(networkErrorMessage);
         }
     };
 
@@ -1393,7 +870,7 @@ const Dashboard = () => {
             alert('Error updating user. Please try again.');
         }
     };
-
+    
     const confirmDeleteUser = async () => {
         console.log('🔥 DELETE CONFIRMATION CLICKED!');
         console.log('User to delete:', userToDelete);
@@ -1474,51 +951,37 @@ const Dashboard = () => {
         });
     };
 
-    // const getFilteredApplications = () => {
-    //     // Debug: Show actual program values in the data
-    //     const uniquePrograms = [...new Set(applicationSubmissions.map(app => app.program).filter(Boolean))];
-    //     console.log('🔍 Unique program values in database:', uniquePrograms);
+    const getFilteredApplications = () => {
+        // Debug: Show actual program values in the data
+        const uniquePrograms = [...new Set(applicationSubmissions.map(app => app.program).filter(Boolean))];
+        console.log('🔍 Unique program values in database:', uniquePrograms);
         
-    //     const filtered = applicationSubmissions.filter(app => {
-    //         const matchesSearch = !searchTermApp || 
-    //             app.firstName?.toLowerCase().includes(searchTermApp.toLowerCase()) ||
-    //             app.lastName?.toLowerCase().includes(searchTermApp.toLowerCase()) ||
-    //             app.email?.toLowerCase().includes(searchTermApp.toLowerCase()) ||
-    //             app.program?.toLowerCase().includes(searchTermApp.toLowerCase());
-            
-    //         // FIX: Handle all possible "all programs" values properly
-    //         const matchesProgram = !selectedProgram || 
-    //             selectedProgram === '' || 
-    //             selectedProgram === 'All Programs' || 
-    //             selectedProgram === 'all' ||
-    //             selectedProgram === 'All' ||
-    //             app.program === selectedProgram; // ✅ This should match exactly with database values
-                
-    //         const matchesStatus = !selectedAppStatus || 
-    //             selectedAppStatus === '' || 
-    //             selectedAppStatus === 'All Statuses' || 
-    //             selectedAppStatus === 'all' ||
-    //             app.status === selectedAppStatus;
-            
-    //         return matchesSearch && matchesProgram && matchesStatus;
-    //     });
-        
-    //     console.log('📊 Filtered applications:', filtered.length);
-    //     return filtered;
-    // };
-        const getFilteredApplications = () => {
-        return applicationSubmissions.filter(application => {
+        const filtered = applicationSubmissions.filter(app => {
             const matchesSearch = !searchTermApp || 
-                application.firstName?.toLowerCase().includes(searchTermApp.toLowerCase()) ||
-                application.lastName?.toLowerCase().includes(searchTermApp.toLowerCase()) ||
-                application.email?.toLowerCase().includes(searchTermApp.toLowerCase());
+                app.firstName?.toLowerCase().includes(searchTermApp.toLowerCase()) ||
+                app.lastName?.toLowerCase().includes(searchTermApp.toLowerCase()) ||
+                app.email?.toLowerCase().includes(searchTermApp.toLowerCase()) ||
+                app.program?.toLowerCase().includes(searchTermApp.toLowerCase());
             
-            const matchesProgram = !selectedProgram || application.program === selectedProgram;
-            
-            const matchesStatus = !selectedAppStatus || application.status === selectedAppStatus;
+            // FIX: Handle all possible "all programs" values properly
+            const matchesProgram = !selectedProgram || 
+                selectedProgram === '' || 
+                selectedProgram === 'All Programs' || 
+                selectedProgram === 'all' ||
+                selectedProgram === 'All' ||
+                app.program === selectedProgram; // ✅ This should match exactly with database values
+                
+            const matchesStatus = !selectedAppStatus || 
+                selectedAppStatus === '' || 
+                selectedAppStatus === 'All Statuses' || 
+                selectedAppStatus === 'all' ||
+                app.status === selectedAppStatus;
             
             return matchesSearch && matchesProgram && matchesStatus;
         });
+        
+        console.log('📊 Filtered applications:', filtered.length);
+        return filtered;
     };
     
     const getFilteredContacts = () => {
@@ -1551,6 +1014,131 @@ const Dashboard = () => {
         
         // console.log('📊 Filtered results:', filtered.length);
         return filtered;
+    };
+
+    // ✅ Get paginated contacts
+    const getPaginatedContacts = () => {
+        const filtered = getFilteredContacts();
+        const startIndex = (contactCurrentPage - 1) * contactItemsPerPage;
+        const endIndex = startIndex + contactItemsPerPage;
+        return filtered.slice(startIndex, endIndex);
+    };
+
+    // ✅ Get total pages for contacts
+    const getContactTotalPages = () => {
+        const filtered = getFilteredContacts();
+        return Math.ceil(filtered.length / contactItemsPerPage);
+    };
+
+    // ✅ Handle contact pagination
+    const handleContactPageChange = (page) => {
+        setContactCurrentPage(page);
+    };
+
+    // ✅ Handle view contact details
+    const handleViewContact = (contact) => {
+        setSelectedContact(contact);
+        setShowContactModal(true);
+    };
+
+    // ✅ Handle reply to contact
+    const handleReplyToContact = (contact) => {
+        setReplyData({
+            subject: `Re: ${contact.subject}`,
+            message: '',
+            recipient: contact
+        });
+        setShowReplyModal(true);
+    };
+
+    // ✅ Handle delete contact
+    const handleDeleteContact = async (contact) => {
+        // Show native confirmation dialog
+        const confirmMessage = currentLanguage === 'ja' 
+            ? `連絡先を削除しますか？\n\n名前: ${contact.name}\nメール: ${contact.email}\n件名: ${contact.subject}\n\nこの操作は元に戻せません。`
+            : `Delete Contact?\n\nName: ${contact.name}\nEmail: ${contact.email}\nSubject: ${contact.subject}\n\nThis action cannot be undone.`;
+        
+        if (confirm(confirmMessage)) {
+            const token = getToken();
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/contact/${contact._id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    // Remove the contact from the local state
+                    setContactSubmissions(prev => prev.filter(c => c._id !== contact._id));
+                    
+                    // Show success message
+                    const successMessage = currentLanguage === 'ja' 
+                        ? '削除完了！ メッセージが正常に削除されました。' 
+                        : 'Deleted! The contact message has been deleted successfully.';
+                    alert(successMessage);
+                } else {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to delete contact');
+                }
+            } catch (error) {
+                console.error('Error deleting contact:', error);
+                
+                // Show error message
+                const errorMessage = currentLanguage === 'ja' 
+                    ? 'エラー！ メッセージの削除に失敗しました。' 
+                    : 'Error! Failed to delete the contact message.';
+                alert(errorMessage);
+            }
+        }
+    };
+
+    // ✅ Handle reply submission
+    const handleReplySubmit = async (e) => {
+        e.preventDefault();
+        const token = getToken();
+        
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/contact/reply`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    contactId: replyData.recipient._id,
+                    subject: replyData.subject,
+                    message: replyData.message,
+                    recipientEmail: replyData.recipient.email
+                })
+            });
+
+            if (response.ok) {
+                setShowReplyModal(false);
+                setReplyData({ subject: '', message: '', recipient: null });
+                
+                // Optionally mark the contact as resolved after reply
+                await handleContactAction(replyData.recipient._id, 'resolved');
+                
+                // Show success message
+                const successMessage = currentLanguage === 'ja' 
+                    ? `送信完了！\n\n宛先: ${replyData.recipient.email}\n件名: ${replyData.subject}\n\n返信が正常に送信され、ステータスが「解決済み」に更新されました。`
+                    : `Reply Sent!\n\nTo: ${replyData.recipient.email}\nSubject: ${replyData.subject}\n\nYour reply has been sent successfully and the contact status has been updated to resolved.`;
+                alert(successMessage);
+            } else {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to send reply');
+            }
+        } catch (error) {
+            console.error('Error sending reply:', error);
+            
+            // Show error message
+            const errorMessage = currentLanguage === 'ja' 
+                ? 'エラー！ 返信の送信に失敗しました。もう一度お試しください。' 
+                : 'Error! Failed to send the reply. Please try again.';
+            alert(errorMessage);
+        }
     };
 
     const handleCreateCourse = async (e) => {
@@ -1607,18 +1195,19 @@ const Dashboard = () => {
     
     useEffect(() => {
         const checkAuth = async () => {
-            const token = getToken(); // Use helper function
-            
-            console.log('🔑 Token from localStorage:', token ? 'EXISTS' : 'MISSING');
-            console.log('🌐 API_BASE_URL:', API_BASE_URL);
-            
-            if (!token) {
-                console.log('❌ No token found, redirecting to home');
-                history.push('/');
-                return;
-            }
-
             try {
+                const token = getToken();
+                
+                console.log('🔑 Token from localStorage:', token ? 'EXISTS' : 'MISSING');
+                console.log('🌐 API_BASE_URL:', API_BASE_URL);
+                
+                if (!token) {
+                    console.log('❌ No token found, redirecting to home');
+                    setIsLoading(false);
+                    history.push('/');
+                    return;
+                }
+
                 console.log('🔍 Checking authentication...');
                 const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
                     headers: {
@@ -1654,44 +1243,48 @@ const Dashboard = () => {
                 if (userData.role === 'admin') {
                     console.log('👑 Admin user detected, fetching admin data...');
                     
-                    try {
-                        console.log('📋 Fetching applications...');
-                        await fetchApplicationSubmissions(token);
-                        console.log('✅ Applications fetch completed');
-                    } catch (error) {
-                        console.error('❌ Applications fetch failed:', error);
-                    }
+                    // Fetch all admin data concurrently but handle errors gracefully
+                    const fetchPromises = [
+                        fetchApplicationSubmissions(token).catch(error => {
+                            console.error('❌ Applications fetch failed:', error);
+                            return [];
+                        }),
+                        fetchContactSubmissions(token).catch(error => {
+                            console.error('❌ Contacts fetch failed:', error);
+                            return [];
+                        }),
+                        fetchPendingUsers(token).catch(error => {
+                            console.error('❌ Pending users fetch failed:', error);
+                            return [];
+                        }),
+                        fetchAllUsers(token).catch(error => {
+                            console.error('❌ All users fetch failed:', error);
+                            return [];
+                        })
+                    ];
 
                     try {
-                        console.log('📧 Fetching contacts...');
-                        await fetchContactSubmissions(token);
-                        console.log('✅ Contacts fetch completed');
+                        await Promise.allSettled(fetchPromises);
+                        console.log('✅ Admin data fetch completed');
                     } catch (error) {
-                        console.error('❌ Contacts fetch failed:', error);
-                    }
-
-                    try {
-                        console.log('👥 Fetching users...');
-                        await fetchPendingUsers(token);
-                        await fetchAllUsers(token);
-                        console.log('✅ Users fetch completed');
-                    } catch (error) {
-                        console.error('❌ Users fetch failed:', error);
+                        console.error('❌ Admin data fetch error:', error);
                     }
                 }
+
+                setIsLoading(false);
 
             } catch (error) {
                 console.error('❌ Authentication error:', error);
                 localStorage.clear();
+                setIsLoading(false);
                 history.push('/');
             }
-
-            setIsLoading(false);
         };
 
         checkAuth();
     }, [history, API_BASE_URL]);
     
+    // ✅ Improved loading screen with error handling
     if (isLoading) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100 flex items-center justify-center">
@@ -1743,6 +1336,25 @@ const Dashboard = () => {
                         <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full"></div>
                         <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-gradient-to-br from-purple-400/20 to-indigo-400/20 rounded-full"></div>
                     </div>
+                </div>
+            </div>
+        );
+    }
+
+    // ✅ If no user data, show error
+    if (!user) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4">
+                <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8 text-center max-w-md mx-auto">
+                    <div className="text-6xl mb-4">🔐</div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-4">Authentication Required</h2>
+                    <p className="text-gray-600 mb-6">Please log in to access your dashboard.</p>
+                    <button 
+                        className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                        onClick={() => history.push('/')}
+                    >
+                        Go to Login
+                    </button>
                 </div>
             </div>
         );
@@ -3450,10 +3062,10 @@ const Dashboard = () => {
                     } transition-colors duration-300`}>
                         <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                             <span className="mr-2">🌐</span>
-                            Language Settings
+                            {t('adminDashboard.language.title')}
                         </h3>
                         <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mt-1 transition-colors duration-300`}>
-                            Choose your preferred language
+                            {t('adminDashboard.language.description')}
                         </p>
                     </div>
                     <div className="p-6 space-y-6">
@@ -3514,10 +3126,10 @@ const Dashboard = () => {
                                     </div>
                                     <div>
                                         <div className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>
-                                            Japanese
+                                            {t('adminDashboard.language.languages.japanese')}
                                         </div>
                                         <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
-                                            日本語
+                                            {t('adminDashboard.language.languages.japaneseName')}
                                         </div>
                                     </div>
                                 </div>
@@ -3547,11 +3159,15 @@ const Dashboard = () => {
                                     <div>
                                         <h4 className={`font-semibold ${
                                             isDarkMode ? 'text-green-300' : 'text-green-900'
-                                        } transition-colors duration-300`}>Language Changed</h4>
+                                        } transition-colors duration-300`}>{t('adminDashboard.language.changeNotification.title')}</h4>
                                         <p className={`text-sm ${
                                             isDarkMode ? 'text-green-400' : 'text-green-700'
                                         } transition-colors duration-300`}>
-                                            Interface language has been updated to {currentLanguage === 'ja' ? 'Japanese (日本語)' : 'English'}
+                                            {t('adminDashboard.language.changeNotification.message', { 
+                                                language: currentLanguage === 'ja' 
+                                                    ? t('adminDashboard.language.languages.japanese') + ' (' + t('adminDashboard.language.languages.japaneseName') + ')'
+                                                    : t('adminDashboard.language.languages.english')
+                                            })}
                                         </p>
                                     </div>
                                 </div>
@@ -3699,7 +3315,8 @@ const Dashboard = () => {
         </div>
     );
 
-    // Teacher Dashboard Components    
+    // Teacher Dashboard Components
+    
     const renderTeacherDashboard = () => {
         if (activeTab === 'overview') {
             return renderTeacherOverview();
@@ -5794,7 +5411,7 @@ const Dashboard = () => {
                 <div className={`p-8 border-b ${isDarkMode ? 'border-gray-600' : 'border-gray-200'} transition-colors duration-300`}>
                     <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center mb-6 transition-colors duration-300`}>
                         <span className="mr-3 text-2xl">🌐</span>
-                        Language Settings
+                        {t('adminDashboard.language.title')}
                     </h3>
                     
                     <div className={`p-6 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'} rounded-xl transition-colors duration-300`}>
@@ -5858,11 +5475,15 @@ const Dashboard = () => {
                                     <div>
                                         <h4 className={`font-semibold ${
                                             isDarkMode ? 'text-green-300' : 'text-green-900'
-                                        } transition-colors duration-300`}>Language Changed</h4>
+                                        } transition-colors duration-300`}>{t('adminDashboard.language.changeNotification.title')}</h4>
                                         <p className={`text-sm ${
                                             isDarkMode ? 'text-green-400' : 'text-green-700'
                                         } transition-colors duration-300`}>
-                                            Interface language has been updated to {currentLanguage === 'ja' ? 'Japanese (日本語)' : 'English'}
+                                            {t('adminDashboard.language.changeNotification.message', { 
+                                                language: currentLanguage === 'ja' 
+                                                    ? t('adminDashboard.language.languages.japanese') + ' (' + t('adminDashboard.language.languages.japaneseName') + ')'
+                                                    : t('adminDashboard.language.languages.english')
+                                            })}
                                         </p>
                                     </div>
                                 </div>
@@ -6074,14 +5695,14 @@ const Dashboard = () => {
                                 <div className="absolute inset-0 flex items-center justify-center">
                                     <div className="text-center">
                                         <div className="text-3xl font-bold text-white">{dashboardData.admin.systemHealth}%</div>
-                                        <div className="text-xs text-white/80 font-medium">{t('admin.systemHealth.status')}</div>
+                                        <div className="text-xs text-white/80 font-medium uppercase tracking-wide">{t('admin.status.optimal')}</div>
                                     </div>
                                 </div>
                             </div>
                             <h2 className="text-2xl font-bold text-white mb-2">{t('admin.systemHealth.title')}</h2>
                             <p className="text-white/80 text-center lg:text-left">{t('admin.systemHealth.description')}</p>
                         </div>
-
+    
                         {/* Real-time Metrics */}
                         <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
@@ -6107,7 +5728,7 @@ const Dashboard = () => {
                                     ></div>
                                 </div>
                             </div>
-
+    
                             <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="flex items-center space-x-3">
@@ -6131,7 +5752,7 @@ const Dashboard = () => {
                                     ></div>
                                 </div>
                             </div>
-
+    
                             <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="flex items-center space-x-3">
@@ -6157,7 +5778,7 @@ const Dashboard = () => {
                                     ))}
                                 </div>
                             </div>
-
+    
                             <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="flex items-center space-x-3">
@@ -6187,12 +5808,10 @@ const Dashboard = () => {
                     </div>
                 </div>
             </div>
-
-            {/* Key Metrics Dashboard */}
+    
+            {/* Key Metrics Dashboard - Dark Mode */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className={`rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300 ${
-                    isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'
-                }`}>
+                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
                     <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-6 text-white">
                         <div className="flex items-center justify-between">
                             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -6204,34 +5823,24 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-                    <div className={`p-6 transition-colors duration-300 ${
-                        isDarkMode ? 'bg-gray-800' : 'bg-white'
-                    }`}>
+                    <div className={`p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} transition-colors duration-300`}>
                         <div className="flex items-center justify-between text-sm">
-                            <span className={`transition-colors duration-300 ${
-                                isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                            }`}>{t('admin.metrics.pendingApproval')}</span>
+                            <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>{t('admin.metrics.pendingApproval')}</span>
                             <span className="font-semibold text-orange-600">{pendingUsers.length}</span>
                         </div>
-                        <div className={`mt-4 rounded-full h-2 transition-colors duration-300 ${
-                            isDarkMode ? 'bg-gray-700' : 'bg-gray-200'
-                        }`}>
+                        <div className={`mt-4 rounded-full h-2 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} transition-colors duration-300`}>
                             <div 
                                 className="bg-blue-500 h-2 rounded-full transition-all duration-1000"
                                 style={{ width: `${(allUsers.filter(u => u.isApproved).length / allUsers.length) * 100}%` }}
                             ></div>
                         </div>
-                        <div className={`mt-2 text-xs transition-colors duration-300 ${
-                            isDarkMode ? 'text-gray-500' : 'text-gray-500'
-                        }`}>
+                        <div className={`mt-2 text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-500'} transition-colors duration-300`}>
                             {Math.round((allUsers.filter(u => u.isApproved).length / allUsers.length) * 100)}% {t('admin.status.approved')}
                         </div>
                     </div>
                 </div>
-
-                <div className={`rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300 ${
-                    isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'
-                }`}>
+    
+                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
                     <div className="bg-gradient-to-br from-green-500 to-green-600 p-6 text-white">
                         <div className="flex items-center justify-between">
                             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -6243,34 +5852,24 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-                    <div className={`p-6 transition-colors duration-300 ${
-                        isDarkMode ? 'bg-gray-800' : 'bg-white'
-                    }`}>
+                    <div className={`p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} transition-colors duration-300`}>
                         <div className="flex items-center justify-between text-sm">
-                            <span className={`transition-colors duration-300 ${
-                                isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                            }`}>{t('admin.metrics.pendingReview')}</span>
+                            <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>{t('admin.metrics.pendingReview')}</span>
                             <span className="font-semibold text-orange-600">{dashboardData.admin.pendingApplications || 0}</span>
                         </div>
-                        <div className={`mt-4 rounded-full h-2 transition-colors duration-300 ${
-                            isDarkMode ? 'bg-gray-700' : 'bg-gray-200'
-                        }`}>
+                        <div className={`mt-4 rounded-full h-2 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} transition-colors duration-300`}>
                             <div 
                                 className="bg-green-500 h-2 rounded-full transition-all duration-1000"
                                 style={{ width: `${applicationSubmissions.length > 0 ? ((applicationSubmissions.filter(app => app.status === 'approved').length / applicationSubmissions.length) * 100) : 0}%` }}
                             ></div>
                         </div>
-                        <div className={`mt-2 text-xs transition-colors duration-300 ${
-                            isDarkMode ? 'text-gray-500' : 'text-gray-500'
-                        }`}>
+                        <div className={`mt-2 text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-500'} transition-colors duration-300`}>
                             {applicationSubmissions.filter(app => app.status === 'approved').length} {t('admin.status.approved')}
                         </div>
                     </div>
                 </div>
-
-                <div className={`rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300 ${
-                    isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'
-                }`}>
+    
+                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
                     <div className="bg-gradient-to-br from-orange-500 to-orange-600 p-6 text-white">
                         <div className="flex items-center justify-between">
                             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -6282,34 +5881,24 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-                    <div className={`p-6 transition-colors duration-300 ${
-                        isDarkMode ? 'bg-gray-800' : 'bg-white'
-                    }`}>
+                    <div className={`p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} transition-colors duration-300`}>
                         <div className="flex items-center justify-between text-sm">
-                            <span className={`transition-colors duration-300 ${
-                                isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                            }`}>{t('admin.metrics.needsResponse')}</span>
+                            <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>{t('admin.metrics.needsResponse')}</span>
                             <span className="font-semibold text-red-600">{dashboardData.admin.pendingContacts || 0}</span>
                         </div>
-                        <div className={`mt-4 rounded-full h-2 transition-colors duration-300 ${
-                            isDarkMode ? 'bg-gray-700' : 'bg-gray-200'
-                        }`}>
+                        <div className={`mt-4 rounded-full h-2 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} transition-colors duration-300`}>
                             <div 
                                 className="bg-orange-500 h-2 rounded-full transition-all duration-1000"
                                 style={{ width: `${contactSubmissions.length > 0 ? ((contactSubmissions.filter(contact => contact.status === 'resolved').length / contactSubmissions.length) * 100) : 0}%` }}
                             ></div>
                         </div>
-                        <div className={`mt-2 text-xs transition-colors duration-300 ${
-                            isDarkMode ? 'text-gray-500' : 'text-gray-500'
-                        }`}>
+                        <div className={`mt-2 text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-500'} transition-colors duration-300`}>
                             {contactSubmissions.filter(contact => contact.status === 'resolved').length} {t('admin.status.resolved')}
                         </div>
                     </div>
                 </div>
-
-                <div className={`rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300 ${
-                    isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'
-                }`}>
+    
+                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden group hover:shadow-2xl transition-all duration-300`}>
                     <div className="bg-gradient-to-br from-purple-500 to-purple-600 p-6 text-white">
                         <div className="flex items-center justify-between">
                             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -6321,47 +5910,31 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
-                    <div className={`p-6 transition-colors duration-300 ${
-                        isDarkMode ? 'bg-gray-800' : 'bg-white'
-                    }`}>
+                    <div className={`p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} transition-colors duration-300`}>
                         <div className="flex items-center justify-between text-sm">
-                            <span className={`transition-colors duration-300 ${
-                                isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                            }`}>{t('admin.metrics.last30Days')}</span>
+                            <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>{t('admin.metrics.last30Days')}</span>
                             <span className="font-semibold text-green-600">{t('admin.status.excellent')}</span>
                         </div>
-                        <div className={`mt-4 rounded-full h-2 transition-colors duration-300 ${
-                            isDarkMode ? 'bg-gray-700' : 'bg-gray-200'
-                        }`}>
+                        <div className={`mt-4 rounded-full h-2 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} transition-colors duration-300`}>
                             <div className="bg-purple-500 h-2 rounded-full transition-all duration-1000" style={{ width: '99.9%' }}></div>
                         </div>
-                        <div className={`mt-2 text-xs transition-colors duration-300 ${
-                            isDarkMode ? 'text-gray-500' : 'text-gray-500'
-                        }`}>
+                        <div className={`mt-2 text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-500'} transition-colors duration-300`}>
                             43.2 {t('admin.metrics.downtime')}
                         </div>
                     </div>
                 </div>
             </div>
-
-            {/* Main Content Grid */}
+    
+            {/* Main Content Grid - Dark Mode */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* User Role Distribution */}
-                <div className={`rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300 ${
-                    isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'
-                }`}>
-                    <div className={`p-6 border-b transition-colors duration-300 ${
-                        isDarkMode ? 'border-gray-700' : 'border-gray-200'
-                    }`}>
-                        <h3 className={`text-lg font-semibold flex items-center transition-colors duration-300 ${
-                            isDarkMode ? 'text-gray-100' : 'text-gray-900'
-                        }`}>
+                {/* User Role Distribution - Dark Mode */}
+                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+                    <div className={`p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
+                        <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                             <span className="mr-2">📊</span>
                             {t('admin.userDistribution.title')}
                         </h3>
-                        <p className={`text-sm mt-1 transition-colors duration-300 ${
-                            isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                        }`}>{t('admin.userDistribution.subtitle')}</p>
+                        <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mt-1 transition-colors duration-300`}>{t('admin.userDistribution.subtitle')}</p>
                     </div>
                     <div className="p-6">
                         <div className="space-y-4">
@@ -6373,12 +5946,8 @@ const Dashboard = () => {
                                         <span className="text-white text-sm font-bold">👨‍🎓</span>
                                     </div>
                                     <div>
-                                        <div className={`font-semibold transition-colors duration-300 ${
-                                            isDarkMode ? 'text-gray-100' : 'text-gray-900'
-                                        }`}>{t('admin.roles.students')}</div>
-                                        <div className={`text-sm transition-colors duration-300 ${
-                                            isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                                        }`}>{t('admin.roles.studentsDesc')}</div>
+                                        <div className={`font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>{t('admin.roles.students')}</div>
+                                        <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>{t('admin.roles.studentsDesc')}</div>
                                     </div>
                                 </div>
                                 <div className="text-right">
@@ -6388,7 +5957,7 @@ const Dashboard = () => {
                                     </div>
                                 </div>
                             </div>
-
+    
                             <div className={`flex items-center justify-between p-4 rounded-xl border transition-colors ${
                                 isDarkMode ? 'bg-green-900/20 border-green-700/50' : 'bg-green-50 border-green-200'
                             }`}>
@@ -6397,12 +5966,8 @@ const Dashboard = () => {
                                         <span className="text-white text-sm font-bold">👨‍🏫</span>
                                     </div>
                                     <div>
-                                        <div className={`font-semibold transition-colors duration-300 ${
-                                            isDarkMode ? 'text-gray-100' : 'text-gray-900'
-                                        }`}>{t('admin.roles.teachers')}</div>
-                                        <div className={`text-sm transition-colors duration-300 ${
-                                            isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                                        }`}>{t('admin.roles.teachersDesc')}</div>
+                                        <div className={`font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>{t('admin.roles.teachers')}</div>
+                                        <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>{t('admin.roles.teachersDesc')}</div>
                                     </div>
                                 </div>
                                 <div className="text-right">
@@ -6412,7 +5977,7 @@ const Dashboard = () => {
                                     </div>
                                 </div>
                             </div>
-
+    
                             <div className={`flex items-center justify-between p-4 rounded-xl border transition-colors ${
                                 isDarkMode ? 'bg-purple-900/20 border-purple-700/50' : 'bg-purple-50 border-purple-200'
                             }`}>
@@ -6421,12 +5986,8 @@ const Dashboard = () => {
                                         <span className="text-white text-sm font-bold">👨‍💼</span>
                                     </div>
                                     <div>
-                                        <div className={`font-semibold transition-colors duration-300 ${
-                                            isDarkMode ? 'text-gray-100' : 'text-gray-900'
-                                        }`}>{t('admin.roles.administrators')}</div>
-                                        <div className={`text-sm transition-colors duration-300 ${
-                                            isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                                        }`}>{t('admin.roles.administratorsDesc')}</div>
+                                        <div className={`font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>{t('admin.roles.administrators')}</div>
+                                        <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>{t('admin.roles.administratorsDesc')}</div>
                                     </div>
                                 </div>
                                 <div className="text-right">
@@ -6437,57 +5998,41 @@ const Dashboard = () => {
                                 </div>
                             </div>
                         </div>
-
+    
                         <div className={`mt-6 p-4 rounded-xl transition-colors ${
                             isDarkMode ? 'bg-gradient-to-r from-gray-700 to-gray-600' : 'bg-gradient-to-r from-gray-50 to-gray-100'
                         }`}>
                             <div className="flex items-center justify-between">
-                                <span className={`text-sm font-medium transition-colors duration-300 ${
-                                    isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                                }`}>{t('admin.metrics.totalActiveUsers')}</span>
-                                <span className={`text-lg font-bold transition-colors duration-300 ${
-                                    isDarkMode ? 'text-gray-100' : 'text-gray-900'
-                                }`}>{allUsers.filter(u => u.isApproved).length}</span>
+                                <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>{t('admin.metrics.totalActiveUsers')}</span>
+                                <span className={`text-lg font-bold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>{allUsers.filter(u => u.isApproved).length}</span>
                             </div>
-                            <div className={`mt-2 text-xs transition-colors duration-300 ${
-                                isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                            }`}>
+                            <div className={`mt-2 text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
                                 {t('admin.metrics.growthRate')}: +{Math.floor(Math.random() * 15) + 5}% {t('admin.metrics.thisMonth')}
                             </div>
                         </div>
                     </div>
                 </div>
-
-                {/* Recent Activity Feed */}
-                <div className={`lg:col-span-2 rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300 ${
-                    isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'
-                }`}>
-                    <div className={`p-6 border-b transition-colors duration-300 ${
-                        isDarkMode ? 'border-gray-700' : 'border-gray-200'
-                    }`}>
+    
+                {/* Recent Activity Feed - Dark Mode */}
+                <div className={`lg:col-span-2 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+                    <div className={`p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
                         <div className="flex items-center justify-between">
                             <div>
-                                <h3 className={`text-lg font-semibold flex items-center transition-colors duration-300 ${
-                                    isDarkMode ? 'text-gray-100' : 'text-gray-900'
-                                }`}>
+                                <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                                     <span className="mr-2">⚡</span>
                                     {t('admin.activity.title')}
                                 </h3>
-                                <p className={`text-sm mt-1 transition-colors duration-300 ${
-                                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                                }`}>{t('admin.activity.subtitle')}</p>
+                                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mt-1 transition-colors duration-300`}>{t('admin.activity.subtitle')}</p>
                             </div>
                             <div className="flex items-center space-x-2">
                                 <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                                <span className={`text-sm transition-colors duration-300 ${
-                                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                                }`}>{t('admin.status.live')}</span>
+                                <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>{t('admin.status.live')}</span>
                             </div>
                         </div>
                     </div>
                     <div className="p-6">
                         <div className="space-y-4">
-                            {/* Pending User Approvals */}
+                            {/* Pending User Approvals - Dark Mode */}
                             {pendingUsers.length > 0 && pendingUsers.slice(0, 3).map(user => (
                                 <div key={user._id} className={`flex items-start space-x-4 p-4 border rounded-xl transition-colors ${
                                     isDarkMode 
@@ -6504,20 +6049,14 @@ const Dashboard = () => {
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center justify-between">
-                                            <h4 className={`text-sm font-semibold transition-colors duration-300 ${
-                                                isDarkMode ? 'text-gray-100' : 'text-gray-900'
-                                            }`}>
+                                            <h4 className={`text-sm font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>
                                                 {t('admin.activity.newRegistration', { role: user.role })}
                                             </h4>
-                                            <span className={`text-xs transition-colors duration-300 ${
-                                                isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                                            }`}>
+                                            <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
                                                 {new Date(user.createdAt || Date.now()).toLocaleDateString()}
                                             </span>
                                         </div>
-                                        <p className={`text-sm transition-colors duration-300 ${
-                                            isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                                        }`}>
+                                        <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>
                                             {user.firstName} {user.lastName} ({user.email}) {t('admin.activity.awaitingApproval')}
                                         </p>
                                         <div className="flex space-x-2 mt-3">
@@ -6545,8 +6084,8 @@ const Dashboard = () => {
                                     </div>
                                 </div>
                             ))}
-
-                            {/* Recent Contact Messages */}
+    
+                            {/* Recent Contact Messages - Dark Mode */}
                             {contactSubmissions.length > 0 && contactSubmissions.filter(c => c.status === 'pending').slice(0, 2).map(contact => (
                                 <div key={contact._id} className={`flex items-start space-x-4 p-4 border rounded-xl transition-colors ${
                                     isDarkMode 
@@ -6558,18 +6097,12 @@ const Dashboard = () => {
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center justify-between">
-                                            <h4 className={`text-sm font-semibold transition-colors duration-300 ${
-                                                isDarkMode ? 'text-gray-100' : 'text-gray-900'
-                                            }`}>{t('admin.activity.newContactMessage')}</h4>
-                                            <span className={`text-xs transition-colors duration-300 ${
-                                                isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                                            }`}>
+                                            <h4 className={`text-sm font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>{t('admin.activity.newContactMessage')}</h4>
+                                            <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
                                                 {new Date(contact.createdAt || Date.now()).toLocaleDateString()}
                                             </span>
                                         </div>
-                                        <p className={`text-sm transition-colors duration-300 ${
-                                            isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                                        }`}>
+                                        <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>
                                             {contact.name} - {contact.subject}
                                         </p>
                                         <div className="flex space-x-2 mt-3">
@@ -6597,8 +6130,8 @@ const Dashboard = () => {
                                     </div>
                                 </div>
                             ))}
-
-                            {/* System Events */}
+    
+                            {/* System Events - Dark Mode */}
                             <div className={`flex items-start space-x-4 p-4 border rounded-xl transition-colors ${
                                 isDarkMode 
                                     ? 'bg-green-900/20 border-green-700/50' 
@@ -6609,16 +6142,10 @@ const Dashboard = () => {
                                 </div>
                                 <div className="flex-1">
                                     <div className="flex items-center justify-between">
-                                        <h4 className={`text-sm font-semibold transition-colors duration-300 ${
-                                            isDarkMode ? 'text-gray-100' : 'text-gray-900'
-                                        }`}>{t('admin.activity.securityScan')}</h4>
-                                        <span className={`text-xs transition-colors duration-300 ${
-                                            isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                                        }`}>{t('admin.time.fiveMinutesAgo')}</span>
+                                        <h4 className={`text-sm font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>{t('admin.activity.securityScan')}</h4>
+                                        <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>{t('admin.time.fiveMinutesAgo')}</span>
                                     </div>
-                                    <p className={`text-sm transition-colors duration-300 ${
-                                        isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                                    }`}>{t('admin.activity.noThreats')}</p>
+                                    <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>{t('admin.activity.noThreats')}</p>
                                     <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium mt-2 transition-colors ${
                                         isDarkMode ? 'bg-green-900/50 text-green-300 border border-green-700/50' : 'bg-green-100 text-green-800'
                                     }`}>
@@ -6626,7 +6153,7 @@ const Dashboard = () => {
                                     </span>
                                 </div>
                             </div>
-
+    
                             <div className={`flex items-start space-x-4 p-4 border rounded-xl transition-colors ${
                                 isDarkMode 
                                     ? 'bg-purple-900/20 border-purple-700/50' 
@@ -6637,16 +6164,10 @@ const Dashboard = () => {
                                 </div>
                                 <div className="flex-1">
                                     <div className="flex items-center justify-between">
-                                        <h4 className={`text-sm font-semibold transition-colors duration-300 ${
-                                            isDarkMode ? 'text-gray-100' : 'text-gray-900'
-                                        }`}>{t('admin.activity.databaseBackup')}</h4>
-                                        <span className={`text-xs transition-colors duration-300 ${
-                                            isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                                        }`}>{t('admin.time.oneHourAgo')}</span>
+                                        <h4 className={`text-sm font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>{t('admin.activity.databaseBackup')}</h4>
+                                        <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>{t('admin.time.oneHourAgo')}</span>
                                     </div>
-                                    <p className={`text-sm transition-colors duration-300 ${
-                                        isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                                    }`}>{t('admin.activity.backupSuccess')}</p>
+                                    <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>{t('admin.activity.backupSuccess')}</p>
                                     <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium mt-2 transition-colors ${
                                         isDarkMode ? 'bg-purple-900/50 text-purple-300 border border-purple-700/50' : 'bg-purple-100 text-purple-800'
                                     }`}>
@@ -6655,14 +6176,12 @@ const Dashboard = () => {
                                 </div>
                             </div>
                         </div>
-
-                        {/* Quick Actions */}
+    
+                        {/* Quick Actions - Dark Mode */}
                         <div className={`mt-8 p-6 rounded-xl transition-colors ${
                             isDarkMode ? 'bg-gradient-to-r from-gray-700 to-gray-600' : 'bg-gradient-to-r from-gray-50 to-gray-100'
                         }`}>
-                            <h4 className={`text-sm font-semibold mb-4 transition-colors duration-300 ${
-                                isDarkMode ? 'text-gray-200' : 'text-gray-900'
-                            }`}>{t('admin.quickActions.title')}</h4>
+                            <h4 className={`text-sm font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-900'} mb-4 transition-colors duration-300`}>{t('admin.quickActions.title')}</h4>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                                 <button className={`flex flex-col items-center p-3 rounded-lg border transition-all group ${
                                     isDarkMode 
@@ -6709,24 +6228,16 @@ const Dashboard = () => {
                     </div>
                 </div>
             </div>
-
-            {/* System Alerts & Notifications */}
+    
+            {/* System Alerts & Notifications - Dark Mode */}
             {dashboardData.admin.recentAlerts && dashboardData.admin.recentAlerts.length > 0 && (
-                <div className={`rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300 ${
-                    isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'
-                }`}>
-                    <div className={`p-6 border-b transition-colors duration-300 ${
-                        isDarkMode ? 'border-gray-700' : 'border-gray-200'
-                    }`}>
-                        <h3 className={`text-lg font-semibold flex items-center transition-colors duration-300 ${
-                            isDarkMode ? 'text-gray-100' : 'text-gray-900'
-                        }`}>
+                <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+                    <div className={`p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
+                        <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
                             <span className="mr-2">🚨</span>
                             {t('admin.alerts.title')}
                         </h3>
-                        <p className={`text-sm mt-1 transition-colors duration-300 ${
-                            isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                        }`}>{t('admin.alerts.subtitle')}</p>
+                        <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mt-1 transition-colors duration-300`}>{t('admin.alerts.subtitle')}</p>
                     </div>
                     <div className="p-6">
                         <div className="space-y-3">
@@ -6744,16 +6255,10 @@ const Dashboard = () => {
                                         </span>
                                     </div>
                                     <div className="flex-1">
-                                        <p className={`text-sm font-medium transition-colors duration-300 ${
-                                            isDarkMode ? 'text-gray-100' : 'text-gray-900'
-                                        }`}>{alert.message}</p>
-                                        <p className={`text-xs mt-1 transition-colors duration-300 ${
-                                            isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                                        }`}>{alert.time}</p>
+                                        <p className={`text-sm font-medium ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>{alert.message}</p>
+                                        <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mt-1 transition-colors duration-300`}>{alert.time}</p>
                                     </div>
-                                    <button className={`transition-colors ${
-                                        isDarkMode ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
-                                    }`}>
+                                    <button className={`transition-colors ${isDarkMode ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'}`}>
                                         <span className="text-lg">✕</span>
                                     </button>
                                 </div>
@@ -6765,219 +6270,336 @@ const Dashboard = () => {
         </div>
     );
 
+    // Helper functions for user management pagination
+    const getUserTotalPages = () => {
+        const totalItems = getFilteredUsers().length;
+        return Math.ceil(totalItems / itemsPerPage);
+    };
+
+    const getCurrentPageUsers = () => {
+        const filteredUsers = getFilteredUsers();
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        return filteredUsers.slice(startIndex, endIndex);
+    };
+
     const renderUserManagement = () => (
-        <div className="space-y-8">
-            {/* Header Section */}
-            <div className={`rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300 ${
-                isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'
-            }`}>
-                <div className={`p-6 border-b transition-colors duration-300 ${
-                    isDarkMode ? 'border-gray-700' : 'border-gray-200'
-                }`}>
-                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                        <div>
-                            <h2 className={`text-2xl font-bold flex items-center transition-colors duration-300 ${
-                                isDarkMode ? 'text-gray-100' : 'text-gray-900'
-                            }`}>
-                                <span className="mr-3">👥</span>
-                                {t('userManagement.title')}
-                            </h2>
-                            <div className="flex flex-wrap gap-4 text-sm mt-2">
-                                <span className={`transition-colors duration-300 ${
-                                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                                }`}>
-                                    <span className={`font-semibold transition-colors duration-300 ${
-                                        isDarkMode ? 'text-gray-100' : 'text-gray-900'
-                                    }`}>{allUsers.length}</span> {t('userManagement.stats.totalUsers')}
-                                </span>
-                                <span className={`transition-colors duration-300 ${
-                                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                                }`}>
-                                    <span className="font-semibold text-orange-600">{pendingUsers.length}</span> {t('userManagement.stats.pending')}
-                                </span>
-                                <span className={`transition-colors duration-300 ${
-                                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                                }`}>
-                                    <span className="font-semibold text-green-600">{allUsers.filter(u => u.isApproved).length}</span> {t('userManagement.stats.approved')}
-                                </span>
+        <div className="space-y-6">
+            {/* Clean Header Section */}
+            <div className={`${
+                isDarkMode 
+                    ? 'bg-gray-800 border-gray-700' 
+                    : 'bg-white border-gray-200'
+            } rounded-xl p-6 border shadow-sm`}>
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                    {/* Title and Stats Section */}
+                    <div className="space-y-4">
+                        <div className="flex items-center space-x-3">
+                            <div className={`w-10 h-10 ${
+                                isDarkMode ? 'bg-blue-600' : 'bg-blue-500'
+                            } rounded-lg flex items-center justify-center`}>
+                                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h2 className={`text-2xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                                    {t('userManagement.title')}
+                                </h2>
+                                <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-sm`}>
+                                    Manage and monitor your team
+                                </p>
                             </div>
                         </div>
-    
+                        
+                        {/* Clean Stats Cards */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className={`${
+                                isDarkMode ? 'bg-gray-700' : 'bg-gray-50'
+                            } rounded-lg p-4 transition-colors`}>
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                                            {allUsers.length}
+                                        </div>
+                                        <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                            {t('userManagement.stats.totalUsers')}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className={`${
+                                isDarkMode ? 'bg-gray-700' : 'bg-gray-50'
+                            } rounded-lg p-4 transition-colors`}>
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
+                                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div className="text-xl font-semibold text-orange-600">
+                                            {pendingUsers.length}
+                                        </div>
+                                        <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                            {t('userManagement.stats.pending')}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className={`${
+                                isDarkMode ? 'bg-gray-700' : 'bg-gray-50'
+                            } rounded-lg p-4 transition-colors`}>
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
+                                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div className="text-xl font-semibold text-green-600">
+                                            {allUsers.filter(u => u.isApproved).length}
+                                        </div>
+                                        <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                            {t('userManagement.stats.approved')}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Controls Section */}
+                    <div className="space-y-3">
+                        {/* Search and Filter Controls */}
                         <div className="flex flex-col sm:flex-row gap-3">
-                            <div className="flex flex-col sm:flex-row gap-2">
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
                                 <input 
                                     type="text" 
                                     placeholder={t('userManagement.search.placeholder')}
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className={`px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                    className={`pl-10 pr-4 py-2 w-full border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                                         isDarkMode 
-                                            ? 'border-gray-600 bg-gray-800 text-gray-100 placeholder-gray-400' 
-                                            : 'border-gray-300 bg-white text-gray-900'
+                                            ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+                                            : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
                                     }`}
                                 />
+                            </div>
+                            
+                            <div className="flex gap-2">
                                 <select 
                                     value={selectedRole}
                                     onChange={(e) => setSelectedRole(e.target.value)}
-                                    className={`px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                    className={`px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                                         isDarkMode 
-                                            ? 'border-gray-600 bg-gray-800 text-gray-100' 
+                                            ? 'border-gray-600 bg-gray-700 text-gray-100' 
                                             : 'border-gray-300 bg-white text-gray-900'
                                     }`}
                                 >
-                                    <option value="">{t('userManagement.search.allRoles')}</option>
-                                    <option value="student">{t('userManagement.roles.students')}</option>
-                                    <option value="teacher">{t('userManagement.roles.teachers')}</option>
-                                    <option value="admin">{t('userManagement.roles.admins')}</option>
+                                    <option value="">{t('userManagement.filters.allRoles')}</option>
+                                    <option value="student">{t('userManagement.filters.students')}</option>
+                                    <option value="teacher">{t('userManagement.filters.teachers')}</option>
+                                    <option value="admin">{t('userManagement.filters.admins')}</option>
                                 </select>
                                 <select 
                                     value={selectedStatus}
                                     onChange={(e) => setSelectedStatus(e.target.value)}
-                                    className={`px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                    className={`px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                                         isDarkMode 
-                                            ? 'border-gray-600 bg-gray-800 text-gray-100' 
+                                            ? 'border-gray-600 bg-gray-700 text-gray-100' 
                                             : 'border-gray-300 bg-white text-gray-900'
                                     }`}
                                 >
-                                    <option value="">{t('userManagement.search.allStatus')}</option>
-                                    <option value="approved">{t('userManagement.status.approved')}</option>
-                                    <option value="pending">{t('userManagement.status.pending')}</option>
+                                    <option value="">{t('userManagement.filters.allStatus')}</option>
+                                    <option value="approved">{t('userManagement.filters.approved')}</option>
+                                    <option value="pending">{t('userManagement.filters.pending')}</option>
                                 </select>
                             </div>
-                            <button 
-                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors"
-                                onClick={() => setShowCreateUserForm(true)}
-                            >
-                                ➕ {t('userManagement.buttons.createNewUser')}
-                            </button>
                         </div>
+                        
+                        {/* Create User Button */}
+                        <button 
+                            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                            onClick={() => setShowCreateUserForm(true)}
+                        >
+                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                            {t('userManagement.actions.createUser')}
+                        </button>
                     </div>
                 </div>
             </div>
     
-            {/* CREATE USER MODAL */}
+            {/* Clean Create User Modal */}
             {showCreateUserForm && (
-                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
-                    <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-2xl border w-full max-w-2xl mx-4 transition-colors duration-300`}>
-                        <div className={`flex items-center justify-between p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
-                            <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
-                                <span className="mr-2">✨</span>
-                                {t('userManagement.modals.createUser.title')}
-                            </h3>
+                <div className="fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
+                    <div className={`${
+                        isDarkMode 
+                            ? 'bg-gray-800 border-gray-700' 
+                            : 'bg-white border-gray-200'
+                    } rounded-lg shadow-xl border w-full max-w-2xl`}>
+                        {/* Header */}
+                        <div className={`flex items-center justify-between p-6 border-b ${
+                            isDarkMode ? 'border-gray-700' : 'border-gray-200'
+                        }`}>
+                            <div className="flex items-center space-x-3">
+                                <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                                        {t('userManagement.modals.createUser.title')}
+                                    </h3>
+                                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                        Add a new team member to the platform
+                                    </p>
+                                </div>
+                            </div>
                             <button 
-                                className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+                                className={`p-2 rounded-lg transition-colors ${
+                                    isDarkMode 
+                                        ? 'hover:bg-gray-700 text-gray-400 hover:text-white' 
+                                        : 'hover:bg-gray-100 text-gray-500 hover:text-gray-700'
+                                }`}
                                 onClick={() => setShowCreateUserForm(false)}
                             >
-                                <span className={`${isDarkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-400 hover:text-gray-600'} text-xl transition-colors`}>✕</span>
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
                             </button>
                         </div>
+                        
+                        {/* Form Content */}
                         <div className="p-6">
                             <form onSubmit={handleCreateUser} className="space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
-                                            {t('userManagement.form.firstName')}
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                            {t('userManagement.fields.firstName')}
                                         </label>
                                         <input
                                             type="text"
-                                            placeholder={t('userManagement.form.placeholders.firstName')}
+                                            placeholder={t('userManagement.placeholders.firstName')}
                                             value={newUserData.firstName}
                                             onChange={(e) => setNewUserData({...newUserData, firstName: e.target.value})}
-                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                                                 isDarkMode 
                                                     ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
-                                                    : 'border-gray-300 bg-white text-gray-900'
+                                                    : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
                                             }`}
                                             required
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
-                                            {t('userManagement.form.lastName')}
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                            {t('userManagement.fields.lastName')}
                                         </label>
                                         <input
                                             type="text"
-                                            placeholder={t('userManagement.form.placeholders.lastName')}
+                                            placeholder={t('userManagement.placeholders.lastName')}
                                             value={newUserData.lastName}
                                             onChange={(e) => setNewUserData({...newUserData, lastName: e.target.value})}
-                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                                                 isDarkMode 
                                                     ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
-                                                    : 'border-gray-300 bg-white text-gray-900'
+                                                    : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
                                             }`}
                                             required
                                         />
                                     </div>
                                     <div className="md:col-span-2 space-y-2">
-                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
-                                            {t('userManagement.form.email')}
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                            {t('userManagement.fields.email')}
                                         </label>
                                         <input
                                             type="email"
-                                            placeholder={t('userManagement.form.placeholders.email')}
+                                            placeholder={t('userManagement.placeholders.email')}
                                             value={newUserData.email}
                                             onChange={(e) => setNewUserData({...newUserData, email: e.target.value})}
-                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                                                 isDarkMode 
                                                     ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
-                                                    : 'border-gray-300 bg-white text-gray-900'
+                                                    : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
                                             }`}
                                             required
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
-                                            {t('userManagement.form.password')}
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                            {t('userManagement.fields.password')}
                                         </label>
                                         <input
                                             type="password"
-                                            placeholder={t('userManagement.form.placeholders.password')}
+                                            placeholder={t('userManagement.placeholders.password')}
                                             value={newUserData.password}
                                             onChange={(e) => setNewUserData({...newUserData, password: e.target.value})}
-                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                                                 isDarkMode 
                                                     ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
-                                                    : 'border-gray-300 bg-white text-gray-900'
+                                                    : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
                                             }`}
                                             required
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
-                                            {t('userManagement.form.role')}
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                            {t('userManagement.fields.role')}
                                         </label>
                                         <select
                                             value={newUserData.role}
                                             onChange={(e) => setNewUserData({...newUserData, role: e.target.value})}
-                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                                                 isDarkMode 
                                                     ? 'border-gray-600 bg-gray-700 text-gray-100' 
                                                     : 'border-gray-300 bg-white text-gray-900'
                                             }`}
                                         >
-                                            <option value="student">👨‍🎓 {t('userManagement.roles.student')}</option>
-                                            <option value="teacher">👨‍🏫 {t('userManagement.roles.teacher')}</option>
-                                            <option value="admin">👨‍💼 {t('userManagement.roles.admin')}</option>
+                                            <option value="student">{t('userManagement.roles.student')}</option>
+                                            <option value="teacher">{t('userManagement.roles.teacher')}</option>
+                                            <option value="admin">{t('userManagement.roles.admin')}</option>
                                         </select>
                                     </div>
                                 </div>
-                                <div className={`flex justify-end space-x-3 pt-4 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
+                                
+                                {/* Action Buttons */}
+                                <div className={`flex justify-end space-x-3 pt-4 border-t ${
+                                    isDarkMode ? 'border-gray-700' : 'border-gray-200'
+                                }`}>
                                     <button 
                                         type="button" 
-                                        className={`px-4 py-2 border rounded-lg transition-colors ${
+                                        className={`px-4 py-2 border rounded-lg font-medium transition-colors ${
                                             isDarkMode 
                                                 ? 'border-gray-600 text-gray-300 bg-gray-700 hover:bg-gray-600' 
                                                 : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
                                         }`}
                                         onClick={() => setShowCreateUserForm(false)}
                                     >
-                                        {t('userManagement.buttons.cancel')}
+                                        {t('userManagement.actions.cancel')}
                                     </button>
                                     <button 
                                         type="submit" 
-                                        className="px-4 py-2 border border-transparent rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+                                        className="inline-flex items-center px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
                                     >
-                                        ✨ {t('userManagement.buttons.createUser')}
+                                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                        </svg>
+                                        {t('userManagement.actions.createUser')}
                                     </button>
                                 </div>
                             </form>
@@ -6985,18 +6607,40 @@ const Dashboard = () => {
                     </div>
                 </div>
             )}
-    
-            {/* EDIT USER MODAL */}
+
+            {/* Clean Edit User Modal */}
             {showEditUserForm && editingUser && (
-                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
-                    <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-2xl border w-full max-w-2xl mx-4 transition-colors duration-300`}>
-                        <div className={`flex items-center justify-between p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
-                            <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
-                                <span className="mr-2">📝</span>
-                                {t('userManagement.modals.editUser.title')}: {editingUser.firstName} {editingUser.lastName}
-                            </h3>
+                <div className="fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
+                    <div className={`${
+                        isDarkMode 
+                            ? 'bg-gray-800 border-gray-700' 
+                            : 'bg-white border-gray-200'
+                    } rounded-lg shadow-xl border w-full max-w-2xl`}>
+                        {/* Header */}
+                        <div className={`flex items-center justify-between p-6 border-b ${
+                            isDarkMode ? 'border-gray-700' : 'border-gray-200'
+                        }`}>
+                            <div className="flex items-center space-x-3">
+                                <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center">
+                                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                                        {t('userManagement.modals.editUser.title')}
+                                    </h3>
+                                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                        Editing: {editingUser.firstName} {editingUser.lastName}
+                                    </p>
+                                </div>
+                            </div>
                             <button 
-                                className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+                                className={`p-2 rounded-lg transition-colors ${
+                                    isDarkMode 
+                                        ? 'hover:bg-gray-700 text-gray-400 hover:text-white' 
+                                        : 'hover:bg-gray-100 text-gray-500 hover:text-gray-700'
+                                }`}
                                 onClick={() => {
                                     setShowEditUserForm(false);
                                     setEditingUser(null);
@@ -7009,105 +6653,113 @@ const Dashboard = () => {
                                     });
                                 }}
                             >
-                                <span className={`${isDarkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-400 hover:text-gray-600'} text-xl transition-colors`}>✕</span>
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
                             </button>
                         </div>
+                        
+                        {/* Form Content */}
                         <div className="p-6">
                             <form onSubmit={handleUpdateUser} className="space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
-                                            {t('userManagement.form.firstName')}
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                            {t('userManagement.fields.firstName')}
                                         </label>
                                         <input
                                             type="text"
-                                            placeholder={t('userManagement.form.placeholders.firstName')}
+                                            placeholder={t('userManagement.placeholders.firstName')}
                                             value={newUserData.firstName}
                                             onChange={(e) => setNewUserData({...newUserData, firstName: e.target.value})}
-                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                                                 isDarkMode 
                                                     ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
-                                                    : 'border-gray-300 bg-white text-gray-900'
+                                                    : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
                                             }`}
                                             required
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
-                                            {t('userManagement.form.lastName')}
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                            {t('userManagement.fields.lastName')}
                                         </label>
                                         <input
                                             type="text"
-                                            placeholder={t('userManagement.form.placeholders.lastName')}
+                                            placeholder={t('userManagement.placeholders.lastName')}
                                             value={newUserData.lastName}
                                             onChange={(e) => setNewUserData({...newUserData, lastName: e.target.value})}
-                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                                                 isDarkMode 
                                                     ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
-                                                    : 'border-gray-300 bg-white text-gray-900'
+                                                    : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
                                             }`}
                                             required
                                         />
                                     </div>
                                     <div className="md:col-span-2 space-y-2">
-                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
-                                            {t('userManagement.form.email')}
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                            {t('userManagement.fields.email')}
                                         </label>
                                         <input
                                             type="email"
-                                            placeholder={t('userManagement.form.placeholders.email')}
+                                            placeholder={t('userManagement.placeholders.email')}
                                             value={newUserData.email}
                                             onChange={(e) => setNewUserData({...newUserData, email: e.target.value})}
-                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                                                 isDarkMode 
                                                     ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
-                                                    : 'border-gray-300 bg-white text-gray-900'
+                                                    : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
                                             }`}
                                             required
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
-                                            {t('userManagement.form.newPassword')}
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                            {t('userManagement.fields.newPassword')}
                                         </label>
                                         <input
                                             type="password"
-                                            placeholder={t('userManagement.form.placeholders.newPassword')}
+                                            placeholder={t('userManagement.placeholders.newPassword')}
                                             value={newUserData.password}
                                             onChange={(e) => setNewUserData({...newUserData, password: e.target.value})}
-                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                                                 isDarkMode 
                                                     ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
-                                                    : 'border-gray-300 bg-white text-gray-900'
+                                                    : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
                                             }`}
                                         />
                                         <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                                            {t('userManagement.form.notes.passwordKeep')}
+                                            {t('userManagement.hints.passwordHint')}
                                         </p>
                                     </div>
                                     <div className="space-y-2">
-                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
-                                            {t('userManagement.form.role')}
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                            {t('userManagement.fields.role')}
                                         </label>
                                         <select
                                             value={newUserData.role}
                                             onChange={(e) => setNewUserData({...newUserData, role: e.target.value})}
-                                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                                                 isDarkMode 
                                                     ? 'border-gray-600 bg-gray-700 text-gray-100' 
                                                     : 'border-gray-300 bg-white text-gray-900'
                                             }`}
                                         >
-                                            <option value="student">👨‍🎓 {t('userManagement.roles.student')}</option>
-                                            <option value="teacher">👨‍🏫 {t('userManagement.roles.teacher')}</option>
-                                            <option value="admin">👨‍💼 {t('userManagement.roles.admin')}</option>
+                                            <option value="student">{t('userManagement.roles.student')}</option>
+                                            <option value="teacher">{t('userManagement.roles.teacher')}</option>
+                                            <option value="admin">{t('userManagement.roles.admin')}</option>
                                         </select>
                                     </div>
                                 </div>
-                                <div className={`flex justify-end space-x-3 pt-4 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} transition-colors duration-300`}>
+                                
+                                {/* Action Buttons */}
+                                <div className={`flex justify-end space-x-3 pt-4 border-t ${
+                                    isDarkMode ? 'border-gray-700' : 'border-gray-200'
+                                }`}>
                                     <button 
                                         type="button" 
-                                        className={`px-4 py-2 border rounded-lg transition-colors ${
+                                        className={`px-4 py-2 border rounded-lg font-medium transition-colors ${
                                             isDarkMode 
                                                 ? 'border-gray-600 text-gray-300 bg-gray-700 hover:bg-gray-600' 
                                                 : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
@@ -7124,13 +6776,16 @@ const Dashboard = () => {
                                             });
                                         }}
                                     >
-                                        {t('userManagement.buttons.cancel')}
+                                        {t('userManagement.actions.cancel')}
                                     </button>
                                     <button 
                                         type="submit" 
-                                        className="px-4 py-2 border border-transparent rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+                                        className="inline-flex items-center px-4 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors"
                                     >
-                                        💾 {t('userManagement.buttons.updateUser')}
+                                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        {t('userManagement.actions.updateUser')}
                                     </button>
                                 </div>
                             </form>
@@ -7138,47 +6793,73 @@ const Dashboard = () => {
                     </div>
                 </div>
             )}
-    
-            {/* DELETE CONFIRMATION MODAL */}
+
+            {/* Clean Delete Confirmation Modal */}
             {showDeleteConfirm && userToDelete && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-2xl border w-full max-w-md mx-4 transition-colors duration-300`}>
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className={`${
+                        isDarkMode 
+                            ? 'bg-gray-800 border-gray-700' 
+                            : 'bg-white border-gray-200'
+                    } rounded-lg shadow-xl border w-full max-w-md`}>
                         <div className="p-6">
-                            <div className="flex items-center mb-4">
-                                <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
-                                    <span className="text-red-600 text-2xl">⚠️</span>
+                            {/* Warning Icon */}
+                            <div className="flex justify-center mb-4">
+                                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                                    <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                                    </svg>
                                 </div>
                             </div>
-                            <div className="text-center">
-                                <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} mb-2`}>
+                            
+                            {/* Content */}
+                            <div className="text-center space-y-3">
+                                <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                                     {t('userManagement.modals.deleteUser.title')}
                                 </h3>
-                                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} mb-6`}>
-                                    {t('userManagement.modals.deleteUser.message')} <strong>"{userToDelete.firstName} {userToDelete.lastName}"</strong> ({userToDelete.email})?
-                                    <br />
-                                    <span className="text-red-500 font-medium">{t('userManagement.modals.deleteUser.warning')}</span>
-                                </p>
+                                <div className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} space-y-2`}>
+                                    <p>
+                                        {t('userManagement.modals.deleteUser.message', { 
+                                            name: `${userToDelete.firstName} ${userToDelete.lastName}`, 
+                                            email: userToDelete.email 
+                                        })}
+                                    </p>
+                                    <div className={`p-3 rounded-lg ${
+                                        isDarkMode 
+                                            ? 'bg-red-900 bg-opacity-30 border border-red-800' 
+                                            : 'bg-red-50 border border-red-200'
+                                    }`}>
+                                        <p className="text-red-600 font-medium text-sm">
+                                            {t('userManagement.modals.deleteUser.warning')}
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="flex justify-center space-x-4">
+                            
+                            {/* Action Buttons */}
+                            <div className="flex justify-center space-x-3 mt-6">
                                 <button
                                     onClick={() => {
                                         console.log('❌ Cancel delete clicked');
                                         setShowDeleteConfirm(false);
                                         setUserToDelete(null);
                                     }}
-                                    className={`px-4 py-2 border rounded-lg transition-colors ${
+                                    className={`px-4 py-2 border rounded-lg font-medium transition-colors ${
                                         isDarkMode 
                                             ? 'border-gray-600 text-gray-300 bg-gray-700 hover:bg-gray-600' 
                                             : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
                                     }`}
                                 >
-                                    {t('userManagement.buttons.cancel')}
+                                    {t('userManagement.actions.cancel')}
                                 </button>
                                 <button
                                     onClick={confirmDeleteUser}
-                                    className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                                    className="inline-flex items-center px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors"
                                 >
-                                    🗑️ {t('userManagement.buttons.yesDelete')}
+                                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                    {t('userManagement.actions.confirmDelete')}
                                 </button>
                             </div>
                         </div>
@@ -7186,90 +6867,116 @@ const Dashboard = () => {
                 </div>
             )}
     
-            {/* Users Table */}
-            <div className={`rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300 ${
-                isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'
-            }`}>
+            {/* Clean Users Table */}
+            <div className={`${
+                isDarkMode 
+                    ? 'bg-gray-800 border-gray-700' 
+                    : 'bg-white border-gray-200'
+            } rounded-xl shadow-sm border overflow-hidden`}>
                 <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead className={`transition-colors duration-300 ${
-                            isDarkMode ? 'bg-gradient-to-r from-gray-800 to-gray-700' : 'bg-gradient-to-r from-gray-50 to-gray-100'
-                        }`}>
-                            <tr>
-                                <th className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider transition-colors duration-300 ${
-                                    isDarkMode ? 'text-gray-300' : 'text-gray-500'
-                                }`}>
-                                    <div className="flex items-center space-x-1">
-                                        <span>👤 {t('userManagement.table.headers.user')}</span>
-                                        <span className={`transition-colors duration-300 ${
-                                            isDarkMode ? 'text-gray-500' : 'text-gray-400'
-                                        }`}>↕️</span>
+                    <table className="min-w-full">
+                        <thead>
+                            <tr className={`${
+                                isDarkMode 
+                                    ? 'bg-gray-700 border-gray-600' 
+                                    : 'bg-gray-50 border-gray-200'
+                            } border-b`}>
+                                <th className={`px-6 py-4 text-left text-xs font-semibold ${
+                                    isDarkMode ? 'text-gray-200' : 'text-gray-700'
+                                } uppercase tracking-wider`}>
+                                    <div className="flex items-center space-x-2">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                        <span>{t('userManagement.table.headers.user')}</span>
                                     </div>
                                 </th>
-                                <th className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider transition-colors duration-300 ${
-                                    isDarkMode ? 'text-gray-300' : 'text-gray-500'
-                                }`}>
-                                    <div className="flex items-center space-x-1">
-                                        <span>📧 {t('userManagement.table.headers.contact')}</span>
+                                <th className={`px-6 py-4 text-left text-xs font-semibold ${
+                                    isDarkMode ? 'text-gray-200' : 'text-gray-700'
+                                } uppercase tracking-wider`}>
+                                    <div className="flex items-center space-x-2">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 7.89a2 2 0 002.83 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                        </svg>
+                                        <span>{t('userManagement.table.headers.contact')}</span>
                                     </div>
                                 </th>
-                                <th className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider transition-colors duration-300 ${
-                                    isDarkMode ? 'text-gray-300' : 'text-gray-500'
-                                }`}>
-                                    <div className="flex items-center space-x-1">
-                                        <span>🎭 {t('userManagement.table.headers.role')}</span>
+                                <th className={`px-6 py-4 text-left text-xs font-semibold ${
+                                    isDarkMode ? 'text-gray-200' : 'text-gray-700'
+                                } uppercase tracking-wider`}>
+                                    <div className="flex items-center space-x-2">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                        </svg>
+                                        <span>{t('userManagement.table.headers.role')}</span>
                                     </div>
                                 </th>
-                                <th className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider transition-colors duration-300 ${
-                                    isDarkMode ? 'text-gray-300' : 'text-gray-500'
-                                }`}>
-                                    <div className="flex items-center space-x-1">
-                                        <span>📊 {t('userManagement.table.headers.status')}</span>
+                                <th className={`px-6 py-4 text-left text-xs font-semibold ${
+                                    isDarkMode ? 'text-gray-200' : 'text-gray-700'
+                                } uppercase tracking-wider`}>
+                                    <div className="flex items-center space-x-2">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <span>{t('userManagement.table.headers.status')}</span>
                                     </div>
                                 </th>
-                                <th className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider transition-colors duration-300 ${
-                                    isDarkMode ? 'text-gray-300' : 'text-gray-500'
-                                }`}>
-                                    <div className="flex items-center space-x-1">
-                                        <span>📅 {t('userManagement.table.headers.joined')}</span>
+                                <th className={`px-6 py-4 text-left text-xs font-semibold ${
+                                    isDarkMode ? 'text-gray-200' : 'text-gray-700'
+                                } uppercase tracking-wider`}>
+                                    <div className="flex items-center space-x-2">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        <span>{t('userManagement.table.headers.joined')}</span>
                                     </div>
                                 </th>
-                                <th className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider transition-colors duration-300 ${
-                                    isDarkMode ? 'text-gray-300' : 'text-gray-500'
-                                }`}>
-                                    ⚡ {t('userManagement.table.headers.actions')}
+                                <th className={`px-6 py-4 text-left text-xs font-semibold ${
+                                    isDarkMode ? 'text-gray-200' : 'text-gray-700'
+                                } uppercase tracking-wider`}>
+                                    <div className="flex items-center space-x-2">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                                        </svg>
+                                        <span>{t('userManagement.table.headers.actions')}</span>
+                                    </div>
                                 </th>
                             </tr>
                         </thead>
-                        {/* // Update the table body to use getCurrentPageItems() instead of getFilteredUsers() */}
-                        <tbody className={`transition-colors duration-300 ${
+                        <tbody className={`${
                             isDarkMode ? 'bg-gray-800 divide-gray-700' : 'bg-white divide-gray-200'
-                        }`}>
-                            {getCurrentPageItems().map((user, index) => (
-                                <tr key={user._id} className={`transition-colors duration-200 ${
+                        } divide-y`}>
+                            {getCurrentPageUsers().map((user, index) => (
+                                <tr key={user._id} className={`transition-colors ${
                                     isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'
-                                } ${!user.isApproved ? (isDarkMode ? 'bg-orange-900/30 border-l-4 border-orange-500' : 'bg-orange-25 border-l-4 border-orange-400') : ''}`}>
+                                } ${!user.isApproved ? (
+                                    isDarkMode 
+                                        ? 'bg-orange-900 bg-opacity-20 border-l-4 border-orange-500' 
+                                        : 'bg-orange-50 border-l-4 border-orange-400'
+                                ) : ''}`}>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="flex items-center space-x-4">
+                                        <div className="flex items-center space-x-3">
                                             <div className="relative">
-                                                <div className={`h-12 w-12 rounded-full flex items-center justify-center text-white font-semibold ${
-                                                    user.role === 'admin' ? 'bg-gradient-to-br from-purple-400 to-pink-500' :
-                                                    user.role === 'teacher' ? 'bg-gradient-to-br from-green-400 to-blue-500' :
-                                                    'bg-gradient-to-br from-blue-400 to-purple-500'
+                                                <div className={`h-10 w-10 rounded-lg flex items-center justify-center text-white font-semibold ${
+                                                    user.role === 'admin' ? 'bg-purple-600' :
+                                                    user.role === 'teacher' ? 'bg-green-600' :
+                                                    'bg-blue-600'
                                                 }`}>
                                                     {user.firstName?.charAt(0)}{user.lastName?.charAt(0)}
                                                 </div>
-                                                <div className={`absolute -bottom-1 -right-1 h-4 w-4 border-2 rounded-full transition-colors duration-300 ${
+                                                <div className={`absolute -bottom-1 -right-1 h-3 w-3 border-2 ${
                                                     isDarkMode ? 'border-gray-800' : 'border-white'
-                                                } ${user.isApproved ? 'bg-green-400' : 'bg-orange-400'}`}></div>
+                                                } rounded-full ${
+                                                    user.isApproved ? 'bg-green-400' : 'bg-orange-400'
+                                                }`}></div>
                                             </div>
-                                            <div className="space-y-1">
-                                                <div className={`text-sm font-semibold transition-colors duration-300 ${
+                                            <div>
+                                                <div className={`text-sm font-semibold ${
                                                     isDarkMode ? 'text-gray-100' : 'text-gray-900'
                                                 }`}>
                                                     {user.firstName} {user.lastName}
                                                 </div>
-                                                <div className={`text-xs transition-colors duration-300 ${
+                                                <div className={`text-xs ${
                                                     isDarkMode ? 'text-gray-400' : 'text-gray-500'
                                                 }`}>
                                                     ID: {user._id.slice(-8)}
@@ -7279,33 +6986,53 @@ const Dashboard = () => {
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="space-y-1">
-                                            <div className={`text-sm transition-colors duration-300 ${
+                                            <div className={`text-sm ${
                                                 isDarkMode ? 'text-gray-100' : 'text-gray-900'
                                             }`}>{user.email}</div>
                                             {user.phone && (
-                                                <div className={`text-xs transition-colors duration-300 ${
+                                                <div className={`text-xs ${
                                                     isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                                                }`}>📱 {user.phone}</div>
+                                                } flex items-center`}>
+                                                    <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                                    </svg>
+                                                    {user.phone}
+                                                </div>
                                             )}
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium transition-colors duration-300 ${
-                                            user.role === 'admin' ? (isDarkMode ? 'bg-purple-900/50 text-purple-300 border border-purple-700/50' : 'bg-purple-100 text-purple-800') :
-                                            user.role === 'teacher' ? (isDarkMode ? 'bg-green-900/50 text-green-300 border border-green-700/50' : 'bg-green-100 text-green-800') :
-                                            (isDarkMode ? 'bg-blue-900/50 text-blue-300 border border-blue-700/50' : 'bg-blue-100 text-blue-800')
+                                        <span className={`inline-flex items-center px-3 py-1 rounded-lg text-xs font-medium ${
+                                            user.role === 'admin' ? (
+                                                isDarkMode 
+                                                    ? 'bg-purple-900 bg-opacity-50 text-purple-300 border border-purple-700' 
+                                                    : 'bg-purple-100 text-purple-800'
+                                            ) :
+                                            user.role === 'teacher' ? (
+                                                isDarkMode 
+                                                    ? 'bg-green-900 bg-opacity-50 text-green-300 border border-green-700' 
+                                                    : 'bg-green-100 text-green-800'
+                                            ) : (
+                                                isDarkMode 
+                                                    ? 'bg-blue-900 bg-opacity-50 text-blue-300 border border-blue-700' 
+                                                    : 'bg-blue-100 text-blue-800'
+                                            )
                                         }`}>
-                                            <span className="mr-1">
-                                                {user.role === 'admin' ? '👨‍💼' : 
-                                                user.role === 'teacher' ? '👨‍🏫' : '👨‍🎓'}
-                                            </span>
                                             {t(`userManagement.roles.${user.role}`)}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="space-y-1">
-                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors duration-300 ${
-                                                user.isApproved ? (isDarkMode ? 'bg-green-900/50 text-green-300 border border-green-700/50' : 'bg-green-100 text-green-800') : (isDarkMode ? 'bg-orange-900/50 text-orange-300 border border-orange-700/50' : 'bg-orange-100 text-orange-800')
+                                            <span className={`inline-flex items-center px-2 py-1 rounded-lg text-xs font-medium ${
+                                                user.isApproved ? (
+                                                    isDarkMode 
+                                                        ? 'bg-green-900 bg-opacity-50 text-green-300 border border-green-700' 
+                                                        : 'bg-green-100 text-green-800'
+                                                ) : (
+                                                    isDarkMode 
+                                                        ? 'bg-orange-900 bg-opacity-50 text-orange-300 border border-orange-700' 
+                                                        : 'bg-orange-100 text-orange-800'
+                                                )
                                             }`}>
                                                 <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
                                                     user.isApproved ? 'bg-green-400' : 'bg-orange-400'
@@ -7313,27 +7040,33 @@ const Dashboard = () => {
                                                 {user.isApproved ? t('userManagement.status.approved') : t('userManagement.status.pending')}
                                             </span>
                                             {!user.isApproved && (
-                                                <div className={`text-xs font-medium transition-colors duration-300 ${
-                                                    isDarkMode ? 'text-orange-400' : 'text-orange-600'
+                                                <div className={`text-xs font-medium flex items-center ${
+                                                    isDarkMode ? 'text-orange-300' : 'text-orange-600'
                                                 }`}>
-                                                    ⚠️ {t('userManagement.status.needsReview')}
+                                                    <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                                                    </svg>
+                                                    {t('userManagement.status.needsReview')}
                                                 </div>
                                             )}
                                         </div>
                                     </td>
-                                    <td className={`px-6 py-4 whitespace-nowrap text-sm transition-colors duration-300 ${
-                                        isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                                    <td className={`px-6 py-4 whitespace-nowrap text-sm ${
+                                        isDarkMode ? 'text-gray-300' : 'text-gray-600'
                                     }`}>
                                         <div className="space-y-1">
-                                            <div className={`font-medium transition-colors duration-300 ${
+                                            <div className={`font-medium ${
                                                 isDarkMode ? 'text-gray-100' : 'text-gray-900'
                                             }`}>
                                                 {new Date(user.createdAt || Date.now()).toLocaleDateString()}
                                             </div>
-                                            <div className="text-xs">
+                                            <div className="text-xs flex items-center">
+                                                <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
                                                 {(() => {
                                                     const days = Math.floor((Date.now() - new Date(user.createdAt || Date.now())) / (1000 * 60 * 60 * 24));
-                                                    return days === 0 ? t('userManagement.table.timeago.today') : `${days} ${t('userManagement.table.timeago.daysAgo')}`;
+                                                    return days === 0 ? t('userManagement.time.today') : t('userManagement.time.daysAgo', { days });
                                                 })()}
                                             </div>
                                         </div>
@@ -7343,76 +7076,111 @@ const Dashboard = () => {
                                             {!user.isApproved ? (
                                                 <>
                                                     <button 
-                                                        className={`inline-flex items-center p-2 border border-transparent rounded-lg text-green-600 transition-colors duration-200 ${
-                                                            isDarkMode ? 'hover:bg-green-900/30' : 'hover:bg-green-100'
-                                                        }`}
+                                                        className={`p-2 border border-transparent rounded-lg text-green-600 ${
+                                                            isDarkMode ? 'hover:bg-green-900 hover:bg-opacity-30' : 'hover:bg-green-100'
+                                                        } transition-colors`}
                                                         onClick={() => handleUserApproval(user._id, true)}
-                                                        title={t('userManagement.table.actions.approve')}
+                                                        title={t('userManagement.actions.approveUser')}
                                                     >
-                                                        ✅
+                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                                        </svg>
                                                     </button>
                                                     <button 
-                                                        className={`inline-flex items-center p-2 border border-transparent rounded-lg text-red-600 transition-colors duration-200 ${
-                                                            isDarkMode ? 'hover:bg-red-900/30' : 'hover:bg-red-100'
-                                                        }`}
+                                                        className={`p-2 border border-transparent rounded-lg text-red-600 ${
+                                                            isDarkMode ? 'hover:bg-red-900 hover:bg-opacity-30' : 'hover:bg-red-100'
+                                                        } transition-colors`}
                                                         onClick={() => handleUserApproval(user._id, false)}
-                                                        title={t('userManagement.table.actions.reject')}
+                                                        title={t('userManagement.actions.rejectUser')}
                                                     >
-                                                        ❌
+                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                        </svg>
                                                     </button>
                                                 </>
                                             ) : (
                                                 <>
                                                     <button 
-                                                        className={`inline-flex items-center p-2 border border-transparent rounded-lg text-blue-600 transition-colors duration-200 ${
-                                                            isDarkMode ? 'hover:bg-blue-900/30' : 'hover:bg-blue-100'
-                                                        }`}
+                                                        className={`p-2 border border-transparent rounded-lg text-blue-600 ${
+                                                            isDarkMode ? 'hover:bg-blue-900 hover:bg-opacity-30' : 'hover:bg-blue-100'
+                                                        } transition-colors`}
                                                         onClick={() => handleEditUser(user)}
-                                                        title={t('userManagement.table.actions.edit')}
+                                                        title={t('userManagement.actions.editUser')}
                                                     >
-                                                        📝
+                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                        </svg>
                                                     </button>
                                                     <button 
-                                                        className={`inline-flex items-center p-2 border border-transparent rounded-lg text-red-600 transition-colors duration-200 ${
-                                                            isDarkMode ? 'hover:bg-red-900/30' : 'hover:bg-red-100'
-                                                        }`}
+                                                        className={`p-2 border border-transparent rounded-lg text-red-600 ${
+                                                            isDarkMode ? 'hover:bg-red-900 hover:bg-opacity-30' : 'hover:bg-red-100'
+                                                        } transition-colors`}
                                                         onClick={() => handleDeleteUser(user)}
-                                                        title={t('userManagement.table.actions.delete')}
+                                                        title={t('userManagement.actions.deleteUser')}
                                                     >
-                                                        🗑️
+                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                        </svg>
                                                     </button>
                                                 </>
                                             )}
                                             
                                             {/* More Actions Dropdown */}
                                             <div className="relative group">
-                                                <button className={`inline-flex items-center p-2 border border-transparent rounded-lg transition-colors duration-200 ${
-                                                    isDarkMode ? 'text-gray-400 hover:bg-gray-700/50' : 'text-gray-600 hover:bg-gray-100'
-                                                }`}>
-                                                    ⋮
+                                                <button className={`p-2 border border-transparent rounded-lg ${
+                                                    isDarkMode 
+                                                        ? 'text-gray-400 hover:bg-gray-700 hover:bg-opacity-50' 
+                                                        : 'text-gray-600 hover:bg-gray-100'
+                                                } transition-colors`}>
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                                                    </svg>
                                                 </button>
-                                                <div className={`absolute right-0 mt-2 w-48 rounded-lg shadow-lg border z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 ${
-                                                    isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-                                                }`}>
+                                                <div className={`absolute right-0 mt-2 w-48 ${
+                                                    isDarkMode 
+                                                        ? 'bg-gray-800 border-gray-700' 
+                                                        : 'bg-white border-gray-200'
+                                                } rounded-lg shadow-lg border z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200`}>
                                                     <div className="py-1">
                                                         <button 
-                                                            className={`flex items-center w-full px-4 py-2 text-sm transition-colors duration-200 ${
-                                                                isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'
-                                                            }`}
+                                                            className={`flex items-center w-full px-4 py-2 text-sm ${
+                                                                isDarkMode 
+                                                                    ? 'text-gray-300 hover:bg-gray-700' 
+                                                                    : 'text-gray-700 hover:bg-gray-100'
+                                                            } transition-colors`}
                                                             onClick={() => handleEditUser(user)}
                                                         >
-                                                            <span className="mr-2">📝</span>
-                                                            {t('userManagement.dropdown.editUser')}
+                                                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                            </svg>
+                                                            {t('userManagement.actions.editUser')}
                                                         </button>
-                                                        <hr className={`my-1 ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`} />
                                                         <button 
-                                                            className={`flex items-center w-full px-4 py-2 text-sm text-red-600 transition-colors duration-200 ${
-                                                                isDarkMode ? 'hover:bg-red-900/30' : 'hover:bg-red-50'
-                                                            }`}
+                                                            className={`flex items-center w-full px-4 py-2 text-sm ${
+                                                                isDarkMode 
+                                                                    ? 'text-gray-300 hover:bg-gray-700' 
+                                                                    : 'text-gray-700 hover:bg-gray-100'
+                                                            } transition-colors`}
+                                                            onClick={() => handleSendMessageToUser(user)}
+                                                        >
+                                                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 7.89a2 2 0 002.83 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                                            </svg>
+                                                            {t('userManagement.actions.sendMessage')}
+                                                        </button>
+                                                        <hr className={`my-1 ${
+                                                            isDarkMode ? 'border-gray-700' : 'border-gray-200'
+                                                        }`} />
+                                                        <button 
+                                                            className={`flex items-center w-full px-4 py-2 text-sm text-red-600 ${
+                                                                isDarkMode ? 'hover:bg-red-900 hover:bg-opacity-30' : 'hover:bg-red-50'
+                                                            } transition-colors`}
                                                             onClick={() => handleDeleteUser(user)}
                                                         >
-                                                            <span className="mr-2">🗑️</span>
-                                                            {t('userManagement.dropdown.deleteUser')}
+                                                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                            </svg>
+                                                            {t('userManagement.actions.deleteUser')}
                                                         </button>
                                                     </div>
                                                 </div>
@@ -7421,1028 +7189,170 @@ const Dashboard = () => {
                                     </td>
                                 </tr>
                             ))}
-
-                            {/* Show empty state when no users found */}
-                            {getCurrentPageItems().length === 0 && (
-                                <tr>
-                                    <td colSpan="6" className={`px-6 py-12 text-center transition-colors duration-300 ${
-                                        isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                                    }`}>
-                                        <div className="flex flex-col items-center space-y-3">
-                                            <div className={`w-16 h-16 rounded-full flex items-center justify-center transition-colors duration-300 ${
-                                                isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
-                                            }`}>
-                                                <span className="text-2xl">👥</span>
-                                            </div>
-                                            <div>
-                                                <h3 className={`text-lg font-medium transition-colors duration-300 ${
-                                                    isDarkMode ? 'text-gray-300' : 'text-gray-900'
-                                                }`}>
-                                                    {getFilteredUsers().length === 0 ? 'No users found' : 'No users on this page'}
-                                                </h3>
-                                                <p className={`text-sm transition-colors duration-300 ${
-                                                    isDarkMode ? 'text-gray-500' : 'text-gray-600'
-                                                }`}>
-                                                    {getFilteredUsers().length === 0 
-                                                        ? 'Try adjusting your search or filter criteria'
-                                                        : 'Navigate to a different page to see more users'
-                                                    }
-                                                </p>
-                                            </div>
-                                            {(searchTerm || selectedRole || selectedStatus) && (
-                                                <button
-                                                    onClick={() => {
-                                                        setSearchTerm('');
-                                                        setSelectedRole('');
-                                                        setSelectedStatus('');
-                                                        setCurrentPage(1);
-                                                    }}
-                                                    className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg transition-colors ${
-                                                        isDarkMode 
-                                                            ? 'text-blue-300 bg-blue-900/50 hover:bg-blue-800/50' 
-                                                            : 'text-blue-700 bg-blue-100 hover:bg-blue-200'
-                                                    }`}
-                                                >
-                                                    <span className="mr-2">🔄</span>
-                                                    Clear Filters
-                                                </button>
-                                            )}
-                                        </div>
-                                    </td>
-                                </tr>
-                            )}
                         </tbody>
                     </table>
                 </div>
     
-                {/* Table Footer */}
-                {/* Enhanced Pagination Footer */}
-                {(() => {
-                    const filteredUsers = getFilteredUsers();
-                    const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
-                    const startIndex = (currentPage - 1) * itemsPerPage;
-                    const endIndex = Math.min(startIndex + itemsPerPage, filteredUsers.length);
-                    
-                    // Generate smart page numbers
-                    const getPageNumbers = () => {
-                        const pages = [];
-                        const maxVisiblePages = 5;
-                        
-                        if (totalPages <= maxVisiblePages) {
-                            for (let i = 1; i <= totalPages; i++) {
-                                pages.push(i);
-                            }
-                        } else {
-                            const startPage = Math.max(1, currentPage - 2);
-                            const endPage = Math.min(totalPages, currentPage + 2);
-                            
-                            if (startPage > 1) {
-                                pages.push(1);
-                                if (startPage > 2) pages.push('...');
-                            }
-                            
-                            for (let i = startPage; i <= endPage; i++) {
-                                pages.push(i);
-                            }
-                            
-                            if (endPage < totalPages) {
-                                if (endPage < totalPages - 1) pages.push('...');
-                                pages.push(totalPages);
-                            }
-                        }
-                        return pages;
-                    };
-                
-                    const handlePageChange = (pageNumber) => {
-                        if (pageNumber >= 1 && pageNumber <= totalPages) {
-                            setCurrentPage(pageNumber);
-                        }
-                    };
-                
-                    const handlePreviousPage = () => {
-                        if (currentPage > 1) {
-                            setCurrentPage(currentPage - 1);
-                        }
-                    };
-                
-                    const handleNextPage = () => {
-                        if (currentPage < totalPages) {
-                            setCurrentPage(currentPage + 1);
-                        }
-                    };
-                
-                    return (
-                        <div className={`px-6 py-4 flex flex-col sm:flex-row items-center justify-between border-t transition-all duration-300 ${
-                            isDarkMode ? 'bg-gray-800/50 border-gray-700' : 'bg-gray-50 border-gray-200'
-                        }`}>
-                            {/* Results Info */}
-                            <div className={`text-sm mb-4 sm:mb-0 transition-colors duration-300 ${
-                                isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                            }`}>
-                                <div className="flex items-center space-x-1 flex-wrap">
-                                    <span>{t('userManagement.footer.showing')}</span>
-                                    <span className={`font-semibold px-2 py-1 rounded-lg transition-colors duration-300 ${
-                                        isDarkMode ? 'bg-blue-900/50 text-blue-300' : 'bg-blue-100 text-blue-800'
-                                    }`}>
-                                        {filteredUsers.length > 0 ? startIndex + 1 : 0} - {endIndex}
-                                    </span>
-                                    <span>{t('userManagement.footer.of')}</span>
-                                    <span className={`font-semibold px-2 py-1 rounded-lg transition-colors duration-300 ${
-                                        isDarkMode ? 'bg-gray-700 text-gray-200' : 'bg-gray-200 text-gray-800'
-                                    }`}>
-                                        {filteredUsers.length}
-                                    </span>
-                                    <span>{t('userManagement.footer.users')}</span>
-                                    {(searchTerm || selectedRole || selectedStatus) && (
-                                        <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium transition-colors duration-300 ${
-                                            isDarkMode ? 'bg-orange-900/50 text-orange-300 border border-orange-700/50' : 'bg-orange-100 text-orange-800'
-                                        }`}>
-                                            🔍 {t('userManagement.footer.filtered')}
-                                        </span>
-                                    )}
-                                </div>
-                            </div>
-                
-                            {/* Pagination Controls - Only show if there are pages */}
-                            {totalPages > 0 && (
-                                <div className="flex items-center space-x-2">
-                                    {/* Previous Button */}
-                                    <button 
-                                        onClick={handlePreviousPage}
-                                        disabled={currentPage === 1}
-                                        className={`inline-flex items-center px-3 py-2 border rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105 ${
-                                            currentPage === 1
-                                                ? isDarkMode 
-                                                    ? 'border-gray-700 text-gray-500 bg-gray-800 cursor-not-allowed opacity-50' 
-                                                    : 'border-gray-300 text-gray-400 bg-gray-100 cursor-not-allowed opacity-50'
-                                                : isDarkMode 
-                                                    ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700 hover:border-blue-500 hover:text-blue-300' 
-                                                    : 'border-gray-300 text-gray-700 bg-white hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700'
-                                        }`}
-                                        title={t('userManagement.footer.previous')}
-                                    >
-                                        <span className="mr-1">←</span>
-                                        <span className="hidden sm:inline">{t('userManagement.footer.previous')}</span>
-                                        <span className="sm:hidden">Prev</span>
-                                    </button>
-                
-                                    {/* Page Numbers */}
-                                    <div className="flex items-center space-x-1">
-                                        {getPageNumbers().map((page, index) => (
-                                            <div key={index}>
-                                                {page === '...' ? (
-                                                    <span className={`px-3 py-2 text-sm transition-colors duration-300 ${
-                                                        isDarkMode ? 'text-gray-500' : 'text-gray-400'
-                                                    }`}>
-                                                        ...
-                                                    </span>
-                                                ) : (
-                                                    <button
-                                                        onClick={() => handlePageChange(page)}
-                                                        className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105 ${
-                                                            currentPage === page
-                                                                ? 'text-white bg-gradient-to-r from-blue-600 to-indigo-600 shadow-lg'
-                                                                : isDarkMode 
-                                                                    ? 'text-gray-300 bg-gray-800 border border-gray-600 hover:bg-gray-700 hover:border-blue-500 hover:text-blue-300' 
-                                                                    : 'text-gray-700 bg-white border border-gray-300 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700'
-                                                        }`}
-                                                        title={`Go to page ${page}`}
-                                                    >
-                                                        {page}
-                                                    </button>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div>
-                
-                                    {/* Next Button */}
-                                    <button 
-                                        onClick={handleNextPage}
-                                        disabled={currentPage === totalPages}
-                                        className={`inline-flex items-center px-3 py-2 border rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105 ${
-                                            currentPage === totalPages
-                                                ? isDarkMode 
-                                                    ? 'border-gray-700 text-gray-500 bg-gray-800 cursor-not-allowed opacity-50' 
-                                                    : 'border-gray-300 text-gray-400 bg-gray-100 cursor-not-allowed opacity-50'
-                                                : isDarkMode 
-                                                    ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700 hover:border-blue-500 hover:text-blue-300' 
-                                                    : 'border-gray-300 text-gray-700 bg-white hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700'
-                                        }`}
-                                        title={t('userManagement.footer.next')}
-                                    >
-                                        <span className="hidden sm:inline">{t('userManagement.footer.next')}</span>
-                                        <span className="sm:hidden">Next</span>
-                                        <span className="ml-1">→</span>
-                                    </button>
-                                </div>
-                            )}
-                
-                            {/* Quick Page Jump for Large Datasets */}
-                            {totalPages > 10 && (
-                                <div className="flex items-center space-x-2 mt-4 sm:mt-0 sm:ml-4">
-                                    <span className={`text-sm transition-colors duration-300 ${
-                                        isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                                    }`}>
-                                        Page:
-                                    </span>
-                                    <select
-                                        value={currentPage}
-                                        onChange={(e) => handlePageChange(parseInt(e.target.value))}
-                                        className={`px-2 py-1 border rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                                            isDarkMode 
-                                                ? 'border-gray-600 bg-gray-800 text-gray-300' 
-                                                : 'border-gray-300 bg-white text-gray-900'
-                                        }`}
-                                    >
-                                        {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                                            <option key={page} value={page}>
-                                                {page}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                            )}
+                {/* Enhanced Table Footer with Pagination */}
+                <div className={`${
+                    isDarkMode 
+                        ? 'bg-gradient-to-r from-gray-800/90 to-gray-700/90 border-gray-600/50' 
+                        : 'bg-gradient-to-r from-gray-50/90 to-white/90 border-gray-200/50'
+                } px-8 py-6 flex items-center justify-between border-t backdrop-blur-sm`}>
+                    <div className={`text-sm font-medium ${
+                        isDarkMode ? 'text-gray-200' : 'text-gray-700'
+                    } flex items-center space-x-2`}>
+                        <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
+                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            </svg>
                         </div>
-                    );
-                })()}
-            </div>
-        </div>
-    );
-
-    const renderApplicationManagement = () => (
-        <div className="space-y-6">
-            {/* Header Section */}
-            <div className={`rounded-2xl p-6 shadow-lg border ${
-                isDarkMode 
-                    ? 'bg-gray-800 border-gray-700' 
-                    : 'bg-white border-gray-200'
-            }`}>
-                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-                    {/* Title and Stats */}
-                    <div className="space-y-4">
-                        <div className="flex items-center space-x-3">
-                            <div className="p-2 bg-blue-500 rounded-lg">
-                                <span className="text-white text-xl">📋</span>
-                            </div>
-                            <div>
-                                <h2 className={`text-2xl font-bold ${
-                                    isDarkMode ? 'text-white' : 'text-gray-900'
-                                }`}>
-                                    {t('applicationManagement.title')}
-                                </h2>
-                                <p className={`text-sm ${
-                                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                                }`}>
-                                    {t('applicationManagement.subtitle')}
-                                </p>
-                            </div>
-                        </div>
-    
-                        {/* Stats Grid */}
-                        <div className="grid grid-cols-4 gap-3">
-                            <div className={`p-3 rounded-lg border ${
-                                isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
+                        <span>
+                            {t('userManagement.table.pagination.showing', {
+                                from: Math.min((currentPage - 1) * itemsPerPage + 1, getFilteredUsers().length),
+                                to: Math.min(currentPage * itemsPerPage, getFilteredUsers().length),
+                                total: getFilteredUsers().length
+                            })}
+                        </span>
+                        {(searchTerm || selectedRole || selectedStatus) && (
+                            <span className={`ml-2 px-3 py-1 rounded-full text-xs font-semibold ${
+                                isDarkMode 
+                                    ? 'bg-blue-900/50 text-blue-300 border border-blue-700/50' 
+                                    : 'bg-blue-100 text-blue-600 border border-blue-200'
                             }`}>
-                                <div className="text-lg font-bold text-blue-600">
-                                    {applicationSubmissions.length}
-                                </div>
-                                <div className={`text-xs ${
-                                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                                }`}>
-                                    {t('applicationManagement.stats.totalApplications')}
-                                </div>
-                            </div>
-                            <div className={`p-3 rounded-lg border ${
-                                isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
-                            }`}>
-                                <div className="text-lg font-bold text-orange-600">
-                                    {applicationSubmissions.filter(app => app.status === 'pending').length}
-                                </div>
-                                <div className={`text-xs ${
-                                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                                }`}>
-                                    {t('applicationManagement.stats.pending')}
-                                </div>
-                            </div>
-                            <div className={`p-3 rounded-lg border ${
-                                isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
-                            }`}>
-                                <div className="text-lg font-bold text-green-600">
-                                    {applicationSubmissions.filter(app => app.status === 'approved').length}
-                                </div>
-                                <div className={`text-xs ${
-                                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                                }`}>
-                                    {t('applicationManagement.stats.approved')}
-                                </div>
-                            </div>
-                            <div className={`p-3 rounded-lg border ${
-                                isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
-                            }`}>
-                                <div className="text-lg font-bold text-red-600">
-                                    {applicationSubmissions.filter(app => app.status === 'rejected').length}
-                                </div>
-                                <div className={`text-xs ${
-                                    isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                                }`}>
-                                    {t('applicationManagement.stats.rejected')}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Filters */}
-                    <div className="flex flex-col space-y-3">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                            {/* Search Input */}
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>🔍</span>
-                                </div>
-                                <input 
-                                    type="text" 
-                                    placeholder={t('applicationManagement.search.placeholder')}
-                                    value={searchTermApp}
-                                    onChange={(e) => setSearchTermApp(e.target.value)}
-                                    className={`w-full pl-10 pr-4 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
-                                        isDarkMode 
-                                            ? 'border-gray-600 bg-gray-700 text-white placeholder-gray-400' 
-                                            : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
-                                    }`}
-                                />
-                            </div>
-                    
-                            {/* Program Filter */}
-                            <div className="relative">
-                                <select 
-                                    value={selectedProgram}
-                                    onChange={(e) => setSelectedProgram(e.target.value)}
-                                    className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
-                                        isDarkMode 
-                                            ? 'border-gray-600 bg-gray-700 text-white' 
-                                            : 'border-gray-300 bg-white text-gray-900'
-                                    }`}
-                                >
-                                    <option value="">{t('applicationManagement.search.allPrograms')}</option>
-                                    <option value="webDevelopment">{t('applicationManagement.programs.webDevelopment')}</option>
-                                    <option value="dataScience">{t('applicationManagement.programs.dataScience')}</option>
-                                    <option value="cybersecurity">{t('applicationManagement.programs.cybersecurity')}</option>
-                                    <option value="cloudComputing">{t('applicationManagement.programs.cloudComputing')}</option>
-                                    <option value="aiMachineLearning">{t('applicationManagement.programs.aiMachineLearning')}</option>
-                                </select>
-                            </div>
-                    
-                            {/* Status Filter */}
-                            <div className="relative">
-                                <select 
-                                    value={selectedAppStatus}
-                                    onChange={(e) => setSelectedAppStatus(e.target.value)}
-                                    className={`w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
-                                        isDarkMode 
-                                            ? 'border-gray-600 bg-gray-700 text-white' 
-                                            : 'border-gray-300 bg-white text-gray-900'
-                                    }`}
-                                >
-                                    <option value="">{t('applicationManagement.search.allStatus')}</option>
-                                    <option value="pending">{t('applicationManagement.status.pending')}</option>
-                                    <option value="approved">{t('applicationManagement.status.approved')}</option>
-                                    <option value="rejected">{t('applicationManagement.status.rejected')}</option>
-                                    <option value="under-review">{t('applicationManagement.status.underReview')}</option>
-                                </select>
-                            </div>
-                        </div>
-                    
-                        {/* Clear Filters Button (only shows when filters are active) */}
-                        {(searchTermApp || selectedProgram || selectedAppStatus) && (
-                            <div className="flex justify-end">
-                                <button
-                                    onClick={() => {
-                                        setSearchTermApp('');
-                                        setSelectedProgram('');
-                                        setSelectedAppStatus('');
-                                        setCurrentPage(1);
-                                    }}
-                                    className={`px-4 py-2 text-sm border rounded-lg transition-colors hover:bg-opacity-80 ${
-                                        isDarkMode 
-                                            ? 'border-gray-600 text-gray-300 bg-gray-700 hover:bg-gray-600' 
-                                            : 'border-gray-300 text-gray-700 bg-gray-50 hover:bg-gray-100'
-                                    }`}
-                                >
-                                    <span className="mr-1">🔄</span>
-                                    {t('applicationManagement.buttons.clearFilters')}
-                                </button>
-                            </div>
+                                <svg className="w-3 h-3 mr-1.5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                                {t('userManagement.table.pagination.filtered')}
+                            </span>
                         )}
                     </div>
-                </div>
-            </div>
-    
-            {/* Applications Table */}
-            <div className={`rounded-2xl shadow-lg border overflow-hidden ${
-                isDarkMode 
-                    ? 'bg-gray-800 border-gray-700' 
-                    : 'bg-white border-gray-200'
-            }`}>
-                <div className="overflow-x-auto">
-                    <table className="min-w-full">
-                        <thead className={`${
-                            isDarkMode ? 'bg-gray-700' : 'bg-gray-50'
-                        }`}>
-                            <tr>
-                                <th className={`px-4 py-3 text-left text-xs font-semibold uppercase ${
-                                    isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                                }`}>
-                                    {t('applicationManagement.table.headers.applicant')}
-                                </th>
-                                <th className={`px-4 py-3 text-left text-xs font-semibold uppercase ${
-                                    isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                                }`}>
-                                    {t('applicationManagement.table.headers.contact')}
-                                </th>
-                                <th className={`px-4 py-3 text-left text-xs font-semibold uppercase ${
-                                    isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                                }`}>
-                                    {t('applicationManagement.table.headers.program')}
-                                </th>
-                                <th className={`px-4 py-3 text-left text-xs font-semibold uppercase ${
-                                    isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                                }`}>
-                                    {t('applicationManagement.table.headers.status')}
-                                </th>
-                                <th className={`px-4 py-3 text-left text-xs font-semibold uppercase ${
-                                    isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                                }`}>
-                                    {t('applicationManagement.table.headers.submitted')}
-                                </th>
-                                <th className={`px-4 py-3 text-left text-xs font-semibold uppercase ${
-                                    isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                                }`}>
-                                    {t('applicationManagement.table.headers.actions')}
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody className={`divide-y ${
-                            isDarkMode ? 'divide-gray-700' : 'divide-gray-200'
-                        }`}>
-                            {getCurrentPageApplications().map((application) => (
-                                <tr key={application._id} className={`hover:bg-opacity-50 ${
-                                    isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'
-                                }`}>
-                                    {/* Applicant Cell */}
-                                    <td className="px-4 py-3">
-                                        <div className="flex items-center space-x-3">
-                                            <div className={`h-10 w-10 rounded-lg flex items-center justify-center text-white font-bold ${
-                                                application.status === 'approved' 
-                                                    ? 'bg-green-500' :
-                                                application.status === 'rejected' 
-                                                    ? 'bg-red-500' :
-                                                'bg-blue-500'
-                                            }`}>
-                                                {application.firstName?.charAt(0)}{application.lastName?.charAt(0)}
-                                            </div>
-                                            <div>
-                                                <div className={`font-medium ${
-                                                    isDarkMode ? 'text-white' : 'text-gray-900'
-                                                }`}>
-                                                    {application.firstName} {application.lastName}
-                                                </div>
-                                                <div className={`text-xs ${
-                                                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                                                }`}>
-                                                    ID: {application._id.slice(-8)}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-    
-                                    {/* Contact Cell */}
-                                    <td className="px-4 py-3">
-                                        <div className={`text-sm ${
-                                            isDarkMode ? 'text-white' : 'text-gray-900'
-                                        }`}>
-                                            {application.email}
-                                        </div>
-                                        {application.phone && (
-                                            <div className={`text-xs ${
-                                                isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                                            }`}>
-                                                📱 {application.phone}
-                                            </div>
-                                        )}
-                                    </td>
-    
-                                    {/* Program Cell */}
-                                    <td className="px-4 py-3">
-                                        <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
-                                            application.program === 'data-science' 
-                                                ? (isDarkMode ? 'bg-blue-900 text-blue-300' : 'bg-blue-100 text-blue-800') :
-                                            application.program === 'web-development' 
-                                                ? (isDarkMode ? 'bg-green-900 text-green-300' : 'bg-green-100 text-green-800') :
-                                            application.program === 'machine-learning' 
-                                                ? (isDarkMode ? 'bg-purple-900 text-purple-300' : 'bg-purple-100 text-purple-800') :
-                                            application.program === 'cybersecurity' 
-                                                ? (isDarkMode ? 'bg-red-900 text-red-300' : 'bg-red-100 text-red-800') :
-                                            (isDarkMode ? 'bg-orange-900 text-orange-300' : 'bg-orange-100 text-orange-800')
-                                        }`}>
-                                            {application.program === 'data-science' ? '📊' :
-                                            application.program === 'web-development' ? '💻' :
-                                            application.program === 'machine-learning' ? '🤖' :
-                                            application.program === 'cybersecurity' ? '🔒' : '📱'}
-                                            <span className="ml-1">
-                                                {t(`applicationManagement.programs.${application.program?.replace('-', '')}`) || application.program}
-                                            </span>
+                    <div className="flex items-center space-x-3">
+                        <button 
+                            className={`group px-4 py-2 border rounded-2xl text-sm font-semibold transition-all duration-300 ${
+                                currentPage === 1
+                                    ? `opacity-50 cursor-not-allowed ${
+                                        isDarkMode 
+                                            ? 'border-gray-600/50 text-gray-500 bg-gray-800/50' 
+                                            : 'border-gray-200/50 text-gray-400 bg-white/50'
+                                    }`
+                                    : `hover:scale-105 shadow-lg ${
+                                        isDarkMode 
+                                            ? 'border-gray-600/50 text-gray-200 bg-gray-800/50 hover:bg-gray-700/50' 
+                                            : 'border-gray-200/50 text-gray-700 bg-white/50 hover:bg-gray-50/50'
+                                    }`
+                            }`}
+                            onClick={handlePreviousPage}
+                            disabled={currentPage === 1}
+                        >
+                            <span className="flex items-center space-x-2">
+                                <svg className="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                </svg>
+                                <span>{t('userManagement.table.pagination.previous')}</span>
+                            </span>
+                        </button>
+                        
+                        <div className="flex space-x-2">
+                            {[...Array(getUserTotalPages())].map((_, index) => {
+                                const pageNumber = index + 1;
+                                
+                                // Show first page, last page, current page, and pages around current page
+                                if (getUserTotalPages() <= 5 || 
+                                    pageNumber === 1 || 
+                                    pageNumber === getUserTotalPages() || 
+                                    (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)) {
+                                    return (
+                                        <button
+                                            key={pageNumber}
+                                            className={`px-4 py-2 rounded-2xl text-sm font-semibold transition-all duration-300 shadow-lg ${
+                                                currentPage === pageNumber
+                                                    ? `text-white transform scale-110 ${
+                                                        isDarkMode 
+                                                            ? 'bg-gradient-to-r from-blue-600 to-purple-600 shadow-blue-500/25' 
+                                                            : 'bg-gradient-to-r from-blue-600 to-purple-600 shadow-blue-500/25'
+                                                    }`
+                                                    : `hover:scale-105 ${
+                                                        isDarkMode 
+                                                            ? 'border border-gray-600/50 text-gray-200 bg-gray-800/50 hover:bg-gray-700/50' 
+                                                            : 'border border-gray-200/50 text-gray-700 bg-white/50 hover:bg-gray-50/50'
+                                                    }`
+                                            }`}
+                                            onClick={() => handlePageChange(pageNumber)}
+                                        >
+                                            {pageNumber}
+                                        </button>
+                                    );
+                                } else if (pageNumber === currentPage - 2 || pageNumber === currentPage + 2) {
+                                    return (
+                                        <span key={pageNumber} className={`px-3 py-2 ${
+                                            isDarkMode ? 'text-gray-500' : 'text-gray-400'
+                                        } font-bold`}>
+                                            ...
                                         </span>
-                                    </td>
-    
-                                    {/* Status Cell */}
-                                    <td className="px-4 py-3">
-                                        <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
-                                            application.status === 'approved' 
-                                                ? (isDarkMode ? 'bg-green-900 text-green-300' : 'bg-green-100 text-green-800') :
-                                            application.status === 'rejected' 
-                                                ? (isDarkMode ? 'bg-red-900 text-red-300' : 'bg-red-100 text-red-800') :
-                                            application.status === 'under-review' 
-                                                ? (isDarkMode ? 'bg-blue-900 text-blue-300' : 'bg-blue-100 text-blue-800') :
-                                            (isDarkMode ? 'bg-orange-900 text-orange-300' : 'bg-orange-100 text-orange-800')
-                                        }`}>
-                                            <div className={`w-2 h-2 rounded-full mr-1 ${
-                                                application.status === 'approved' ? 'bg-green-500' :
-                                                application.status === 'rejected' ? 'bg-red-500' :
-                                                application.status === 'under-review' ? 'bg-blue-500' : 'bg-orange-500'
-                                            }`}></div>
-                                            {t(`applicationManagement.status.${application.status}`)}
-                                        </span>
-                                    </td>
-    
-                                    {/* Submitted Date Cell */}
-                                    <td className={`px-4 py-3 text-sm ${
-                                        isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                                    }`}>
-                                        <div className={`font-medium ${
-                                            isDarkMode ? 'text-white' : 'text-gray-900'
-                                        }`}>
-                                            {new Date(application.createdAt || Date.now()).toLocaleDateString()}
-                                        </div>
-                                        <div className="text-xs">
-                                            {(() => {
-                                                const days = Math.floor((new Date() - new Date(application.createdAt || Date.now())) / (1000 * 60 * 60 * 24));
-                                                return `${days} ${t('applicationManagement.table.daysAgo', { count: days })}`;
-                                            })()}
-                                        </div>
-                                    </td>
-    
-                                    {/* Actions Cell */}
-                                    <td className="px-4 py-3">
-                                        <div className="flex items-center space-x-2">
-                                            {/* View Button */}
-                                            <button 
-                                                className={`p-2 rounded hover:bg-opacity-20 ${
-                                                    isDarkMode 
-                                                        ? 'text-blue-400 hover:bg-blue-500' 
-                                                        : 'text-blue-600 hover:bg-blue-500'
-                                                }`}
-                                                onClick={() => handleViewApplication(application)}
-                                                title={t('applicationManagement.table.actions.view')}
-                                            >
-                                                👁️
-                                            </button>
-    
-                                            {application.status === 'pending' && (
-                                                <>
-                                                    {/* Approve Button */}
-                                                    <button 
-                                                        className={`p-2 rounded hover:bg-opacity-20 ${
-                                                            isDarkMode 
-                                                                ? 'text-green-400 hover:bg-green-500' 
-                                                                : 'text-green-600 hover:bg-green-500'
-                                                        }`}
-                                                        onClick={() => handleUpdateApplicationStatus(application._id, 'approved')}
-                                                        title={t('applicationManagement.table.actions.approve')}
-                                                    >
-                                                        ✅
-                                                    </button>
-    
-                                                    {/* Reject Button */}
-                                                    <button 
-                                                        className={`p-2 rounded hover:bg-opacity-20 ${
-                                                            isDarkMode 
-                                                                ? 'text-red-400 hover:bg-red-500' 
-                                                                : 'text-red-600 hover:bg-red-500'
-                                                        }`}
-                                                        onClick={() => handleUpdateApplicationStatus(application._id, 'rejected')}
-                                                        title={t('applicationManagement.table.actions.reject')}
-                                                    >
-                                                        ❌
-                                                    </button>
-                                                </>
-                                            )}
-    
-                                            {/* Send Message Button */}
-                                            <button 
-                                                className={`p-2 rounded hover:bg-opacity-20 ${
-                                                    isDarkMode 
-                                                        ? 'text-purple-400 hover:bg-purple-500' 
-                                                        : 'text-purple-600 hover:bg-purple-500'
-                                                }`}
-                                                onClick={() => handleSendMessage(application)}
-                                                title={t('applicationManagement.table.actions.sendMessage')}
-                                            >
-                                                💬
-                                            </button>
-    
-                                            {/* Delete Button */}
-                                            <button 
-                                                className={`p-2 rounded hover:bg-opacity-20 ${
-                                                    isDarkMode 
-                                                        ? 'text-red-400 hover:bg-red-500' 
-                                                        : 'text-red-600 hover:bg-red-500'
-                                                }`}
-                                                onClick={() => handleDeleteApplication(application)}
-                                                title={t('applicationManagement.table.actions.delete')}
-                                            >
-                                                🗑️
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-    
-                            {/* Empty State */}
-                            {getCurrentPageApplications().length === 0 && (
-                                <tr>
-                                    <td colSpan="6" className={`px-4 py-12 text-center ${
-                                        isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                                    }`}>
-                                        <div className="flex flex-col items-center space-y-4">
-                                            <div className={`w-16 h-16 rounded-full flex items-center justify-center ${
-                                                isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
-                                            }`}>
-                                                <span className="text-2xl">📋</span>
-                                            </div>
-                                            <div>
-                                                <h3 className={`text-lg font-medium ${
-                                                    isDarkMode ? 'text-gray-300' : 'text-gray-900'
-                                                }`}>
-                                                    {getFilteredApplications().length === 0 
-                                                        ? t('applicationManagement.emptyState.noApplicationsFound') 
-                                                        : t('applicationManagement.emptyState.noApplicationsOnPage')}
-                                                </h3>
-                                                <p className="mt-1">
-                                                    {getFilteredApplications().length === 0 
-                                                        ? t('applicationManagement.emptyState.adjustFilters')
-                                                        : t('applicationManagement.emptyState.navigateToOtherPage')}
-                                                </p>
-                                            </div>
-                                            {(searchTermApp || selectedProgram || selectedAppStatus) && (
-                                                <button
-                                                    onClick={() => {
-                                                        setSearchTermApp('');
-                                                        setSelectedProgram('');
-                                                        setSelectedAppStatus('');
-                                                        setCurrentPage(1);
-                                                    }}
-                                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                                                >
-                                                    🔄 {t('applicationManagement.buttons.clearFilters')}
-                                                </button>
-                                            )}
-                                        </div>
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-    
-                {/* Pagination */}
-                {renderApplicationPagination()}
-            </div>
-            
-            {/* View Application Modal */}
-            {showViewApplicationModal && selectedApplication && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className={`w-full max-w-4xl max-h-screen overflow-y-auto rounded-lg shadow-xl ${
-                        isDarkMode ? 'bg-gray-800' : 'bg-white'
-                    }`}>
-                        {/* Modal Header */}
-                        <div className={`flex items-center justify-between p-6 border-b ${
-                            isDarkMode ? 'border-gray-700' : 'border-gray-200'
-                        }`}>
-                            <div className="flex items-center space-x-3">
-                                <div className="p-2 bg-blue-500 rounded-lg">
-                                    <span className="text-white text-xl">👁️</span>
-                                </div>
-                                <div>
-                                    <h3 className={`text-xl font-bold ${
-                                        isDarkMode ? 'text-white' : 'text-gray-900'
-                                    }`}>
-                                        {t('applicationManagement.modals.viewApplication.title')}
-                                    </h3>
-                                    <p className={`text-sm ${
-                                        isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                                    }`}>
-                                        {selectedApplication.firstName} {selectedApplication.lastName}
-                                    </p>
-                                </div>
-                            </div>
-                            <button 
-                                className={`p-2 rounded-lg hover:bg-opacity-20 ${
-                                    isDarkMode 
-                                        ? 'text-gray-400 hover:bg-gray-500' 
-                                        : 'text-gray-400 hover:bg-gray-500'
-                                }`}
-                                onClick={() => {
-                                    setShowViewApplicationModal(false);
-                                    setSelectedApplication(null);
-                                }}
-                            >
-                                ✕
-                            </button>
-                        </div>
-    
-                        {/* Modal Content */}
-                        <div className="p-6 space-y-6">
-                            {/* Status Banner */}
-                            <div className={`p-4 rounded-lg border-l-4 ${
-                                selectedApplication.status === 'approved' 
-                                    ? (isDarkMode ? 'bg-green-900 border-green-500 text-green-300' : 'bg-green-50 border-green-500 text-green-800') :
-                                selectedApplication.status === 'rejected' 
-                                    ? (isDarkMode ? 'bg-red-900 border-red-500 text-red-300' : 'bg-red-50 border-red-500 text-red-800') :
-                                selectedApplication.status === 'under-review' 
-                                    ? (isDarkMode ? 'bg-blue-900 border-blue-500 text-blue-300' : 'bg-blue-50 border-blue-500 text-blue-800') :
-                                (isDarkMode ? 'bg-orange-900 border-orange-500 text-orange-300' : 'bg-orange-50 border-orange-500 text-orange-800')
-                            }`}>
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="font-semibold">
-                                            {t(`applicationManagement.status.${selectedApplication.status || 'pending'}`)}
-                                        </p>
-                                        <p className="text-sm opacity-75">
-                                            {t('applicationManagement.modals.viewApplication.applicationId')}: {selectedApplication._id?.slice(-12)}
-                                        </p>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="text-sm opacity-75">
-                                            {t('applicationManagement.modals.viewApplication.fields.submittedOn')}
-                                        </p>
-                                        <p className="font-semibold">
-                                            {new Date(selectedApplication.createdAt || Date.now()).toLocaleDateString()}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-    
-                            {/* Information Grid */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {/* Personal Information */}
-                                <div className={`p-4 rounded-lg border ${
-                                    isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
-                                }`}>
-                                    <h4 className={`text-lg font-semibold mb-4 flex items-center ${
-                                        isDarkMode ? 'text-white' : 'text-gray-900'
-                                    }`}>
-                                        <span className="mr-2">👤</span>
-                                        {t('applicationManagement.modals.viewApplication.personalInfo')}
-                                    </h4>
-                                    <div className="space-y-3">
-                                        <div>
-                                            <label className={`text-sm font-medium ${
-                                                isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                                            }`}>
-                                                {t('applicationManagement.modals.viewApplication.fields.fullName')}
-                                            </label>
-                                            <p className={`mt-1 ${
-                                                isDarkMode ? 'text-white' : 'text-gray-900'
-                                            }`}>
-                                                {selectedApplication.firstName} {selectedApplication.lastName}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <label className={`text-sm font-medium ${
-                                                isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                                            }`}>
-                                                {t('applicationManagement.modals.viewApplication.fields.email')}
-                                            </label>
-                                            <p className={`mt-1 ${
-                                                isDarkMode ? 'text-white' : 'text-gray-900'
-                                            }`}>
-                                                {selectedApplication.email}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <label className={`text-sm font-medium ${
-                                                isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                                            }`}>
-                                                {t('applicationManagement.modals.viewApplication.fields.phone')}
-                                            </label>
-                                            <p className={`mt-1 ${
-                                                isDarkMode ? 'text-white' : 'text-gray-900'
-                                            }`}>
-                                                {selectedApplication.phone || (
-                                                    <span className={`italic ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                                                        {t('applicationManagement.modals.viewApplication.notProvided')}
-                                                    </span>
-                                                )}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-    
-                                {/* Academic Information */}
-                                <div className={`p-4 rounded-lg border ${
-                                    isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
-                                }`}>
-                                    <h4 className={`text-lg font-semibold mb-4 flex items-center ${
-                                        isDarkMode ? 'text-white' : 'text-gray-900'
-                                    }`}>
-                                        <span className="mr-2">🎓</span>
-                                        {t('applicationManagement.modals.viewApplication.academicInfo')}
-                                    </h4>
-                                    <div className="space-y-3">
-                                        <div>
-                                            <label className={`text-sm font-medium ${
-                                                isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                                            }`}>
-                                                {t('applicationManagement.modals.viewApplication.fields.programInterested')}
-                                            </label>
-                                            <div className="mt-1">
-                                                <span className={`inline-flex items-center px-2 py-1 rounded text-sm font-medium ${
-                                                    selectedApplication.program === 'data-science' 
-                                                        ? (isDarkMode ? 'bg-blue-900 text-blue-300' : 'bg-blue-100 text-blue-800') :
-                                                    selectedApplication.program === 'web-development' 
-                                                        ? (isDarkMode ? 'bg-green-900 text-green-300' : 'bg-green-100 text-green-800') :
-                                                    selectedApplication.program === 'machine-learning' 
-                                                        ? (isDarkMode ? 'bg-purple-900 text-purple-300' : 'bg-purple-100 text-purple-800') :
-                                                    selectedApplication.program === 'cybersecurity' 
-                                                        ? (isDarkMode ? 'bg-red-900 text-red-300' : 'bg-red-100 text-red-800') :
-                                                    (isDarkMode ? 'bg-orange-900 text-orange-300' : 'bg-orange-100 text-orange-800')
-                                                }`}>
-                                                    {selectedApplication.program === 'data-science' ? '📊' :
-                                                    selectedApplication.program === 'web-development' ? '💻' :
-                                                    selectedApplication.program === 'machine-learning' ? '🤖' :
-                                                    selectedApplication.program === 'cybersecurity' ? '🔒' : '📱'}
-                                                    <span className="ml-1">
-                                                        {t(`applicationManagement.programs.${selectedApplication.program?.replace('-', '')}`)}
-                                                    </span>
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-    
-                            {/* Personal Statement */}
-                            {selectedApplication.personalStatement && (
-                                <div className={`p-4 rounded-lg border ${
-                                    isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
-                                }`}>
-                                    <h4 className={`text-lg font-semibold mb-4 flex items-center ${
-                                        isDarkMode ? 'text-white' : 'text-gray-900'
-                                    }`}>
-                                        <span className="mr-2">📝</span>
-                                        {t('applicationManagement.modals.viewApplication.personalStatement')}
-                                    </h4>
-                                    <p className={`whitespace-pre-wrap ${
-                                        isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                                    }`}>
-                                        {selectedApplication.personalStatement}
-                                    </p>
-                                </div>
-                            )}
+                                    );
+                                }
+                                return null;
+                            })}
                         </div>
                         
-                        {/* Modal Footer */}
-                        <div className={`flex justify-end space-x-3 p-6 border-t ${
-                            isDarkMode ? 'border-gray-700' : 'border-gray-200'
-                        }`}>
-                            {selectedApplication.status === 'pending' && (
-                                <>
-                                    <button 
-                                        onClick={() => handleUpdateApplicationStatus(selectedApplication._id, 'approved')}
-                                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                                    >
-                                        ✅ {t('applicationManagement.buttons.approve')}
-                                    </button>
-                                    <button 
-                                        onClick={() => handleUpdateApplicationStatus(selectedApplication._id, 'rejected')}
-                                        className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-                                    >
-                                        ❌ {t('applicationManagement.buttons.reject')}
-                                    </button>
-                                </>
-                            )}
-                            <button 
-                                onClick={() => handleSendMessage(selectedApplication)}
-                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                            >
-                                📧 {t('applicationManagement.buttons.sendMessage')}
-                            </button>
-                            <button 
-                                onClick={() => {
-                                    setShowViewApplicationModal(false);
-                                    setSelectedApplication(null);
-                                }}
-                                className={`px-4 py-2 border rounded-lg transition-colors ${
-                                    isDarkMode 
-                                        ? 'border-gray-600 text-gray-300 hover:bg-gray-700' 
-                                        : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                                }`}
-                            >
-                                {t('applicationManagement.buttons.close')}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-    
-            {/* Delete Confirmation Modal */}
-            {showDeleteApplicationConfirm && applicationToDelete && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className={`w-full max-w-md rounded-lg shadow-xl ${
-                        isDarkMode ? 'bg-gray-800' : 'bg-white'
-                    }`}>
-                        <div className="p-6">
-                            <div className="flex items-center space-x-3 mb-4">
-                                <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
-                                    <span className="text-red-600 text-2xl">⚠️</span>
-                                </div>
-                                <div>
-                                    <h3 className={`text-lg font-medium ${
-                                        isDarkMode ? 'text-white' : 'text-gray-900'
-                                    }`}>
-                                        {t('applicationManagement.modals.deleteApplication.title')}
-                                    </h3>
-                                </div>
-                            </div>
-                            <div className={`text-sm mb-6 ${
-                                isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                            }`}>
-                                <p>
-                                    {t('applicationManagement.modals.deleteApplication.message')} 
-                                    <strong>"{applicationToDelete.firstName} {applicationToDelete.lastName}"</strong>?
-                                </p>
-                                <p className="mt-2 text-red-600 font-medium">
-                                    {t('applicationManagement.modals.deleteApplication.warning')}
-                                </p>
-                            </div>
-                            <div className="flex space-x-3">
-                                <button
-                                    onClick={() => {
-                                        setShowDeleteApplicationConfirm(false);
-                                        setApplicationToDelete(null);
-                                    }}
-                                    className={`flex-1 px-4 py-2 border rounded-lg transition-colors ${
+                        <button 
+                            className={`group px-4 py-2 border rounded-2xl text-sm font-semibold transition-all duration-300 ${
+                                currentPage === getUserTotalPages()
+                                    ? `opacity-50 cursor-not-allowed ${
                                         isDarkMode 
-                                            ? 'border-gray-600 text-gray-300 hover:bg-gray-700' 
-                                            : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                                    }`}
-                                >
-                                    {t('applicationManagement.buttons.cancel')}
-                                </button>
-                                <button
-                                    onClick={confirmDeleteApplication}
-                                    className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-                                >
-                                    {t('applicationManagement.buttons.yesDelete')}
-                                </button>
-                            </div>
-                        </div>
+                                            ? 'border-gray-600/50 text-gray-500 bg-gray-800/50' 
+                                            : 'border-gray-200/50 text-gray-400 bg-white/50'
+                                    }`
+                                    : `hover:scale-105 shadow-lg ${
+                                        isDarkMode 
+                                            ? 'border-gray-600/50 text-gray-200 bg-gray-800/50 hover:bg-gray-700/50' 
+                                            : 'border-gray-200/50 text-gray-700 bg-white/50 hover:bg-gray-50/50'
+                                    }`
+                            }`}
+                            onClick={handleNextPage}
+                            disabled={currentPage === getUserTotalPages()}
+                        >
+                            <span className="flex items-center space-x-2">
+                                <span>{t('userManagement.table.pagination.next')}</span>
+                                <svg className="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                </svg>
+                            </span>
+                        </button>
                     </div>
                 </div>
-            )}
-    
-            {/* Send Message Modal */}
+            </div>
+
+            {/* Send Message Modal for User Management */}
             {showSendMessageModal && messageData.recipient && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className={`w-full max-w-2xl rounded-lg shadow-xl ${
-                        isDarkMode ? 'bg-gray-800' : 'bg-white'
-                    }`}>
-                        {/* Modal Header */}
+                    <div className={`${
+                        isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+                    } rounded-lg shadow-xl border w-full max-w-2xl`}>
                         <div className={`flex items-center justify-between p-6 border-b ${
                             isDarkMode ? 'border-gray-700' : 'border-gray-200'
                         }`}>
                             <div className="flex items-center space-x-3">
-                                <div className="p-2 bg-blue-500 rounded-lg">
-                                    <span className="text-white text-xl">📧</span>
+                                <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 7.89a2 2 0 002.83 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                    </svg>
                                 </div>
                                 <div>
-                                    <h3 className={`text-xl font-bold ${
-                                        isDarkMode ? 'text-white' : 'text-gray-900'
-                                    }`}>
-                                        {t('applicationManagement.modals.sendMessage.title')}
+                                    <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                                        {t('userManagement.actions.sendMessage')}
                                     </h3>
-                                    <p className={`text-sm ${
-                                        isDarkMode ? 'text-gray-400' : 'text-gray-600'
-                                    }`}>
-                                        {messageData.recipient.firstName} {messageData.recipient.lastName}
+                                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                        Send message to {messageData.recipient.firstName} {messageData.recipient.lastName}
                                     </p>
                                 </div>
                             </div>
                             <button 
-                                className={`p-2 rounded-lg hover:bg-opacity-20 ${
+                                className={`p-2 rounded-lg transition-colors ${
                                     isDarkMode 
-                                        ? 'text-gray-400 hover:bg-gray-500' 
-                                        : 'text-gray-400 hover:bg-gray-500'
+                                        ? 'hover:bg-gray-700 text-gray-400 hover:text-white' 
+                                        : 'hover:bg-gray-100 text-gray-500 hover:text-gray-700'
                                 }`}
                                 onClick={() => {
                                     setShowSendMessageModal(false);
@@ -8453,93 +7363,72 @@ const Dashboard = () => {
                                     });
                                 }}
                             >
-                                ✕
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
                             </button>
                         </div>
-    
-                        {/* Modal Content */}
+                        
                         <div className="p-6">
-                            <form onSubmit={handleSendMessageSubmit} className="space-y-4">
-                                {/* Recipient Info */}
-                                <div>
-                                    <label className={`text-sm font-medium ${
-                                        isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                                    }`}>
-                                        {t('applicationManagement.modals.sendMessage.fields.to')}
+                            <form onSubmit={handleSendMessageSubmit} className="space-y-6">
+                                <div className="space-y-2">
+                                    <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                        To:
                                     </label>
-                                    <div className={`mt-1 p-3 rounded-lg border ${
+                                    <div className={`p-3 rounded-lg ${
                                         isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
-                                    }`}>
-                                        <div className="flex items-center space-x-3">
-                                            <div className="h-8 w-8 rounded-lg bg-blue-500 flex items-center justify-center text-white font-bold text-sm">
-                                                {messageData.recipient.firstName?.charAt(0)}{messageData.recipient.lastName?.charAt(0)}
-                                            </div>
-                                            <div>
-                                                <p className={`font-medium ${
-                                                    isDarkMode ? 'text-white' : 'text-gray-900'
-                                                }`}>
-                                                    {messageData.recipient.firstName} {messageData.recipient.lastName}
-                                                </p>
-                                                <p className={`text-sm ${
-                                                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                                                }`}>
-                                                    {messageData.recipient.email}
-                                                </p>
-                                            </div>
-                                        </div>
+                                    } border`}>
+                                        <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
+                                            {messageData.recipient.firstName} {messageData.recipient.lastName} ({messageData.recipient.email})
+                                        </p>
                                     </div>
                                 </div>
                                 
-                                {/* Subject */}
-                                <div>
-                                    <label className={`block text-sm font-medium ${
-                                        isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                                    }`}>
-                                        {t('applicationManagement.modals.sendMessage.fields.subject')}
+                                <div className="space-y-2">
+                                    <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                        Subject:
                                     </label>
                                     <input
                                         type="text"
+                                        placeholder="Enter subject..."
                                         value={messageData.subject}
                                         onChange={(e) => setMessageData({...messageData, subject: e.target.value})}
-                                        className={`mt-1 w-full px-3 py-2 border rounded-lg ${
+                                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                                             isDarkMode 
-                                                ? 'border-gray-600 bg-gray-700 text-white placeholder-gray-400' 
+                                                ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
                                                 : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
                                         }`}
-                                        placeholder={t('applicationManagement.modals.sendMessage.subjectPlaceholder')}
                                         required
                                     />
                                 </div>
                                 
-                                {/* Message */}
-                                <div>
-                                    <label className={`block text-sm font-medium ${
-                                        isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                                    }`}>
-                                        {t('applicationManagement.modals.sendMessage.fields.message')}
+                                <div className="space-y-2">
+                                    <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                        Message:
                                     </label>
                                     <textarea
                                         rows="6"
+                                        placeholder="Enter your message here..."
                                         value={messageData.message}
                                         onChange={(e) => setMessageData({...messageData, message: e.target.value})}
-                                        placeholder={t('applicationManagement.modals.sendMessage.placeholder')}
-                                        className={`mt-1 w-full px-3 py-2 border rounded-lg resize-none ${
+                                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none ${
                                             isDarkMode 
-                                                ? 'border-gray-600 bg-gray-700 text-white placeholder-gray-400' 
+                                                ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
                                                 : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
                                         }`}
                                         required
                                     />
                                 </div>
                                 
-                                {/* Action Buttons */}
-                                <div className="flex justify-end space-x-3 pt-4">
+                                <div className={`flex justify-end space-x-3 pt-4 border-t ${
+                                    isDarkMode ? 'border-gray-700' : 'border-gray-200'
+                                }`}>
                                     <button 
                                         type="button" 
-                                        className={`px-4 py-2 border rounded-lg transition-colors ${
+                                        className={`px-4 py-2 border rounded-lg font-medium transition-colors ${
                                             isDarkMode 
-                                                ? 'border-gray-600 text-gray-300 hover:bg-gray-700' 
-                                                : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                                                ? 'border-gray-600 text-gray-300 bg-gray-700 hover:bg-gray-600' 
+                                                : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
                                         }`}
                                         onClick={() => {
                                             setShowSendMessageModal(false);
@@ -8550,13 +7439,16 @@ const Dashboard = () => {
                                             });
                                         }}
                                     >
-                                        {t('applicationManagement.buttons.cancel')}
+                                        Cancel
                                     </button>
                                     <button 
                                         type="submit" 
-                                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                        className="inline-flex items-center px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
                                     >
-                                        📤 {t('applicationManagement.buttons.sendMessage')}
+                                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 7.89a2 2 0 002.83 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                        </svg>
+                                        Send Message
                                     </button>
                                 </div>
                             </form>
@@ -8566,3 +7458,2454 @@ const Dashboard = () => {
             )}
         </div>
     );
+
+    const renderApplicationManagement = () => (
+        <div className="space-y-8">
+            {/* Header */}
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <div className="space-y-2">
+                    <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
+                        <span className="mr-2">📋</span>
+                        Application Management
+                    </h2>
+                    <div className="flex flex-wrap gap-4 text-sm">
+                        <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
+                            <span className={`font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>{applicationSubmissions.length}</span> Total Applications
+                        </span>
+                        <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
+                            <span className="font-semibold text-orange-600">{applicationSubmissions.filter(app => app.status === 'pending').length}</span> Pending
+                        </span>
+                        <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
+                            <span className="font-semibold text-green-600">{applicationSubmissions.filter(app => app.status === 'approved').length}</span> Approved
+                        </span>
+                        <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
+                            <span className="font-semibold text-red-600">{applicationSubmissions.filter(app => app.status === 'rejected').length}</span> Rejected
+                        </span>
+                    </div>
+                </div>
+                
+                <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="flex flex-col sm:flex-row gap-2">
+                        <input 
+                            type="text" 
+                            placeholder="🔍 Search applications..." 
+                            value={searchTermApp}
+                            onChange={(e) => setSearchTermApp(e.target.value)}
+                            className={`px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                isDarkMode 
+                                    ? 'border-gray-600 bg-gray-800 text-gray-100 placeholder-gray-400' 
+                                    : 'border-gray-300 bg-white text-gray-900'
+                            }`}
+                        />
+                        <select 
+                            value={selectedProgram} 
+                            onChange={(e) => setSelectedProgram(e.target.value)}
+                            className={`px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                isDarkMode 
+                                    ? 'border-gray-600 bg-gray-800 text-gray-100' 
+                                    : 'border-gray-300 bg-white text-gray-900'
+                            }`}
+                        >
+                            <option value="">All Programs</option>
+                            <option value="webDevelopment">Web Development</option>
+                            <option value="dataScience">Data Science and Analytics</option>
+                            <option value="cybersecurity">Cybersecurity</option>
+                            <option value="cloudComputing">Cloud Computing</option>
+                            <option value="aiMachineLearning">AI & Machine Learning</option>
+                        </select>
+                        <select 
+                            value={selectedAppStatus}
+                            onChange={(e) => setSelectedAppStatus(e.target.value)}
+                            className={`px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                isDarkMode 
+                                    ? 'border-gray-600 bg-gray-800 text-gray-100' 
+                                    : 'border-gray-300 bg-white text-gray-900'
+                            }`}
+                        >
+                            <option value="">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="under_review">Under Review</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                    </div>
+                    <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors">
+                        📤 Export Applications
+                    </button>
+                </div>
+            </div>
+            
+            {/* View Application Modal */}
+            {showViewApplicationModal && selectedApplication && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-2xl border w-full max-w-4xl max-h-[90vh] overflow-y-auto transition-colors duration-300`}>
+                        <div className={`flex items-center justify-between p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} sticky top-0 bg-inherit`}>
+                            <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center`}>
+                                <span className="mr-2">👁️</span>
+                                Application Details
+                            </h3>
+                            <button 
+                                className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+                                onClick={() => {
+                                    setShowViewApplicationModal(false);
+                                    setSelectedApplication(null);
+                                }}
+                            >
+                                <span className={`${isDarkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-400 hover:text-gray-600'} text-xl`}>✕</span>
+                            </button>
+                        </div>
+                        <div className="p-6 space-y-6">
+                            {/* Personal Information */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-4">
+                                    <h4 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} pb-2`}>
+                                        👤 Personal Information
+                                    </h4>
+                                    <div className="space-y-3">
+                                        <div>
+                                            <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Full Name</label>
+                                            <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
+                                                {selectedApplication.firstName} {selectedApplication.lastName}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Email</label>
+                                            <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>{selectedApplication.email}</p>
+                                        </div>
+                                        <div>
+                                            <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Phone</label>
+                                            <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>{selectedApplication.phone}</p>
+                                        </div>
+                                        <div>
+                                            <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Date of Birth</label>
+                                            <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
+                                                {selectedApplication.dateOfBirth ? new Date(selectedApplication.dateOfBirth).toLocaleDateString() : 'Not provided'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="space-y-4">
+                                    <h4 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} pb-2`}>
+                                        📍 Contact Information
+                                    </h4>
+                                    <div className="space-y-3">
+                                        <div>
+                                            <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Address</label>
+                                            <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>{selectedApplication.address || 'Not provided'}</p>
+                                        </div>
+                                        <div>
+                                            <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>City</label>
+                                            <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>{selectedApplication.city || 'Not provided'}</p>
+                                        </div>
+                                        <div>
+                                            <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Country</label>
+                                            <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>{selectedApplication.country || 'Not provided'}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+            
+                            {/* Academic Information */}
+                            <div className="space-y-4">
+                                <h4 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} pb-2`}>
+                                    🎓 Academic Information
+                                </h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {/* <div>
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Program Interested</label>
+                                        <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'} font-medium`}>{selectedApplication.programInterested}</p>
+                                    </div> */}
+                                    {/* // In your view application modal, update this part: */}
+                                    <div>
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Program Interested</label>
+                                        <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'} font-medium`}>{selectedApplication.program}</p>
+                                    </div>
+                                    <div>
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Education Level</label>
+                                        <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>{selectedApplication.educationLevel || 'Not provided'}</p>
+                                    </div>
+                                </div>
+                            </div>
+            
+                            {/* Additional Information */}
+                            {selectedApplication.personalStatement && (
+                                <div className="space-y-4">
+                                    <h4 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} pb-2`}>
+                                        📝 Personal Statement
+                                    </h4>
+                                    <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
+                                        <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'} whitespace-pre-wrap`}>
+                                            {selectedApplication.personalStatement}
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+            
+                            {/* Application Status and Metadata */}
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Application Status</label>
+                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mt-1 ${
+                                        selectedApplication.status === 'approved' ? 'bg-green-100 text-green-800' :
+                                        selectedApplication.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                                        'bg-yellow-100 text-yellow-800'
+                                    }`}>
+                                        {selectedApplication.status ? selectedApplication.status.charAt(0).toUpperCase() + selectedApplication.status.slice(1) : 'Pending'}
+                                    </span>
+                                </div>
+                                <div>
+                                    <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Submitted On</label>
+                                    <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
+                                        {new Date(selectedApplication.createdAt || Date.now()).toLocaleDateString()}
+                                    </p>
+                                </div>
+                                <div>
+                                    <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Application ID</label>
+                                    <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'} font-mono text-sm`}>
+                                        {selectedApplication._id?.slice(-8) || 'N/A'}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {/* Modal Footer */}
+                        <div className={`flex justify-end space-x-3 p-6 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                            <button 
+                                onClick={() => handleSendMessage(selectedApplication)}
+                                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                            >
+                                📧 Send Message
+                            </button>
+                            <button 
+                                onClick={() => {
+                                    setShowViewApplicationModal(false);
+                                    setSelectedApplication(null);
+                                }}
+                                className={`px-4 py-2 border rounded-lg transition-colors ${
+                                    isDarkMode 
+                                        ? 'border-gray-600 text-gray-300 bg-gray-700 hover:bg-gray-600' 
+                                        : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                                }`}
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            
+            {/* Delete Application Confirmation Modal */}
+            {showDeleteApplicationConfirm && applicationToDelete && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-2xl border w-full max-w-md mx-4 transition-colors duration-300`}>
+                        <div className="p-6">
+                            <div className="flex items-center mb-4">
+                                <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                                    <span className="text-red-600 text-2xl">⚠️</span>
+                                </div>
+                            </div>
+                            <div className="text-center">
+                                <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} mb-2`}>
+                                    Delete Application
+                                </h3>
+                                {/* <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} mb-6`}>
+                                    Are you sure you want to delete the application from <strong>"{applicationToDelete.firstName} {applicationToDelete.lastName}"</strong> for <strong>{applicationToDelete.programInterested}</strong>?
+                                    <br />
+                                    <span className="text-red-500 font-medium">This action cannot be undone.</span>
+                                </p> */}
+                                <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} mb-6`}>
+                                    Are you sure you want to delete the application from <strong>"{applicationToDelete.firstName} {applicationToDelete.lastName}"</strong> for <strong>{applicationToDelete.program}</strong>?
+                                    <br />
+                                    <span className="text-red-500 font-medium">This action cannot be undone.</span>
+                                </p>
+                            </div>
+                            <div className="flex justify-center space-x-4">
+                                <button
+                                    onClick={() => {
+                                        setShowDeleteApplicationConfirm(false);
+                                        setApplicationToDelete(null);
+                                    }}
+                                    className={`px-4 py-2 border rounded-lg transition-colors ${
+                                        isDarkMode 
+                                            ? 'border-gray-600 text-gray-300 bg-gray-700 hover:bg-gray-600' 
+                                            : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                                    }`}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={confirmDeleteApplication}
+                                    className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                                >
+                                    🗑️ Yes, Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+            
+                {/* //Send Message Modal */}
+            {showSendMessageModal && messageData.recipient && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-2xl border w-full max-w-2xl transition-colors duration-300`}>
+                        <div className={`flex items-center justify-between p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                            <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center`}>
+                                <span className="mr-2">📧</span>
+                                Send Message to {messageData.recipient.firstName} {messageData.recipient.lastName}
+                            </h3>
+                            <button 
+                                className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+                                onClick={() => {
+                                    setShowSendMessageModal(false);
+                                    setMessageData({
+                                        subject: '',
+                                        message: '',
+                                        recipient: null
+                                    });
+                                }}
+                            >
+                                <span className={`${isDarkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-400 hover:text-gray-600'} text-xl`}>✕</span>
+                            </button>
+                        </div>
+                        <div className="p-6">
+                            <form onSubmit={handleSendMessageSubmit} className="space-y-6">
+                                <div className="space-y-2">
+                                    <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>To:</label>
+                                    <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
+                                        <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
+                                            {messageData.recipient.firstName} {messageData.recipient.lastName} ({messageData.recipient.email})
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <div className="space-y-2">
+                                    <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Subject:</label>
+                                    <input
+                                        type="text"
+                                        value={messageData.subject}
+                                        onChange={(e) => setMessageData({...messageData, subject: e.target.value})}
+                                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                            isDarkMode 
+                                                ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+                                                : 'border-gray-300 bg-white text-gray-900'
+                                        }`}
+                                        required
+                                    />
+                                </div>
+                                
+                                <div className="space-y-2">
+                                    <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Message:</label>
+                                    <textarea
+                                        rows="8"
+                                        value={messageData.message}
+                                        onChange={(e) => setMessageData({...messageData, message: e.target.value})}
+                                        placeholder="Enter your message here..."
+                                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none ${
+                                            isDarkMode 
+                                                ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+                                                : 'border-gray-300 bg-white text-gray-900'
+                                        }`}
+                                        required
+                                    />
+                                </div>
+                                
+                                <div className={`flex justify-end space-x-3 pt-4 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                                    <button 
+                                        type="button" 
+                                        className={`px-4 py-2 border rounded-lg transition-colors ${
+                                            isDarkMode 
+                                                ? 'border-gray-600 text-gray-300 bg-gray-700 hover:bg-gray-600' 
+                                                : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                                        }`}
+                                        onClick={() => {
+                                            setShowSendMessageModal(false);
+                                            setMessageData({
+                                                subject: '',
+                                                message: '',
+                                                recipient: null
+                                            });
+                                        }}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button 
+                                        type="submit" 
+                                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                    >
+                                        📧 Send Message
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+            
+            {/* Table */}
+            <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+                <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead className={`${isDarkMode ? 'bg-gradient-to-r from-gray-800 to-gray-700' : 'bg-gradient-to-r from-gray-50 to-gray-100'} transition-colors duration-300`}>
+                            <tr>
+                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
+                                    <div className="flex items-center space-x-1">
+                                        <span>👤 Applicant</span>
+                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
+                                    </div>
+                                </th>
+                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
+                                    <div className="flex items-center space-x-1">
+                                        <span>📧 Contact</span>
+                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
+                                    </div>
+                                </th>
+                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
+                                    <div className="flex items-center space-x-1">
+                                        <span>🎓 Program</span>
+                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
+                                    </div>
+                                </th>
+                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
+                                    <div className="flex items-center space-x-1">
+                                        <span>📊 Status</span>
+                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
+                                    </div>
+                                </th>
+                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
+                                    <div className="flex items-center space-x-1">
+                                        <span>📅 Applied</span>
+                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
+                                    </div>
+                                </th>
+                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
+                                    ⚡ Actions
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody className={`${isDarkMode ? 'bg-gray-800 divide-gray-700' : 'bg-white divide-gray-200'} transition-colors duration-300`}>
+                            {getFilteredApplications().map((application, index) => (
+                                <tr key={application._id} className={`${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'} transition-colors duration-200 ${application.status === 'pending' ? (isDarkMode ? 'bg-orange-900/30 border-l-4 border-orange-500' : 'bg-orange-25 border-l-4 border-orange-400') : ''}`}>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="flex items-center space-x-4">
+                                            <div className="relative">
+                                                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-semibold">
+                                                    {application.firstName?.charAt(0)}{application.lastName?.charAt(0)}
+                                                </div>
+                                                <div className={`absolute -bottom-1 -right-1 h-4 w-4 bg-blue-400 border-2 ${isDarkMode ? 'border-gray-800' : 'border-white'} rounded-full transition-colors duration-300`}></div>
+                                            </div>
+                                            <div className="space-y-1">
+                                                <div className={`text-sm font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>
+                                                    {application.firstName} {application.lastName}
+                                                </div>
+                                                <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
+                                                    ID: {application._id.slice(-8)}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="space-y-1">
+                                            <div className={`text-sm ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>{application.email}</div>
+                                            {application.phone && (
+                                                <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>📱 {application.phone}</div>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="space-y-1">
+                                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${isDarkMode ? 'bg-blue-900/50 text-blue-300 border border-blue-700/50' : 'bg-blue-100 text-blue-800'} transition-colors duration-300`}>
+                                                <span className="mr-1">🎓</span>
+                                                {application.program}
+                                            </span>
+                                            <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
+                                                Start: {new Date(application.startDate).toLocaleDateString()}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="space-y-1">
+                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors duration-300 ${
+                                                application.status === 'pending' ? (isDarkMode ? 'bg-orange-900/50 text-orange-300 border border-orange-700/50' : 'bg-orange-100 text-orange-800') : 
+                                                application.status === 'approved' ? (isDarkMode ? 'bg-green-900/50 text-green-300 border border-green-700/50' : 'bg-green-100 text-green-800') : 
+                                                application.status === 'under_review' ? (isDarkMode ? 'bg-blue-900/50 text-blue-300 border border-blue-700/50' : 'bg-blue-100 text-blue-800') : 
+                                                (isDarkMode ? 'bg-red-900/50 text-red-300 border border-red-700/50' : 'bg-red-100 text-red-800')
+                                            }`}>
+                                                <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
+                                                    application.status === 'pending' ? 'bg-orange-400' : 
+                                                    application.status === 'approved' ? 'bg-green-400' : 
+                                                    application.status === 'under_review' ? 'bg-blue-400' : 
+                                                    'bg-red-400'
+                                                }`}></span>
+                                                {application.status.replace('_', ' ').toUpperCase()}
+                                            </span>
+                                            {application.status === 'pending' && (
+                                                <div className={`text-xs font-medium ${isDarkMode ? 'text-orange-400' : 'text-orange-600'} transition-colors duration-300`}>
+                                                    ⚠️ Needs Review
+                                                </div>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td className={`px-6 py-4 whitespace-nowrap text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
+                                        <div className="space-y-1">
+                                            <div className={`font-medium ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>
+                                                {new Date(application.createdAt || Date.now()).toLocaleDateString()}
+                                            </div>
+                                            <div className="text-xs">
+                                                {(() => {
+                                                    const days = Math.floor((Date.now() - new Date(application.createdAt || Date.now())) / (1000 * 60 * 60 * 24));
+                                                    return days === 0 ? 'Today' : `${days} days ago`;
+                                                })()}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    {/* <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        {application.status === 'pending' ? (
+                                            <div className="flex space-x-2">
+                                                <button 
+                                                    className={`inline-flex items-center p-2 border border-transparent rounded-lg text-green-600 ${isDarkMode ? 'hover:bg-green-900/30' : 'hover:bg-green-100'} transition-colors duration-200`}
+                                                    onClick={() => handleApplicationAction(application._id, 'approved')}
+                                                    title="Approve Application"
+                                                >
+                                                    ✅
+                                                </button>
+                                                <button 
+                                                    className={`inline-flex items-center p-2 border border-transparent rounded-lg text-blue-600 ${isDarkMode ? 'hover:bg-blue-900/30' : 'hover:bg-blue-100'} transition-colors duration-200`}
+                                                    onClick={() => handleApplicationAction(application._id, 'under_review')}
+                                                    title="Under Review"
+                                                >
+                                                    👀
+                                                </button>
+                                                <button 
+                                                    className={`inline-flex items-center p-2 border border-transparent rounded-lg text-red-600 ${isDarkMode ? 'hover:bg-red-900/30' : 'hover:bg-red-100'} transition-colors duration-200`}
+                                                    onClick={() => handleApplicationAction(application._id, 'rejected')}
+                                                    title="Reject Application"
+                                                >
+                                                    ❌
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="flex space-x-2">
+                                                <button 
+                                                    className={`inline-flex items-center p-2 border border-transparent rounded-lg text-blue-600 ${isDarkMode ? 'hover:bg-blue-900/30' : 'hover:bg-blue-100'} transition-colors duration-200`}
+                                                    title="View Details"
+                                                >
+                                                    👁️
+                                                </button>
+                                                <button 
+                                                    className={`inline-flex items-center p-2 border border-transparent rounded-lg ${isDarkMode ? 'text-gray-400 hover:bg-gray-700/50' : 'text-gray-600 hover:bg-gray-100'} transition-colors duration-200`}
+                                                    title="Send Message"
+                                                >
+                                                    📧
+                                                </button>
+                                                <div className="relative group">
+                                                    <button className={`inline-flex items-center p-2 border border-transparent rounded-lg ${isDarkMode ? 'text-gray-400 hover:bg-gray-700/50' : 'text-gray-600 hover:bg-gray-100'} transition-colors duration-200`}>
+                                                        ⋮
+                                                    </button>
+                                                    <div className={`absolute right-0 mt-2 w-48 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} rounded-lg shadow-lg border z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200`}>
+                                                        <div className="py-1">
+                                                            <button className={`flex items-center w-full px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors duration-200`}>
+                                                                <span className="mr-2">📝</span>
+                                                                Edit Application
+                                                            </button>
+                                                            <button className={`flex items-center w-full px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors duration-200`}>
+                                                                <span className="mr-2">📧</span>
+                                                                Send Email
+                                                            </button>
+                                                            <button className={`flex items-center w-full px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors duration-200`}>
+                                                                <span className="mr-2">📄</span>
+                                                                Download PDF
+                                                            </button>
+                                                            <hr className={`my-1 ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`} />
+                                                            <button className={`flex items-center w-full px-4 py-2 text-sm text-red-600 ${isDarkMode ? 'hover:bg-red-900/30' : 'hover:bg-red-50'} transition-colors duration-200`}>
+                                                                <span className="mr-2">🗑️</span>
+                                                                Delete Application
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </td> */}
+                                    {/* // ✅ In your application table, replace the actions column with this: */}
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div className="flex items-center space-x-2">
+                                            {/* View Application */}
+                                            <button 
+                                                className={`inline-flex items-center p-2 border border-transparent rounded-lg text-blue-600 ${isDarkMode ? 'hover:bg-blue-900/30' : 'hover:bg-blue-100'} transition-colors duration-200`}
+                                                onClick={() => handleViewApplication(application)}
+                                                title="View Application Details"
+                                            >
+                                                👁️
+                                            </button>
+                                            
+                                            {/* Send Message */}
+                                            <button 
+                                                className={`inline-flex items-center p-2 border border-transparent rounded-lg text-green-600 ${isDarkMode ? 'hover:bg-green-900/30' : 'hover:bg-green-100'} transition-colors duration-200`}
+                                                onClick={() => handleSendMessage(application)}
+                                                title="Send Message to Applicant"
+                                            >
+                                                📧
+                                            </button>
+                                            
+                                            {/* Delete Application */}
+                                            <button 
+                                                className={`inline-flex items-center p-2 border border-transparent rounded-lg text-red-600 ${isDarkMode ? 'hover:bg-red-900/30' : 'hover:bg-red-100'} transition-colors duration-200`}
+                                                onClick={() => handleDeleteApplication(application)}
+                                                title="Delete Application"
+                                            >
+                                                🗑️
+                                            </button>
+                                            
+                                            {/* Status Update Dropdown */}
+                                            <div className="relative group">
+                                                <button className={`inline-flex items-center p-2 border border-transparent rounded-lg ${isDarkMode ? 'text-gray-400 hover:bg-gray-700/50' : 'text-gray-600 hover:bg-gray-100'} transition-colors duration-200`}>
+                                                    ⋮
+                                                </button>
+                                                <div className={`absolute right-0 mt-2 w-48 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} rounded-lg shadow-lg border z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200`}>
+                                                    <div className="py-1">
+                                                        <button 
+                                                            className={`flex items-center w-full px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors duration-200`}
+                                                            onClick={() => handleUpdateApplicationStatus(application._id, 'approved')}
+                                                        >
+                                                            <span className="mr-2">✅</span>
+                                                            Approve Application
+                                                        </button>
+                                                        <button 
+                                                            className={`flex items-center w-full px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors duration-200`}
+                                                            onClick={() => handleUpdateApplicationStatus(application._id, 'rejected')}
+                                                        >
+                                                            <span className="mr-2">❌</span>
+                                                            Reject Application
+                                                        </button>
+                                                        <button 
+                                                            className={`flex items-center w-full px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors duration-200`}
+                                                            onClick={() => handleUpdateApplicationStatus(application._id, 'pending')}
+                                                        >
+                                                            <span className="mr-2">⏳</span>
+                                                            Mark as Pending
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            
+                 {/* Table Footer with Dark Mode */}
+                <div className={`${isDarkMode ? 'bg-gray-750 border-gray-700' : 'bg-gray-50 border-gray-200'} px-6 py-3 flex items-center justify-between border-t transition-colors duration-300`}>
+                    <div className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
+                        Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, getFilteredApplications().length)} of {getFilteredApplications().length} applications
+                            {(searchTermApp || selectedProgram || selectedAppStatus) && (
+                            <span className={`ml-2 font-medium ${isDarkMode ? 'text-blue-400' : 'text-blue-600'} transition-colors duration-300`}>
+                                (filtered)
+                            </span>
+                        )}
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <button 
+                            className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${
+                                isDarkMode 
+                                    ? 'border-gray-600 text-gray-400 bg-gray-800 hover:bg-gray-700' 
+                                    : 'border-gray-300 text-gray-500 bg-white hover:bg-gray-50'
+                            } ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            onClick={handlePreviousPage}
+                            disabled={currentPage === 1}
+                        >
+                            ← Previous
+                        </button>
+                        
+                        <div className="flex space-x-1">
+                            {[...Array(getTotalPages())].map((_, index) => {
+                                const pageNumber = index + 1;
+                                const isCurrentPage = pageNumber === currentPage;
+                                
+                                // Show only a few pages around current page
+                                if (getTotalPages() <= 5 || 
+                                    pageNumber === 1 || 
+                                    pageNumber === getTotalPages() || 
+                                    (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)) {
+                                    
+                                    return (
+                                        <button 
+                                            key={pageNumber}
+                                            className={`px-3 py-1 rounded-lg text-sm transition-colors duration-200 ${
+                                                isCurrentPage 
+                                                    ? 'text-white bg-blue-600 hover:bg-blue-700' 
+                                                    : isDarkMode 
+                                                        ? 'border border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' 
+                                                        : 'border border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                                            }`}
+                                            onClick={() => handlePageChange(pageNumber)}
+                                        >
+                                            {pageNumber}
+                                        </button>
+                                    );
+                                } else if (pageNumber === currentPage - 2 || pageNumber === currentPage + 2) {
+                                    return (
+                                        <span key={pageNumber} className={`px-2 text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                            ...
+                                        </span>
+                                    );
+                                }
+                                return null;
+                            })}
+                        </div>
+                        
+                        <button 
+                            className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${
+                                isDarkMode 
+                                    ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' 
+                                    : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                            } ${currentPage === getTotalPages() ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            onClick={handleNextPage}
+                            disabled={currentPage === getTotalPages()}
+                        >
+                            Next →
+                        </button>
+                    </div>
+                </div>
+            </div>
+    
+            {/* Bulk Actions Bar - Dark Mode */}
+            <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-xl shadow-lg border p-4 transition-colors duration-300`}>
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                        <input 
+                            type="checkbox" 
+                            id="select-all-applications" 
+                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" 
+                        />
+                        <label htmlFor="select-all-applications" className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
+                            Select All
+                        </label>
+                        <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
+                            {getFilteredApplications().length} items
+                        </span>
+                    </div>
+                    <div className="flex space-x-2">
+                        <button className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 transition-colors">
+                            ✅ Approve Selected
+                        </button>
+                        <button className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors">
+                            👀 Review Selected
+                        </button>
+                        <button className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-white bg-red-600 hover:bg-red-700 transition-colors">
+                            ❌ Reject Selected
+                        </button>
+                        <button className={`inline-flex items-center px-3 py-1.5 border text-xs font-medium rounded-lg transition-colors ${
+                            isDarkMode 
+                                ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' 
+                                : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                        }`}>
+                            📤 Export Filtered
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+
+    const renderContactManagement = () => (
+        <div className="space-y-8">
+            {/* Header */}
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <div className="space-y-2">
+                    <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
+                        <span className="mr-2">📧</span>
+                        Contact Management
+                    </h2>
+                    <div className="flex flex-wrap gap-4 text-sm">
+                        <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
+                            <span className={`font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>{contactSubmissions.length}</span> Total Messages
+                        </span>
+                        <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
+                            <span className="font-semibold text-orange-600">{contactSubmissions.filter(contact => contact.status === 'pending').length}</span> Pending
+                        </span>
+                        <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
+                            <span className="font-semibold text-green-600">{contactSubmissions.filter(contact => contact.status === 'resolved').length}</span> Resolved
+                        </span>
+                        <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
+                            <span className="font-semibold text-blue-600">{contactSubmissions.filter(contact => contact.status === 'approved').length}</span> Priority
+                        </span>
+                    </div>
+                </div>
+                
+                <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="flex flex-col sm:flex-row gap-2">
+                        <input 
+                            type="text" 
+                            placeholder="🔍 Search messages..." 
+                            value={searchTermContact}
+                            onChange={(e) => setSearchTermContact(e.target.value)}
+                            className={`px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                isDarkMode 
+                                    ? 'border-gray-600 bg-gray-800 text-gray-100 placeholder-gray-400' 
+                                    : 'border-gray-300 bg-white text-gray-900'
+                            }`}
+                        />
+                        <select 
+                            value={selectedCategory} 
+                            onChange={(e) => setSelectedCategory(e.target.value)}
+                            className={`px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                isDarkMode 
+                                    ? 'border-gray-600 bg-gray-800 text-gray-100' 
+                                    : 'border-gray-300 bg-white text-gray-900'
+                            }`}
+                        >
+                            <option value="">All Categories</option>
+                            <option value="general">General</option>
+                            <option value="admissions">Admission</option>
+                            <option value="courses">Course Information</option>
+                            <option value="careers">Career Services</option>
+                            <option value="others">Others</option>
+                        </select>
+                        <select 
+                            value={selectedContactStatus}
+                            onChange={(e) => setSelectedContactStatus(e.target.value)}
+                            className={`px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                isDarkMode 
+                                    ? 'border-gray-600 bg-gray-800 text-gray-100' 
+                                    : 'border-gray-300 bg-white text-gray-900'
+                            }`}
+                        >
+                            <option value="">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Priority</option>
+                            <option value="resolved">Resolved</option>
+                            <option value="ignored">Ignored</option>
+                        </select>
+                    </div>
+                    <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors">
+                        📤 Export Messages
+                    </button>
+                </div>
+            </div>
+    
+            {/* Contact Messages Table - Dark Mode */}
+            <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+                <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead className={`${isDarkMode ? 'bg-gradient-to-r from-gray-800 to-gray-700' : 'bg-gradient-to-r from-gray-50 to-gray-100'} transition-colors duration-300`}>
+                            <tr>
+                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
+                                    <div className="flex items-center space-x-1">
+                                        <span>👤 Contact</span>
+                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
+                                    </div>
+                                </th>
+                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
+                                    <div className="flex items-center space-x-1">
+                                        <span>📧 Details</span>
+                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
+                                    </div>
+                                </th>
+                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
+                                    <div className="flex items-center space-x-1">
+                                        <span>💬 Message</span>
+                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
+                                    </div>
+                                </th>
+                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
+                                    <div className="flex items-center space-x-1">
+                                        <span>📊 Status</span>
+                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
+                                    </div>
+                                </th>
+                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
+                                    <div className="flex items-center space-x-1">
+                                        <span>📅 Received</span>
+                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
+                                    </div>
+                                </th>
+                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
+                                    ⚡ Actions
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody className={`${isDarkMode ? 'bg-gray-800 divide-gray-700' : 'bg-white divide-gray-200'} transition-colors duration-300`}>
+                            {getFilteredContacts().map((contact, index) => (
+                                <tr key={contact._id} className={`${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'} transition-colors duration-200 ${contact.status === 'pending' ? (isDarkMode ? 'bg-orange-900/30 border-l-4 border-orange-500' : 'bg-orange-25 border-l-4 border-orange-400') : ''}`}>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="flex items-center space-x-4">
+                                            <div className="relative">
+                                                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center text-white font-semibold">
+                                                    {contact.name?.charAt(0).toUpperCase()}
+                                                </div>
+                                                <div className={`absolute -bottom-1 -right-1 h-4 w-4 border-2 ${isDarkMode ? 'border-gray-800' : 'border-white'} rounded-full ${
+                                                    contact.status === 'pending' ? 'bg-orange-400' : 
+                                                    contact.status === 'resolved' ? 'bg-green-400' : 
+                                                    contact.status === 'approved' ? 'bg-blue-400' : 'bg-gray-400'
+                                                } transition-colors duration-300`}></div>
+                                            </div>
+                                            <div className="space-y-1">
+                                                <div className={`text-sm font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>
+                                                    {contact.name}
+                                                </div>
+                                                <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
+                                                    ID: {contact._id.slice(-8)}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="space-y-1">
+                                            <div className={`text-sm ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>{contact.email}</div>
+                                            {contact.phone && (
+                                                <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>📱 {contact.phone}</div>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <div className="space-y-2">
+                                            <div className={`text-sm font-medium ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>
+                                                {contact.subject}
+                                            </div>
+                                            <div className={`text-sm max-w-xs ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} transition-colors duration-300`}>
+                                                <div className={`p-3 rounded-lg border ${isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'} transition-colors duration-300`}>
+                                                    {contact.message.length > 80 ? 
+                                                        `${contact.message.substring(0, 80)}...` : 
+                                                        contact.message
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="space-y-1">
+                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors duration-300 ${
+                                                contact.status === 'pending' ? (isDarkMode ? 'bg-orange-900/50 text-orange-300 border border-orange-700/50' : 'bg-orange-100 text-orange-800') : 
+                                                contact.status === 'approved' ? (isDarkMode ? 'bg-blue-900/50 text-blue-300 border border-blue-700/50' : 'bg-blue-100 text-blue-800') : 
+                                                contact.status === 'resolved' ? (isDarkMode ? 'bg-green-900/50 text-green-300 border border-green-700/50' : 'bg-green-100 text-green-800') : 
+                                                (isDarkMode ? 'bg-gray-900/50 text-gray-300 border border-gray-700/50' : 'bg-gray-100 text-gray-800')
+                                            }`}>
+                                                <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
+                                                    contact.status === 'pending' ? 'bg-orange-400' : 
+                                                    contact.status === 'approved' ? 'bg-blue-400' : 
+                                                    contact.status === 'resolved' ? 'bg-green-400' : 
+                                                    'bg-gray-400'
+                                                }`}></span>
+                                                {contact.status === 'pending' ? '⏳ Pending' : 
+                                                contact.status === 'approved' ? '🔥 Priority' : 
+                                                contact.status === 'resolved' ? '✅ Resolved' : '❌ Ignored'}
+                                            </span>
+                                            {contact.status === 'pending' && (
+                                                <div className={`text-xs font-medium ${isDarkMode ? 'text-orange-400' : 'text-orange-600'} transition-colors duration-300`}>
+                                                    ⚠️ Needs Response
+                                                </div>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td className={`px-6 py-4 whitespace-nowrap text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
+                                        <div className="space-y-1">
+                                            <div className={`font-medium ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>
+                                                {new Date(contact.createdAt || Date.now()).toLocaleDateString()}
+                                            </div>
+                                            <div className="text-xs">
+                                                {(() => {
+                                                    const days = Math.floor((Date.now() - new Date(contact.createdAt || Date.now())) / (1000 * 60 * 60 * 24));
+                                                    return days === 0 ? 'Today' : `${days} days ago`;
+                                                })()}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        {contact.status === 'pending' ? (
+                                            <div className="flex space-x-2">
+                                                <button 
+                                                    className={`inline-flex items-center p-2 border border-transparent rounded-lg text-green-600 ${isDarkMode ? 'hover:bg-green-900/30' : 'hover:bg-green-100'} transition-colors duration-200`}
+                                                    onClick={() => handleContactAction(contact._id, 'resolved')}
+                                                    title="Resolve"
+                                                >
+                                                    ✅
+                                                </button>
+                                                <button 
+                                                    className={`inline-flex items-center p-2 border border-transparent rounded-lg text-blue-600 ${isDarkMode ? 'hover:bg-blue-900/30' : 'hover:bg-blue-100'} transition-colors duration-200`}
+                                                    onClick={() => handleContactAction(contact._id, 'approved')}
+                                                    title="Mark as Priority"
+                                                >
+                                                    🔥
+                                                </button>
+                                                <button 
+                                                    className={`inline-flex items-center p-2 border border-transparent rounded-lg ${isDarkMode ? 'text-gray-400 hover:bg-gray-700/50' : 'text-gray-600 hover:bg-gray-100'} transition-colors duration-200`}
+                                                    onClick={() => handleContactAction(contact._id, 'ignored')}
+                                                    title="Ignore"
+                                                >
+                                                    ❌
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="flex space-x-2">
+                                                <button 
+                                                    className={`inline-flex items-center p-2 border border-transparent rounded-lg text-blue-600 ${isDarkMode ? 'hover:bg-blue-900/30' : 'hover:bg-blue-100'} transition-colors duration-200`}
+                                                    title="View Full Message"
+                                                >
+                                                    👁️
+                                                </button>
+                                                <button 
+                                                    className={`inline-flex items-center p-2 border border-transparent rounded-lg ${isDarkMode ? 'text-gray-400 hover:bg-gray-700/50' : 'text-gray-600 hover:bg-gray-100'} transition-colors duration-200`}
+                                                    title="Reply"
+                                                >
+                                                    📧
+                                                </button>
+                                            </div>
+                                        )}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+    
+                {/* Table Footer with Dark Mode */}
+                <div className={`${isDarkMode ? 'bg-gray-750 border-gray-700' : 'bg-gray-50 border-gray-200'} px-6 py-3 flex items-center justify-between border-t transition-colors duration-300`}>
+                    <div className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
+                        Showing {getFilteredContacts().length} of {contactSubmissions.length} messages
+                        {(searchTermContact || selectedCategory || selectedContactStatus) && (
+                            <span className={`ml-2 font-medium ${isDarkMode ? 'text-blue-400' : 'text-blue-600'} transition-colors duration-300`}>
+                                (filtered)
+                            </span>
+                        )}
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <button className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${
+                            isDarkMode 
+                                ? 'border-gray-600 text-gray-400 bg-gray-800 hover:bg-gray-700' 
+                                : 'border-gray-300 text-gray-500 bg-white hover:bg-gray-50'
+                        }`} disabled>
+                            ← Previous
+                        </button>
+                        <div className="flex space-x-1">
+                            <button className={`px-3 py-1 rounded-lg text-sm text-white transition-colors duration-200 ${isDarkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-600 hover:bg-blue-700'}`}>1</button>
+                            <button className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${isDarkMode ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'}`}>2</button>
+                            <button className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${isDarkMode ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'}`}>3</button>
+                        </div>
+                        <button className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${
+                            isDarkMode 
+                                ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' 
+                                : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                        }`}>
+                            Next →
+                        </button>
+                    </div>
+                </div>
+            </div>
+    
+            {/* Bulk Actions Bar - Dark Mode */}
+            <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-xl shadow-lg border p-4 transition-colors duration-300`}>
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                        <input type="checkbox" id="select-all-contacts" className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+                        <label htmlFor="select-all-contacts" className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>Select All</label>
+                        <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>{getFilteredContacts().length} items</span>
+                    </div>
+                    <div className="flex space-x-2">
+                        <button className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 transition-colors">
+                            ✅ Resolve Selected
+                        </button>
+                        <button className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors">
+                            🔥 Mark as Priority
+                        </button>
+                        <button className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-white bg-gray-600 hover:bg-gray-700 transition-colors">
+                            ❌ Ignore Selected
+                        </button>
+                        <button className={`inline-flex items-center px-3 py-1.5 border text-xs font-medium rounded-lg transition-colors ${
+                            isDarkMode 
+                                ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' 
+                                : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                        }`}>
+                            📤 Export Filtered
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+
+    const renderAdminDashboard = () => {
+        
+        const handleTabTransition = (newTab) => {
+            setIsTransitioning(true);
+            setTimeout(() => {
+                setActiveTab(newTab);
+                setIsTransitioning(false);
+            }, 150);
+        };
+    
+        // Add breadcrumb navigation
+        const getBreadcrumb = () => {
+            const breadcrumbs = {
+                overview: 'System Overview',
+                users: 'User Management',
+                applications: 'Application Management', 
+                contacts: 'Contact Management',
+                settings: 'System Settings'
+            };
+            return breadcrumbs[activeTab] || 'Dashboard';
+        };
+    
+        return (
+            <div className="space-y-6">
+                {/* Enhanced Admin Header with Breadcrumb */}
+                <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 rounded-2xl p-6 text-white shadow-xl">
+                    <div className="flex items-center justify-between">
+                        <div className="space-y-2">
+                            <div className="flex items-center space-x-2 text-blue-100">
+                                <span className="text-sm">🏠 Admin Portal</span>
+                                <span className="text-sm">→</span>
+                                <span className="text-sm font-medium">{getBreadcrumb()}</span>
+                            </div>
+                            <h1 className="text-2xl font-bold flex items-center">
+                                <span className="mr-2">
+                                    {activeTab === 'overview' ? '📊' : 
+                                        activeTab === 'users' ? '👥' : 
+                                        activeTab === 'applications' ? '📋' : 
+                                        activeTab === 'contacts' ? '📧' : '⚙️'}
+                                </span>
+                                {getBreadcrumb()}
+                            </h1>
+                        </div>
+                        
+                        {/* Quick Stats Mini Cards */}
+                        <div className="hidden lg:flex space-x-4">
+                            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center">
+                                <div className="text-lg font-bold">{pendingUsers.length}</div>
+                                <div className="text-xs text-blue-100">Pending Users</div>
+                            </div>
+                            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center">
+                                <div className="text-lg font-bold">{applicationSubmissions.filter(app => app.status === 'pending').length}</div>
+                                <div className="text-xs text-blue-100">New Applications</div>
+                            </div>
+                            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center">
+                                <div className="text-lg font-bold">{contactSubmissions.filter(c => c.status === 'pending').length}</div>
+                                <div className="text-xs text-blue-100">Unread Messages</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+                {/* Content with Smooth Transitions */}
+                <div className={`transition-all duration-300 ${isTransitioning ? 'opacity-50 transform translate-y-2' : 'opacity-100 transform translate-y-0'}`}>
+                    {(() => {
+                        switch(activeTab) {
+                            case 'overview':
+                                return (
+                                    <div className="animate-fadeIn">
+                                        {renderAdminOverview()}
+                                    </div>
+                                );
+                            case 'users':
+                                return (
+                                    <div className="animate-slideInLeft">
+                                        {renderUserManagement()}
+                                    </div>
+                                );
+                            case 'applications':
+                                return (
+                                    <div className="animate-slideInRight">
+                                        {renderApplicationManagement()}
+                                    </div>
+                                );
+                            case 'contacts':
+                                return (
+                                    <div className="animate-slideInUp">
+                                        {renderContactManagement()}
+                                    </div>
+                                );
+                            case 'settings':
+                                return (
+                                    <div className="animate-fadeIn">
+                                        {renderAdminSettings()}
+                                    </div>
+                                );
+                            default:
+                                return (
+                                    <div className="animate-fadeIn">
+                                        {renderAdminOverview()}
+                                    </div>
+                                );
+                        }
+                    })()}
+                </div>
+    
+                {/* Floating Action Button for Quick Actions */}
+                <div className="fixed bottom-8 right-8 z-50">
+                    <div className="relative group">
+                        <button className="w-14 h-14 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center text-white hover:scale-110">
+                            <span className="text-xl">⚡</span>
+                        </button>
+                        
+                        {/* Quick Action Menu */}
+                        <div className="absolute bottom-16 right-0 bg-white rounded-xl shadow-xl border border-gray-200 p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 w-48">
+                            <button 
+                                className="w-full flex items-center space-x-3 px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 rounded-lg transition-colors"
+                                onClick={() => setShowCreateUserForm(true)}
+                            >
+                                <span>👤</span>
+                                <span>Create New User</span>
+                            </button>
+                            <button className="w-full flex items-center space-x-3 px-3 py-2 text-sm text-gray-700 hover:bg-green-50 rounded-lg transition-colors">
+                                <span>📧</span>
+                                <span>Send Announcement</span>
+                            </button>
+                            <button className="w-full flex items-center space-x-3 px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 rounded-lg transition-colors">
+                                <span>📊</span>
+                                <span>Generate Report</span>
+                            </button>
+                            <button className="w-full flex items-center space-x-3 px-3 py-2 text-sm text-gray-700 hover:bg-purple-50 rounded-lg transition-colors">
+                                <span>⚙️</span>
+                                <span>System Settings</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    const renderAdminSettings = () => (
+        <div className={`space-y-8 ${isDarkMode ? 'dark' : ''}`}>
+            {/* Header */}
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <div className="space-y-2">
+                    <h2 className={`text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
+                        <span className="mr-3 text-4xl">⚙️</span>
+                        Admin Settings
+                    </h2>
+                    <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} text-lg transition-colors duration-300`}>
+                        Configure system-wide preferences and administrative controls
+                    </p>
+                </div>
+                
+                <div className="flex space-x-3">
+                    <button className={`inline-flex items-center px-4 py-2 border ${isDarkMode ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'} text-sm font-medium rounded-lg transition-colors`}>
+                        <span className="mr-2">🔄</span>
+                        Reset to Defaults
+                    </button>
+                    <button className="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-xl text-white bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-xl">
+                        <span className="mr-2 text-lg">💾</span>
+                        Save All Settings
+                    </button>
+                </div>
+            </div>
+    
+            {/* Settings Container */}
+            <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+                {/* Account Section */}
+                <div className={`p-8 border-b ${isDarkMode ? 'border-gray-600' : 'border-gray-200'} transition-colors duration-300`}>
+                    <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center mb-6 transition-colors duration-300`}>
+                        <span className="mr-3 text-2xl">👨‍💼</span>
+                        Administrator Profile
+                    </h3>
+                    
+                    <div className="flex items-center space-x-6 mb-8">
+                        <div className="relative">
+                            <div className="w-24 h-24 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white text-3xl font-bold">
+                                {user?.firstName?.charAt(0)?.toUpperCase() || user?.name?.charAt(0)?.toUpperCase() || 'A'}
+                                {user?.lastName?.charAt(0)?.toUpperCase() || ''}
+                            </div>
+                            <button className="absolute -bottom-1 -right-1 w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center hover:bg-purple-700 transition-colors">
+                                <span className="text-sm">📷</span>
+                            </button>
+                        </div>
+                        <div className="flex-1">
+                            <h4 className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>
+                                {user?.firstName && user?.lastName 
+                                    ? `${user.firstName} ${user.lastName}` 
+                                    : user?.name || 'Administrator'
+                                }
+                            </h4>
+                            <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
+                                {user?.email || 'admin@fiainstitute.com'}
+                            </p>
+                            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800 mt-2">
+                                👨‍💼 {user?.role === 'admin' ? 'Super Admin' : 'Administrator'}
+                            </span>
+                        </div>
+                    </div>
+    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} transition-colors duration-300`}>
+                                Full Name
+                            </label>
+                            <input
+                                type="text"
+                                defaultValue={user?.firstName && user?.lastName 
+                                    ? `${user.firstName} ${user.lastName}` 
+                                    : user?.name || 'Administrator'
+                                }
+                                className={`w-full px-4 py-3 border ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white placeholder-gray-400' : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all`}
+                                placeholder="Enter your full name"
+                            />
+                        </div>
+                        
+                        <div className="space-y-2">
+                            <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} transition-colors duration-300`}>
+                                Email Address
+                            </label>
+                            <input
+                                type="email"
+                                defaultValue={user?.email || 'admin@fiainstitute.com'}
+                                className={`w-full px-4 py-3 border ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white placeholder-gray-400' : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all`}
+                                placeholder="Enter your email"
+                            />
+                        </div>
+                        
+                        <div className="space-y-2">
+                            <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} transition-colors duration-300`}>
+                                Admin ID
+                            </label>
+                            <input
+                                type="text"
+                                defaultValue="ADM-2024-001"
+                                readOnly
+                                className={`w-full px-4 py-3 border ${isDarkMode ? 'border-gray-600 bg-gray-600 text-gray-300' : 'border-gray-300 bg-gray-100 text-gray-600'} rounded-lg transition-all cursor-not-allowed`}
+                            />
+                        </div>
+                        
+                        <div className="space-y-2">
+                            <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} transition-colors duration-300`}>
+                                Access Level
+                            </label>
+                            <select className={`w-full px-4 py-3 border ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white' : 'border-gray-300 bg-white text-gray-900'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all`}>
+                                <option>Super Administrator</option>
+                                <option>System Administrator</option>
+                                <option>Content Administrator</option>
+                                <option>User Administrator</option>
+                            </select>
+                        </div>
+                        
+                        <div className="space-y-2">
+                            <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} transition-colors duration-300`}>
+                                Phone Number
+                            </label>
+                            <input
+                                type="tel"
+                                defaultValue={user?.phone || '+1 (555) 123-4567'}
+                                className={`w-full px-4 py-3 border ${isDarkMode ? 'border-gray-600 bg-gray-700 text-white placeholder-gray-400' : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all`}
+                                placeholder="Enter your phone number"
+                            />
+                        </div>
+                        
+                        <div className="space-y-2">
+                            <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} transition-colors duration-300`}>
+                                Last Login
+                            </label>
+                            <input
+                                type="text"
+                                defaultValue={new Date().toLocaleString()}
+                                readOnly
+                                className={`w-full px-4 py-3 border ${isDarkMode ? 'border-gray-600 bg-gray-600 text-gray-300' : 'border-gray-300 bg-gray-100 text-gray-600'} rounded-lg transition-all cursor-not-allowed`}
+                            />
+                        </div>
+                    </div>
+                </div>
+    
+                {/* Language Toggle Section */}
+                <div className={`p-8 border-b ${isDarkMode ? 'border-gray-600' : 'border-gray-200'} transition-colors duration-300`}>
+                    <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center mb-6 transition-colors duration-300`}>
+                        <span className="mr-3 text-2xl">🌐</span>
+                        Language Settings
+                    </h3>
+                    
+                    <div className={`p-6 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'} rounded-xl transition-colors duration-300`}>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-4">
+                                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center text-white text-xl">
+                                    🗣️
+                                </div>
+                                <div>
+                                    <h4 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>
+                                        Interface Language
+                                    </h4>
+                                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
+                                        Choose your preferred language
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div className="flex items-center space-x-3">
+                                <span className={`text-sm font-medium transition-colors duration-300 ${
+                                    currentLanguage === 'en' 
+                                        ? isDarkMode ? 'text-white' : 'text-gray-900'
+                                        : isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                                }`}>
+                                    🇺🇸 English
+                                </span>
+                                <button
+                                    onClick={() => {
+                                        const newLanguage = currentLanguage === 'en' ? 'ja' : 'en';
+                                        handleLanguageToggle(newLanguage);
+                                    }}
+                                    className={`relative inline-flex h-8 w-16 items-center rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${
+                                        currentLanguage === 'ja' ? 'bg-purple-600' : 'bg-gray-300'
+                                    }`}
+                                >
+                                    <span
+                                        className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform duration-300 ${
+                                            currentLanguage === 'ja' ? 'translate-x-9' : 'translate-x-1'
+                                        }`}
+                                    />
+                                </button>
+                                <span className={`text-sm font-medium transition-colors duration-300 ${
+                                    currentLanguage === 'ja' 
+                                        ? isDarkMode ? 'text-white' : 'text-gray-900'
+                                        : isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                                }`}>
+                                    🇯🇵 Japanese
+                                </span>
+                            </div>
+                        </div>
+                        
+                        {/* Language Change Feedback */}
+                        {currentLanguage !== 'en' && (
+                            <div className={`mt-4 p-4 ${
+                                isDarkMode 
+                                    ? 'bg-gradient-to-r from-green-900/50 to-emerald-900/50 border-green-700' 
+                                    : 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-200'
+                            } rounded-xl border transition-all duration-300`}>
+                                <div className="flex items-center space-x-3">
+                                    <span className="text-green-600 text-2xl">✅</span>
+                                    <div>
+                                        <h4 className={`font-semibold ${
+                                            isDarkMode ? 'text-green-300' : 'text-green-900'
+                                        } transition-colors duration-300`}>Language Changed</h4>
+                                        <p className={`text-sm ${
+                                            isDarkMode ? 'text-green-400' : 'text-green-700'
+                                        } transition-colors duration-300`}>
+                                            Interface language has been updated to {currentLanguage === 'ja' ? 'Japanese (日本語)' : 'English'}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+    
+                        <div className={`mt-4 p-4 ${
+                            isDarkMode 
+                                ? 'bg-gradient-to-r from-blue-900/50 to-indigo-900/50 border-blue-700' 
+                                : 'bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200'
+                        } rounded-xl border transition-colors duration-300`}>
+                            <div className="flex items-center space-x-3">
+                                <span className="text-blue-600 text-2xl">💡</span>
+                                <div>
+                                    <h4 className={`font-semibold ${
+                                        isDarkMode ? 'text-blue-300' : 'text-blue-900'
+                                    } transition-colors duration-300`}>Admin Note</h4>
+                                    <p className={`text-sm ${
+                                        isDarkMode ? 'text-blue-400' : 'text-blue-700'
+                                    } transition-colors duration-300`}>
+                                        Language changes apply to admin interface only. User portal languages are managed separately.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+                {/* Dark Mode Toggle Section */}
+                <div className={`p-8 border-b ${isDarkMode ? 'border-gray-600' : 'border-gray-200'} transition-colors duration-300`}>
+                    <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center mb-6 transition-colors duration-300`}>
+                        <span className="mr-3 text-2xl">🎨</span>
+                        Display Settings
+                    </h3>
+                    
+                    <div className={`p-6 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'} rounded-xl transition-colors duration-300`}>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-4">
+                                <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center text-white text-xl">
+                                    {isDarkMode ? '🌙' : '☀️'}
+                                </div>
+                                <div>
+                                    <h4 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>
+                                        Dark Mode
+                                    </h4>
+                                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
+                                        Switch between light and dark themes
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div className="flex items-center space-x-3">
+                                <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
+                                    ☀️ Light
+                                </span>
+                                <button
+                                    onClick={toggleDarkMode}
+                                    className={`relative inline-flex h-8 w-16 items-center rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                                        isDarkMode ? 'bg-blue-600' : 'bg-gray-300'
+                                    }`}
+                                >
+                                    <span
+                                        className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform duration-300 ${
+                                            isDarkMode ? 'translate-x-9' : 'translate-x-1'
+                                        }`}
+                                    />
+                                </button>
+                                <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
+                                    🌙 Dark
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+                {/* System Configuration */}
+                <div className="p-8">
+                    <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center mb-6 transition-colors duration-300`}>
+                        <span className="mr-3 text-2xl">🔧</span>
+                        System Configuration
+                    </h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* System Preferences */}
+                        <div className={`p-6 ${isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'} rounded-xl border transition-colors duration-300`}>
+                            <h4 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-4 transition-colors duration-300`}>
+                                System Preferences
+                            </h4>
+                            <div className="space-y-4">
+                                {[
+                                    { title: 'Enable automatic backups', desc: 'Daily system backup at 2:00 AM', checked: true },
+                                    { title: 'Maintenance mode notifications', desc: 'Alert users before maintenance', checked: true },
+                                    { title: 'Debug logging', desc: 'Enhanced logging for troubleshooting', checked: false },
+                                    { title: 'Real-time monitoring', desc: 'Live system performance tracking', checked: true }
+                                ].map((setting, index) => (
+                                    <div key={index} className="flex items-center justify-between">
+                                        <div className="flex-1">
+                                            <div className={`font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-900'} transition-colors duration-300`}>
+                                                {setting.title}
+                                            </div>
+                                            <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
+                                                {setting.desc}
+                                            </div>
+                                        </div>
+                                        <button
+                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${
+                                                setting.checked ? 'bg-purple-600' : 'bg-gray-300'
+                                            }`}
+                                        >
+                                            <span
+                                                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-300 ${
+                                                    setting.checked ? 'translate-x-6' : 'translate-x-1'
+                                                }`}
+                                            />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+    
+                        {/* Notification Settings */}
+                        <div className={`p-6 ${isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'} rounded-xl border transition-colors duration-300`}>
+                            <h4 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} mb-4 transition-colors duration-300`}>
+                                Admin Notifications
+                            </h4>
+                            <div className="space-y-4">
+                                {[
+                                    'User Registration Alerts',
+                                    'System Error Notifications',
+                                    'Security Alerts',
+                                    'Database Backup Status',
+                                    'Performance Warnings'
+                                ].map((notification, index) => (
+                                    <div key={index} className="flex items-center justify-between">
+                                        <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
+                                            {notification}
+                                        </span>
+                                        <button
+                                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${
+                                                index % 2 === 0 ? 'bg-purple-600' : 'bg-gray-300'
+                                            }`}
+                                        >
+                                            <span
+                                                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-300 ${
+                                                    index % 2 === 0 ? 'translate-x-6' : 'translate-x-1'
+                                                }`}
+                                            />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+    
+                    {/* Security Section */}
+                    <div className={`mt-8 p-6 bg-gradient-to-r ${isDarkMode ? 'from-red-900/50 to-orange-900/50 border-red-700' : 'from-red-50 to-orange-50 border-red-200'} rounded-xl border transition-colors duration-300`}>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-3">
+                                <span className="text-red-600 text-2xl">🔐</span>
+                                <div>
+                                    <h4 className={`font-semibold ${isDarkMode ? 'text-red-300' : 'text-red-900'} transition-colors duration-300`}>
+                                        Security Settings
+                                    </h4>
+                                    <p className={`text-sm ${isDarkMode ? 'text-red-400' : 'text-red-700'} transition-colors duration-300`}>
+                                        Manage admin account security and access controls
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex space-x-3">
+                                <button className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium">
+                                    <span className="mr-2">🔑</span>
+                                    Change Password
+                                </button>
+                                <button className="inline-flex items-center px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm font-medium">
+                                    <span className="mr-2">🛡️</span>
+                                    2FA Settings
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+
+    const renderAdminSidebar = () => (
+        <nav className="flex flex-col space-y-2 p-2 sm:p-4">
+            <button 
+                className={`flex items-center justify-center sm:justify-start space-x-0 sm:space-x-3 px-2 sm:px-4 py-3 rounded-xl transition-all duration-200 group ${
+                    activeTab === 'overview' 
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg transform scale-105' 
+                    : `${isDarkMode 
+                        ? 'text-gray-300 hover:bg-gray-700/80 hover:text-white border border-gray-700/50 hover:border-gray-600' 
+                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    }`
+                }`}
+                onClick={() => setActiveTab('overview')}
+                title="Overview"
+            >
+                <div className={`p-2 rounded-lg transition-all duration-200 ${
+                    activeTab === 'overview' 
+                    ? 'bg-white/20 shadow-sm' 
+                    : `${isDarkMode 
+                        ? 'bg-blue-900/30 group-hover:bg-blue-800/50 border border-blue-800/30 group-hover:border-blue-700/50' 
+                        : 'bg-blue-100 group-hover:bg-blue-200'
+                    }`
+                }`}>
+                    <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+                    </svg>
+                </div>
+                <span className="font-medium hidden sm:block">Overview</span>
+                {activeTab === 'overview' && (
+                    <div className="hidden sm:block ml-auto">
+                        <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                    </div>
+                )}
+            </button>
+    
+            <button 
+                className={`flex items-center justify-center sm:justify-start space-x-0 sm:space-x-3 px-2 sm:px-4 py-3 rounded-xl transition-all duration-200 group ${
+                    activeTab === 'users' 
+                    ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg transform scale-105' 
+                    : `${isDarkMode 
+                        ? 'text-gray-300 hover:bg-gray-700/80 hover:text-white border border-gray-700/50 hover:border-gray-600' 
+                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    }`
+                }`}
+                onClick={() => setActiveTab('users')}
+                title="Users"
+            >
+                <div className={`p-2 rounded-lg transition-all duration-200 ${
+                    activeTab === 'users' 
+                    ? 'bg-white/20 shadow-sm' 
+                    : `${isDarkMode 
+                        ? 'bg-green-900/30 group-hover:bg-green-800/50 border border-green-800/30 group-hover:border-green-700/50' 
+                        : 'bg-green-100 group-hover:bg-green-200'
+                    }`
+                }`}>
+                    <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A2.96 2.96 0 0 0 17 6.5c-.86 0-1.76.34-2.42 1.01L12 10l2.58 2.58c.76.76 2 .76 2.76 0l.66-.66V22h2z"/>
+                    </svg>
+                </div>
+                <span className="font-medium hidden sm:block">Users</span>
+                {/* Pending users indicator */}
+                {pendingUsers.length > 0 && (
+                    <div className="hidden sm:block ml-auto">
+                        <span className={`inline-flex items-center justify-center px-2 py-1 text-xs font-bold rounded-full ${
+                            isDarkMode ? 'bg-orange-600 text-orange-100' : 'bg-orange-500 text-white'
+                        }`}>
+                            {pendingUsers.length}
+                        </span>
+                    </div>
+                )}
+                {activeTab === 'users' && (
+                    <div className="hidden sm:block ml-auto">
+                        <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                    </div>
+                )}
+            </button>
+    
+            <button 
+                className={`flex items-center justify-center sm:justify-start space-x-0 sm:space-x-3 px-2 sm:px-4 py-3 rounded-xl transition-all duration-200 group ${
+                    activeTab === 'applications' 
+                    ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-lg transform scale-105' 
+                    : `${isDarkMode 
+                        ? 'text-gray-300 hover:bg-gray-700/80 hover:text-white border border-gray-700/50 hover:border-gray-600' 
+                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    }`
+                }`}
+                onClick={() => setActiveTab('applications')}
+                title="Applications"
+            >
+                <div className={`p-2 rounded-lg transition-all duration-200 ${
+                    activeTab === 'applications' 
+                    ? 'bg-white/20 shadow-sm' 
+                    : `${isDarkMode 
+                        ? 'bg-orange-900/30 group-hover:bg-orange-800/50 border border-orange-800/30 group-hover:border-orange-700/50' 
+                        : 'bg-orange-100 group-hover:bg-orange-200'
+                    }`
+                }`}>
+                    <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h8c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                    </svg>
+                </div>
+                <span className="font-medium hidden sm:block">Applications</span>
+                {/* Pending applications indicator */}
+                {applicationSubmissions.filter(app => app.status === 'pending').length > 0 && (
+                    <div className="hidden sm:block ml-auto">
+                        <span className={`inline-flex items-center justify-center px-2 py-1 text-xs font-bold rounded-full ${
+                            isDarkMode ? 'bg-red-600 text-red-100' : 'bg-red-500 text-white'
+                        }`}>
+                            {applicationSubmissions.filter(app => app.status === 'pending').length}
+                        </span>
+                    </div>
+                )}
+                {activeTab === 'applications' && (
+                    <div className="hidden sm:block ml-auto">
+                        <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                    </div>
+                )}
+            </button>
+    
+            <button 
+                className={`flex items-center justify-center sm:justify-start space-x-0 sm:space-x-3 px-2 sm:px-4 py-3 rounded-xl transition-all duration-200 group ${
+                    activeTab === 'contacts' 
+                    ? 'bg-gradient-to-r from-purple-500 to-pink-600 text-white shadow-lg transform scale-105' 
+                    : `${isDarkMode 
+                        ? 'text-gray-300 hover:bg-gray-700/80 hover:text-white border border-gray-700/50 hover:border-gray-600' 
+                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    }`
+                }`}
+                onClick={() => setActiveTab('contacts')}
+                title="Contacts"
+            >
+                <div className={`p-2 rounded-lg transition-all duration-200 ${
+                    activeTab === 'contacts' 
+                    ? 'bg-white/20 shadow-sm' 
+                    : `${isDarkMode 
+                        ? 'bg-purple-900/30 group-hover:bg-purple-800/50 border border-purple-800/30 group-hover:border-purple-700/50' 
+                        : 'bg-purple-100 group-hover:bg-purple-200'
+                    }`
+                }`}>
+                    <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+                    </svg>
+                </div>
+                <span className="font-medium hidden sm:block">Contacts</span>
+                {/* Pending contacts indicator */}
+                {contactSubmissions.filter(contact => contact.status === 'pending').length > 0 && (
+                    <div className="hidden sm:block ml-auto">
+                        <span className={`inline-flex items-center justify-center px-2 py-1 text-xs font-bold rounded-full ${
+                            isDarkMode ? 'bg-purple-600 text-purple-100' : 'bg-purple-500 text-white'
+                        }`}>
+                            {contactSubmissions.filter(contact => contact.status === 'pending').length}
+                        </span>
+                    </div>
+                )}
+                {activeTab === 'contacts' && (
+                    <div className="hidden sm:block ml-auto">
+                        <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                    </div>
+                )}
+            </button>
+    
+            <button 
+                className={`flex items-center justify-center sm:justify-start space-x-0 sm:space-x-3 px-2 sm:px-4 py-3 rounded-xl transition-all duration-200 group ${
+                    activeTab === 'settings' 
+                    ? 'bg-gradient-to-r from-gray-500 to-slate-600 text-white shadow-lg transform scale-105' 
+                    : `${isDarkMode 
+                        ? 'text-gray-300 hover:bg-gray-700/80 hover:text-white border border-gray-700/50 hover:border-gray-600' 
+                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    }`
+                }`}
+                onClick={() => setActiveTab('settings')}
+                title="Settings"
+            >
+                <div className={`p-2 rounded-lg transition-all duration-200 ${
+                    activeTab === 'settings' 
+                    ? 'bg-white/20 shadow-sm' 
+                    : `${isDarkMode 
+                        ? 'bg-slate-900/30 group-hover:bg-slate-800/50 border border-slate-800/30 group-hover:border-slate-700/50' 
+                        : 'bg-gray-100 group-hover:bg-gray-200'
+                    }`
+                }`}>
+                    <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+                    </svg>
+                </div>
+                <span className="font-medium hidden sm:block">Settings</span>
+                {activeTab === 'settings' && (
+                    <div className="hidden sm:block ml-auto">
+                        <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                    </div>
+                )}
+            </button>
+    
+            {/* Divider */}
+            <div className={`my-4 border-t ${isDarkMode ? 'border-gray-700/50' : 'border-gray-200/50'} transition-colors duration-300`}></div>
+    
+            {/* Quick Stats in Sidebar */}
+            <div className="hidden sm:block space-y-3">
+                <h4 className={`text-xs font-medium uppercase tracking-wider ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} px-2`}>
+                    Quick Stats
+                </h4>
+                
+                <div className={`p-3 rounded-xl ${isDarkMode ? 'bg-gray-800/50 border border-gray-700/30' : 'bg-gray-50 border border-gray-200'} transition-colors duration-300`}>
+                    <div className="flex items-center justify-between mb-2">
+                        <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>System Health</span>
+                        <span className={`text-sm font-bold ${isDarkMode ? 'text-green-400' : 'text-green-600'}`}>98%</span>
+                    </div>
+                    <div className={`w-full h-2 rounded-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`}>
+                        <div className="h-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full" style={{ width: '98%' }}></div>
+                    </div>
+                </div>
+    
+                <div className={`p-3 rounded-xl ${isDarkMode ? 'bg-gray-800/50 border border-gray-700/30' : 'bg-gray-50 border border-gray-200'} transition-colors duration-300`}>
+                    <div className="flex items-center justify-between">
+                        <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Online Users</span>
+                        <div className="flex items-center space-x-2">
+                            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                            <span className={`text-sm font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>247</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            {/* Dark Mode Visual Enhancement */}
+            {isDarkMode && (
+                <div className="hidden sm:block mt-6 p-4 rounded-xl bg-gradient-to-br from-blue-900/20 to-purple-900/20 border border-blue-800/30">
+                    <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                            <span className="text-white text-sm">🌙</span>
+                        </div>
+                        <div>
+                            <p className="text-white text-sm font-medium">Dark Mode</p>
+                            <p className="text-blue-200 text-xs">Enhanced for night work</p>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </nav>
+    );
+
+    const renderDefaultSidebar = () => (
+        <nav className="flex flex-col space-y-2 p-4">
+            <button 
+                className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
+                    activeTab === 'overview' 
+                    ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg transform scale-105' 
+                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                }`}
+                onClick={() => setActiveTab('overview')}
+            >
+                <div className={`p-2 rounded-lg ${
+                    activeTab === 'overview' 
+                    ? 'bg-white/20' 
+                    : 'bg-blue-100 group-hover:bg-blue-200'
+                }`}>
+                    <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+                    </svg>
+                </div>
+                <span className="font-medium">Overview</span>
+            </button>
+    
+            <button 
+                className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
+                    activeTab === 'courses' 
+                    ? 'bg-gradient-to-r from-green-500 to-teal-600 text-white shadow-lg transform scale-105' 
+                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                }`}
+                onClick={() => setActiveTab('courses')}
+            >
+                <div className={`p-2 rounded-lg ${
+                    activeTab === 'courses' 
+                    ? 'bg-white/20' 
+                    : 'bg-green-100 group-hover:bg-green-200'
+                }`}>
+                    <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3z"/>
+                    </svg>
+                </div>
+                <span className="font-medium">Courses</span>
+            </button>
+    
+            <button 
+                className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
+                    activeTab === 'analytics' 
+                    ? 'bg-gradient-to-r from-purple-500 to-violet-600 text-white shadow-lg transform scale-105' 
+                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                }`}
+                onClick={() => setActiveTab('analytics')}
+            >
+                <div className={`p-2 rounded-lg ${
+                    activeTab === 'analytics' 
+                    ? 'bg-white/20' 
+                    : 'bg-purple-100 group-hover:bg-purple-200'
+                }`}>
+                    <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                    </svg>
+                </div>
+                <span className="font-medium">Analytics</span>
+            </button>
+    
+            <button 
+                className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
+                    activeTab === 'messages' 
+                    ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-lg transform scale-105' 
+                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                }`}
+                onClick={() => setActiveTab('messages')}
+            >
+                <div className={`p-2 rounded-lg ${
+                    activeTab === 'messages' 
+                    ? 'bg-white/20' 
+                    : 'bg-orange-100 group-hover:bg-orange-200'
+                }`}>
+                    <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+                    </svg>
+                </div>
+                <span className="font-medium">Messages</span>
+            </button>
+    
+            <button 
+                className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
+                    activeTab === 'settings' 
+                    ? 'bg-gradient-to-r from-gray-500 to-slate-600 text-white shadow-lg transform scale-105' 
+                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                }`}
+                onClick={() => setActiveTab('settings')}
+            >
+                <div className={`p-2 rounded-lg ${
+                    activeTab === 'settings' 
+                    ? 'bg-white/20' 
+                    : 'bg-gray-100 group-hover:bg-gray-200'
+                }`}>
+                    <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+                    </svg>
+                </div>
+                <span className="font-medium">Settings</span>
+            </button>
+        </nav>
+    );
+
+    const renderDashboardContent = () => {
+        switch(user?.role) {
+            case 'student':
+                return renderStudentDashboard();
+            case 'teacher':
+                return renderTeacherDashboard();
+            case 'admin':
+                return renderAdminDashboard();
+            default:
+                return renderStudentDashboard();
+        }
+    };
+
+    const renderDashboardTabs = () => {
+        const studentTabs = [
+            { id: 'overview', label: 'Overview', icon: '🏠', gradient: 'from-blue-500 to-indigo-600', bgColor: 'bg-blue-100 group-hover:bg-blue-200' },
+            { id: 'courses', label: 'My Courses', icon: '📚', gradient: 'from-green-500 to-emerald-600', bgColor: 'bg-green-100 group-hover:bg-green-200' },
+            { id: 'analytics', label: 'Analytics', icon: '📈', gradient: 'from-purple-500 to-violet-600', bgColor: 'bg-purple-100 group-hover:bg-purple-200' },
+            { id: 'messages', label: 'Messages', icon: '💬', gradient: 'from-orange-500 to-red-600', bgColor: 'bg-orange-100 group-hover:bg-orange-200' },
+            { id: 'settings', label: 'Settings', icon: '⚙️', gradient: 'from-gray-500 to-slate-600', bgColor: 'bg-gray-100 group-hover:bg-gray-200' }
+        ];
+    
+        const teacherTabs = [
+            { id: 'overview', label: 'Overview', icon: '📊', gradient: 'from-blue-500 to-purple-600', bgColor: 'bg-blue-100 group-hover:bg-blue-200' },
+            { id: 'courses', label: 'Courses', icon: '📚', gradient: 'from-green-500 to-teal-600', bgColor: 'bg-green-100 group-hover:bg-green-200' },
+            { id: 'analytics', label: 'Analytics', icon: '📈', gradient: 'from-purple-500 to-pink-600', bgColor: 'bg-purple-100 group-hover:bg-purple-200' },
+            { id: 'messages', label: 'Messages', icon: '💬', gradient: 'from-orange-500 to-amber-600', bgColor: 'bg-orange-100 group-hover:bg-orange-200' },
+            { id: 'settings', label: 'Settings', icon: '⚙️', gradient: 'from-gray-500 to-zinc-600', bgColor: 'bg-gray-100 group-hover:bg-gray-200' }
+        ];
+    
+        const tabs = user.role === 'teacher' ? teacherTabs : studentTabs;
+
+        return (
+            <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100'} flex transition-colors duration-300`}>
+                {/* Responsive Sidebar */}
+                <div className={`w-16 sm:w-80 ${isDarkMode ? 'bg-gray-800/80' : 'bg-white/80'} backdrop-blur-xl shadow-2xl border-r ${isDarkMode ? 'border-gray-700/50' : 'border-gray-200/50'} flex flex-col transition-colors duration-300`}>
+                    {/* Sidebar Header - Updated for dark mode */}
+                    <div className={`p-2 sm:p-6 border-b ${isDarkMode ? 'border-gray-700/50' : 'border-gray-200/50'} transition-colors duration-300`}>
+                        <div className="flex items-center justify-center sm:justify-start space-x-0 sm:space-x-3 mb-4">
+                            <div className="w-8 sm:w-12 h-8 sm:h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                                <span className="text-white text-lg sm:text-xl font-bold">
+                                    {user?.role === 'teacher' ? '📚' : '🎓'}
+                                </span>
+                            </div>
+                            <div className="hidden sm:block">
+                                <h2 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>FIA Portal</h2>
+                                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
+                                    {user?.role === 'teacher' ? 'Teacher Dashboard' : 'Student Dashboard'}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+        
+                    {/* Navigation Items - Updated with dark mode */}
+                    <nav className="flex-1 py-2 sm:py-6 px-2 sm:px-4 space-y-2">
+                        {tabs.map((tab) => (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id)}
+                                title={tab.label}
+                                className={`w-full flex items-center justify-center sm:justify-start space-x-0 sm:space-x-3 px-2 sm:px-4 py-3 rounded-xl transition-all duration-200 group ${
+                                    activeTab === tab.id
+                                        ? `bg-gradient-to-r ${tab.gradient} text-white shadow-lg transform scale-105`
+                                        : `${isDarkMode 
+                                            ? 'text-gray-300 hover:bg-gray-700 hover:text-white' 
+                                            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                                        }`
+                                }`}
+                            >
+                                <div className={`p-2 rounded-lg ${
+                                    activeTab === tab.id 
+                                    ? 'bg-white/20' 
+                                    : `${isDarkMode 
+                                        ? 'bg-gray-700 group-hover:bg-gray-600' 
+                                        : tab.bgColor
+                                    }`
+                                }`}>
+                                    <span className="text-lg sm:text-base">{tab.icon}</span>
+                                </div>
+                                <span className="hidden sm:block font-medium">{tab.label}</span>
+                            </button>
+                        ))}
+                    </nav>
+        
+                    {/* User Profile Section - Updated with dark mode */}
+                    <div className={`p-2 sm:p-6 border-t ${isDarkMode ? 'border-gray-700/50' : 'border-gray-200/50'} transition-colors duration-300`}>
+                        <div className="flex items-center justify-center sm:justify-start space-x-0 sm:space-x-3 mb-4">
+                            <div className="w-8 sm:w-12 h-8 sm:h-12 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center text-white font-semibold text-sm sm:text-lg">
+                                {user?.name?.charAt(0).toUpperCase()}
+                            </div>
+                            <div className="flex-1 min-w-0 hidden sm:block">
+                                <p className={`text-sm font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} truncate transition-colors duration-300`}>
+                                    {user?.name}
+                                </p>
+                                <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} truncate transition-colors duration-300`}>
+                                    {user?.email}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        {/* Logout Button */}
+                        <button
+                            onClick={handleLogout}
+                            title="Logout"
+                            className="w-full flex items-center justify-center space-x-0 sm:space-x-2 px-2 sm:px-4 py-3 bg-gradient-to-r from-red-500 to-pink-600 text-white rounded-xl hover:from-red-600 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+                        >
+                            <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+                            </svg>
+                            <span className="font-medium hidden sm:block">Logout</span>
+                        </button>
+                    </div>
+                </div>
+        
+                {/* Main Content Area */}
+                <div className="flex-1 flex flex-col overflow-hidden">
+                    {/* Top Header - Mobile Only - Updated with dark mode */}
+                    <div className={`sm:hidden ${isDarkMode ? 'bg-gray-800/80 border-gray-700/50' : 'bg-white/80 border-gray-200/50'} backdrop-blur-xl shadow-sm border-b p-4 transition-colors duration-300`}>
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <h1 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>
+                                    {tabs.find(tab => tab.id === activeTab)?.label || 'Dashboard'}
+                                </h1>
+                                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} capitalize transition-colors duration-300`}>
+                                    {user.role} Portal
+                                </p>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium capitalize transition-colors duration-300 ${
+                                    isDarkMode ? 'bg-blue-900/50 text-blue-300 border border-blue-700/50' : 'bg-blue-100 text-blue-800'
+                                }`}>
+                                    {user.role}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+        
+                    {/* Desktop Header - Already has dark mode support */}
+                    <div className={`hidden sm:block ${isDarkMode ? 'bg-gray-800/80 border-gray-700/50' : 'bg-white/80 border-gray-200/50'} backdrop-blur-xl shadow-lg border-b px-4 sm:px-8 py-4 sm:py-6 transition-colors duration-300`}>
+                        {/* Header content remains the same as it already has dark mode support */}
+                        <div className="max-w-7xl mx-auto">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+                                <div>
+                                    <h1 className={`text-xl sm:text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
+                                        {currentLanguage === 'en' 
+                                            ? `Welcome back, ${user?.name}!` 
+                                            : `おかえりなさい、${user?.name}！`
+                                        }
+                                        <span className="ml-2 text-2xl sm:text-4xl">👋</span>
+                                    </h1>
+                                    <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mt-1 text-sm sm:text-base transition-colors duration-300`}>
+                                        {currentLanguage === 'en' 
+                                            ? `Here's what's happening in your ${user?.role} dashboard today.`
+                                            : `今日の${user?.role === 'student' ? '学生' : '教師'}ダッシュボードの状況です。`
+                                        }
+                                    </p>
+                                </div>
+                                <div className="flex items-center justify-between sm:justify-end space-x-4">
+                                    {/* Language Toggle */}
+                                    <div className={`flex ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'} p-1 rounded-lg transition-colors duration-300`}>
+                                        <button 
+                                            className={`flex items-center justify-center w-8 h-8 rounded-md transition-all ${
+                                                currentLanguage === 'en' 
+                                                    ? 'text-white bg-blue-600 shadow' 
+                                                    : `${isDarkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-gray-700 hover:bg-gray-200'}`
+                                            }`}
+                                            onClick={() => handleLanguageToggle('en')}
+                                            title="English"
+                                        >
+                                            <span className="text-sm font-bold">EN</span>
+                                        </button>
+                                        <button 
+                                            className={`flex items-center justify-center w-8 h-8 rounded-md transition-all ${
+                                                currentLanguage === 'ja' 
+                                                    ? 'text-white bg-blue-600 shadow' 
+                                                    : `${isDarkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-gray-700 hover:bg-gray-200'}`
+                                            }`}
+                                            onClick={() => handleLanguageToggle('ja')}
+                                            title="Japanese"
+                                        >
+                                            <span className="text-sm font-bold">JA</span>
+                                        </button>
+                                    </div>
+        
+                                    {/* Dark Mode Toggle */}
+                                    <div className={`flex ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'} p-1 rounded-lg transition-colors duration-300`}>
+                                        <button 
+                                            className={`flex items-center justify-center w-8 h-8 rounded-md transition-all ${
+                                                !isDarkMode 
+                                                    ? 'text-white bg-yellow-500 shadow' 
+                                                    : `${isDarkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-gray-700 hover:bg-gray-200'}`
+                                            }`}
+                                            onClick={() => handleThemeToggle('light')}
+                                            title="Light Mode"
+                                        >
+                                            <span className="text-lg">☀️</span>
+                                        </button>
+                                        <button 
+                                            className={`flex items-center justify-center w-8 h-8 rounded-md transition-all ${
+                                                isDarkMode 
+                                                    ? 'text-white bg-gray-800 shadow' 
+                                                    : `${isDarkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-gray-700 hover:bg-gray-200'}`
+                                            }`}
+                                            onClick={() => handleThemeToggle('dark')}
+                                            title="Dark Mode"
+                                        >
+                                            <span className="text-lg">🌙</span>
+                                        </button>
+                                    </div>
+        
+                                    {/* Online Status */}
+                                    <div className={`flex items-center space-x-2 px-3 sm:px-4 py-1 sm:py-2 rounded-full transition-colors duration-300 ${
+                                        isDarkMode ? 'bg-green-900/50 text-green-300' : 'bg-green-100 text-green-800'
+                                    }`}>
+                                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                        <span className="text-xs sm:text-sm font-medium">
+                                            {currentLanguage === 'en' ? 'Online' : 'オンライン'}
+                                        </span>
+                                    </div>
+        
+                                    {/* Date */}
+                                    <div className={`text-xs sm:text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} hidden sm:block transition-colors duration-300`}>
+                                        {currentLanguage === 'en' 
+                                            ? new Date().toLocaleDateString('en-US', { 
+                                                weekday: 'long', 
+                                                year: 'numeric', 
+                                                month: 'long', 
+                                                day: 'numeric' 
+                                            })
+                                            : new Date().toLocaleDateString('ja-JP', { 
+                                                weekday: 'long', 
+                                                year: 'numeric', 
+                                                month: 'long', 
+                                                day: 'numeric' 
+                                            })
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        
+                    {/* Dashboard Content - UPDATED WITH DARK MODE */}
+                    <div className={`flex-1 overflow-auto ${isDarkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100'} transition-colors duration-300`}>
+                        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-4 sm:py-8">
+                            {user.role === 'teacher' ? renderTeacherDashboard() : renderStudentDashboard()}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    const getRoleDisplayName = (role) => {
+        const roleNames = {
+            student: 'Student',
+            teacher: 'Teacher',
+            admin: 'Administrator'
+        };
+        return roleNames[role] || 'User';
+    };
+
+    const getDashboardTitle = (role) => {
+        const titles = {
+            student: 'Learning Journey Tracker',
+            teacher: 'Classroom Pulse Dashboard',
+            admin: 'System Health Monitor'
+        };
+        return titles[role] || 'Dashboard';
+    };
+
+    return (
+        <div className="min-h-screen">
+            {/* Loading Screen */}
+            {isLoading && (
+                <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100 flex items-center justify-center">
+                    <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-gray-200/50 p-12 text-center max-w-md mx-4">
+                        {/* Animated Spinner */}
+                        <div className="relative w-20 h-20 mx-auto mb-8">
+                            <div className="absolute inset-0 border-4 border-gray-200 rounded-full"></div>
+                            <div className="absolute inset-0 border-4 border-transparent border-t-blue-500 border-r-purple-500 rounded-full animate-spin"></div>
+                            <div className="absolute inset-2 border-4 border-transparent border-t-purple-400 border-r-blue-400 rounded-full animate-spin animation-delay-75"></div>
+                            <div className="absolute inset-4 border-4 border-transparent border-t-blue-300 border-r-purple-300 rounded-full animate-spin animation-delay-150"></div>
+                        </div>
+    
+                        {/* Loading Text */}
+                        <div className="space-y-4">
+                            <h2 className="text-2xl font-bold text-gray-900 flex items-center justify-center">
+                                <span className="mr-2">🚀</span>
+                                Loading Your Dashboard
+                            </h2>
+                            <p className="text-gray-600 text-lg font-medium">
+                                Preparing your personalized experience...
+                            </p>
+                            
+                            {/* Progress Dots */}
+                            <div className="flex justify-center space-x-2 mt-6">
+                                <div className="w-3 h-3 bg-blue-500 rounded-full animate-bounce"></div>
+                                <div className="w-3 h-3 bg-purple-500 rounded-full animate-bounce animation-delay-100"></div>
+                                <div className="w-3 h-3 bg-indigo-500 rounded-full animate-bounce animation-delay-200"></div>
+                            </div>
+    
+                            {/* Loading Steps */}
+                            <div className="mt-8 space-y-2 text-sm text-gray-500">
+                                <div className="flex items-center justify-center space-x-2">
+                                    <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                                    <span>Authenticating user</span>
+                                </div>
+                                <div className="flex items-center justify-center space-x-2">
+                                    <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                                    <span>Loading dashboard data</span>
+                                </div>
+                                <div className="flex items-center justify-center space-x-2">
+                                    <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+                                    <span>Customizing interface</span>
+                                </div>
+                            </div>
+                        </div>
+    
+                        {/* Decorative Background Elements */}
+                        <div className="absolute inset-0 overflow-hidden rounded-3xl pointer-events-none">
+                            <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full"></div>
+                            <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-gradient-to-br from-purple-400/20 to-indigo-400/20 rounded-full"></div>
+                        </div>
+                    </div>
+                </div>
+            )}
+    
+            {/* Student & Teacher Dashboard with Responsive Sidebar */}
+            {!isLoading && (user?.role === 'student' || user?.role === 'teacher') && renderDashboardTabs()}
+    
+            {/* Admin Dashboard - Keep existing admin layout */}
+            {!isLoading && user?.role === 'admin' && (
+                <div className={`min-h-screen flex ${isDarkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100'} transition-colors duration-300`}>
+                    {/* Admin Sidebar with Dark Mode Support */}
+                    <div className={`w-16 sm:w-80 ${isDarkMode ? 'bg-gray-800/90' : 'bg-white/80'} backdrop-blur-xl shadow-2xl border-r ${isDarkMode ? 'border-gray-700/50' : 'border-gray-200/50'} flex flex-col transition-colors duration-300`}>
+                        {/* Admin Sidebar Header */}
+                        <div className={`p-2 sm:p-6 border-b ${isDarkMode ? 'border-gray-700/50' : 'border-gray-200/50'} transition-colors duration-300`}>
+                            <div className="flex items-center justify-center sm:justify-start space-x-0 sm:space-x-3 mb-4">
+                                <div className="w-8 sm:w-12 h-8 sm:h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                                    <span className="text-white text-lg sm:text-xl font-bold">⚡</span>
+                                </div>
+                                <div className="hidden sm:block">
+                                    <h2 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} transition-colors duration-300`}>System Health Monitor</h2>
+                                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>Administrator Portal</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {/* Admin Navigation */}
+                        <div className="flex-1 py-2 sm:py-6">
+                            {renderAdminSidebar()}
+                        </div>
+    
+                        {/* Admin Sidebar Footer with Dark Mode */}
+                        <div className={`p-2 sm:p-6 border-t ${isDarkMode ? 'border-gray-700/50' : 'border-gray-200/50'} transition-colors duration-300`}>
+                            <div className="flex items-center justify-center sm:justify-start space-x-0 sm:space-x-3 mb-4">
+                                <div className="w-8 sm:w-12 h-8 sm:h-12 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center text-white font-semibold text-sm sm:text-lg">
+                                    {user?.name?.charAt(0).toUpperCase()}
+                                </div>
+                                <div className="flex-1 min-w-0 hidden sm:block">
+                                    <p className={`text-sm font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'} truncate transition-colors duration-300`}>{user?.name}</p>
+                                    <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} truncate transition-colors duration-300`}>{user?.email}</p>
+                                </div>
+                            </div>
+                            <button 
+                                className="w-full flex items-center justify-center space-x-0 sm:space-x-2 px-2 sm:px-4 py-3 bg-gradient-to-r from-red-500 to-pink-600 text-white rounded-xl hover:from-red-600 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+                                onClick={handleLogout}
+                                title="Logout"
+                            >
+                                <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+                                </svg>
+                                <span className="font-medium hidden sm:block">Logout</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Admin Main Content with Dark Mode */}
+                    {/* Admin Main Content with Dark Mode */}
+                    <div className="flex-1 flex flex-col overflow-hidden">
+                        {/* Admin Header with Working Toggles and Dark Mode */}
+                        <div className={`${isDarkMode ? 'bg-gray-800/80 border-gray-700/50' : 'bg-white/80 border-gray-200/50'} backdrop-blur-xl shadow-lg border-b px-4 sm:px-8 py-4 sm:py-6 transition-colors duration-300`}>
+                            <div className="max-w-7xl mx-auto">
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+                                    <div>
+                                        <h1 className={`text-xl sm:text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
+                                            {currentLanguage === 'en' 
+                                                ? `Welcome back, ${user?.name}!` 
+                                                : `おかえりなさい、${user?.name}！`
+                                            }
+                                            <span className="ml-2 text-2xl sm:text-4xl">👋</span>
+                                        </h1>
+                                        <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mt-1 text-sm sm:text-base transition-colors duration-300`}>
+                                            {currentLanguage === 'en' 
+                                                ? "Here's what's happening in your administrator dashboard today."
+                                                : "今日の管理者ダッシュボードの状況です。"
+                                            }
+                                        </p>
+                                    </div>
+                                    <div className="flex items-center justify-between sm:justify-end space-x-4">
+                                        {/* Language Toggle with i18n Integration */}
+                                        <div className={`flex ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'} p-1 rounded-lg transition-colors duration-300`}>
+                                            <button 
+                                                className={`flex items-center justify-center w-8 h-8 rounded-md transition-all duration-200 ${
+                                                    currentLanguage === 'en' 
+                                                        ? 'text-white bg-blue-600 shadow-lg transform scale-105' 
+                                                        : `${isDarkMode ? 'text-gray-300 hover:bg-gray-600 hover:text-white' : 'text-gray-700 hover:bg-gray-200'} hover:scale-105`
+                                                }`}
+                                                onClick={() => handleLanguageToggle('en')}
+                                                title={currentLanguage === 'en' ? 'English (Current)' : 'Switch to English'}
+                                                aria-label="Switch to English"
+                                            >
+                                                <span className="text-sm font-bold">EN</span>
+                                            </button>
+                                            <button 
+                                                className={`flex items-center justify-center w-8 h-8 rounded-md transition-all duration-200 ${
+                                                    currentLanguage === 'ja' 
+                                                        ? 'text-white bg-blue-600 shadow-lg transform scale-105' 
+                                                        : `${isDarkMode ? 'text-gray-300 hover:bg-gray-600 hover:text-white' : 'text-gray-700 hover:bg-gray-200'} hover:scale-105`
+                                                }`}
+                                                onClick={() => handleLanguageToggle('ja')}
+                                                title={currentLanguage === 'ja' ? '日本語 (現在)' : '日本語に切り替え'}
+                                                aria-label="Switch to Japanese"
+                                            >
+                                                <span className="text-sm font-bold">JA</span>
+                                            </button>
+                                        </div>
+                    
+                                        {/* Dark Mode Toggle - FIXED */}
+                                        <div className={`flex ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'} p-1 rounded-lg transition-colors duration-300`}>
+                                            <button 
+                                                className={`flex items-center justify-center w-8 h-8 rounded-md transition-all duration-200 ${
+                                                    !isDarkMode 
+                                                        ? 'text-white bg-yellow-500 shadow-lg transform scale-105' 
+                                                        : `${isDarkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-gray-700 hover:bg-gray-200'} hover:scale-105`
+                                                }`}
+                                                onClick={() => handleThemeToggle('light')}
+                                                title={currentLanguage === 'en' ? 'Light Mode' : 'ライトモード'}
+                                                aria-label={currentLanguage === 'en' ? 'Switch to light mode' : 'ライトモードに切り替え'}
+                                            >
+                                                <span className="text-lg">☀️</span>
+                                            </button>
+                                            <button 
+                                                className={`flex items-center justify-center w-8 h-8 rounded-md transition-all duration-200 ${
+                                                    isDarkMode 
+                                                        ? 'text-white bg-gray-800 shadow-lg transform scale-105' 
+                                                        : `${isDarkMode ? 'text-gray-300 hover:bg-gray-600' : 'text-gray-700 hover:bg-gray-200'} hover:scale-105`
+                                                }`}
+                                                onClick={() => handleThemeToggle('dark')}
+                                                title={currentLanguage === 'en' ? 'Dark Mode' : 'ダークモード'}
+                                                aria-label={currentLanguage === 'en' ? 'Switch to dark mode' : 'ダークモードに切り替え'}
+                                            >
+                                                <span className="text-lg">🌙</span>
+                                            </button>
+                                        </div>
+                    
+                                        {/* Online Status with Dark Mode */}
+                                        <div className={`flex items-center space-x-2 px-3 sm:px-4 py-1 sm:py-2 ${isDarkMode ? 'bg-green-900/50 text-green-300' : 'bg-green-100 text-green-800'} rounded-full transition-colors duration-300`}>
+                                            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                            <span className="text-xs sm:text-sm font-medium">
+                                                {currentLanguage === 'en' ? 'Online' : 'オンライン'}
+                                            </span>
+                                        </div>
+                    
+                                        {/* Date with Dark Mode */}
+                                        <div className={`text-xs sm:text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} hidden sm:block transition-colors duration-300`}>
+                                            {currentLanguage === 'en' 
+                                                ? new Date().toLocaleDateString('en-US', { 
+                                                    weekday: 'long', 
+                                                    year: 'numeric', 
+                                                    month: 'long', 
+                                                    day: 'numeric' 
+                                                })
+                                                : new Date().toLocaleDateString('ja-JP', { 
+                                                    weekday: 'long', 
+                                                    year: 'numeric', 
+                                                    month: 'long', 
+                                                    day: 'numeric' 
+                                                })
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    
+                        {/* Admin Dashboard Content with Dark Mode */}
+                        <div className={`flex-1 overflow-auto ${isDarkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100'} transition-colors duration-300`}>
+                            <div className="max-w-7xl mx-auto px-4 sm:px-8 py-4 sm:py-8">
+                                {renderAdminDashboard()}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default Dashboard;

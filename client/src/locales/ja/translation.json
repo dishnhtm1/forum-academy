@@ -1,4 +1,38 @@
 {
+  "error": "エラー",
+  "table": {
+    "applicant": "申請者",
+    "contact": "連絡先",
+    "program": "プログラム",
+    "status": "ステータス",
+    "applied": "申請日",
+    "actions": "アクション",
+    "startDate": "開始日"
+  },
+  "actions": {
+    "viewDetails": "詳細を表示",
+    "sendMessage": "メッセージ送信",
+    "delete": "削除",
+    "approve": "承認",
+    "reject": "拒否",
+    "markPending": "保留中にマーク",
+    "close": "閉じる",
+    "cancel": "キャンセル",
+    "yesDelete": "はい、削除"
+  },
+  "programs": {
+    "webDevelopment": "ウェブ開発",
+    "dataScience": "データサイエンス",
+    "cybersecurity": "サイバーセキュリティ",
+    "cloudComputing": "クラウドコンピューティング",
+    "aiMachineLearning": "AI・機械学習"
+  },
+  "status": {
+    "pending": "保留中",
+    "approved": "承認済み",
+    "rejected": "拒否済み",
+    "underReview": "審査中"
+  },
   "about": {
     "hero": {
       "badge": "FIAについて",
@@ -1341,7 +1375,7 @@
       "jobPlacement": {
         "label": "就職率"
       },
-      "industryPartners": {
+           "industryPartners": {
         "label": "業界パートナー"
       },
       "programs": {
@@ -1414,15 +1448,15 @@
       "administratorsDesc": "システム管理者"
     },
     "activity": {
-      "title": "最近のアクティビティ",
-      "subtitle": "プラットフォームからのライブ更新",
+      "title": "リアルタイムアクティビティ",
+      "subtitle": "ライブシステムイベントとユーザーアクション",
       "newRegistration": "新しい{{role}}登録",
-      "awaitingApproval": "承認待ちです",
+      "awaitingApproval": "承認待ち",
       "newContactMessage": "新しいお問い合わせメッセージ",
-      "securityScan": "日次セキュリティスキャン完了",
-      "noThreats": "脅威は検出されませんでした - システムは安全です",
-      "databaseBackup": "自動データベースバックアップ",
-      "backupSuccess": "バックアップが正常に完了しました（2.3GB）"
+      "securityScan": "セキュリティスキャン完了",
+      "noThreats": "脅威は検出されませんでした。すべてのシステムが安全です。",
+      "databaseBackup": "データベースバックアップ完了",
+      "backupSuccess": "日次バックアップが正常に完了しました。2.4GB アーカイブされました。"
     },
     "time": {
       "fiveMinutesAgo": "5分前",
@@ -1454,14 +1488,18 @@
         "approved": "承認済み"
       },
       "search": {
-        "placeholder": "名前、メール、またはIDで検索...",
-        "allRoles": "すべての役割",
-        "allStatus": "すべてのステータス"
+        "placeholder": "名前、メール、またはIDで検索..."
       },
-      "roles": {
+      "filters": {
+        "allRoles": "すべての役割",
+        "allStatus": "すべてのステータス",
         "students": "学生",
         "teachers": "教師",
         "admins": "管理者",
+        "approved": "承認済み",
+        "pending": "保留中"
+      },
+      "roles": {
         "student": "学生",
         "teacher": "教師",
         "admin": "管理者"
@@ -1471,12 +1509,17 @@
         "pending": "保留中",
         "needsReview": "要審査"
       },
-      "buttons": {
-        "createNewUser": "新規ユーザー作成",
+      "actions": {
+        "createUser": "新規ユーザー作成",
         "cancel": "キャンセル",
-        "createUser": "ユーザー作成",
         "updateUser": "ユーザー更新",
-        "yesDelete": "はい、削除"
+        "confirmDelete": "はい、削除",
+        "approveUser": "ユーザーを承認",
+        "rejectUser": "ユーザーを拒否",
+        "editUser": "ユーザーを編集",
+        "deleteUser": "ユーザーを削除",
+        "sendMessage": "メッセージを送信",
+        "resetPassword": "パスワードをリセット"
       },
       "modals": {
         "createUser": {
@@ -1487,27 +1530,27 @@
         },
         "deleteUser": {
           "title": "ユーザー削除",
-          "message": "このユーザーを削除してもよろしいですか",
+          "message": "{{name}} ({{email}}) を削除してもよろしいですか？",
           "warning": "この操作は元に戻せません。"
         }
       },
-      "form": {
+      "fields": {
         "firstName": "名",
         "lastName": "姓",
         "email": "メールアドレス",
         "password": "パスワード",
         "newPassword": "新しいパスワード",
-        "role": "役割",
-        "placeholders": {
-          "firstName": "名を入力",
-          "lastName": "姓を入力",
-          "email": "メールアドレスを入力",
-          "password": "パスワードを入力",
-          "newPassword": "現在のパスワードを保持する場合は空白のまま"
-        },
-        "notes": {
-          "passwordKeep": "現在のパスワードを保持する場合は空白のまま"
-        }
+        "role": "役割"
+      },
+      "placeholders": {
+        "firstName": "名を入力",
+        "lastName": "姓を入力",
+        "email": "メールアドレスを入力",
+        "password": "パスワードを入力",
+        "newPassword": "現在のパスワードを保持する場合は空白のまま"
+      },
+      "hints": {
+        "passwordHint": "現在のパスワードを保持する場合は空白のまま"
       },
       "table": {
         "headers": {
@@ -1518,33 +1561,45 @@
           "joined": "登録日",
           "actions": "アクション"
         },
-        "actions": {
-          "approve": "ユーザーを承認",
-          "reject": "ユーザーを拒否",
-          "edit": "ユーザーを編集",
-          "delete": "ユーザーを削除"
+        "footer": {
+          "showing": "{{showing}} / {{total}} ユーザーを表示中",
+          "filtered": "フィルター済み"
         },
-        "timeago": {
-          "today": "今日",
-          "daysAgo": "日前"
+        "pagination": {
+          "previous": "前へ",
+          "next": "次へ",
+          "showing": "{{from}}〜{{to}}件 / 全{{total}}ユーザー",
+          "filtered": "フィルタ済み"
         }
       },
-      "dropdown": {
-        "editUser": "ユーザーを編集",
-        "deleteUser": "ユーザーを削除"
-      },
-      "footer": {
-        "showing": "表示中",
-        "of": "/",
-        "users": "ユーザー",
-        "filtered": "フィルター済み",
-        "previous": "前へ",
-        "next": "次へ"
+      "time": {
+        "today": "今日",
+        "daysAgo": "{{days}}日前"
       }
   },
   "applicationManagement": {
     "title": "申請管理",
     "subtitle": "学生の申請を効率的に審査・管理",
+    "total": "総申請数",
+    "pending": "保留中",
+    "approved": "承認済み",
+    "rejected": "却下済み",
+    "searchPlaceholder": "申請を検索...",
+    "allPrograms": "すべてのプログラム",
+    "allStatus": "すべてのステータス",
+    "export": "申請をエクスポート",
+    "viewDetails": "申請詳細",
+    "personalInfo": "個人情報",
+    "contactInfo": "連絡先情報",
+    "academicInfo": "学術情報",
+    "status": "申請ステータス",
+    "submittedOn": "提出日",
+    "applicationId": "申請ID",
+    "deleteApplication": "申請を削除",
+    "deleteConfirmation": "「{{name}}」の{{program}}への申請を本当に削除しますか？",
+    "noApplications": "申請が見つかりません",
+    "noFilteredApplications": "検索条件またはフィルター条件を調整してみてください。",
+    "noApplicationsYet": "申請が提出されるとここに表示されます。",
     "stats": {
       "totalApplications": "総申請数",
       "pending": "保留中",
@@ -1567,13 +1622,6 @@
       "machinelearning": "機械学習",
       "mobileappdevelopment": "モバイルアプリ開発"
     },
-    "status": {
-      "pending": "保留中",
-      "approved": "承認済み",
-      "rejected": "拒否済み",
-      "underReview": "審査中",
-      "needsReview": "要審査"
-    },
     "buttons": {
       "exportData": "データエクスポート",
       "approve": "承認",
@@ -1582,31 +1630,32 @@
       "close": "閉じる",
       "cancel": "キャンセル",
       "yesDelete": "はい、削除",
-      "clearFilters": "フィルターをクリア"
+      "clearFilters": "フィルターをクリア",
+      "selectAll": "すべて選択",
+      "approveSelected": "選択したものを承認",
+      "reviewSelected": "選択したものを審査",
+      "rejectSelected": "選択したものを拒否",
+      "exportFiltered": "フィルター済みをエクスポート"
     },
     "table": {
-      "headers": {
-        "applicant": "申請者",
-        "contact": "連絡先",
-        "program": "プログラム",
-        "status": "ステータス",
-        "submitted": "提出日",
-        "actions": "アクション"
-      },
-      "actions": {
-        "view": "申請を表示",
-        "approve": "申請を承認",
-        "reject": "申請を拒否",
-        "sendMessage": "メッセージ送信",
-        "delete": "申請を削除"
-      },
-      "daysAgo": "日前"
+      "applicant": "申請者",
+      "contact": "連絡先",
+      "program": "プログラム",
+      "status": "ステータス",
+      "applied": "申請日",
+      "actions": "アクション",
+      "startDate": "開始日"
     },
-    "emptyState": {
-      "noApplicationsFound": "申請が見つかりません",
-      "noApplicationsOnPage": "このページに申請がありません",
-      "adjustFilters": "検索フィルターを調整するか、新しい申請について後でもう一度確認してください。",
-      "navigateToOtherPage": "他のページに移動してより多くの申請を表示してください。"
+    "actions": {
+      "viewDetails": "詳細を表示",
+      "sendMessage": "メッセージ送信",
+      "delete": "削除",
+      "approve": "承認",
+      "reject": "拒否",
+      "markPending": "保留中にマーク",
+      "close": "閉じる",
+      "cancel": "キャンセル",
+      "yesDelete": "はい、削除"
     },
     "modals": {
       "viewApplication": {
@@ -1647,6 +1696,19 @@
         "placeholder": "メッセージをここに入力..."
       }
     },
+  "common": {
+    "notProvided": "未記入",
+    "today": "今日",
+    "daysAgo": "日前",
+    "needsReview": "要審査",
+    "needsResponse": "要返信",
+    "items": "項目",
+    "messages": "メッセージ",
+    "cannotBeUndone": "この操作は元に戻せません。",
+    "showing": "表示中",
+    "of": "の",
+    "filtered": "フィルタ済み"
+  },
     "pagination": {
       "showing": "表示中",
       "of": "の",
@@ -1660,6 +1722,7 @@
   },
   "contactManagement": {
     "title": "お問い合わせ管理",
+    "subtitle": "お問い合わせメッセージを効率的に管理・対応",
     "stats": {
       "totalMessages": "総メッセージ数",
       "pending": "保留中",
@@ -1684,24 +1747,6 @@
       "resolved": "解決済み",
       "ignored": "無視"
     },
-    "buttons": {
-      "exportMessages": "メッセージをエクスポート",
-      "view": "表示",
-      "delete": "削除",
-      "close": "閉じる",
-      "cancel": "キャンセル",
-      "deleteContact": "お問い合わせを削除",
-      "resolveSelected": "選択したものを解決",
-      "markPriority": "優先としてマーク",
-      "ignoreSelected": "選択したものを無視",
-      "exportFiltered": "フィルター済みをエクスポート"
-    },
-    "section": {
-      "title": "お問い合わせメッセージ",
-      "description": "お問い合わせフォームの提出を管理・対応",
-      "noSubmissions": "お問い合わせはまだありません",
-      "noSubmissionsText": "ユーザーがお問い合わせフォームを送信すると、審査・返信のためにここに表示されます。"
-    },
     "table": {
       "headers": {
         "contact": "お問い合わせ",
@@ -1722,6 +1767,33 @@
         "ignoredStatus": "無視",
         "needsResponse": "要返信"
       }
+    },
+    "pagination": {
+      "showing": "表示中",
+      "of": "の",
+      "messages": "メッセージ",
+      "filtered": "フィルタ済み",
+      "previous": "前へ",
+      "next": "次へ",
+      "page": "ページ"
+    },
+    "buttons": {
+      "exportMessages": "メッセージをエクスポート",
+      "view": "表示",
+      "delete": "削除",
+      "close": "閉じる",
+      "cancel": "キャンセル",
+      "deleteContact": "お問い合わせを削除",
+      "resolveSelected": "選択したものを解決",
+      "markPriority": "優先としてマーク",
+      "ignoreSelected": "選択したものを無視",
+      "exportFiltered": "フィルター済みをエクスポート"
+    },
+    "section": {
+      "title": "お問い合わせメッセージ",
+      "description": "お問い合わせフォームの提出を管理・対応",
+      "noSubmissions": "お問い合わせはまだありません",
+      "noSubmissionsText": "ユーザーがお問い合わせフォームを送信すると、審査・返信のためにここに表示されます。"
     },
     "modals": {
       "contactDetails": {
@@ -1823,11 +1895,18 @@
       "description": "管理者インターフェースの優先言語を選択してください",
       "languages": {
         "english": "English",
-        "japanese": "日本語"
+        "japanese": "日本語",
+        "japaneseName": "日本語"
       },
       "changeNotification": {
-        "title": "言語変更が完了しました",
-        "message": "インターフェース言語が次に変更されました："
+        "title": "言語変更完了",
+        "message": "インターフェース言語が{{language}}に更新されました"
+      },
+      "switcher": {
+        "currentJapanese": "日本語 (現在)",
+        "switchToJapanese": "日本語に切り替え",
+        "currentEnglish": "English (現在)",
+        "switchToEnglish": "Englishに切り替え"
       },
       "adminNote": {
         "title": "管理者への注意",
@@ -2077,5 +2156,30 @@
       "mainContent": "メイン管理コンテンツエリア",
       "headerControls": "ヘッダーコントロールボタン"
     }
+  },
+  "dashboardAlerts": {
+    "noApplicationSelected": "削除する申請が選択されていません",
+    "noAuthToken": "認証トークンが見つかりません",
+    "applicationDeletedSuccess": "申請が正常に削除されました！",
+    "applicationDeleteError": "申請の削除中にエラーが発生しました。もう一度お試しください。",
+    "messageSentSuccess": "メッセージが正常に送信されました！",
+    "messageSendError": "メッセージの送信中にエラーが発生しました。もう一度お試しください。",
+    "userApprovedSuccess": "ユーザーが正常に承認されました！",
+    "userRejectedSuccess": "ユーザーが正常に拒否されました！",
+    "userApprovalError": "ユーザーの承認に失敗しました",
+    "userRejectionError": "ユーザーの拒否に失敗しました",
+    "contactApprovedSuccess": "お問い合わせが正常に承認されました！",
+    "contactRejectedSuccess": "お問い合わせが正常に拒否されました！",
+    "contactApprovalError": "お問い合わせの承認に失敗しました",
+    "contactRejectionError": "お問い合わせの拒否に失敗しました",
+    "applicationApprovedSuccess": "申請が正常に承認されました！",
+    "applicationRejectedSuccess": "申請が正常に拒否されました！",
+    "applicationPendingSuccess": "申請が保留中としてマークされました！",
+    "applicationUnderReviewSuccess": "申請が審査中としてマークされました！",
+    "applicationUpdateError": "申請ステータスの更新に失敗しました",
+    "applicationApprovalError": "申請の承認に失敗しました",
+    "applicationRejectionError": "申請の拒否に失敗しました",
+    "userCreatedSuccess": "ユーザーが正常に作成されました！",
+    "userCreationError": "ユーザーの作成中にエラーが発生しました"
   }
 }

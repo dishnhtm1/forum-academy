@@ -91,6 +91,9 @@ const Dashboard = () => {
     // };
     
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> e4465fad4fd3279c753d9c5956a4c25b0e8be1f1
     // const handleDeleteApplication = (application) => {
     //     console.log('🗑️ Delete application clicked:', application);
     //     setApplicationToDelete(application);
@@ -177,23 +180,56 @@ const Dashboard = () => {
     // };
 
         // Update the confirmDeleteApplication function (around line 172):
+<<<<<<< HEAD
+    // const handleDeleteApplication = (application) => {
+    //     console.log('🗑️ Delete application clicked:', application);
+    //     setApplicationToDelete(application);
+    //     setShowDeleteApplicationConfirm(true);
+    // };
+
+    // ✅ FIXED: Update the handleSendMessage function to use correct field name
+    // const handleSendMessage = (application) => {
+    //     console.log('📧 Send message clicked:', application);
+    //     setMessageData({
+    //         subject: `Regarding your application for ${application.program}`, // ✅ Changed from programInterested to program
+    //         message: '',
+    //         recipient: application
+    //     });
+    //     setShowSendMessageModal(true);
+    // };
+    
+
+// ✅ View full application modal
+    const handleViewApplication = (application) => {
+        console.log('👁️ View application clicked:', application);
+        setSelectedApplication(application);
+        setShowViewApplicationModal(true);
+    };
+
+    // ✅ Open confirmation modal to delete an application
 =======
+=======
+>>>>>>> e4465fad4fd3279c753d9c5956a4c25b0e8be1f1
     const handleDeleteApplication = (application) => {
         console.log('🗑️ Delete application clicked:', application);
         setApplicationToDelete(application);
         setShowDeleteApplicationConfirm(true);
     };
 
-    // ✅ FIXED: Update the handleSendMessage function to use correct field name
+    // ✅ Open send-message modal with pre-filled subject
     const handleSendMessage = (application) => {
         console.log('📧 Send message clicked:', application);
+        const subjectLine = `Regarding your application for ${application.program || 'the selected program'}`;
+        
         setMessageData({
-            subject: `Regarding your application for ${application.program}`, // ✅ Changed from programInterested to program
+            subject: subjectLine,
             message: '',
             recipient: application
         });
         setShowSendMessageModal(true);
     };
+<<<<<<< HEAD
+=======
 >>>>>>> b37560737ece8646eb9a6c718f688d9557431c0f
     
 
@@ -223,6 +259,7 @@ const Dashboard = () => {
         });
         setShowSendMessageModal(true);
     };
+>>>>>>> e4465fad4fd3279c753d9c5956a4c25b0e8be1f1
 
     // ✅ New: Approve/Reject handler (replaces undefined handleUpdateApplicationStatus)
     const handleApplicationStatusChange = (application, status) => {
