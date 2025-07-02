@@ -13,14 +13,29 @@ const app = express();
 connectDB();
 
 // CORS configuration for Azure
+// app.use(cors({
+//     origin: [
+//         'http://localhost:3000',
+//         'https://wonderful-meadow-0e35b381e.6.azurestaticapps.net',
+//         process.env.CLIENT_URL
+//     ].filter(Boolean),
+//     credentials: true
+// }));
+
 app.use(cors({
-    origin: [
-        'http://localhost:3000',
-        'https://wonderful-meadow-0e35b381e.6.azurestaticapps.net',
-        process.env.CLIENT_URL
-    ].filter(Boolean),
-    credentials: true
+  origin: [
+    'http://localhost:3000',
+    'https://wonderful-meadow-0e35b381e.6.azurestaticapps.net',
+    process.env.CLIENT_URL
+  ].filter(Boolean),
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+// Handle preflight requests
+app.options('*', cors());
+
 
 app.use(express.json());
 
