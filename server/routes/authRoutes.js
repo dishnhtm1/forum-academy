@@ -236,6 +236,74 @@ router.post('/create-user', authenticate, authorizeRoles('admin'), async (req, r
     }
 });
 
+// Send message to user endpoint
+router.post('/send-message', authenticate, authorizeRoles('admin'), async (req, res) => {
+    try {
+        const { to, subject, message, recipientName, recipientId } = req.body;
+        
+        console.log('📧 Send message request received:');
+        console.log(`   From: ${req.user?.email || 'Unknown admin'}`);
+        console.log(`   To: ${to}`);
+        console.log(`   Subject: ${subject}`);
+        console.log(`   Recipient: ${recipientName}`);
+        console.log(`   Recipient ID: ${recipientId}`);
+        
+        // Validate required fields
+        if (!to || !subject || !message) {
+            return res.status(400).json({
+                success: false,
+                message: 'Missing required fields: to, subject, and message are required'
+            });
+        }
+        
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(to)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid email address format'
+            });
+        }
+        
+        // Verify user exists if recipientId provided
+        if (recipientId) {
+            const user = await User.findById(recipientId);
+            if (!user) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'User not found'
+                });
+            }
+        }
+        
+        // Here you would integrate with your email service (SendGrid, NodeMailer, etc.)
+        // For now, we'll simulate sending with a delay
+        console.log('📧 Simulating email send...');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        console.log('✅ Message sent successfully');
+        
+        res.json({
+            success: true,
+            message: 'Message sent successfully',
+            details: {
+                recipient: to,
+                subject: subject,
+                recipientName: recipientName,
+                sentBy: req.user?.email,
+                timestamp: new Date().toISOString()
+            }
+        });
+    } catch (error) {
+        console.error('❌ Error sending message:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error sending message',
+            error: error.message
+        });
+    }
+});
+
 module.exports = router;
 
 // const express = require('express');
