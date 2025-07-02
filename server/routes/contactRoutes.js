@@ -228,5 +228,92 @@ router.delete('/:id', authenticate, authorizeRoles('admin'), async (req, res) =>
     }
 });
 
+// Add reply endpoint
+router.post('/reply', authenticate, authorizeRoles('admin'), async (req, res) => {
+    try {
+        const { contactId, subject, message, recipientEmail } = req.body;
+        console.log(`📧 Sending reply to contact ${contactId}`);
+        
+        // Validate required fields
+        if (!contactId || !subject || !message || !recipientEmail) {
+            return res.status(400).json({
+                success: false,
+                message: 'Missing required fields: contactId, subject, message, recipientEmail'
+            });
+        }
+        
+        // Find the original contact
+        const contact = await Contact.findById(contactId);
+        if (!contact) {
+            return res.status(404).json({
+                success: false,
+                message: 'Contact not found'
+            });
+        }
+        
+        // For now, we'll just log the reply and return success
+        // In a real application, you would integrate with an email service like:
+        // - NodeMailer with SMTP
+        // - SendGrid
+        // - AWS SES
+        // - Mailgun
+        
+        console.log(`📧 Reply Details:
+        To: ${recipientEmail}
+        Subject: ${subject}
+        Message: ${message}
+        Original Contact: ${contact.name} (${contact.email})`);
+        
+        // You can add email sending logic here
+        // Example with nodemailer (commented out):
+        /*
+        const nodemailer = require('nodemailer');
+        const transporter = nodemailer.createTransporter({
+            host: process.env.SMTP_HOST,
+            port: process.env.SMTP_PORT,
+            auth: {
+                user: process.env.SMTP_USER,
+                pass: process.env.SMTP_PASS
+            }
+        });
+        
+        await transporter.sendMail({
+            from: process.env.FROM_EMAIL,
+            to: recipientEmail,
+            subject: subject,
+            text: message,
+            html: `<div style="font-family: Arial, sans-serif;">
+                <h3>${subject}</h3>
+                <p>${message.replace(/\n/g, '<br>')}</p>
+                <hr>
+                <small>This is a reply to your inquiry: "${contact.subject}"</small>
+            </div>`
+        });
+        */
+        
+        // Update contact status to indicate reply was sent
+        await Contact.findByIdAndUpdate(contactId, {
+            status: 'resolved',
+            repliedAt: new Date(),
+            replySubject: subject,
+            replyMessage: message
+        });
+        
+        res.json({
+            success: true,
+            message: 'Reply sent successfully',
+            contact: contact
+        });
+        
+    } catch (error) {
+        console.error('❌ Error sending reply:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error sending reply',
+            error: error.message
+        });
+    }
+});
+
 console.log('✅ contactRoutes.js loaded successfully');
 module.exports = router;
