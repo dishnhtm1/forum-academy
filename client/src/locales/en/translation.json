@@ -1,4 +1,5 @@
 {
+  "error": "Error",
   "about": {
     "hero": {
       "badge": "About FIA",
@@ -372,7 +373,15 @@
         "email": "Email Address",
         "phone": "Phone Number (Optional)",
         "subject": "Select Subject",
-        "message": "Your Message"
+        "message": "Your Message",
+        "fullName": "Full Name",
+        "dateOfBirth": "Date of Birth",
+        "address": "Address",
+        "city": "City",
+        "country": "Country",
+        "programInterested": "Program Interested",
+        "educationLevel": "Education Level",
+        "personalStatement": "Personal Statement"
       },
       "subjects": {
         "general": "General Inquiry",
@@ -402,21 +411,73 @@
         "response": {
           "question": "How quickly will I receive a response?",
           "answer": "We typically respond to all inquiries within 24 hours during business days. For urgent matters, please call us directly."
-        },
-        "tour": {
-          "question": "Can I schedule a campus tour?",
-          "answer": "Absolutely! We offer guided campus tours Monday through Friday. Contact us to schedule your visit and see our facilities firsthand."
-        },
-        "virtual": {
-          "question": "Do you offer virtual consultations?",
-          "answer": "Yes, we provide virtual consultations via video call for students who cannot visit in person. This includes program information and career guidance."
-        },
-        "financial": {
-          "question": "Can I discuss financial aid options?",
-          "answer": "Our financial aid advisors are available to discuss payment plans, scholarships, and funding options. Schedule a consultation to explore your options."
         }
       }
     }
+  },
+  "status": {
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "underReview": "Under Review"
+  },
+  "programs": {
+    "webDevelopment": "Web Development",
+    "dataScience": "Data Science",
+    "cybersecurity": "Cybersecurity",
+    "cloudComputing": "Cloud Computing",
+    "aiMachineLearning": "AI & Machine Learning"
+  },
+  "table": {
+    "applicant": "Applicant",
+    "contact": "Contact",
+    "program": "Program",
+    "status": "Status",
+    "applied": "Applied",
+    "actions": "Actions",
+    "startDate": "Start"
+  },
+  "actions": {
+    "viewDetails": "View Application Details",
+    "sendMessage": "Send Message",
+    "delete": "Delete Application",
+    "close": "Close",
+    "cancel": "Cancel",
+    "yesDelete": "Yes, Delete",
+    "approve": "Approve Application",
+    "reject": "Reject Application",
+    "markPending": "Mark as Pending",
+    "selectAll": "Select All",
+    "approveSelected": "Approve Selected",
+    "reviewSelected": "Review Selected", 
+    "rejectSelected": "Reject Selected",
+    "exportFiltered": "Export Filtered"
+  },
+  "form": {
+    "fullName": "Full Name",
+    "email": "Email",
+    "phone": "Phone",
+    "dateOfBirth": "Date of Birth",
+    "address": "Address",
+    "city": "City",
+    "country": "Country",
+    "programInterested": "Program Interested",
+    "educationLevel": "Education Level",
+    "personalStatement": "Personal Statement"
+  },
+  "pagination": {
+    "showing": "Showing {{start}} to {{end}} of {{total}} applications",
+    "filtered": "filtered",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "common": {
+    "notProvided": "Not provided",
+    "today": "Today",
+    "daysAgo": "days ago",
+    "needsReview": "Needs Review",
+    "items": "items",
+    "cannotBeUndone": "This action cannot be undone."
   },
   "courses": {
     "hero": {
@@ -569,7 +630,21 @@
       "youAreHere": "You are here"
     },
     "actions": {
-      "exploreMore": "Explore More"
+      "exploreMore": "Explore More",
+      "viewDetails": "View Details",
+      "sendMessage": "Send Message",
+      "close": "Close",
+      "cancel": "Cancel",
+      "yesDelete": "Yes, Delete",
+      "delete": "Delete",
+      "approve": "Approve Application",
+      "reject": "Reject Application",
+      "markPending": "Mark as Pending",
+      "selectAll": "Select All",
+      "approveSelected": "Approve Selected",
+      "reviewSelected": "Review Selected",
+      "rejectSelected": "Reject Selected",
+      "exportFiltered": "Export Filtered"
     }
   },
   "campusLife": {
@@ -1399,7 +1474,10 @@
       "live": "Live",
       "liveMonitoring": "Live monitoring",
       "automated": "Automated",
-      "allClear": "All Clear"
+      "allClear": "All Clear",
+      "pending": "Pending",
+      "rejected": "Rejected",
+      "underReview": "Under Review"
     },
     "userDistribution": {
       "title": "User Distribution",
@@ -1414,15 +1492,15 @@
       "administratorsDesc": "System admins"
     },
     "activity": {
-      "title": "Recent Activity",
-      "subtitle": "Live updates from your platform",
+      "title": "Real-time Activity",
+      "subtitle": "Live system events and user actions",
       "newRegistration": "New {{role}} registration",
-      "awaitingApproval": "is awaiting approval",
+      "awaitingApproval": "awaiting approval",
       "newContactMessage": "New contact message",
-      "securityScan": "Daily security scan completed",
-      "noThreats": "No threats detected - system secure",
-      "databaseBackup": "Automated database backup",
-      "backupSuccess": "Backup completed successfully (2.3GB)"
+      "securityScan": "Security scan completed",
+      "noThreats": "No threats detected. All systems secure.",
+      "databaseBackup": "Database backup completed",
+      "backupSuccess": "Daily backup successful. 2.4GB archived."
     },
     "time": {
       "fiveMinutesAgo": "5 minutes ago",
@@ -1454,14 +1532,18 @@
         "approved": "approved"
       },
       "search": {
-        "placeholder": "Search by name, email, or ID...",
-        "allRoles": "All Roles",
-        "allStatus": "All Status"
+        "placeholder": "Search by name, email, or ID..."
       },
-      "roles": {
+      "filters": {
+        "allRoles": "All Roles",
+        "allStatus": "All Status",
         "students": "Students",
         "teachers": "Teachers",
         "admins": "Administrators",
+        "approved": "Approved",
+        "pending": "Pending"
+      },
+      "roles": {
         "student": "Student",
         "teacher": "Teacher",
         "admin": "Administrator"
@@ -1471,12 +1553,17 @@
         "pending": "Pending",
         "needsReview": "Needs Review"
       },
-      "buttons": {
-        "createNewUser": "Create New User",
+      "actions": {
+        "createUser": "Create New User",
         "cancel": "Cancel",
-        "createUser": "Create User",
         "updateUser": "Update User",
-        "yesDelete": "Yes, Delete"
+        "confirmDelete": "Yes, Delete",
+        "approveUser": "Approve User",
+        "rejectUser": "Reject User",
+        "editUser": "Edit User",
+        "deleteUser": "Delete User",
+        "sendMessage": "Send Message",
+        "resetPassword": "Reset Password"
       },
       "modals": {
         "createUser": {
@@ -1487,27 +1574,27 @@
         },
         "deleteUser": {
           "title": "Delete User",
-          "message": "Are you sure you want to delete the user",
+          "message": "Are you sure you want to delete {{name}} ({{email}})?",
           "warning": "This action cannot be undone."
         }
       },
-      "form": {
+      "fields": {
         "firstName": "First Name",
         "lastName": "Last Name",
         "email": "Email Address",
         "password": "Password",
         "newPassword": "New Password",
-        "role": "Role",
-        "placeholders": {
-          "firstName": "Enter first name",
-          "lastName": "Enter last name",
-          "email": "Enter email address",
-          "password": "Enter password",
-          "newPassword": "Leave blank to keep current password"
-        },
-        "notes": {
-          "passwordKeep": "Leave blank to keep current password"
-        }
+        "role": "Role"
+      },
+      "placeholders": {
+        "firstName": "Enter first name",
+        "lastName": "Enter last name",
+        "email": "Enter email address",
+        "password": "Enter password",
+        "newPassword": "Leave blank to keep current password"
+      },
+      "hints": {
+        "passwordHint": "Leave blank to keep current password"
       },
       "table": {
         "headers": {
@@ -1518,33 +1605,44 @@
           "joined": "Joined",
           "actions": "Actions"
         },
-        "actions": {
-          "approve": "Approve User",
-          "reject": "Reject User",
-          "edit": "Edit User",
-          "delete": "Delete User"
+        "footer": {
+          "showing": "Showing {{showing}} of {{total}} users",
+          "filtered": "Filtered"
         },
-        "timeago": {
-          "today": "Today",
-          "daysAgo": "days ago"
+        "pagination": {
+          "previous": "Previous",
+          "next": "Next",
+          "showing": "Showing {{from}} to {{to}} of {{total}} users",
+          "filtered": "filtered"
         }
       },
-      "dropdown": {
-        "editUser": "Edit User",
-        "deleteUser": "Delete User"
-      },
-      "footer": {
-        "showing": "Showing",
-        "of": "of",
-        "users": "users",
-        "filtered": "Filtered",
-        "previous": "Previous",
-        "next": "Next"
+      "time": {
+        "today": "Today",
+        "daysAgo": "{{days}} days ago"
       }
   },
   "applicationManagement": {
     "title": "Application Management",
     "subtitle": "Review and manage student applications efficiently",
+    "total": "Total Applications",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "searchPlaceholder": "Search applications...",
+    "allPrograms": "All Programs",
+    "allStatus": "All Status",
+    "export": "Export Applications",
+    "viewDetails": "Application Details",
+    "personalInfo": "Personal Information",
+    "contactInfo": "Contact Information", 
+    "academicInfo": "Academic Information",
+    "submittedOn": "Submitted On",
+    "applicationId": "Application ID",
+    "deleteApplication": "Delete Application",
+    "deleteConfirmation": "Are you sure you want to delete the application from \"{{name}}\" for {{program}}?",
+    "noApplications": "No applications found",
+    "noFilteredApplications": "Try adjusting your search or filter criteria.",
+    "noApplicationsYet": "Applications will appear here once submitted.",
     "stats": {
       "totalApplications": "Total Applications",
       "pending": "Pending",
@@ -1582,7 +1680,12 @@
       "close": "Close",
       "cancel": "Cancel",
       "yesDelete": "Yes, Delete",
-      "clearFilters": "Clear Filters"
+      "clearFilters": "Clear Filters",
+      "selectAll": "Select All",
+      "approveSelected": "Approve Selected",
+      "reviewSelected": "Review Selected",
+      "rejectSelected": "Reject Selected",
+      "exportFiltered": "Export Filtered"
     },
     "table": {
       "headers": {
@@ -1598,7 +1701,10 @@
         "approve": "Approve Application",
         "reject": "Reject Application",
         "sendMessage": "Send Message",
-        "delete": "Delete Application"
+        "delete": "Delete Application",
+        "underReview": "Under Review",
+        "viewDetails": "View Application Details",
+        "sendMessageToApplicant": "Send Message to Applicant"
       },
       "daysAgo": "days ago"
     },
@@ -1606,7 +1712,10 @@
       "noApplicationsFound": "No Applications Found",
       "noApplicationsOnPage": "No Applications on This Page",
       "adjustFilters": "Try adjusting your search filters or check back later for new applications.",
-      "navigateToOtherPage": "Navigate to other pages to view more applications."
+      "navigateToOtherPage": "Navigate to other pages to view more applications.",
+      "noApplications": "No applications found",
+      "noFilteredApplications": "Try adjusting your search or filter criteria.",
+      "noApplicationsYet": "Applications will appear here once submitted."
     },
     "modals": {
       "viewApplication": {
@@ -1646,6 +1755,14 @@
         "subjectPlaceholder": "Enter message subject...",
         "placeholder": "Type your message here..."
       }
+    },
+    "common": {
+      "notProvided": "Not provided",
+      "today": "Today",
+      "daysAgo": "days ago",
+      "needsReview": "Needs Review",
+      "items": "items",
+      "cannotBeUndone": "This action cannot be undone."
     },
     "pagination": {
       "showing": "Showing",
@@ -1823,11 +1940,18 @@
       "description": "Choose your preferred language for the admin interface",
       "languages": {
         "english": "English",
-        "japanese": "Japanese"
+        "japanese": "Japanese",
+        "japaneseName": "日本語"
       },
       "changeNotification": {
-        "title": "Language Changed Successfully",
-        "message": "Interface language has been switched to"
+        "title": "Language Changed",
+        "message": "Interface language has been updated to {{language}}"
+      },
+      "switcher": {
+        "currentJapanese": "日本語 (Current)",
+        "switchToJapanese": "Switch to 日本語",
+        "currentEnglish": "English (Current)",
+        "switchToEnglish": "Switch to English"
       },
       "adminNote": {
         "title": "Administrator Note",
@@ -2077,5 +2201,27 @@
       "mainContent": "Main administrative content area",
       "headerControls": "Header control buttons"
     }
+  },
+  "dashboardAlerts": {
+    "noApplicationSelected": "No application selected for deletion",
+    "noAuthToken": "No authentication token found",
+    "applicationDeletedSuccess": "Application deleted successfully!",
+    "applicationDeleteError": "Error deleting application. Please try again.",
+    "messageSentSuccess": "Message sent successfully!",
+    "messageSendError": "Error sending message. Please try again.",
+    "userApprovedSuccess": "User approved successfully!",
+    "userRejectedSuccess": "User rejected successfully!",
+    "userApprovalError": "Failed to approve user",
+    "userRejectionError": "Failed to reject user",
+    "contactApprovedSuccess": "Contact submission approved successfully!",
+    "contactRejectedSuccess": "Contact submission rejected successfully!",
+    "contactApprovalError": "Failed to approve contact",
+    "contactRejectionError": "Failed to reject contact",
+    "applicationApprovedSuccess": "Application approved successfully!",
+    "applicationRejectedSuccess": "Application rejected successfully!",
+    "applicationApprovalError": "Failed to approve application",
+    "applicationRejectionError": "Failed to reject application",
+    "userCreatedSuccess": "User created successfully!",
+    "userCreationError": "Error creating user"
   }
 }
