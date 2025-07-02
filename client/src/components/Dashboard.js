@@ -83,30 +83,153 @@ const Dashboard = () => {
         recipient: null
     });
 
-    // ✅ Application Management Functions
+    // // ✅ Application Management Functions
+    // const handleViewApplication = (application) => {
+    //     console.log('👁️ View application clicked:', application);
+    //     setSelectedApplication(application);
+    //     setShowViewApplicationModal(true);
+    // };
+    
+    // const handleDeleteApplication = (application) => {
+    //     console.log('🗑️ Delete application clicked:', application);
+    //     setApplicationToDelete(application);
+    //     setShowDeleteApplicationConfirm(true);
+    // };
+    
+    // // const handleSendMessage = (application) => {
+    // //     console.log('📧 Send message clicked:', application);
+    // //     setMessageData({
+    // //         subject: `Regarding your application for ${application.programInterested}`,
+    // //         message: '',
+    // //         recipient: application
+    // //     });
+    // //     setShowSendMessageModal(true);
+    // // };
+
+    // // ✅ FIXED: Update the handleSendMessage function to use correct field name
+    // const handleSendMessage = (application) => {
+    //     console.log('📧 Send message clicked:', application);
+    //     setMessageData({
+    //         subject: `Regarding your application for ${application.program}`, // ✅ Changed from programInterested to program
+    //         message: '',
+    //         recipient: application
+    //     });
+    //     setShowSendMessageModal(true);
+    // };
+
+    // ✅ FIXED: Update the confirmDeleteApplication function
+    // const confirmDeleteApplication = async () => {
+    //     console.log('🔥 DELETE APPLICATION CONFIRMATION CLICKED!');
+    //     console.log('Application to delete:', applicationToDelete);
+        
+    //     if (!applicationToDelete) {
+    //         alert('No application selected for deletion');
+    //         return;
+    //     }
+        
+    //     try {
+    //         const token = getToken();
+    //         if (!token) {
+    //             alert('No authentication token found');
+    //             return;
+    //         }
+            
+    //         console.log('🗑️ Attempting to delete application:', applicationToDelete._id);
+            
+    //         const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/applications/${applicationToDelete._id}`, {
+    //             method: 'DELETE',
+    //             headers: {
+    //                 'Authorization': `Bearer ${token}`,
+    //                 'Content-Type': 'application/json'
+    //             }
+    //         });
+
+    //         console.log('Delete application response status:', response.status);
+
+    //         if (response.ok) {
+    //             const result = await response.json();
+    //             console.log('Delete application successful:', result);
+                
+    //             if (result.success) {
+    //                 // Remove application from local state
+    //                 setApplicationSubmissions(prevApps => 
+    //                     prevApps.filter(app => app._id !== applicationToDelete._id)
+    //                 );
+                    
+    //                 // Reset modal state
+    //                 setShowDeleteApplicationConfirm(false);
+    //                 setApplicationToDelete(null);
+                    
+    //                 alert('Application deleted successfully!');
+    //             } else {
+    //                 alert(`Error: ${result.message}`);
+    //             }
+    //         } else {
+    //             const error = await response.json();
+    //             console.error('Delete application failed:', error);
+    //             alert(`Error deleting application: ${error.message || 'Unknown error'}`);
+    //         }
+    //     } catch (error) {
+    //         console.error('Error deleting application:', error);
+    //         alert('Error deleting application. Please try again.');
+    //     }
+    // };
+
+        // Update the confirmDeleteApplication function (around line 172):
+    // const handleDeleteApplication = (application) => {
+    //     console.log('🗑️ Delete application clicked:', application);
+    //     setApplicationToDelete(application);
+    //     setShowDeleteApplicationConfirm(true);
+    // };
+
+    // ✅ FIXED: Update the handleSendMessage function to use correct field name
+    // const handleSendMessage = (application) => {
+    //     console.log('📧 Send message clicked:', application);
+    //     setMessageData({
+    //         subject: `Regarding your application for ${application.program}`, // ✅ Changed from programInterested to program
+    //         message: '',
+    //         recipient: application
+    //     });
+    //     setShowSendMessageModal(true);
+    // };
+    
+
+// ✅ View full application modal
     const handleViewApplication = (application) => {
         console.log('👁️ View application clicked:', application);
         setSelectedApplication(application);
         setShowViewApplicationModal(true);
     };
-    
+
+    // ✅ Open confirmation modal to delete an application
     const handleDeleteApplication = (application) => {
         console.log('🗑️ Delete application clicked:', application);
         setApplicationToDelete(application);
         setShowDeleteApplicationConfirm(true);
     };
 
-    // ✅ FIXED: Update the handleSendMessage function to use correct field name
+    // ✅ Open send-message modal with pre-filled subject
     const handleSendMessage = (application) => {
         console.log('📧 Send message clicked:', application);
+        const subjectLine = `Regarding your application for ${application.program || 'the selected program'}`;
+        
         setMessageData({
-            subject: `Regarding your application for ${application.program}`, // ✅ Changed from programInterested to program
+            subject: subjectLine,
             message: '',
             recipient: application
         });
         setShowSendMessageModal(true);
     };
-    
+
+    // ✅ New: Approve/Reject handler (replaces undefined handleUpdateApplicationStatus)
+    const handleApplicationStatusChange = (application, status) => {
+        if (!application || !application._id) return;
+
+        console.log(`🔁 Changing status of ${application.email} to ${status}`);
+        handleApplicationAction(application._id, status); // This function is already defined elsewhere
+    };
+
+
     const confirmDeleteApplication = async () => {
         console.log('🔥 DELETE APPLICATION CONFIRMATION CLICKED!');
         console.log('Application to delete:', applicationToDelete);
