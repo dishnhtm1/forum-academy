@@ -278,57 +278,106 @@ const Dashboard = () => {
         }
     };
 
+    // const handleUpdateApplicationStatus = async (applicationId, newStatus) => {
+    //     try {
+    //         const token = getToken();
+    //         if (!token) {
+    //             alert('No authentication token found');
+    //             return;
+    //         }
+
+    //         console.log(`🔄 Updating application ${applicationId} status to: ${newStatus}`);
+
+    //         const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/applications/${applicationId}/status`, {
+    //             method: 'PATCH',
+    //             headers: {
+    //                 'Authorization': `Bearer ${token}`,
+    //                 'Content-Type': 'application/json'
+    //             },
+    //             body: JSON.stringify({ status: newStatus })
+    //         });
+
+    //         if (response.ok) {
+    //             const result = await response.json();
+    //             console.log('Application status updated successfully:', result);
+
+    //             // Update local state
+    //             setApplicationSubmissions(prev => prev.map(app => 
+    //                 app._id === applicationId 
+    //                     ? { ...app, status: newStatus }
+    //                     : app
+    //             ));
+
+    //             // Close dropdown
+    //             setDropdownOpen(null);
+
+    //             // Show success message
+    //             const statusMessages = {
+    //                 'approved': t('admin.applicationApprovedSuccess') || 'Application approved successfully!',
+    //                 'rejected': t('admin.applicationRejectedSuccess') || 'Application rejected successfully!',
+    //                 'pending': t('admin.applicationPendingSuccess') || 'Application marked as pending successfully!'
+    //             };
+
+    //             alert(statusMessages[newStatus] || 'Application status updated successfully!');
+    //         } else {
+    //             const error = await response.json();
+    //             console.error('Failed to update application status:', error);
+    //             alert(`Error updating status: ${error.message || 'Unknown error'}`);
+    //         }
+    //     } catch (error) {
+    //         console.error('Error updating application status:', error);
+    //         alert('Error updating application status. Please try again.');
+    //     }
+    // };
     const handleUpdateApplicationStatus = async (applicationId, newStatus) => {
-        try {
-            const token = getToken();
-            if (!token) {
-                alert('No authentication token found');
-                return;
-            }
-
-            console.log(`🔄 Updating application ${applicationId} status to: ${newStatus}`);
-
-            const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/applications/${applicationId}/status`, {
-                method: 'PATCH',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ status: newStatus })
-            });
-
-            if (response.ok) {
-                const result = await response.json();
-                console.log('Application status updated successfully:', result);
-
-                // Update local state
-                setApplicationSubmissions(prev => prev.map(app => 
-                    app._id === applicationId 
-                        ? { ...app, status: newStatus }
-                        : app
-                ));
-
-                // Close dropdown
-                setDropdownOpen(null);
-
-                // Show success message
-                const statusMessages = {
-                    'approved': t('admin.applicationApprovedSuccess') || 'Application approved successfully!',
-                    'rejected': t('admin.applicationRejectedSuccess') || 'Application rejected successfully!',
-                    'pending': t('admin.applicationPendingSuccess') || 'Application marked as pending successfully!'
-                };
-
-                alert(statusMessages[newStatus] || 'Application status updated successfully!');
-            } else {
-                const error = await response.json();
-                console.error('Failed to update application status:', error);
-                alert(`Error updating status: ${error.message || 'Unknown error'}`);
-            }
-        } catch (error) {
-            console.error('Error updating application status:', error);
-            alert('Error updating application status. Please try again.');
+    try {
+        const token = getToken();
+        if (!token) {
+            alert('No authentication token found');
+            return;
         }
-    };
+
+        console.log(`🔄 Updating application ${applicationId} status to: ${newStatus}`);
+
+        const response = await fetch(`${API_BASE_URL}/api/applications/${applicationId}/status`, {
+            method: 'PUT', // ✅ FIXED
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status: newStatus })
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            console.log('Application status updated successfully:', result);
+
+            setApplicationSubmissions(prev => prev.map(app => 
+                app._id === applicationId 
+                    ? { ...app, status: newStatus }
+                    : app
+            ));
+
+            setDropdownOpen(null);
+
+            const statusMessages = {
+                'approved': t('admin.applicationApprovedSuccess') || 'Application approved successfully!',
+                'rejected': t('admin.applicationRejectedSuccess') || 'Application rejected successfully!',
+                'pending': t('admin.applicationPendingSuccess') || 'Application marked as pending successfully!'
+            };
+
+            alert(statusMessages[newStatus] || 'Application status updated successfully!');
+        } else {
+            const error = await response.json();
+            console.error('Failed to update application status:', error);
+            alert(`Error updating status: ${error.message || 'Unknown error'}`);
+        }
+    } catch (error) {
+        console.error('Error updating application status:', error);
+        alert('Error updating application status. Please try again.');
+    }
+};
+
 
     // Add these helper functions
     const getTotalPages = () => {
