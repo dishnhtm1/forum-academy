@@ -50,6 +50,7 @@ const Dashboard = () => {
     // ✅ Navigation and UI States
     const [activeTab, setActiveTab] = useState('overview');
     const [currentPage, setCurrentPage] = useState(1);
+    const [currentApplicationPage, setCurrentApplicationPage] = useState(1);
     const [itemsPerPage] = useState(10);
 
     // ✅ Data Collection States
@@ -169,8 +170,7 @@ const Dashboard = () => {
             console.log('🗑️ Attempting to delete application:', applicationToDelete._id);
             
             // Use the correct API URL
-            const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-            const response = await fetch(`${apiUrl}/api/applications/${applicationToDelete._id}`, {
+            const response = await fetch(`${API_BASE_URL}/api/applications/${applicationToDelete._id}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -246,7 +246,7 @@ const Dashboard = () => {
             
             // Use different endpoint based on recipient type
             const endpoint = isApplication ? 'applications/send-message' : 'auth/send-message';
-            const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/${endpoint}`, {
+            const response = await fetch(`${API_BASE_URL}/api/${endpoint}`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -288,7 +288,7 @@ const Dashboard = () => {
 
             console.log(`🔄 Updating application ${applicationId} status to: ${newStatus}`);
 
-            const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/applications/${applicationId}/status`, {
+            const response = await fetch(`${API_BASE_URL}/api/applications/${applicationId}/status`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -512,8 +512,9 @@ const Dashboard = () => {
     });
 
     const history = useHistory();
-    // Base API URL
-    const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+    // Base API URL - Use Azure for production database access
+    const API_BASE_URL = 'https://forum-backend-api-a7hgg9g7hmgegrh3.eastasia-01.azurewebsites.net';
+    // const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
     // const getToken = localStorage.getItem("authToken");
     const getToken = () => localStorage.getItem("authToken");
 
@@ -826,7 +827,7 @@ const Dashboard = () => {
                 updateData.password = newUserData.password;
             }
 
-            const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/users/${editingUser._id}`, {
+            const response = await fetch(`${API_BASE_URL}/api/users/${editingUser._id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -889,7 +890,7 @@ const Dashboard = () => {
             
             console.log('🗑️ Attempting to delete user:', userToDelete._id);
             
-            const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/users/${userToDelete._id}`, {
+            const response = await fetch(`${API_BASE_URL}/api/users/${userToDelete._id}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -6283,6 +6284,19 @@ const Dashboard = () => {
         return filteredUsers.slice(startIndex, endIndex);
     };
 
+    // Helper functions for application management pagination
+    const getApplicationTotalPages = () => {
+        const totalItems = getFilteredApplications().length;
+        return Math.ceil(totalItems / itemsPerPage);
+    };
+
+    const getCurrentPageApplications = () => {
+        const filteredApplications = getFilteredApplications();
+        const startIndex = (currentApplicationPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        return filteredApplications.slice(startIndex, endIndex);
+    };
+
     const renderUserManagement = () => (
         <div className="space-y-6">
             {/* Clean Header Section */}
@@ -7460,78 +7474,176 @@ const Dashboard = () => {
     );
 
     const renderApplicationManagement = () => (
-        <div className="space-y-8">
-            {/* Header */}
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                <div className="space-y-2">
-                    <h2 className={`text-2xl font-bold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center transition-colors duration-300`}>
-                        <span className="mr-2">📋</span>
-                        Application Management
-                    </h2>
-                    <div className="flex flex-wrap gap-4 text-sm">
-                        <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
-                            <span className={`font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>{applicationSubmissions.length}</span> Total Applications
-                        </span>
-                        <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
-                            <span className="font-semibold text-orange-600">{applicationSubmissions.filter(app => app.status === 'pending').length}</span> Pending
-                        </span>
-                        <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
-                            <span className="font-semibold text-green-600">{applicationSubmissions.filter(app => app.status === 'approved').length}</span> Approved
-                        </span>
-                        <span className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'} transition-colors duration-300`}>
-                            <span className="font-semibold text-red-600">{applicationSubmissions.filter(app => app.status === 'rejected').length}</span> Rejected
-                        </span>
+        <div className="space-y-6">
+            {/* Clean Header Section */}
+            <div className={`${
+                isDarkMode 
+                    ? 'bg-gray-800 border-gray-700' 
+                    : 'bg-white border-gray-200'
+            } rounded-xl p-6 border shadow-sm`}>
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                    {/* Title and Stats Section */}
+                    <div className="space-y-4">
+                        <div className="flex items-center space-x-3">
+                            <div className={`w-10 h-10 ${
+                                isDarkMode ? 'bg-indigo-600' : 'bg-indigo-500'
+                            } rounded-lg flex items-center justify-center`}>
+                                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h2 className={`text-2xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                                    {t('dashboard.applicationManagement.title')}
+                                </h2>
+                                <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-sm`}>
+                                    {t('dashboard.applicationManagement.subtitle')}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        {/* Clean Stats Cards */}
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div className={`${
+                                isDarkMode ? 'bg-gray-700' : 'bg-gray-50'
+                            } rounded-lg p-4 transition-colors`}>
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center">
+                                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                                            {applicationSubmissions.length}
+                                        </div>
+                                        <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                            {t('dashboard.applicationManagement.stats.totalApplications')}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className={`${
+                                isDarkMode ? 'bg-gray-700' : 'bg-gray-50'
+                            } rounded-lg p-4 transition-colors`}>
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
+                                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div className="text-xl font-semibold text-orange-600">
+                                            {applicationSubmissions.filter(app => app.status === 'pending').length}
+                                        </div>
+                                        <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                            {t('dashboard.applicationManagement.stats.pending')}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className={`${
+                                isDarkMode ? 'bg-gray-700' : 'bg-gray-50'
+                            } rounded-lg p-4 transition-colors`}>
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
+                                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div className="text-xl font-semibold text-green-600">
+                                            {applicationSubmissions.filter(app => app.status === 'approved').length}
+                                        </div>
+                                        <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                            {t('dashboard.applicationManagement.stats.approved')}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className={`${
+                                isDarkMode ? 'bg-gray-700' : 'bg-gray-50'
+                            } rounded-lg p-4 transition-colors`}>
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
+                                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div className="text-xl font-semibold text-red-600">
+                                            {applicationSubmissions.filter(app => app.status === 'rejected').length}
+                                        </div>
+                                        <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                            {t('dashboard.applicationManagement.stats.rejected')}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                
-                <div className="flex flex-col sm:flex-row gap-3">
-                    <div className="flex flex-col sm:flex-row gap-2">
-                        <input 
-                            type="text" 
-                            placeholder="🔍 Search applications..." 
-                            value={searchTermApp}
-                            onChange={(e) => setSearchTermApp(e.target.value)}
-                            className={`px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                                isDarkMode 
-                                    ? 'border-gray-600 bg-gray-800 text-gray-100 placeholder-gray-400' 
-                                    : 'border-gray-300 bg-white text-gray-900'
-                            }`}
-                        />
-                        <select 
-                            value={selectedProgram} 
-                            onChange={(e) => setSelectedProgram(e.target.value)}
-                            className={`px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                                isDarkMode 
-                                    ? 'border-gray-600 bg-gray-800 text-gray-100' 
-                                    : 'border-gray-300 bg-white text-gray-900'
-                            }`}
-                        >
-                            <option value="">All Programs</option>
-                            <option value="webDevelopment">Web Development</option>
-                            <option value="dataScience">Data Science and Analytics</option>
-                            <option value="cybersecurity">Cybersecurity</option>
-                            <option value="cloudComputing">Cloud Computing</option>
-                            <option value="aiMachineLearning">AI & Machine Learning</option>
-                        </select>
-                        <select 
-                            value={selectedAppStatus}
-                            onChange={(e) => setSelectedAppStatus(e.target.value)}
-                            className={`px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                                isDarkMode 
-                                    ? 'border-gray-600 bg-gray-800 text-gray-100' 
-                                    : 'border-gray-300 bg-white text-gray-900'
-                            }`}
-                        >
-                            <option value="">All Status</option>
-                            <option value="pending">Pending</option>
-                            <option value="approved">Approved</option>
-                            <option value="under_review">Under Review</option>
-                            <option value="rejected">Rejected</option>
-                        </select>
+
+                    {/* Controls Section */}
+                    <div className="space-y-3">
+                        {/* Search and Filter Controls */}
+                        <div className="flex flex-col sm:flex-row gap-3">
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg className={`w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                                <input 
+                                    type="text" 
+                                    placeholder={t('dashboard.applicationManagement.search.placeholder')}
+                                    value={searchTermApp}
+                                    onChange={(e) => setSearchTermApp(e.target.value)}
+                                    className={`pl-10 pr-4 py-2 w-full border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                        isDarkMode 
+                                            ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
+                                            : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
+                                    }`}
+                                />
+                            </div>
+                            
+                            <div className="flex gap-2">
+                                <select 
+                                    value={selectedProgram}
+                                    onChange={(e) => setSelectedProgram(e.target.value)}
+                                    className={`px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                        isDarkMode 
+                                            ? 'border-gray-600 bg-gray-700 text-gray-100' 
+                                            : 'border-gray-300 bg-white text-gray-900'
+                                    }`}
+                                >
+                                    <option value="">{t('dashboard.applicationManagement.search.allPrograms')}</option>
+                                    <option value="webDevelopment">{t('programs.webDevelopment')}</option>
+                                    <option value="dataScience">{t('programs.dataScience')}</option>
+                                    <option value="cybersecurity">{t('programs.cybersecurity')}</option>
+                                    <option value="cloudComputing">{t('programs.cloudComputing')}</option>
+                                    <option value="aiMachineLearning">{t('programs.aiMachineLearning')}</option>
+                                </select>
+                                <select 
+                                    value={selectedAppStatus}
+                                    onChange={(e) => setSelectedAppStatus(e.target.value)}
+                                    className={`px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                        isDarkMode 
+                                            ? 'border-gray-600 bg-gray-700 text-gray-100' 
+                                            : 'border-gray-300 bg-white text-gray-900'
+                                    }`}
+                                >
+                                    <option value="">{t('dashboard.applicationManagement.search.allStatus')}</option>
+                                    <option value="pending">{t('status.pending')}</option>
+                                    <option value="approved">{t('status.approved')}</option>
+                                    <option value="under_review">{t('status.underReview')}</option>
+                                    <option value="rejected">{t('status.rejected')}</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors">
-                        📤 Export Applications
-                    </button>
                 </div>
             </div>
             
@@ -7542,7 +7654,7 @@ const Dashboard = () => {
                         <div className={`flex items-center justify-between p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} sticky top-0 bg-inherit`}>
                             <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center`}>
                                 <span className="mr-2">👁️</span>
-                                Application Details
+                                {t('dashboard.applicationManagement.modals.viewApplication.title')}
                             </h3>
                             <button 
                                 className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
@@ -7559,27 +7671,27 @@ const Dashboard = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-4">
                                     <h4 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} pb-2`}>
-                                        👤 Personal Information
+                                        👤 {t('dashboard.applicationManagement.modals.viewApplication.personalInfo')}
                                     </h4>
                                     <div className="space-y-3">
                                         <div>
-                                            <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Full Name</label>
+                                            <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>{t('dashboard.applicationManagement.modals.viewApplication.fullName')}</label>
                                             <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
                                                 {selectedApplication.firstName} {selectedApplication.lastName}
                                             </p>
                                         </div>
                                         <div>
-                                            <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Email</label>
+                                            <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>{t('dashboard.applicationManagement.modals.viewApplication.email')}</label>
                                             <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>{selectedApplication.email}</p>
                                         </div>
                                         <div>
-                                            <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Phone</label>
+                                            <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>{t('dashboard.applicationManagement.modals.viewApplication.phone')}</label>
                                             <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>{selectedApplication.phone}</p>
                                         </div>
                                         <div>
-                                            <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Date of Birth</label>
+                                            <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>{t('dashboard.applicationManagement.modals.viewApplication.dateOfBirth')}</label>
                                             <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
-                                                {selectedApplication.dateOfBirth ? new Date(selectedApplication.dateOfBirth).toLocaleDateString() : 'Not provided'}
+                                                {selectedApplication.dateOfBirth ? new Date(selectedApplication.dateOfBirth).toLocaleDateString() : t('dashboard.applicationManagement.modals.viewApplication.notProvided')}
                                             </p>
                                         </div>
                                     </div>
@@ -7587,7 +7699,7 @@ const Dashboard = () => {
                                 
                                 <div className="space-y-4">
                                     <h4 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} pb-2`}>
-                                        📍 Contact Information
+                                        📍 {t('dashboard.applicationManagement.modals.viewApplication.contactInfo')}
                                     </h4>
                                     <div className="space-y-3">
                                         <div>
@@ -7609,7 +7721,7 @@ const Dashboard = () => {
                             {/* Academic Information */}
                             <div className="space-y-4">
                                 <h4 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} pb-2`}>
-                                    🎓 Academic Information
+                                    🎓 {t('dashboard.applicationManagement.modals.viewApplication.academicInfo')}
                                 </h4>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {/* <div>
@@ -7618,7 +7730,7 @@ const Dashboard = () => {
                                     </div> */}
                                     {/* // In your view application modal, update this part: */}
                                     <div>
-                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Program Interested</label>
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>{t('dashboard.applicationManagement.modals.viewApplication.programInterested')}</label>
                                         <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'} font-medium`}>{selectedApplication.program}</p>
                                     </div>
                                     <div>
@@ -7675,7 +7787,7 @@ const Dashboard = () => {
                                 onClick={() => handleSendMessage(selectedApplication)}
                                 className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                             >
-                                📧 Send Message
+                                📧 {t('dashboard.applicationManagement.modals.viewApplication.sendMessage')}
                             </button>
                             <button 
                                 onClick={() => {
@@ -7688,7 +7800,7 @@ const Dashboard = () => {
                                         : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
                                 }`}
                             >
-                                Close
+                                {t('dashboard.applicationManagement.modals.viewApplication.close')}
                             </button>
                         </div>
                     </div>
@@ -7707,7 +7819,7 @@ const Dashboard = () => {
                             </div>
                             <div className="text-center">
                                 <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} mb-2`}>
-                                    Delete Application
+                                    {t('dashboard.applicationManagement.modals.deleteConfirm.title')}
                                 </h3>
                                 {/* <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} mb-6`}>
                                     Are you sure you want to delete the application from <strong>"{applicationToDelete.firstName} {applicationToDelete.lastName}"</strong> for <strong>{applicationToDelete.programInterested}</strong>?
@@ -7715,9 +7827,13 @@ const Dashboard = () => {
                                     <span className="text-red-500 font-medium">This action cannot be undone.</span>
                                 </p> */}
                                 <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} mb-6`}>
-                                    Are you sure you want to delete the application from <strong>"{applicationToDelete.firstName} {applicationToDelete.lastName}"</strong> for <strong>{applicationToDelete.program}</strong>?
+                                    {t('dashboard.applicationManagement.modals.deleteConfirm.message', {
+                                        firstName: applicationToDelete.firstName,
+                                        lastName: applicationToDelete.lastName,
+                                        program: applicationToDelete.program
+                                    })}
                                     <br />
-                                    <span className="text-red-500 font-medium">This action cannot be undone.</span>
+                                    <span className="text-red-500 font-medium">{t('dashboard.applicationManagement.modals.deleteConfirm.warning')}</span>
                                 </p>
                             </div>
                             <div className="flex justify-center space-x-4">
@@ -7732,13 +7848,13 @@ const Dashboard = () => {
                                             : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
                                     }`}
                                 >
-                                    Cancel
+                                    {t('dashboard.applicationManagement.modals.deleteConfirm.cancel')}
                                 </button>
                                 <button
                                     onClick={confirmDeleteApplication}
                                     className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
                                 >
-                                    🗑️ Yes, Delete
+                                    🗑️ {t('dashboard.applicationManagement.modals.deleteConfirm.delete')}
                                 </button>
                             </div>
                         </div>
@@ -7753,7 +7869,10 @@ const Dashboard = () => {
                         <div className={`flex items-center justify-between p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
                             <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center`}>
                                 <span className="mr-2">📧</span>
-                                Send Message to {messageData.recipient.firstName} {messageData.recipient.lastName}
+                                {t('dashboard.applicationManagement.modals.sendMessage.title', {
+                                    firstName: messageData.recipient.firstName,
+                                    lastName: messageData.recipient.lastName
+                                })}
                             </h3>
                             <button 
                                 className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
@@ -7772,7 +7891,7 @@ const Dashboard = () => {
                         <div className="p-6">
                             <form onSubmit={handleSendMessageSubmit} className="space-y-6">
                                 <div className="space-y-2">
-                                    <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>To:</label>
+                                    <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t('dashboard.applicationManagement.modals.sendMessage.to')}</label>
                                     <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
                                         <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
                                             {messageData.recipient.firstName} {messageData.recipient.lastName} ({messageData.recipient.email})
@@ -7781,7 +7900,7 @@ const Dashboard = () => {
                                 </div>
                                 
                                 <div className="space-y-2">
-                                    <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Subject:</label>
+                                    <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t('dashboard.applicationManagement.modals.sendMessage.subject')}</label>
                                     <input
                                         type="text"
                                         value={messageData.subject}
@@ -7796,12 +7915,12 @@ const Dashboard = () => {
                                 </div>
                                 
                                 <div className="space-y-2">
-                                    <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Message:</label>
+                                    <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t('dashboard.applicationManagement.modals.sendMessage.message')}</label>
                                     <textarea
                                         rows="8"
                                         value={messageData.message}
                                         onChange={(e) => setMessageData({...messageData, message: e.target.value})}
-                                        placeholder="Enter your message here..."
+                                        placeholder={t('dashboard.applicationManagement.modals.sendMessage.placeholder')}
                                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none ${
                                             isDarkMode 
                                                 ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
@@ -7828,13 +7947,13 @@ const Dashboard = () => {
                                             });
                                         }}
                                     >
-                                        Cancel
+                                        {t('dashboard.applicationManagement.modals.sendMessage.cancel')}
                                     </button>
                                     <button 
                                         type="submit" 
                                         className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                                     >
-                                        📧 Send Message
+                                        📧 {t('dashboard.applicationManagement.modals.sendMessage.send')}
                                     </button>
                                 </div>
                             </form>
@@ -7843,63 +7962,115 @@ const Dashboard = () => {
                 </div>
             )}
             
-            {/* Table */}
-            <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-2xl shadow-xl border overflow-hidden transition-colors duration-300`}>
+            {/* Clean Applications Table */}
+            <div className={`${
+                isDarkMode 
+                    ? 'bg-gray-800 border-gray-700' 
+                    : 'bg-white border-gray-200'
+            } rounded-xl shadow-sm border overflow-hidden`}>
                 <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead className={`${isDarkMode ? 'bg-gradient-to-r from-gray-800 to-gray-700' : 'bg-gradient-to-r from-gray-50 to-gray-100'} transition-colors duration-300`}>
-                            <tr>
-                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
-                                    <div className="flex items-center space-x-1">
-                                        <span>👤 Applicant</span>
-                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
+                    <table className="min-w-full">
+                        <thead>
+                            <tr className={`${
+                                isDarkMode 
+                                    ? 'bg-gray-700 border-gray-600' 
+                                    : 'bg-gray-50 border-gray-200'
+                            } border-b`}>
+                                <th className={`px-6 py-4 text-left text-xs font-semibold ${
+                                    isDarkMode ? 'text-gray-200' : 'text-gray-700'
+                                } uppercase tracking-wider`}>
+                                    <div className="flex items-center space-x-2">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                        <span>{t('dashboard.applicationManagement.table.applicant')}</span>
                                     </div>
                                 </th>
-                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
-                                    <div className="flex items-center space-x-1">
-                                        <span>📧 Contact</span>
-                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
+                                <th className={`px-6 py-4 text-left text-xs font-semibold ${
+                                    isDarkMode ? 'text-gray-200' : 'text-gray-700'
+                                } uppercase tracking-wider`}>
+                                    <div className="flex items-center space-x-2">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 7.89a2 2 0 002.83 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                        </svg>
+                                        <span>{t('dashboard.applicationManagement.table.contact')}</span>
                                     </div>
                                 </th>
-                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
-                                    <div className="flex items-center space-x-1">
-                                        <span>🎓 Program</span>
-                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
+                                <th className={`px-6 py-4 text-left text-xs font-semibold ${
+                                    isDarkMode ? 'text-gray-200' : 'text-gray-700'
+                                } uppercase tracking-wider`}>
+                                    <div className="flex items-center space-x-2">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                        </svg>
+                                        <span>{t('dashboard.applicationManagement.table.program')}</span>
                                     </div>
                                 </th>
-                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
-                                    <div className="flex items-center space-x-1">
-                                        <span>📊 Status</span>
-                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
+                                <th className={`px-6 py-4 text-left text-xs font-semibold ${
+                                    isDarkMode ? 'text-gray-200' : 'text-gray-700'
+                                } uppercase tracking-wider`}>
+                                    <div className="flex items-center space-x-2">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <span>{t('dashboard.applicationManagement.table.status')}</span>
                                     </div>
                                 </th>
-                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
-                                    <div className="flex items-center space-x-1">
-                                        <span>📅 Applied</span>
-                                        <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'} transition-colors duration-300`}>↕️</span>
+                                <th className={`px-6 py-4 text-left text-xs font-semibold ${
+                                    isDarkMode ? 'text-gray-200' : 'text-gray-700'
+                                } uppercase tracking-wider`}>
+                                    <div className="flex items-center space-x-2">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        <span>{t('dashboard.applicationManagement.table.applied')}</span>
                                     </div>
                                 </th>
-                                <th className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider transition-colors duration-300`}>
-                                    ⚡ Actions
+                                <th className={`px-6 py-4 text-left text-xs font-semibold ${
+                                    isDarkMode ? 'text-gray-200' : 'text-gray-700'
+                                } uppercase tracking-wider`}>
+                                    <div className="flex items-center space-x-2">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                                        </svg>
+                                        <span>{t('dashboard.applicationManagement.table.actions')}</span>
+                                    </div>
                                 </th>
                             </tr>
                         </thead>
-                        <tbody className={`${isDarkMode ? 'bg-gray-800 divide-gray-700' : 'bg-white divide-gray-200'} transition-colors duration-300`}>
-                            {getFilteredApplications().map((application, index) => (
-                                <tr key={application._id} className={`${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'} transition-colors duration-200 ${application.status === 'pending' ? (isDarkMode ? 'bg-orange-900/30 border-l-4 border-orange-500' : 'bg-orange-25 border-l-4 border-orange-400') : ''}`}>
+                        <tbody className={`${
+                            isDarkMode ? 'bg-gray-800 divide-gray-700' : 'bg-white divide-gray-200'
+                        } divide-y`}>
+                            {getCurrentPageApplications().map((application, index) => (
+                                <tr key={application._id} className={`transition-colors ${
+                                    isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'
+                                } ${application.status === 'pending' ? (
+                                    isDarkMode 
+                                        ? 'bg-orange-900 bg-opacity-20 border-l-4 border-orange-500' 
+                                        : 'bg-orange-50 border-l-4 border-orange-400'
+                                ) : ''}`}>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="flex items-center space-x-4">
+                                        <div className="flex items-center space-x-3">
                                             <div className="relative">
-                                                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-semibold">
+                                                <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-semibold">
                                                     {application.firstName?.charAt(0)}{application.lastName?.charAt(0)}
                                                 </div>
-                                                <div className={`absolute -bottom-1 -right-1 h-4 w-4 bg-blue-400 border-2 ${isDarkMode ? 'border-gray-800' : 'border-white'} rounded-full transition-colors duration-300`}></div>
+                                                <div className={`absolute -bottom-1 -right-1 h-3 w-3 border-2 ${
+                                                    isDarkMode ? 'border-gray-800' : 'border-white'
+                                                } rounded-full ${
+                                                    application.status === 'approved' ? 'bg-green-400' : 
+                                                    application.status === 'rejected' ? 'bg-red-400' : 'bg-orange-400'
+                                                }`}></div>
                                             </div>
-                                            <div className="space-y-1">
-                                                <div className={`text-sm font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>
+                                            <div>
+                                                <div className={`text-sm font-semibold ${
+                                                    isDarkMode ? 'text-gray-100' : 'text-gray-900'
+                                                }`}>
                                                     {application.firstName} {application.lastName}
                                                 </div>
-                                                <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
+                                                <div className={`text-xs ${
+                                                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                                                }`}>
                                                     ID: {application._id.slice(-8)}
                                                 </div>
                                             </div>
@@ -7907,184 +8078,197 @@ const Dashboard = () => {
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="space-y-1">
-                                            <div className={`text-sm ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>{application.email}</div>
+                                            <div className={`text-sm ${
+                                                isDarkMode ? 'text-gray-100' : 'text-gray-900'
+                                            }`}>{application.email}</div>
                                             {application.phone && (
-                                                <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>📱 {application.phone}</div>
-                                            )}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="space-y-1">
-                                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${isDarkMode ? 'bg-blue-900/50 text-blue-300 border border-blue-700/50' : 'bg-blue-100 text-blue-800'} transition-colors duration-300`}>
-                                                <span className="mr-1">🎓</span>
-                                                {application.program}
-                                            </span>
-                                            <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
-                                                Start: {new Date(application.startDate).toLocaleDateString()}
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="space-y-1">
-                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors duration-300 ${
-                                                application.status === 'pending' ? (isDarkMode ? 'bg-orange-900/50 text-orange-300 border border-orange-700/50' : 'bg-orange-100 text-orange-800') : 
-                                                application.status === 'approved' ? (isDarkMode ? 'bg-green-900/50 text-green-300 border border-green-700/50' : 'bg-green-100 text-green-800') : 
-                                                application.status === 'under_review' ? (isDarkMode ? 'bg-blue-900/50 text-blue-300 border border-blue-700/50' : 'bg-blue-100 text-blue-800') : 
-                                                (isDarkMode ? 'bg-red-900/50 text-red-300 border border-red-700/50' : 'bg-red-100 text-red-800')
-                                            }`}>
-                                                <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
-                                                    application.status === 'pending' ? 'bg-orange-400' : 
-                                                    application.status === 'approved' ? 'bg-green-400' : 
-                                                    application.status === 'under_review' ? 'bg-blue-400' : 
-                                                    'bg-red-400'
-                                                }`}></span>
-                                                {application.status.replace('_', ' ').toUpperCase()}
-                                            </span>
-                                            {application.status === 'pending' && (
-                                                <div className={`text-xs font-medium ${isDarkMode ? 'text-orange-400' : 'text-orange-600'} transition-colors duration-300`}>
-                                                    ⚠️ Needs Review
+                                                <div className={`text-xs ${
+                                                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                                                } flex items-center`}>
+                                                    <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                                    </svg>
+                                                    {application.phone}
                                                 </div>
                                             )}
                                         </div>
                                     </td>
-                                    <td className={`px-6 py-4 whitespace-nowrap text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
+                                    <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="space-y-1">
-                                            <div className={`font-medium ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} transition-colors duration-300`}>
+                                            <span className={`inline-flex items-center px-3 py-1 rounded-lg text-xs font-medium ${
+                                                isDarkMode 
+                                                    ? 'bg-indigo-900 bg-opacity-50 text-indigo-300 border border-indigo-700' 
+                                                    : 'bg-indigo-100 text-indigo-800'
+                                            }`}>
+                                                <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                                </svg>
+                                                {application.program}
+                                            </span>
+                                            <div className={`text-xs ${
+                                                isDarkMode ? 'text-gray-400' : 'text-gray-500'
+                                            }`}>
+                                                {t('dashboard.applicationManagement.table.startDate')} {new Date(application.startDate).toLocaleDateString()}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="space-y-1">
+                                            <span className={`inline-flex items-center px-2 py-1 rounded-lg text-xs font-medium ${
+                                                application.status === 'approved' ? (
+                                                    isDarkMode 
+                                                        ? 'bg-green-900 bg-opacity-50 text-green-300 border border-green-700' 
+                                                        : 'bg-green-100 text-green-800'
+                                                ) : application.status === 'rejected' ? (
+                                                    isDarkMode 
+                                                        ? 'bg-red-900 bg-opacity-50 text-red-300 border border-red-700' 
+                                                        : 'bg-red-100 text-red-800'
+                                                ) : application.status === 'under_review' ? (
+                                                    isDarkMode 
+                                                        ? 'bg-blue-900 bg-opacity-50 text-blue-300 border border-blue-700' 
+                                                        : 'bg-blue-100 text-blue-800'
+                                                ) : (
+                                                    isDarkMode 
+                                                        ? 'bg-orange-900 bg-opacity-50 text-orange-300 border border-orange-700' 
+                                                        : 'bg-orange-100 text-orange-800'
+                                                )
+                                            }`}>
+                                                <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
+                                                    application.status === 'approved' ? 'bg-green-400' : 
+                                                    application.status === 'rejected' ? 'bg-red-400' : 
+                                                    application.status === 'under_review' ? 'bg-blue-400' : 'bg-orange-400'
+                                                }`}></span>
+                                                {application.status?.replace('_', ' ').toUpperCase() || 'PENDING'}
+                                            </span>
+                                            {application.status === 'pending' && (
+                                                <div className={`text-xs font-medium flex items-center ${
+                                                    isDarkMode ? 'text-orange-300' : 'text-orange-600'
+                                                }`}>
+                                                    <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                                                    </svg>
+                                                    {t('dashboard.applicationManagement.table.needsReview')}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td className={`px-6 py-4 whitespace-nowrap text-sm ${
+                                        isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                                    }`}>
+                                        <div className="space-y-1">
+                                            <div className={`font-medium ${
+                                                isDarkMode ? 'text-gray-100' : 'text-gray-900'
+                                            }`}>
                                                 {new Date(application.createdAt || Date.now()).toLocaleDateString()}
                                             </div>
-                                            <div className="text-xs">
+                                            <div className="text-xs flex items-center">
+                                                <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
                                                 {(() => {
                                                     const days = Math.floor((Date.now() - new Date(application.createdAt || Date.now())) / (1000 * 60 * 60 * 24));
-                                                    return days === 0 ? 'Today' : `${days} days ago`;
+                                                    return days === 0 ? t('dashboard.applicationManagement.table.today') : `${days}${t('dashboard.applicationManagement.table.daysAgo')}`;
                                                 })()}
                                             </div>
                                         </div>
                                     </td>
-                                    {/* <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        {application.status === 'pending' ? (
-                                            <div className="flex space-x-2">
-                                                <button 
-                                                    className={`inline-flex items-center p-2 border border-transparent rounded-lg text-green-600 ${isDarkMode ? 'hover:bg-green-900/30' : 'hover:bg-green-100'} transition-colors duration-200`}
-                                                    onClick={() => handleApplicationAction(application._id, 'approved')}
-                                                    title="Approve Application"
-                                                >
-                                                    ✅
-                                                </button>
-                                                <button 
-                                                    className={`inline-flex items-center p-2 border border-transparent rounded-lg text-blue-600 ${isDarkMode ? 'hover:bg-blue-900/30' : 'hover:bg-blue-100'} transition-colors duration-200`}
-                                                    onClick={() => handleApplicationAction(application._id, 'under_review')}
-                                                    title="Under Review"
-                                                >
-                                                    👀
-                                                </button>
-                                                <button 
-                                                    className={`inline-flex items-center p-2 border border-transparent rounded-lg text-red-600 ${isDarkMode ? 'hover:bg-red-900/30' : 'hover:bg-red-100'} transition-colors duration-200`}
-                                                    onClick={() => handleApplicationAction(application._id, 'rejected')}
-                                                    title="Reject Application"
-                                                >
-                                                    ❌
-                                                </button>
-                                            </div>
-                                        ) : (
-                                            <div className="flex space-x-2">
-                                                <button 
-                                                    className={`inline-flex items-center p-2 border border-transparent rounded-lg text-blue-600 ${isDarkMode ? 'hover:bg-blue-900/30' : 'hover:bg-blue-100'} transition-colors duration-200`}
-                                                    title="View Details"
-                                                >
-                                                    👁️
-                                                </button>
-                                                <button 
-                                                    className={`inline-flex items-center p-2 border border-transparent rounded-lg ${isDarkMode ? 'text-gray-400 hover:bg-gray-700/50' : 'text-gray-600 hover:bg-gray-100'} transition-colors duration-200`}
-                                                    title="Send Message"
-                                                >
-                                                    📧
-                                                </button>
-                                                <div className="relative group">
-                                                    <button className={`inline-flex items-center p-2 border border-transparent rounded-lg ${isDarkMode ? 'text-gray-400 hover:bg-gray-700/50' : 'text-gray-600 hover:bg-gray-100'} transition-colors duration-200`}>
-                                                        ⋮
-                                                    </button>
-                                                    <div className={`absolute right-0 mt-2 w-48 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} rounded-lg shadow-lg border z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200`}>
-                                                        <div className="py-1">
-                                                            <button className={`flex items-center w-full px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors duration-200`}>
-                                                                <span className="mr-2">📝</span>
-                                                                Edit Application
-                                                            </button>
-                                                            <button className={`flex items-center w-full px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors duration-200`}>
-                                                                <span className="mr-2">📧</span>
-                                                                Send Email
-                                                            </button>
-                                                            <button className={`flex items-center w-full px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors duration-200`}>
-                                                                <span className="mr-2">📄</span>
-                                                                Download PDF
-                                                            </button>
-                                                            <hr className={`my-1 ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`} />
-                                                            <button className={`flex items-center w-full px-4 py-2 text-sm text-red-600 ${isDarkMode ? 'hover:bg-red-900/30' : 'hover:bg-red-50'} transition-colors duration-200`}>
-                                                                <span className="mr-2">🗑️</span>
-                                                                Delete Application
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </td> */}
-                                    {/* // ✅ In your application table, replace the actions column with this: */}
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div className="flex items-center space-x-2">
                                             {/* View Application */}
                                             <button 
-                                                className={`inline-flex items-center p-2 border border-transparent rounded-lg text-blue-600 ${isDarkMode ? 'hover:bg-blue-900/30' : 'hover:bg-blue-100'} transition-colors duration-200`}
+                                                className={`p-2 border border-transparent rounded-lg text-blue-600 ${
+                                                    isDarkMode ? 'hover:bg-blue-900 hover:bg-opacity-30' : 'hover:bg-blue-100'
+                                                } transition-colors`}
                                                 onClick={() => handleViewApplication(application)}
-                                                title="View Application Details"
+                                                title={t('dashboard.applicationManagement.actions.viewDetails')}
                                             >
-                                                👁️
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                </svg>
                                             </button>
                                             
                                             {/* Send Message */}
                                             <button 
-                                                className={`inline-flex items-center p-2 border border-transparent rounded-lg text-green-600 ${isDarkMode ? 'hover:bg-green-900/30' : 'hover:bg-green-100'} transition-colors duration-200`}
+                                                className={`p-2 border border-transparent rounded-lg text-green-600 ${
+                                                    isDarkMode ? 'hover:bg-green-900 hover:bg-opacity-30' : 'hover:bg-green-100'
+                                                } transition-colors`}
                                                 onClick={() => handleSendMessage(application)}
-                                                title="Send Message to Applicant"
+                                                title={t('dashboard.applicationManagement.actions.sendMessage')}
                                             >
-                                                📧
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 7.89a2 2 0 002.83 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                                </svg>
                                             </button>
                                             
                                             {/* Delete Application */}
                                             <button 
-                                                className={`inline-flex items-center p-2 border border-transparent rounded-lg text-red-600 ${isDarkMode ? 'hover:bg-red-900/30' : 'hover:bg-red-100'} transition-colors duration-200`}
+                                                className={`p-2 border border-transparent rounded-lg text-red-600 ${
+                                                    isDarkMode ? 'hover:bg-red-900 hover:bg-opacity-30' : 'hover:bg-red-100'
+                                                } transition-colors`}
                                                 onClick={() => handleDeleteApplication(application)}
-                                                title="Delete Application"
+                                                title={t('dashboard.applicationManagement.actions.deleteApplication')}
                                             >
-                                                🗑️
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
                                             </button>
                                             
                                             {/* Status Update Dropdown */}
                                             <div className="relative group">
-                                                <button className={`inline-flex items-center p-2 border border-transparent rounded-lg ${isDarkMode ? 'text-gray-400 hover:bg-gray-700/50' : 'text-gray-600 hover:bg-gray-100'} transition-colors duration-200`}>
-                                                    ⋮
+                                                <button className={`p-2 border border-transparent rounded-lg ${
+                                                    isDarkMode 
+                                                        ? 'text-gray-400 hover:bg-gray-700 hover:bg-opacity-50' 
+                                                        : 'text-gray-600 hover:bg-gray-100'
+                                                } transition-colors`}>
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                                                    </svg>
                                                 </button>
-                                                <div className={`absolute right-0 mt-2 w-48 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} rounded-lg shadow-lg border z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200`}>
+                                                <div className={`absolute right-0 mt-2 w-48 ${
+                                                    isDarkMode 
+                                                        ? 'bg-gray-800 border-gray-700' 
+                                                        : 'bg-white border-gray-200'
+                                                } rounded-lg shadow-lg border z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200`}>
                                                     <div className="py-1">
                                                         <button 
-                                                            className={`flex items-center w-full px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors duration-200`}
+                                                            className={`flex items-center w-full px-4 py-2 text-sm ${
+                                                                isDarkMode 
+                                                                    ? 'text-gray-300 hover:bg-gray-700' 
+                                                                    : 'text-gray-700 hover:bg-gray-100'
+                                                            } transition-colors`}
                                                             onClick={() => handleUpdateApplicationStatus(application._id, 'approved')}
                                                         >
-                                                            <span className="mr-2">✅</span>
-                                                            Approve Application
+                                                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                                            </svg>
+                                                            {t('dashboard.applicationManagement.actions.approveApplication')}
                                                         </button>
                                                         <button 
-                                                            className={`flex items-center w-full px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors duration-200`}
+                                                            className={`flex items-center w-full px-4 py-2 text-sm ${
+                                                                isDarkMode 
+                                                                    ? 'text-gray-300 hover:bg-gray-700' 
+                                                                    : 'text-gray-700 hover:bg-gray-100'
+                                                            } transition-colors`}
                                                             onClick={() => handleUpdateApplicationStatus(application._id, 'rejected')}
                                                         >
-                                                            <span className="mr-2">❌</span>
-                                                            Reject Application
+                                                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                            </svg>
+                                                            {t('dashboard.applicationManagement.actions.rejectApplication')}
                                                         </button>
                                                         <button 
-                                                            className={`flex items-center w-full px-4 py-2 text-sm ${isDarkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'} transition-colors duration-200`}
+                                                            className={`flex items-center w-full px-4 py-2 text-sm ${
+                                                                isDarkMode 
+                                                                    ? 'text-gray-300 hover:bg-gray-700' 
+                                                                    : 'text-gray-700 hover:bg-gray-100'
+                                                            } transition-colors`}
                                                             onClick={() => handleUpdateApplicationStatus(application._id, 'pending')}
                                                         >
-                                                            <span className="mr-2">⏳</span>
-                                                            Mark as Pending
+                                                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                            </svg>
+                                                            {t('dashboard.applicationManagement.actions.markAsPending')}
                                                         </button>
                                                     </div>
                                                 </div>
@@ -8097,113 +8281,105 @@ const Dashboard = () => {
                     </table>
                 </div>
             
-                 {/* Table Footer with Dark Mode */}
                 <div className={`${isDarkMode ? 'bg-gray-750 border-gray-700' : 'bg-gray-50 border-gray-200'} px-6 py-3 flex items-center justify-between border-t transition-colors duration-300`}>
                     <div className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
-                        Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, getFilteredApplications().length)} of {getFilteredApplications().length} applications
-                            {(searchTermApp || selectedProgram || selectedAppStatus) && (
+                        {t('dashboard.applicationManagement.pagination.showing', {
+                            from: ((currentApplicationPage - 1) * itemsPerPage) + 1,
+                            to: Math.min(currentApplicationPage * itemsPerPage, getFilteredApplications().length),
+                            total: getFilteredApplications().length
+                        })}
+                        {(searchTermApp || selectedProgram || selectedAppStatus) && (
                             <span className={`ml-2 font-medium ${isDarkMode ? 'text-blue-400' : 'text-blue-600'} transition-colors duration-300`}>
-                                (filtered)
+                                {t('dashboard.applicationManagement.pagination.filtered')}
                             </span>
                         )}
                     </div>
                     <div className="flex items-center space-x-2">
-                        <button 
-                            className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${
-                                isDarkMode 
-                                    ? 'border-gray-600 text-gray-400 bg-gray-800 hover:bg-gray-700' 
-                                    : 'border-gray-300 text-gray-500 bg-white hover:bg-gray-50'
-                            } ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
-                            onClick={handlePreviousPage}
-                            disabled={currentPage === 1}
+                        <button
+                            onClick={() => setCurrentApplicationPage(prev => Math.max(prev - 1, 1))}
+                            disabled={currentApplicationPage === 1}
+                            className={`px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200 ${
+                                currentApplicationPage === 1
+                                    ? (isDarkMode ? 'text-gray-500 bg-gray-800' : 'text-gray-400 bg-gray-100 cursor-not-allowed')
+                                    : (isDarkMode 
+                                        ? 'text-gray-300 bg-gray-700 hover:bg-gray-600' 
+                                        : 'text-gray-700 bg-white hover:bg-gray-50 border border-gray-300')
+                            }`}
                         >
-                            ← Previous
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                            </svg>
                         </button>
                         
-                        <div className="flex space-x-1">
-                            {[...Array(getTotalPages())].map((_, index) => {
-                                const pageNumber = index + 1;
-                                const isCurrentPage = pageNumber === currentPage;
+                        <div className="flex items-center space-x-1">
+                            {(() => {
+                                const totalPages = getApplicationTotalPages();
+                                const pages = [];
+                                const maxVisiblePages = 5;
                                 
-                                // Show only a few pages around current page
-                                if (getTotalPages() <= 5 || 
-                                    pageNumber === 1 || 
-                                    pageNumber === getTotalPages() || 
-                                    (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)) {
+                                if (totalPages <= maxVisiblePages) {
+                                    for (let i = 1; i <= totalPages; i++) {
+                                        pages.push(i);
+                                    }
+                                } else {
+                                    const startPage = Math.max(1, currentApplicationPage - 2);
+                                    const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
                                     
-                                    return (
-                                        <button 
-                                            key={pageNumber}
-                                            className={`px-3 py-1 rounded-lg text-sm transition-colors duration-200 ${
-                                                isCurrentPage 
-                                                    ? 'text-white bg-blue-600 hover:bg-blue-700' 
-                                                    : isDarkMode 
-                                                        ? 'border border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' 
-                                                        : 'border border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
-                                            }`}
-                                            onClick={() => handlePageChange(pageNumber)}
-                                        >
-                                            {pageNumber}
-                                        </button>
-                                    );
-                                } else if (pageNumber === currentPage - 2 || pageNumber === currentPage + 2) {
-                                    return (
-                                        <span key={pageNumber} className={`px-2 text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                    if (startPage > 1) {
+                                        pages.push(1);
+                                        if (startPage > 2) pages.push('...');
+                                    }
+                                    
+                                    for (let i = startPage; i <= endPage; i++) {
+                                        pages.push(i);
+                                    }
+                                    
+                                    if (endPage < totalPages) {
+                                        if (endPage < totalPages - 1) pages.push('...');
+                                        pages.push(totalPages);
+                                    }
+                                }
+                                
+                                return pages.map((page, index) => (
+                                    page === '...' ? (
+                                        <span key={`ellipsis-${index}`} className={`px-3 py-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                                             ...
                                         </span>
-                                    );
-                                }
-                                return null;
-                            })}
+                                    ) : (
+                                        <button
+                                            key={page}
+                                            onClick={() => setCurrentApplicationPage(page)}
+                                            className={`px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200 ${
+                                                currentApplicationPage === page
+                                                    ? (isDarkMode 
+                                                        ? 'bg-blue-600 text-white' 
+                                                        : 'bg-blue-600 text-white')
+                                                    : (isDarkMode 
+                                                        ? 'text-gray-300 bg-gray-700 hover:bg-gray-600' 
+                                                        : 'text-gray-700 bg-white hover:bg-gray-50 border border-gray-300')
+                                            }`}
+                                        >
+                                            {page}
+                                        </button>
+                                    )
+                                ));
+                            })()}
                         </div>
                         
-                        <button 
-                            className={`px-3 py-1 border rounded-lg text-sm transition-colors duration-200 ${
-                                isDarkMode 
-                                    ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' 
-                                    : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
-                            } ${currentPage === getTotalPages() ? 'opacity-50 cursor-not-allowed' : ''}`}
-                            onClick={handleNextPage}
-                            disabled={currentPage === getTotalPages()}
+                        <button
+                            onClick={() => setCurrentApplicationPage(prev => Math.min(prev + 1, getApplicationTotalPages()))}
+                            disabled={currentApplicationPage === getApplicationTotalPages()}
+                            className={`px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200 ${
+                                currentApplicationPage === getApplicationTotalPages()
+                                    ? (isDarkMode ? 'text-gray-500 bg-gray-800' : 'text-gray-400 bg-gray-100 cursor-not-allowed')
+                                    : (isDarkMode 
+                                        ? 'text-gray-300 bg-gray-700 hover:bg-gray-600' 
+                                        : 'text-gray-700 bg-white hover:bg-gray-50 border border-gray-300')
+                            }`}
                         >
-                            Next →
-                        </button>
-                    </div>
-                </div>
-            </div>
-    
-            {/* Bulk Actions Bar - Dark Mode */}
-            <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-xl shadow-lg border p-4 transition-colors duration-300`}>
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                        <input 
-                            type="checkbox" 
-                            id="select-all-applications" 
-                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" 
-                        />
-                        <label htmlFor="select-all-applications" className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
-                            Select All
-                        </label>
-                        <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'} transition-colors duration-300`}>
-                            {getFilteredApplications().length} items
-                        </span>
-                    </div>
-                    <div className="flex space-x-2">
-                        <button className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 transition-colors">
-                            ✅ Approve Selected
-                        </button>
-                        <button className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors">
-                            👀 Review Selected
-                        </button>
-                        <button className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-lg text-white bg-red-600 hover:bg-red-700 transition-colors">
-                            ❌ Reject Selected
-                        </button>
-                        <button className={`inline-flex items-center px-3 py-1.5 border text-xs font-medium rounded-lg transition-colors ${
-                            isDarkMode 
-                                ? 'border-gray-600 text-gray-300 bg-gray-800 hover:bg-gray-700' 
-                                : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
-                        }`}>
-                            📤 Export Filtered
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
                         </button>
                     </div>
                 </div>

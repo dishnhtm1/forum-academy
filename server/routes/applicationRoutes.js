@@ -788,6 +788,59 @@ router.put('/:id/status', authenticate, authorizeRoles('admin'), async (req, res
     }
 });
 
+// PATCH update application status (admin only) - Alternative route for frontend compatibility
+router.patch('/:id/status', authenticate, authorizeRoles('admin'), async (req, res) => {
+    try {
+        const { status } = req.body;
+        const applicationId = req.params.id;
+        
+        console.log(`📝 PATCH: Updating application ${applicationId} status to: ${status}`);
+        
+        const validStatuses = ['pending', 'approved', 'rejected'];
+        if (!validStatuses.includes(status)) {
+            return res.status(400).json({
+                success: false,
+                message: `Invalid status. Must be one of: ${validStatuses.join(', ')}`
+            });
+        }
+        
+        if (!applicationId.match(/^[0-9a-fA-F]{24}$/)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid application ID format'
+            });
+        }
+        
+        const application = await Application.findByIdAndUpdate(
+            applicationId,
+            { status, updatedAt: new Date() },
+            { new: true }
+        );
+        
+        if (!application) {
+            console.log(`❌ Application not found: ${applicationId}`);
+            return res.status(404).json({
+                success: false,
+                message: 'Application not found'
+            });
+        }
+        
+        console.log(`✅ Application status updated successfully: ${application.firstName} ${application.lastName}`);
+        res.json({
+            success: true,
+            message: 'Application status updated',
+            application
+        });
+    } catch (error) {
+        console.error('❌ Error updating application:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error updating application',
+            error: error.message
+        });
+    }
+});
+
 // DELETE application route (admin only) - THIS IS THE MISSING ROUTE
 router.delete('/:id', authenticate, authorizeRoles('admin'), async (req, res) => {
     try {
