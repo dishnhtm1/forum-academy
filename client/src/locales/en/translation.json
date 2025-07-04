@@ -474,7 +474,7 @@
   "common": {
     "notProvided": "Not provided",
     "today": "Today",
-    "daysAgo": "days ago",
+    "daysAgo": "{{days}} days ago",
     "needsReview": "Needs Review",
     "items": "items",
     "cannotBeUndone": "This action cannot be undone."
@@ -1576,6 +1576,17 @@
           "title": "Delete User",
           "message": "Are you sure you want to delete {{name}} ({{email}})?",
           "warning": "This action cannot be undone."
+        },
+        "sendMessage": {
+          "title": "Send Message",
+          "subtitle": "Send message to {{firstName}} {{lastName}}",
+          "to": "To:",
+          "subject": "Subject:",
+          "message": "Message:",
+          "subjectPlaceholder": "Enter subject...",
+          "messagePlaceholder": "Enter your message here...",
+          "cancel": "Cancel",
+          "send": "Send Message"
         }
       },
       "fields": {
@@ -1726,6 +1737,8 @@
         "academicInfo": "Academic Information",
         "personalStatement": "Personal Statement",
         "notProvided": "Not provided",
+        "sendMessage": "Send Message",
+        "close": "Close",
         "fields": {
           "submittedOn": "Submitted On",
           "fullName": "Full Name",
@@ -1739,27 +1752,29 @@
           "educationLevel": "Education Level"
         }
       },
-      "deleteApplication": {
+      "deleteConfirm": {
         "title": "Delete Application",
-        "message": "Are you sure you want to delete the application from",
-        "for": "for",
-        "warning": "This action cannot be undone."
+        "message": "Are you sure you want to delete the application from {{firstName}} {{lastName}} for {{program}}?",
+        "warning": "This action cannot be undone.",
+        "cancel": "Cancel",
+        "delete": "Delete"
       },
       "sendMessage": {
-        "title": "Send Message",
+        "title": "Send Message to {{firstName}} {{lastName}}",
         "fields": {
           "to": "To",
-          "subject": "Subject",
+          "subject": "Subject", 
           "message": "Message"
         },
-        "subjectPlaceholder": "Enter message subject...",
+        "send": "Send Message",
+        "cancel": "Cancel",
         "placeholder": "Type your message here..."
       }
     },
     "common": {
       "notProvided": "Not provided",
       "today": "Today",
-      "daysAgo": "days ago",
+      "daysAgo": "{{days}} days ago",
       "needsReview": "Needs Review",
       "items": "items",
       "cannotBeUndone": "This action cannot be undone."

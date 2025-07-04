@@ -7407,7 +7407,10 @@ const Dashboard = () => {
                                         {t('userManagement.actions.sendMessage')}
                                     </h3>
                                     <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                                        Send message to {messageData.recipient.firstName} {messageData.recipient.lastName}
+                                        {t('userManagement.modals.sendMessage.subtitle', { 
+                                            firstName: messageData.recipient.firstName, 
+                                            lastName: messageData.recipient.lastName 
+                                        })}
                                     </p>
                                 </div>
                             </div>
@@ -7436,7 +7439,7 @@ const Dashboard = () => {
                             <form onSubmit={handleSendMessageSubmit} className="space-y-6">
                                 <div className="space-y-2">
                                     <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                                        To:
+                                        {t('userManagement.modals.sendMessage.to')}
                                     </label>
                                     <div className={`p-3 rounded-lg ${
                                         isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
@@ -7449,11 +7452,11 @@ const Dashboard = () => {
                                 
                                 <div className="space-y-2">
                                     <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                                        Subject:
+                                        {t('userManagement.modals.sendMessage.subject')}
                                     </label>
                                     <input
                                         type="text"
-                                        placeholder="Enter subject..."
+                                        placeholder={t('userManagement.modals.sendMessage.subjectPlaceholder')}
                                         value={messageData.subject}
                                         onChange={(e) => setMessageData({...messageData, subject: e.target.value})}
                                         className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
@@ -7467,11 +7470,11 @@ const Dashboard = () => {
                                 
                                 <div className="space-y-2">
                                     <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                                        Message:
+                                        {t('userManagement.modals.sendMessage.message')}
                                     </label>
                                     <textarea
                                         rows="6"
-                                        placeholder="Enter your message here..."
+                                        placeholder={t('userManagement.modals.sendMessage.messagePlaceholder')}
                                         value={messageData.message}
                                         onChange={(e) => setMessageData({...messageData, message: e.target.value})}
                                         className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none ${
@@ -7502,7 +7505,7 @@ const Dashboard = () => {
                                             });
                                         }}
                                     >
-                                        Cancel
+                                        {t('userManagement.modals.sendMessage.cancel')}
                                     </button>
                                     <button 
                                         type="submit" 
@@ -7511,7 +7514,7 @@ const Dashboard = () => {
                                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 7.89a2 2 0 002.83 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                         </svg>
-                                        Send Message
+                                        {t('userManagement.modals.sendMessage.send')}
                                     </button>
                                 </div>
                             </form>
@@ -7543,10 +7546,10 @@ const Dashboard = () => {
                             </div>
                             <div>
                                 <h2 className={`text-2xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                                    {t('dashboard.applicationManagement.title')}
+                                    {t('applicationManagement.title')}
                                 </h2>
                                 <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-500'} text-sm`}>
-                                    {t('dashboard.applicationManagement.subtitle')}
+                                    {t('applicationManagement.subtitle')}
                                 </p>
                             </div>
                         </div>
@@ -7567,7 +7570,7 @@ const Dashboard = () => {
                                             {applicationSubmissions.length}
                                         </div>
                                         <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                                            {t('dashboard.applicationManagement.stats.totalApplications')}
+                                            {t('applicationManagement.stats.totalApplications')}
                                         </div>
                                     </div>
                                 </div>
@@ -7587,7 +7590,7 @@ const Dashboard = () => {
                                             {applicationSubmissions.filter(app => app.status === 'pending').length}
                                         </div>
                                         <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                                            {t('dashboard.applicationManagement.stats.pending')}
+                                            {t('applicationManagement.stats.pending')}
                                         </div>
                                     </div>
                                 </div>
@@ -7607,7 +7610,7 @@ const Dashboard = () => {
                                             {applicationSubmissions.filter(app => app.status === 'approved').length}
                                         </div>
                                         <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                                            {t('dashboard.applicationManagement.stats.approved')}
+                                            {t('applicationManagement.stats.approved')}
                                         </div>
                                     </div>
                                 </div>
@@ -7627,7 +7630,7 @@ const Dashboard = () => {
                                             {applicationSubmissions.filter(app => app.status === 'rejected').length}
                                         </div>
                                         <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                                            {t('dashboard.applicationManagement.stats.rejected')}
+                                            {t('applicationManagement.stats.rejected')}
                                         </div>
                                     </div>
                                 </div>
@@ -7647,7 +7650,7 @@ const Dashboard = () => {
                                 </div>
                                 <input 
                                     type="text" 
-                                    placeholder={t('dashboard.applicationManagement.search.placeholder')}
+                                    placeholder={t('applicationManagement.search.placeholder')}
                                     value={searchTermApp}
                                     onChange={(e) => setSearchTermApp(e.target.value)}
                                     className={`pl-10 pr-4 py-2 w-full border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
@@ -7668,7 +7671,7 @@ const Dashboard = () => {
                                             : 'border-gray-300 bg-white text-gray-900'
                                     }`}
                                 >
-                                    <option value="">{t('dashboard.applicationManagement.search.allPrograms')}</option>
+                                    <option value="">{t('applicationManagement.search.allPrograms')}</option>
                                     <option value="webDevelopment">{t('programs.webDevelopment')}</option>
                                     <option value="dataScience">{t('programs.dataScience')}</option>
                                     <option value="cybersecurity">{t('programs.cybersecurity')}</option>
@@ -7684,7 +7687,7 @@ const Dashboard = () => {
                                             : 'border-gray-300 bg-white text-gray-900'
                                     }`}
                                 >
-                                    <option value="">{t('dashboard.applicationManagement.search.allStatus')}</option>
+                                    <option value="">{t('applicationManagement.search.allStatus')}</option>
                                     <option value="pending">{t('status.pending')}</option>
                                     <option value="approved">{t('status.approved')}</option>
                                     <option value="under_review">{t('status.underReview')}</option>
@@ -7703,7 +7706,7 @@ const Dashboard = () => {
                         <div className={`flex items-center justify-between p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} sticky top-0 bg-inherit`}>
                             <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center`}>
                                 <span className="mr-2">👁️</span>
-                                {t('dashboard.applicationManagement.modals.viewApplication.title')}
+                                {t('applicationManagement.modals.viewApplication.title')}
                             </h3>
                             <button 
                                 className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
@@ -7720,27 +7723,27 @@ const Dashboard = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-4">
                                     <h4 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} pb-2`}>
-                                        👤 {t('dashboard.applicationManagement.modals.viewApplication.personalInfo')}
+                                        👤 {t('applicationManagement.modals.viewApplication.personalInfo')}
                                     </h4>
                                     <div className="space-y-3">
                                         <div>
-                                            <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>{t('dashboard.applicationManagement.modals.viewApplication.fullName')}</label>
+                                            <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>{t('applicationManagement.modals.viewApplication.fields.fullName')}</label>
                                             <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
                                                 {selectedApplication.firstName} {selectedApplication.lastName}
                                             </p>
                                         </div>
                                         <div>
-                                            <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>{t('dashboard.applicationManagement.modals.viewApplication.email')}</label>
+                                            <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>{t('applicationManagement.modals.viewApplication.fields.email')}</label>
                                             <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>{selectedApplication.email}</p>
                                         </div>
                                         <div>
-                                            <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>{t('dashboard.applicationManagement.modals.viewApplication.phone')}</label>
+                                            <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>{t('applicationManagement.modals.viewApplication.fields.phone')}</label>
                                             <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>{selectedApplication.phone}</p>
                                         </div>
                                         <div>
-                                            <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>{t('dashboard.applicationManagement.modals.viewApplication.dateOfBirth')}</label>
+                                            <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>{t('applicationManagement.modals.viewApplication.fields.dateOfBirth')}</label>
                                             <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
-                                                {selectedApplication.dateOfBirth ? new Date(selectedApplication.dateOfBirth).toLocaleDateString() : t('dashboard.applicationManagement.modals.viewApplication.notProvided')}
+                                                {selectedApplication.dateOfBirth ? new Date(selectedApplication.dateOfBirth).toLocaleDateString() : t('applicationManagement.modals.viewApplication.notProvided')}
                                             </p>
                                         </div>
                                     </div>
@@ -7748,7 +7751,7 @@ const Dashboard = () => {
                                 
                                 <div className="space-y-4">
                                     <h4 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} pb-2`}>
-                                        📍 {t('dashboard.applicationManagement.modals.viewApplication.contactInfo')}
+                                        📍 {t('applicationManagement.modals.viewApplication.contactInfo')}
                                     </h4>
                                     <div className="space-y-3">
                                         <div>
@@ -7770,7 +7773,7 @@ const Dashboard = () => {
                             {/* Academic Information */}
                             <div className="space-y-4">
                                 <h4 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} pb-2`}>
-                                    🎓 {t('dashboard.applicationManagement.modals.viewApplication.academicInfo')}
+                                    🎓 {t('applicationManagement.modals.viewApplication.academicInfo')}
                                 </h4>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {/* <div>
@@ -7779,8 +7782,30 @@ const Dashboard = () => {
                                     </div> */}
                                     {/* // In your view application modal, update this part: */}
                                     <div>
-                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>{t('dashboard.applicationManagement.modals.viewApplication.programInterested')}</label>
-                                        <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'} font-medium`}>{selectedApplication.program}</p>
+                                        <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>{t('applicationManagement.modals.viewApplication.fields.programInterested')}</label>
+                                        <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'} font-medium`}>
+                                            {(() => {
+                                                const program = selectedApplication.program;
+                                                // Try different variations of the program name
+                                                const variations = [
+                                                    program, // Original
+                                                    program?.replace(/\s+/g, ''), // Remove spaces
+                                                    program?.replace(/\s+/g, '').replace(/[&]/g, ''), // Remove spaces and &
+                                                    program?.toLowerCase().replace(/\s+/g, ''), // Lowercase no spaces
+                                                    program?.charAt(0).toLowerCase() + program?.slice(1).replace(/\s+/g, ''), // camelCase
+                                                ];
+                                                
+                                                for (const variation of variations) {
+                                                    if (variation) {
+                                                        const translatedProgram = t(`programs.${variation}`, { defaultValue: null });
+                                                        if (translatedProgram && translatedProgram !== `programs.${variation}`) {
+                                                            return translatedProgram;
+                                                        }
+                                                    }
+                                                }
+                                                return program; // Fallback to original
+                                            })()}
+                                        </p>
                                     </div>
                                     <div>
                                         <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Education Level</label>
@@ -7812,7 +7837,7 @@ const Dashboard = () => {
                                         selectedApplication.status === 'rejected' ? 'bg-red-100 text-red-800' :
                                         'bg-yellow-100 text-yellow-800'
                                     }`}>
-                                        {selectedApplication.status ? selectedApplication.status.charAt(0).toUpperCase() + selectedApplication.status.slice(1) : 'Pending'}
+                                        {selectedApplication.status ? (t(`status.${selectedApplication.status}`) || selectedApplication.status.charAt(0).toUpperCase() + selectedApplication.status.slice(1)) : t('status.pending')}
                                     </span>
                                 </div>
                                 <div>
@@ -7836,7 +7861,7 @@ const Dashboard = () => {
                                 onClick={() => handleSendMessage(selectedApplication)}
                                 className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                             >
-                                📧 {t('dashboard.applicationManagement.modals.viewApplication.sendMessage')}
+                                📧 {t('applicationManagement.modals.viewApplication.sendMessage')}
                             </button>
                             <button 
                                 onClick={() => {
@@ -7849,7 +7874,7 @@ const Dashboard = () => {
                                         : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
                                 }`}
                             >
-                                {t('dashboard.applicationManagement.modals.viewApplication.close')}
+                                {t('applicationManagement.modals.viewApplication.close')}
                             </button>
                         </div>
                     </div>
@@ -7868,21 +7893,36 @@ const Dashboard = () => {
                             </div>
                             <div className="text-center">
                                 <h3 className={`text-lg font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} mb-2`}>
-                                    {t('dashboard.applicationManagement.modals.deleteConfirm.title')}
+                                    {t('applicationManagement.modals.deleteConfirm.title')}
                                 </h3>
-                                {/* <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} mb-6`}>
-                                    Are you sure you want to delete the application from <strong>"{applicationToDelete.firstName} {applicationToDelete.lastName}"</strong> for <strong>{applicationToDelete.programInterested}</strong>?
-                                    <br />
-                                    <span className="text-red-500 font-medium">This action cannot be undone.</span>
-                                </p> */}
                                 <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} mb-6`}>
-                                    {t('dashboard.applicationManagement.modals.deleteConfirm.message', {
+                                    {t('applicationManagement.modals.deleteConfirm.message', {
                                         firstName: applicationToDelete.firstName,
                                         lastName: applicationToDelete.lastName,
-                                        program: applicationToDelete.program
+                                        program: (() => {
+                                            const program = applicationToDelete.programInterested || applicationToDelete.program;
+                                            // Try different variations of the program name for translation
+                                            const variations = [
+                                                program, // Original
+                                                program?.replace(/\s+/g, ''), // Remove spaces
+                                                program?.replace(/\s+/g, '').replace(/[&]/g, ''), // Remove spaces and &
+                                                program?.toLowerCase().replace(/\s+/g, ''), // Lowercase no spaces
+                                                program?.charAt(0).toLowerCase() + program?.slice(1).replace(/\s+/g, ''), // camelCase
+                                            ];
+                                            
+                                            for (const variation of variations) {
+                                                if (variation) {
+                                                    const translatedProgram = t(`programs.${variation}`, { defaultValue: null });
+                                                    if (translatedProgram && translatedProgram !== `programs.${variation}`) {
+                                                        return translatedProgram;
+                                                    }
+                                                }
+                                            }
+                                            return program; // Fallback to original
+                                        })()
                                     })}
                                     <br />
-                                    <span className="text-red-500 font-medium">{t('dashboard.applicationManagement.modals.deleteConfirm.warning')}</span>
+                                    <span className="text-red-500 font-medium">{t('applicationManagement.modals.deleteConfirm.warning')}</span>
                                 </p>
                             </div>
                             <div className="flex justify-center space-x-4">
@@ -7897,13 +7937,13 @@ const Dashboard = () => {
                                             : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
                                     }`}
                                 >
-                                    {t('dashboard.applicationManagement.modals.deleteConfirm.cancel')}
+                                    {t('applicationManagement.modals.deleteConfirm.cancel')}
                                 </button>
                                 <button
                                     onClick={confirmDeleteApplication}
                                     className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
                                 >
-                                    🗑️ {t('dashboard.applicationManagement.modals.deleteConfirm.delete')}
+                                    🗑️ {t('applicationManagement.modals.deleteConfirm.delete')}
                                 </button>
                             </div>
                         </div>
@@ -7918,7 +7958,7 @@ const Dashboard = () => {
                         <div className={`flex items-center justify-between p-6 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
                             <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-gray-100' : 'text-gray-900'} flex items-center`}>
                                 <span className="mr-2">📧</span>
-                                {t('dashboard.applicationManagement.modals.sendMessage.title', {
+                                {t('applicationManagement.modals.sendMessage.title', {
                                     firstName: messageData.recipient.firstName,
                                     lastName: messageData.recipient.lastName
                                 })}
@@ -7940,7 +7980,7 @@ const Dashboard = () => {
                         <div className="p-6">
                             <form onSubmit={handleSendMessageSubmit} className="space-y-6">
                                 <div className="space-y-2">
-                                    <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t('dashboard.applicationManagement.modals.sendMessage.to')}</label>
+                                    <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t('applicationManagement.modals.sendMessage.fields.to')}</label>
                                     <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
                                         <p className={`${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>
                                             {messageData.recipient.firstName} {messageData.recipient.lastName} ({messageData.recipient.email})
@@ -7949,7 +7989,7 @@ const Dashboard = () => {
                                 </div>
                                 
                                 <div className="space-y-2">
-                                    <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t('dashboard.applicationManagement.modals.sendMessage.subject')}</label>
+                                    <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t('applicationManagement.modals.sendMessage.fields.subject')}</label>
                                     <input
                                         type="text"
                                         value={messageData.subject}
@@ -7964,12 +8004,12 @@ const Dashboard = () => {
                                 </div>
                                 
                                 <div className="space-y-2">
-                                    <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t('dashboard.applicationManagement.modals.sendMessage.message')}</label>
+                                    <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{t('applicationManagement.modals.sendMessage.fields.message')}</label>
                                     <textarea
                                         rows="8"
                                         value={messageData.message}
                                         onChange={(e) => setMessageData({...messageData, message: e.target.value})}
-                                        placeholder={t('dashboard.applicationManagement.modals.sendMessage.placeholder')}
+                                        placeholder={t('applicationManagement.modals.sendMessage.placeholder')}
                                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none ${
                                             isDarkMode 
                                                 ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400' 
@@ -7996,13 +8036,13 @@ const Dashboard = () => {
                                             });
                                         }}
                                     >
-                                        {t('dashboard.applicationManagement.modals.sendMessage.cancel')}
+                                        {t('applicationManagement.modals.sendMessage.cancel')}
                                     </button>
                                     <button 
                                         type="submit" 
                                         className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                                     >
-                                        📧 {t('dashboard.applicationManagement.modals.sendMessage.send')}
+                                        📧 {t('applicationManagement.modals.sendMessage.send')}
                                     </button>
                                 </div>
                             </form>
@@ -8032,7 +8072,7 @@ const Dashboard = () => {
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                         </svg>
-                                        <span>{t('dashboard.applicationManagement.table.applicant')}</span>
+                                        <span>{t('applicationManagement.table.headers.applicant')}</span>
                                     </div>
                                 </th>
                                 <th className={`px-6 py-4 text-left text-xs font-semibold ${
@@ -8042,7 +8082,7 @@ const Dashboard = () => {
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 7.89a2 2 0 002.83 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                         </svg>
-                                        <span>{t('dashboard.applicationManagement.table.contact')}</span>
+                                        <span>{t('applicationManagement.table.headers.contact')}</span>
                                     </div>
                                 </th>
                                 <th className={`px-6 py-4 text-left text-xs font-semibold ${
@@ -8052,7 +8092,7 @@ const Dashboard = () => {
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                                         </svg>
-                                        <span>{t('dashboard.applicationManagement.table.program')}</span>
+                                        <span>{t('applicationManagement.table.headers.program')}</span>
                                     </div>
                                 </th>
                                 <th className={`px-6 py-4 text-left text-xs font-semibold ${
@@ -8062,7 +8102,7 @@ const Dashboard = () => {
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
-                                        <span>{t('dashboard.applicationManagement.table.status')}</span>
+                                        <span>{t('applicationManagement.table.headers.status')}</span>
                                     </div>
                                 </th>
                                 <th className={`px-6 py-4 text-left text-xs font-semibold ${
@@ -8072,7 +8112,7 @@ const Dashboard = () => {
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                         </svg>
-                                        <span>{t('dashboard.applicationManagement.table.applied')}</span>
+                                        <span>{t('applicationManagement.table.headers.submitted')}</span>
                                     </div>
                                 </th>
                                 <th className={`px-6 py-4 text-left text-xs font-semibold ${
@@ -8082,7 +8122,7 @@ const Dashboard = () => {
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
                                         </svg>
-                                        <span>{t('dashboard.applicationManagement.table.actions')}</span>
+                                        <span>{t('applicationManagement.table.headers.actions')}</span>
                                     </div>
                                 </th>
                             </tr>
@@ -8152,12 +8192,32 @@ const Dashboard = () => {
                                                 <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                                                 </svg>
-                                                {application.program}
+                                                {(() => {
+                                                    const program = application.program;
+                                                    // Try different variations of the program name
+                                                    const variations = [
+                                                        program, // Original
+                                                        program?.replace(/\s+/g, ''), // Remove spaces
+                                                        program?.replace(/\s+/g, '').replace(/[&]/g, ''), // Remove spaces and &
+                                                        program?.toLowerCase().replace(/\s+/g, ''), // Lowercase no spaces
+                                                        program?.charAt(0).toLowerCase() + program?.slice(1).replace(/\s+/g, ''), // camelCase
+                                                    ];
+                                                    
+                                                    for (const variation of variations) {
+                                                        if (variation) {
+                                                            const translatedProgram = t(`programs.${variation}`, { defaultValue: null });
+                                                            if (translatedProgram && translatedProgram !== `programs.${variation}`) {
+                                                                return translatedProgram;
+                                                            }
+                                                        }
+                                                    }
+                                                    return program; // Fallback to original
+                                                })()}
                                             </span>
                                             <div className={`text-xs ${
                                                 isDarkMode ? 'text-gray-400' : 'text-gray-500'
                                             }`}>
-                                                {t('dashboard.applicationManagement.table.startDate')} {new Date(application.startDate).toLocaleDateString()}
+                                                Start Date: {new Date(application.startDate).toLocaleDateString()}
                                             </div>
                                         </div>
                                     </td>
@@ -8187,7 +8247,28 @@ const Dashboard = () => {
                                                     application.status === 'rejected' ? 'bg-red-400' : 
                                                     application.status === 'under_review' ? 'bg-blue-400' : 'bg-orange-400'
                                                 }`}></span>
-                                                {application.status?.replace('_', ' ').toUpperCase() || 'PENDING'}
+                                                {(() => {
+                                                    const status = application.status;
+                                                    // Try different variations of the status
+                                                    const variations = [
+                                                        status, // Original
+                                                        status?.toLowerCase(), // Lowercase
+                                                        status?.toUpperCase(), // Uppercase  
+                                                        status?.replace('_', ''), // Remove underscores
+                                                        status?.replace('_', ' '), // Replace underscore with space
+                                                        status?.charAt(0).toUpperCase() + status?.slice(1), // Capitalize first
+                                                    ];
+                                                    
+                                                    for (const variation of variations) {
+                                                        if (variation) {
+                                                            const translatedStatus = t(`status.${variation}`, { defaultValue: null });
+                                                            if (translatedStatus && translatedStatus !== `status.${variation}`) {
+                                                                return translatedStatus;
+                                                            }
+                                                        }
+                                                    }
+                                                    return status?.replace('_', ' ').toUpperCase() || t('status.pending'); // Fallback
+                                                })()}
                                             </span>
                                             {application.status === 'pending' && (
                                                 <div className={`text-xs font-medium flex items-center ${
@@ -8196,7 +8277,7 @@ const Dashboard = () => {
                                                     <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                                                     </svg>
-                                                    {t('dashboard.applicationManagement.table.needsReview')}
+                                                    {t('common.needsReview')}
                                                 </div>
                                             )}
                                         </div>
@@ -8216,7 +8297,7 @@ const Dashboard = () => {
                                                 </svg>
                                                 {(() => {
                                                     const days = Math.floor((Date.now() - new Date(application.createdAt || Date.now())) / (1000 * 60 * 60 * 24));
-                                                    return days === 0 ? t('dashboard.applicationManagement.table.today') : `${days}${t('dashboard.applicationManagement.table.daysAgo')}`;
+                                                    return days === 0 ? t('userManagement.time.today') : t('userManagement.time.daysAgo', { days });
                                                 })()}
                                             </div>
                                         </div>
@@ -8229,7 +8310,7 @@ const Dashboard = () => {
                                                     isDarkMode ? 'hover:bg-blue-900 hover:bg-opacity-30' : 'hover:bg-blue-100'
                                                 } transition-colors`}
                                                 onClick={() => handleViewApplication(application)}
-                                                title={t('dashboard.applicationManagement.actions.viewDetails')}
+                                                title={t('applicationManagement.table.actions.viewDetails')}
                                             >
                                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -8243,7 +8324,7 @@ const Dashboard = () => {
                                                     isDarkMode ? 'hover:bg-green-900 hover:bg-opacity-30' : 'hover:bg-green-100'
                                                 } transition-colors`}
                                                 onClick={() => handleSendMessage(application)}
-                                                title={t('dashboard.applicationManagement.actions.sendMessage')}
+                                                title={t('applicationManagement.table.actions.sendMessage')}
                                             >
                                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 7.89a2 2 0 002.83 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -8256,7 +8337,7 @@ const Dashboard = () => {
                                                     isDarkMode ? 'hover:bg-red-900 hover:bg-opacity-30' : 'hover:bg-red-100'
                                                 } transition-colors`}
                                                 onClick={() => handleDeleteApplication(application)}
-                                                title={t('dashboard.applicationManagement.actions.deleteApplication')}
+                                                title={t('applicationManagement.table.actions.delete')}
                                             >
                                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -8291,7 +8372,7 @@ const Dashboard = () => {
                                                             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                                             </svg>
-                                                            {t('dashboard.applicationManagement.actions.approveApplication')}
+                                                            {t('applicationManagement.table.actions.approve')}
                                                         </button>
                                                         <button 
                                                             className={`flex items-center w-full px-4 py-2 text-sm ${
@@ -8304,7 +8385,7 @@ const Dashboard = () => {
                                                             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                                             </svg>
-                                                            {t('dashboard.applicationManagement.actions.rejectApplication')}
+                                                            {t('applicationManagement.table.actions.reject')}
                                                         </button>
                                                         <button 
                                                             className={`flex items-center w-full px-4 py-2 text-sm ${
@@ -8317,7 +8398,7 @@ const Dashboard = () => {
                                                             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                             </svg>
-                                                            {t('dashboard.applicationManagement.actions.markAsPending')}
+                                                            {t('actions.markPending')}
                                                         </button>
                                                     </div>
                                                 </div>
@@ -8332,14 +8413,10 @@ const Dashboard = () => {
             
                 <div className={`${isDarkMode ? 'bg-gray-750 border-gray-700' : 'bg-gray-50 border-gray-200'} px-6 py-3 flex items-center justify-between border-t transition-colors duration-300`}>
                     <div className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-300`}>
-                        {t('dashboard.applicationManagement.pagination.showing', {
-                            from: ((currentApplicationPage - 1) * itemsPerPage) + 1,
-                            to: Math.min(currentApplicationPage * itemsPerPage, getFilteredApplications().length),
-                            total: getFilteredApplications().length
-                        })}
+                        {t('applicationManagement.pagination.showing')} {((currentApplicationPage - 1) * itemsPerPage) + 1}-{Math.min(currentApplicationPage * itemsPerPage, getFilteredApplications().length)} {t('applicationManagement.pagination.of')} {getFilteredApplications().length} {t('applicationManagement.pagination.results')}
                         {(searchTermApp || selectedProgram || selectedAppStatus) && (
                             <span className={`ml-2 font-medium ${isDarkMode ? 'text-blue-400' : 'text-blue-600'} transition-colors duration-300`}>
-                                {t('dashboard.applicationManagement.pagination.filtered')}
+                                {t('applicationManagement.pagination.filtered')}
                             </span>
                         )}
                     </div>
