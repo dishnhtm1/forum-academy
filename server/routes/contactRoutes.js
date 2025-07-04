@@ -228,7 +228,7 @@ router.delete('/:id', authenticate, authorizeRoles('admin'), async (req, res) =>
     }
 });
 
-// Add reply endpoint
+// Add reply endpoint - NOW WITH REAL EMAIL SENDING
 router.post('/reply', authenticate, authorizeRoles('admin'), async (req, res) => {
     try {
         const { contactId, subject, message, recipientEmail } = req.body;
@@ -242,6 +242,15 @@ router.post('/reply', authenticate, authorizeRoles('admin'), async (req, res) =>
             });
         }
         
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(recipientEmail)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid email address format'
+            });
+        }
+        
         // Find the original contact
         const contact = await Contact.findById(contactId);
         if (!contact) {
@@ -251,59 +260,111 @@ router.post('/reply', authenticate, authorizeRoles('admin'), async (req, res) =>
             });
         }
         
-        // For now, we'll just log the reply and return success
-        // In a real application, you would integrate with an email service like:
-        // - NodeMailer with SMTP
-        // - SendGrid
-        // - AWS SES
-        // - Mailgun
-        
         console.log(`📧 Reply Details:
         To: ${recipientEmail}
         Subject: ${subject}
         Message: ${message}
         Original Contact: ${contact.name} (${contact.email})`);
         
-        // You can add email sending logic here
-        // Example with nodemailer (commented out):
-        /*
+        // ✅ REAL EMAIL SENDING using NodeMailer (same config as password reset)
         const nodemailer = require('nodemailer');
-        const transporter = nodemailer.createTransporter({
-            host: process.env.SMTP_HOST,
-            port: process.env.SMTP_PORT,
+        
+        // Email configuration (same as password reset controller)
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
             auth: {
-                user: process.env.SMTP_USER,
-                pass: process.env.SMTP_PASS
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
             }
         });
         
-        await transporter.sendMail({
-            from: process.env.FROM_EMAIL,
-            to: recipientEmail,
-            subject: subject,
-            text: message,
-            html: `<div style="font-family: Arial, sans-serif;">
-                <h3>${subject}</h3>
-                <p>${message.replace(/\n/g, '<br>')}</p>
-                <hr>
-                <small>This is a reply to your inquiry: "${contact.subject}"</small>
-            </div>`
-        });
-        */
+        // Create professional email template
+        const htmlMessage = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h2 style="color: #2563eb; margin: 0;">Forum Academy</h2>
+                <p style="color: #666; margin: 5px 0;">Response to Your Inquiry</p>
+            </div>
+            
+            <div style="background-color: #f8fafc; padding: 20px; border-radius: 6px; margin-bottom: 20px;">
+                <h3 style="color: #1e40af; margin-top: 0;">${subject}</h3>
+                <div style="color: #374151; line-height: 1.6;">
+                    ${message.replace(/\n/g, '<br>')}
+                </div>
+            </div>
+            
+            <div style="border-top: 1px solid #e5e7eb; padding-top: 15px; margin-top: 20px;">
+                <p style="color: #6b7280; font-size: 14px; margin: 0;">
+                    <strong>Reference:</strong> This is a reply to your inquiry: "${contact.subject}"
+                </p>
+                <p style="color: #6b7280; font-size: 14px; margin: 5px 0;">
+                    <strong>Original message submitted:</strong> ${new Date(contact.createdAt).toLocaleDateString()}
+                </p>
+            </div>
+            
+            <div style="text-align: center; margin-top: 25px; padding-top: 15px; border-top: 1px solid #e5e7eb;">
+                <p style="color: #9ca3af; font-size: 12px; margin: 0;">
+                    © ${new Date().getFullYear()} Forum Academy. All rights reserved.
+                </p>
+            </div>
+        </div>
+        `;
         
-        // Update contact status to indicate reply was sent
-        await Contact.findByIdAndUpdate(contactId, {
-            status: 'resolved',
-            repliedAt: new Date(),
-            replySubject: subject,
-            replyMessage: message
-        });
-        
-        res.json({
-            success: true,
-            message: 'Reply sent successfully',
-            contact: contact
-        });
+        try {
+            // Send the email
+            console.log('📧 Attempting to send email...');
+            await transporter.sendMail({
+                from: `"Forum Academy" <${process.env.EMAIL_USER}>`,
+                to: recipientEmail,
+                subject: subject,
+                text: message + `\n\n---\nThis is a reply to your inquiry: "${contact.subject}"`,
+                html: htmlMessage
+            });
+            
+            console.log('✅ Email sent successfully');
+            
+            // Update contact status to indicate reply was sent
+            await Contact.findByIdAndUpdate(contactId, {
+                status: 'resolved',
+                repliedAt: new Date(),
+                replySubject: subject,
+                replyMessage: message
+            });
+            
+            res.json({
+                success: true,
+                message: 'Reply sent successfully via email',
+                details: {
+                    recipient: recipientEmail,
+                    subject: subject,
+                    originalInquiry: contact.subject,
+                    sentAt: new Date().toISOString()
+                }
+            });
+            
+        } catch (emailError) {
+            console.error('❌ Error sending email:', emailError);
+            
+            // Still update the status but indicate email failed
+            await Contact.findByIdAndUpdate(contactId, {
+                status: 'resolved',
+                repliedAt: new Date(),
+                replySubject: subject,
+                replyMessage: message,
+                emailSent: false,
+                emailError: emailError.message
+            });
+            
+            return res.status(500).json({
+                success: false,
+                message: 'Failed to send email. Please check email configuration.',
+                error: emailError.message,
+                emailConfig: {
+                    hasEmailUser: !!process.env.EMAIL_USER,
+                    hasEmailPass: !!process.env.EMAIL_PASS
+                }
+            });
+        }
         
     } catch (error) {
         console.error('❌ Error sending reply:', error);

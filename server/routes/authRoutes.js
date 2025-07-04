@@ -276,24 +276,88 @@ router.post('/send-message', authenticate, authorizeRoles('admin'), async (req, 
             }
         }
         
-        // Here you would integrate with your email service (SendGrid, NodeMailer, etc.)
-        // For now, we'll simulate sending with a delay
-        console.log('📧 Simulating email send...');
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // ✅ REAL EMAIL SENDING using NodeMailer (same config as password reset)
+        const nodemailer = require('nodemailer');
         
-        console.log('✅ Message sent successfully');
-        
-        res.json({
-            success: true,
-            message: 'Message sent successfully',
-            details: {
-                recipient: to,
-                subject: subject,
-                recipientName: recipientName,
-                sentBy: req.user?.email,
-                timestamp: new Date().toISOString()
+        // Email configuration (same as password reset controller)
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
             }
         });
+        
+        // Create professional email template
+        const htmlMessage = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h2 style="color: #2563eb; margin: 0;">Forum Academy</h2>
+                <p style="color: #666; margin: 5px 0;">Message from Administration</p>
+            </div>
+            
+            <div style="background-color: #f8fafc; padding: 20px; border-radius: 6px; margin-bottom: 20px;">
+                <h3 style="color: #1e40af; margin-top: 0;">${subject}</h3>
+                <div style="color: #374151; line-height: 1.6;">
+                    ${message.replace(/\n/g, '<br>')}
+                </div>
+            </div>
+            
+            ${recipientName ? `
+            <div style="border-top: 1px solid #e5e7eb; padding-top: 15px; margin-top: 20px;">
+                <p style="color: #6b7280; font-size: 14px; margin: 0;">
+                    <strong>Recipient:</strong> ${recipientName}
+                </p>
+            </div>
+            ` : ''}
+            
+            <div style="text-align: center; margin-top: 25px; padding-top: 15px; border-top: 1px solid #e5e7eb;">
+                <p style="color: #9ca3af; font-size: 12px; margin: 0;">
+                    © ${new Date().getFullYear()} Forum Academy. All rights reserved.
+                </p>
+            </div>
+        </div>
+        `;
+        
+        try {
+            // Send the email
+            console.log('📧 Attempting to send email...');
+            await transporter.sendMail({
+                from: `"Forum Academy" <${process.env.EMAIL_USER}>`,
+                to: to,
+                subject: subject,
+                text: message,
+                html: htmlMessage
+            });
+            
+            console.log('✅ Email sent successfully');
+            
+            res.json({
+                success: true,
+                message: 'Message sent successfully via email',
+                details: {
+                    recipient: to,
+                    subject: subject,
+                    recipientName: recipientName,
+                    sentBy: req.user?.email,
+                    timestamp: new Date().toISOString()
+                }
+            });
+            
+        } catch (emailError) {
+            console.error('❌ Error sending email:', emailError);
+            
+            return res.status(500).json({
+                success: false,
+                message: 'Failed to send email. Please check email configuration.',
+                error: emailError.message,
+                emailConfig: {
+                    hasEmailUser: !!process.env.EMAIL_USER,
+                    hasEmailPass: !!process.env.EMAIL_PASS
+                }
+            });
+        }
+        
     } catch (error) {
         console.error('❌ Error sending message:', error);
         res.status(500).json({
