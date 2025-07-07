@@ -3,6 +3,8 @@ const router = express.Router();
 const { register, login } = require('../controllers/authController');
 const { authenticate, authorizeRoles } = require('../middleware/authMiddleware');
 const User = require('../models/User');
+const { sendMessageToUser } = require('../controllers/authController');
+
 
 // Import password reset controller functions
 const {
@@ -21,6 +23,8 @@ router.post('/forgot-password', forgotPassword);
 router.post('/verify-otp', verifyOTP);
 router.post('/resend-otp', resendOTP);
 router.post('/reset-password', resetPassword);
+router.post('/send-message', authenticate, authorizeRoles('admin'), sendMessageToUser);
+
 
 // Admin route to approve a user by ID
 router.put('/approve/:id', authenticate, authorizeRoles('admin'), async (req, res) => {
