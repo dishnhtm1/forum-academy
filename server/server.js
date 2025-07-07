@@ -2,7 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 dotenv.config();
-
+const authRoutes = require('./routes/authRoutes');
+app.use('/api/auth', authRoutes);
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorMiddleware');
 
@@ -21,6 +22,7 @@ connectDB();
 //     ].filter(Boolean),
 //     credentials: true
 // }));
+
 
 app.use(cors({
     origin: [
