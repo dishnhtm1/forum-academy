@@ -566,7 +566,7 @@ const Dashboard = () => {
 
     const history = useHistory();
     // Base API URL - Use Azure for production database access
-    const API_BASE_URL = 'https://forum-backend-api-a7hgg9g7hmgegrh3.eastasia-01.azurewebsites.net';
+    const API_BASE_URL = 'https://forum-backend-cnfrb6eubggucqda.canadacentral-01.azurewebsites.net';
     // const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
     // const getToken = localStorage.getItem("authToken");
     const getToken = () => localStorage.getItem("authToken");
