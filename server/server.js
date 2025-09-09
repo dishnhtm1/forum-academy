@@ -2,13 +2,12 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 dotenv.config();
-const authRoutes = require('./routes/authRoutes');
-app.use('/api/auth', authRoutes);
-const connectDB = require('./config/db');
-const errorHandler = require('./middleware/errorMiddleware');
 
 // Initialize Express app FIRST!
 const app = express();
+
+const connectDB = require('./config/db');
+const errorHandler = require('./middleware/errorMiddleware');
 
 // Connect to DB
 connectDB();
@@ -110,6 +109,22 @@ try {
     console.log('✅ Admin routes loaded and mounted');
 } catch (error) {
     console.error('❌ Failed to load admin routes:', error.message);
+}
+
+try {
+    const courseRoutes = require('./routes/courseRoutes');
+    app.use('/api/courses', courseRoutes);
+    console.log('✅ Course routes loaded and mounted');
+} catch (error) {
+    console.error('❌ Failed to load course routes:', error.message);
+}
+
+try {
+    const courseMaterialRoutes = require('./routes/courseMaterialRoutes');
+    app.use('/api/course-materials', courseMaterialRoutes);
+    console.log('✅ Course material routes loaded and mounted');
+} catch (error) {
+    console.error('❌ Failed to load course material routes:', error.message);
 }
 
 console.log('🔧 All routes loaded successfully');
