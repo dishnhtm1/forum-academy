@@ -86,7 +86,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['student', 'teacher', 'admin'],
+    enum: ['superadmin', 'admin', 'faculty', 'teacher', 'student'],
     required: true
   },
   isApproved: {

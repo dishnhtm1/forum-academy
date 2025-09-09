@@ -9,6 +9,7 @@ import Preloader from './components/Preloader';
 import LoginModal from './components/LoginModal';
 import RegisterPage from './components/RegisterPage';
 import Dashboard from './components/Dashboard1';
+import AdminFacultyDashboard from './components/AdminFacultyDashboard';
 import OTPVerification from './components/OTPVerification';
 import ResetPassword from './components/ResetPassword';
 import HomePage from './pages/HomePage';
@@ -87,6 +88,7 @@ function App() {
                     <Route path="/dashboard" component={Dashboard} />
                     <Route path="/student/dashboard" component={Dashboard} />
                     <Route path="/faculty/dashboard" component={Dashboard} />
+                    <Route path="/admin/dashboard" component={AdminFacultyDashboard} />
 
                     <Route path="/verify-otp" component={OTPVerification} />
                     <Route path="/reset-password" component={ResetPassword} />
