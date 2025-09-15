@@ -7,7 +7,8 @@ import {
 import {
   PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined,
   DownloadOutlined, FileOutlined, VideoCameraOutlined, AudioOutlined,
-  UploadOutlined, SearchOutlined, FilterOutlined
+  UploadOutlined, SearchOutlined, FilterOutlined, BookOutlined,
+  TagOutlined, CalendarOutlined, UserOutlined, ClockCircleOutlined
 } from '@ant-design/icons';
 
 // Import API client
@@ -19,6 +20,57 @@ const { TextArea } = Input;
 const { Dragger } = Upload;
 
 const MaterialManagement = ({ currentUser }) => {
+  // Add custom styles for enhanced table appearance
+  const tableStyles = `
+    .table-row-light {
+      background-color: #fafafa !important;
+    }
+    
+    .table-row-dark {
+      background-color: #ffffff !important;
+    }
+    
+    .ant-table-thead > tr > th {
+      background-color: #f8f9fa !important;
+      border-bottom: 2px solid #e9ecef !important;
+      font-weight: 600 !important;
+      color: #495057 !important;
+      text-align: center !important;
+    }
+    
+    .ant-table-tbody > tr > td {
+      padding: 12px !important;
+      vertical-align: middle !important;
+      border-bottom: 1px solid #f0f0f0 !important;
+    }
+    
+    .ant-table-tbody > tr:hover > td {
+      background-color: #f8f9fa !important;
+    }
+    
+    .ant-pagination {
+      margin-top: 20px !important;
+      text-align: center !important;
+    }
+    
+    .ant-card {
+      border-radius: 12px !important;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+      border: none !important;
+    }
+  `;
+
+  // Inject styles
+  React.useEffect(() => {
+    const styleElement = document.createElement('style');
+    styleElement.innerHTML = tableStyles;
+    document.head.appendChild(styleElement);
+    
+    return () => {
+      document.head.removeChild(styleElement);
+    };
+  }, []);
+
   const [materials, setMaterials] = useState([]);
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -155,87 +207,241 @@ const MaterialManagement = ({ currentUser }) => {
 
   const columns = [
     {
-      title: 'File',
-      key: 'file',
-      render: (_, record) => (
+      title: (
         <Space>
-          {getFileIcon(record.fileType)}
-          <div>
-            <Text strong>{record.title}</Text>
-            <br />
-            <Text type="secondary" style={{ fontSize: '12px' }}>
-              {record.fileName} ({formatFileSize(record.fileSize)})
-            </Text>
-          </div>
+          <FileOutlined />
+          <Text strong>Material Details</Text>
         </Space>
-      )
-    },
-    {
-      title: 'Course',
-      dataIndex: ['course', 'title'],
-      key: 'course',
-      render: (courseTitle, record) => (
-        <div>
-          <Text>{courseTitle}</Text>
-          <br />
-          <Tag color="blue" size="small">{record.course.code}</Tag>
+      ),
+      key: 'file',
+      width: 300,
+      render: (_, record) => (
+        <div style={{ padding: '8px 0' }}>
+          <Space align="start">
+            <div style={{ 
+              fontSize: '24px', 
+              marginRight: '8px',
+              padding: '8px',
+              backgroundColor: '#f5f5f5',
+              borderRadius: '6px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              {getFileIcon(record.fileType)}
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ marginBottom: '4px' }}>
+                <Text strong style={{ fontSize: '14px', color: '#1890ff' }}>
+                  {record.title}
+                </Text>
+              </div>
+              <div style={{ marginBottom: '2px' }}>
+                <Text type="secondary" style={{ fontSize: '12px' }}>
+                  📁 {record.fileName}
+                </Text>
+              </div>
+              <div>
+                <Tag size="small" color="geekblue">
+                  {formatFileSize(record.fileSize)}
+                </Tag>
+                <Tag size="small" color="green">
+                  {record.fileType.toUpperCase()}
+                </Tag>
+              </div>
+            </div>
+          </Space>
         </div>
       )
     },
     {
-      title: 'Category',
+      title: (
+        <Space>
+          <BookOutlined />
+          <Text strong>Course</Text>
+        </Space>
+      ),
+      key: 'course',
+      width: 200,
+      render: (_, record) => (
+        <div style={{ padding: '4px 0' }}>
+          <div style={{ marginBottom: '4px' }}>
+            <Text strong style={{ color: '#1890ff' }}>
+              {record.course?.title || 'No Course Assigned'}
+            </Text>
+          </div>
+          <Tag color="blue" size="small">
+            {record.course?.code || 'N/A'}
+          </Tag>
+        </div>
+      )
+    },
+    {
+      title: (
+        <Space>
+          <TagOutlined />
+          <Text strong>Category</Text>
+        </Space>
+      ),
       dataIndex: 'category',
       key: 'category',
-      render: (category) => (
-        <Tag color={
-          category === 'lecture' ? 'blue' :
-          category === 'assignment' ? 'orange' :
-          category === 'reading' ? 'green' :
-          category === 'exam' ? 'red' : 'default'
-        }>
-          {category.charAt(0).toUpperCase() + category.slice(1)}
-        </Tag>
+      width: 120,
+      render: (category) => {
+        const categoryConfig = {
+          lecture: { color: 'blue', icon: '📚' },
+          assignment: { color: 'orange', icon: '📝' },
+          reading: { color: 'green', icon: '📖' },
+          exam: { color: 'red', icon: '📋' },
+          supplementary: { color: 'purple', icon: '📎' },
+          other: { color: 'default', icon: '📄' }
+        };
+        const config = categoryConfig[category] || categoryConfig.other;
+        
+        return (
+          <Tag 
+            color={config.color} 
+            style={{ 
+              padding: '4px 8px', 
+              borderRadius: '4px',
+              fontSize: '12px',
+              fontWeight: '500'
+            }}
+          >
+            {config.icon} {category.charAt(0).toUpperCase() + category.slice(1)}
+          </Tag>
+        );
+      }
+    },
+    {
+      title: (
+        <Space>
+          <CalendarOutlined />
+          <Text strong>Week/Lesson</Text>
+        </Space>
+      ),
+      key: 'weekLesson',
+      width: 120,
+      render: (_, record) => (
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ 
+            backgroundColor: '#f0f0f0', 
+            padding: '4px 8px', 
+            borderRadius: '4px',
+            marginBottom: '2px'
+          }}>
+            <Text style={{ fontSize: '12px', fontWeight: '500' }}>
+              📅 Week {record.week}
+            </Text>
+          </div>
+          <Text type="secondary" style={{ fontSize: '11px' }}>
+            Lesson {record.lesson}
+          </Text>
+        </div>
       )
     },
     {
-      title: 'Week/Lesson',
-      key: 'weekLesson',
-      render: (_, record) => `Week ${record.week}, Lesson ${record.lesson}`
-    },
-    {
-      title: 'Access Level',
+      title: (
+        <Space>
+          <UserOutlined />
+          <Text strong>Access Level</Text>
+        </Space>
+      ),
       dataIndex: 'accessLevel',
       key: 'accessLevel',
-      render: (accessLevel) => (
-        <Tag color={
-          accessLevel === 'public' ? 'green' :
-          accessLevel === 'course_students' ? 'blue' : 'red'
-        }>
-          {accessLevel.replace('_', ' ').toUpperCase()}
-        </Tag>
+      width: 130,
+      render: (accessLevel) => {
+        const accessConfig = {
+          public: { color: 'green', icon: '🌍', text: 'Public' },
+          course_students: { color: 'blue', icon: '👥', text: 'Course Students' },
+          private: { color: 'red', icon: '🔒', text: 'Private' }
+        };
+        const config = accessConfig[accessLevel] || accessConfig.private;
+        
+        return (
+          <Tag 
+            color={config.color}
+            style={{ 
+              padding: '4px 8px', 
+              borderRadius: '4px',
+              fontSize: '11px',
+              fontWeight: '500'
+            }}
+          >
+            {config.icon} {config.text}
+          </Tag>
+        );
+      }
+    },
+    {
+      title: (
+        <Space>
+          <DownloadOutlined />
+          <Text strong>Downloads</Text>
+        </Space>
+      ),
+      dataIndex: 'downloadCount',
+      key: 'downloadCount',
+      width: 100,
+      align: 'center',
+      render: (count) => (
+        <div style={{ textAlign: 'center' }}>
+          <Badge 
+            count={count || 0} 
+            style={{ 
+              backgroundColor: '#52c41a',
+              fontSize: '12px',
+              fontWeight: '500'
+            }} 
+          />
+          <div style={{ marginTop: '2px' }}>
+            <Text type="secondary" style={{ fontSize: '10px' }}>
+              downloads
+            </Text>
+          </div>
+        </div>
       )
     },
     {
-      title: 'Downloads',
-      dataIndex: 'downloadCount',
-      key: 'downloadCount',
-      render: (count) => <Badge count={count} style={{ backgroundColor: '#52c41a' }} />
-    },
-    {
-      title: 'Upload Date',
+      title: (
+        <Space>
+          <ClockCircleOutlined />
+          <Text strong>Upload Date</Text>
+        </Space>
+      ),
       dataIndex: 'createdAt',
       key: 'createdAt',
-      render: (date) => new Date(date).toLocaleDateString()
+      width: 120,
+      render: (date) => (
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ marginBottom: '2px' }}>
+            <Text style={{ fontSize: '12px', fontWeight: '500' }}>
+              {new Date(date).toLocaleDateString()}
+            </Text>
+          </div>
+          <Text type="secondary" style={{ fontSize: '10px' }}>
+            {new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          </Text>
+        </div>
+      )
     },
     {
-      title: 'Actions',
+      title: (
+        <Text strong>Actions</Text>
+      ),
       key: 'actions',
+      width: 150,
+      align: 'center',
       render: (_, record) => (
-        <Space>
+        <Space size="small">
           <Tooltip title="View Details">
             <Button 
               icon={<EyeOutlined />} 
               size="small"
+              style={{ 
+                backgroundColor: '#1890ff', 
+                borderColor: '#1890ff',
+                color: 'white'
+              }}
               onClick={() => {
                 setSelectedMaterial(record);
                 setViewModalVisible(true);
@@ -246,11 +452,24 @@ const MaterialManagement = ({ currentUser }) => {
             <Button 
               icon={<DownloadOutlined />} 
               size="small"
+              style={{ 
+                backgroundColor: '#52c41a', 
+                borderColor: '#52c41a',
+                color: 'white'
+              }}
               onClick={() => window.open(`/api/course-materials/download/${record._id}`)}
             />
           </Tooltip>
           <Tooltip title="Edit">
-            <Button icon={<EditOutlined />} size="small" />
+            <Button 
+              icon={<EditOutlined />} 
+              size="small"
+              style={{ 
+                backgroundColor: '#faad14', 
+                borderColor: '#faad14',
+                color: 'white'
+              }}
+            />
           </Tooltip>
           <Popconfirm
             title="Are you sure you want to delete this material?"
@@ -259,7 +478,12 @@ const MaterialManagement = ({ currentUser }) => {
             cancelText="No"
           >
             <Tooltip title="Delete">
-              <Button icon={<DeleteOutlined />} size="small" danger />
+              <Button 
+                icon={<DeleteOutlined />} 
+                size="small" 
+                danger 
+                style={{ backgroundColor: '#ff4d4f', borderColor: '#ff4d4f' }}
+              />
             </Tooltip>
           </Popconfirm>
         </Space>
@@ -297,7 +521,7 @@ const MaterialManagement = ({ currentUser }) => {
             >
               {courses.map(course => (
                 <Option key={course._id} value={course._id}>
-                  {course.title} ({course.code})
+                  {course.title} ({course.code || 'No Code'})
                 </Option>
               ))}
             </Select>
@@ -336,7 +560,12 @@ const MaterialManagement = ({ currentUser }) => {
         </Row>
       </Card>
 
-      <Card>
+      <Card style={{ 
+        backgroundColor: 'white',
+        borderRadius: '12px',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+        border: 'none'
+      }}>
         <Table
           columns={columns}
           dataSource={filteredMaterials}
@@ -345,7 +574,75 @@ const MaterialManagement = ({ currentUser }) => {
           pagination={{
             pageSize: 10,
             showSizeChanger: true,
-            showQuickJumper: true
+            showQuickJumper: true,
+            showTotal: (total, range) => 
+              `Showing ${range[0]}-${range[1]} of ${total} materials`,
+            pageSizeOptions: ['5', '10', '20', '50'],
+            style: { 
+              marginTop: '20px',
+              textAlign: 'center'
+            }
+          }}
+          scroll={{ x: 1400 }}
+          size="middle"
+          bordered={false}
+          style={{
+            backgroundColor: 'white',
+            borderRadius: '8px'
+          }}
+          rowClassName={(record, index) => 
+            index % 2 === 0 ? 'table-row-light' : 'table-row-dark'
+          }
+          components={{
+            header: {
+              cell: (props) => (
+                <th
+                  {...props}
+                  style={{
+                    ...props.style,
+                    backgroundColor: '#f8f9fa',
+                    borderBottom: '2px solid #e9ecef',
+                    fontWeight: '600',
+                    padding: '16px 12px',
+                    fontSize: '13px',
+                    color: '#495057',
+                    textAlign: 'center'
+                  }}
+                />
+              )
+            },
+            body: {
+              row: (props) => (
+                <tr
+                  {...props}
+                  style={{
+                    ...props.style,
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#f8f9fa';
+                    e.currentTarget.style.transform = 'translateY(-1px)';
+                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '';
+                    e.currentTarget.style.transform = '';
+                    e.currentTarget.style.boxShadow = '';
+                  }}
+                />
+              ),
+              cell: (props) => (
+                <td
+                  {...props}
+                  style={{
+                    ...props.style,
+                    padding: '12px',
+                    borderBottom: '1px solid #f0f0f0',
+                    verticalAlign: 'middle'
+                  }}
+                />
+              )
+            }
           }}
         />
       </Card>

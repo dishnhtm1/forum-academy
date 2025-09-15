@@ -229,9 +229,9 @@ const HomeworkManagement = ({ currentUser }) => {
       key: 'course',
       render: (courseTitle, record) => (
         <div>
-          <Text>{courseTitle}</Text>
+          <Text>{courseTitle || 'No Course'}</Text>
           <br />
-          <Tag color="blue" size="small">{record.course.code}</Tag>
+          <Tag color="blue" size="small">{record.course?.code || 'N/A'}</Tag>
         </div>
       )
     },

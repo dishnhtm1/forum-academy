@@ -90,6 +90,7 @@ const express = require('express');
 const router = express.Router();
 const Contact = require('../models/Contact');
 const { authenticate, authorizeRoles } = require('../middleware/authMiddleware');
+const { submitContact, getAllContacts, updateContactStatus, replyToContact } = require('../controllers/contactController');
 
 console.log('🔧 Loading contactRoutes.js...');
 
@@ -375,6 +376,9 @@ router.post('/reply', authenticate, authorizeRoles('admin'), async (req, res) =>
         });
     }
 });
+
+// Add new route using controller
+router.post('/:id/reply', authenticate, authorizeRoles('admin'), replyToContact);
 
 console.log('✅ contactRoutes.js loaded successfully');
 module.exports = router;

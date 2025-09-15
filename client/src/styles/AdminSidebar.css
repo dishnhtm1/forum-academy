@@ -1,363 +1,463 @@
-/* Admin Sidebar Styles - Clean & Simple Design */
-
-/* Keyframe Animations */
-@keyframes rotate {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+/* FORUM ACADEMY - MODERN SIDEBAR DESIGN */
+/* Reset and ensure styles apply */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
+/* CRITICAL: Force awesome gradient sidebar background */
+.ant-layout-sider,
+.ant-layout-sider-dark,
+.ant-layout-sider.ant-layout-sider-dark,
+div.ant-layout-sider.ant-layout-sider-dark.ant-layout-sider-has-trigger,
+.modern-sidebar,
+.modern-sidebar.ant-layout-sider {
+  background: linear-gradient(180deg, #667eea 0%, #764ba2 50%, #f093fb 100%) !important;
+  background-color: #667eea !important;
 }
 
-@keyframes selectedGlow {
-    0%, 100% { 
-        box-shadow: 
-            0 20px 50px rgba(245, 158, 11, 0.45),
-            0 12px 25px rgba(251, 191, 36, 0.35),
-            0 6px 15px rgba(252, 211, 77, 0.25),
-            inset 0 2px 0 rgba(255, 255, 255, 0.4);
-    }
-    50% { 
-        box-shadow: 
-            0 25px 60px rgba(245, 158, 11, 0.55),
-            0 15px 30px rgba(251, 191, 36, 0.45),
-            0 8px 18px rgba(252, 211, 77, 0.35),
-            inset 0 3px 0 rgba(255, 255, 255, 0.5);
-    }
+/* Ensure sidebar is visible and fixed */
+.ant-layout {
+  display: flex !important;
 }
 
-@keyframes glassFloat {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-2px); }
+.ant-layout-sider.modern-sidebar {
+  position: fixed !important;
+  left: 0 !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  height: 100vh !important;
+  z-index: 1000 !important;
+  background: linear-gradient(180deg, #667eea 0%, #764ba2 50%, #f093fb 100%) !important;
+  box-shadow: 4px 0 30px rgba(102, 126, 234, 0.4) !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
 }
 
-@keyframes glassShimmer {
-    0% { transform: translateX(-100%) skewX(-15deg); }
-    100% { transform: translateX(200%) skewX(-15deg); }
+/* Sidebar children container */
+.ant-layout-sider-children {
+  background: transparent !important;
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
 }
 
-@keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
+/* Logo Section - Make it visible */
+.sidebar-logo-section {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%) !important;
+  padding: 30px 20px !important;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2) !important;
+  text-align: center !important;
 }
 
-/* Main Menu Container Glass Design */
-.enhanced-admin-menu {
-    background: linear-gradient(180deg, 
-        rgba(255, 255, 255, 0.08) 0%, 
-        rgba(255, 255, 255, 0.05) 50%, 
-        rgba(255, 255, 255, 0.03) 100%) !important;
-    backdrop-filter: blur(25px) saturate(180%) !important;
-    -webkit-backdrop-filter: blur(25px) saturate(180%) !important;
-    border: none !important;
-    border-radius: 0 !important;
-    padding: 12px 0 !important;
-    box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.1) !important;
+.logo-container {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 15px !important;
 }
 
-/* Simple Clean Menu Items */
-.enhanced-admin-menu .ant-menu-item {
-    border-radius: 8px !important;
-    margin: 4px 8px !important;
-    padding: 12px 16px !important;
-    height: 44px !important;
-    transition: all 0.2s ease !important;
-    background: rgba(255, 255, 255, 0.1) !important;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    position: relative !important;
-    overflow: hidden !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    text-align: left !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
-    color: rgba(255, 255, 255, 0.85) !important;
-    font-weight: 500 !important;
+.logo-icon-box {
+  width: 70px !important;
+  height: 70px !important;
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%) !important;
+  border-radius: 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4) !important;
+  animation: logoFloat 3s ease-in-out infinite !important;
 }
 
-/* Glass shine effect on hover */
-.enhanced-admin-menu .ant-menu-item::before {
-    content: '' !important;
-    position: absolute !important;
-    top: 0 !important;
-    left: -100% !important;
-    width: 100% !important;
-    height: 100% !important;
-    background: linear-gradient(120deg, 
-        transparent 0%, 
-        rgba(255, 255, 255, 0.3) 40%, 
-        rgba(255, 255, 255, 0.5) 50%, 
-        rgba(255, 255, 255, 0.3) 60%, 
-        transparent 100%) !important;
-    transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    z-index: 1 !important;
+@keyframes logoFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
 }
 
-.enhanced-admin-menu .ant-menu-item:hover::before {
-    left: 100% !important;
+.logo-icon {
+  font-size: 35px !important;
+  color: #ffffff !important;
 }
 
-/* Glass reflection effect */
-.enhanced-admin-menu .ant-menu-item::after {
-    content: '' !important;
-    position: absolute !important;
-    top: 2px !important;
-    left: 2px !important;
-    right: 2px !important;
-    height: 40% !important;
-    background: linear-gradient(180deg, 
-        rgba(255, 255, 255, 0.25) 0%, 
-        rgba(255, 255, 255, 0.1) 50%,
-        transparent 100%) !important;
-    border-radius: 6px 6px 0 0 !important;
-    z-index: 2 !important;
-    pointer-events: none !important;
+.logo-text-wrapper {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 5px !important;
 }
 
-/* Submenu Styling */
-.enhanced-admin-menu .ant-menu-submenu-title {
-    border-radius: 12px !important;
-    margin: 6px 8px !important;
-    padding: 18px 20px !important;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    background: linear-gradient(145deg, 
-        rgba(255, 255, 255, 0.15) 0%, 
-        rgba(255, 255, 255, 0.10) 25%,
-        rgba(255, 255, 255, 0.07) 75%, 
-        rgba(255, 255, 255, 0.04) 100%) !important;
-    border: 2px solid rgba(255, 255, 255, 0.2) !important;
-    backdrop-filter: blur(20px) saturate(180%) !important;
-    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-    position: relative !important;
-    overflow: hidden !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    text-align: left !important;
-    box-shadow: 
-        0 10px 35px rgba(0, 0, 0, 0.15),
-        0 5px 18px rgba(0, 0, 0, 0.10),
-        inset 0 1px 0 rgba(255, 255, 255, 0.25),
-        inset 0 -1px 0 rgba(255, 255, 255, 0.15) !important;
+.logo-text {
+  font-size: 22px !important;
+  font-weight: 800 !important;
+  color: #ffffff !important;
+  letter-spacing: -0.5px !important;
+  margin: 0 !important;
+  line-height: 1.2 !important;
 }
 
-/* Glass submenu hover - Emerald theme */
-.enhanced-admin-menu .ant-menu-submenu-title:hover {
-    background: linear-gradient(145deg, 
-        rgba(16, 185, 129, 0.28) 0%, 
-        rgba(34, 197, 94, 0.23) 25%,
-        rgba(52, 211, 153, 0.18) 75%, 
-        rgba(110, 231, 183, 0.13) 100%) !important;
-    border-color: rgba(16, 185, 129, 0.7) !important;
-    transform: translateX(8px) translateY(-2px) scale(1.03) !important;
-    box-shadow: 
-        0 16px 40px rgba(16, 185, 129, 0.4),
-        0 8px 20px rgba(34, 197, 94, 0.3),
-        0 4px 12px rgba(52, 211, 153, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3),
-        inset 0 -1px 0 rgba(16, 185, 129, 0.1) !important;
-    backdrop-filter: blur(25px) saturate(200%) !important;
-    color: rgba(255, 255, 255, 0.95) !important;
+.portal-badge {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important;
+  color: #ffffff !important;
+  padding: 4px 12px !important;
+  border-radius: 20px !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+  display: inline-block !important;
 }
 
-/* Glass submenu open state - Violet theme */
-.enhanced-admin-menu .ant-menu-submenu-open > .ant-menu-submenu-title {
-    background: linear-gradient(145deg, 
-        rgba(168, 85, 247, 0.32) 0%, 
-        rgba(139, 92, 246, 0.27) 25%,
-        rgba(124, 58, 237, 0.22) 75%, 
-        rgba(109, 40, 217, 0.17) 100%) !important;
-    border-color: rgba(168, 85, 247, 0.8) !important;
-    transform: translateX(10px) translateY(-2px) scale(1.04) !important;
-    box-shadow: 
-        0 18px 45px rgba(168, 85, 247, 0.45),
-        0 10px 25px rgba(139, 92, 246, 0.35),
-        0 5px 15px rgba(124, 58, 237, 0.25),
-        inset 0 2px 0 rgba(255, 255, 255, 0.35),
-        inset 0 -2px 0 rgba(168, 85, 247, 0.15) !important;
-    backdrop-filter: blur(28px) saturate(210%) !important;
-    color: rgba(255, 255, 255, 1) !important;
-    font-weight: 600 !important;
-    animation: glassFloat 4s ease-in-out infinite !important;
+/* Menu Styling - Dark theme */
+.ant-menu,
+.ant-menu-dark,
+.ant-menu.ant-menu-dark,
+.modern-menu,
+.modern-menu.ant-menu-dark {
+  background: transparent !important;
+  background-color: transparent !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+  padding: 20px 10px !important;
 }
 
-/* Simple Uniform Navigation Menu Design */
-
-/* All submenu items - Simple uniform styling */
-.enhanced-admin-menu .ant-menu-submenu .ant-menu-item {
-    background: rgba(255, 255, 255, 0.1) !important;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
-    border-radius: 8px !important;
-    margin: 4px 8px !important;
-    padding: 12px 16px !important;
-    color: rgba(255, 255, 255, 0.85) !important;
-    font-weight: 500 !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
-    transition: all 0.2s ease !important;
-    height: 44px !important;
-    line-height: 20px !important;
-    display: flex !important;
-    align-items: center !important;
+.ant-menu-item,
+.ant-menu-submenu-title,
+.ant-menu-dark .ant-menu-item,
+.ant-menu-dark .ant-menu-submenu-title,
+.modern-menu .ant-menu-item,
+.modern-menu .ant-menu-submenu-title {
+  margin: 8px 0 !important;
+  padding: 14px 20px !important;
+  border-radius: 12px !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+  height: auto !important;
+  line-height: normal !important;
+  display: flex !important;
+  align-items: center !important;
 }
 
-.enhanced-admin-menu .ant-menu-submenu .ant-menu-item:hover {
-    background: rgba(59, 130, 246, 0.2) !important;
-    border: 1px solid rgba(59, 130, 246, 0.4) !important;
-    color: rgba(255, 255, 255, 0.95) !important;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2) !important;
-    transform: translateX(2px) !important;
+.ant-menu-item:hover,
+.ant-menu-submenu-title:hover,
+.ant-menu-dark .ant-menu-item:hover,
+.ant-menu-dark .ant-menu-submenu-title:hover {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.25) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  transform: translateX(5px) !important;
 }
 
-.enhanced-admin-menu .ant-menu-submenu .ant-menu-item-selected {
-    background: rgba(59, 130, 246, 0.3) !important;
-    border: 1px solid rgba(59, 130, 246, 0.6) !important;
-    color: rgba(255, 255, 255, 1) !important;
-    font-weight: 600 !important;
-    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3) !important;
-    transform: translateX(4px) !important;
+.ant-menu-item-selected,
+.ant-menu-item.ant-menu-item-selected,
+.ant-menu-dark .ant-menu-item-selected {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 4px 20px rgba(255, 107, 107, 0.4) !important;
 }
 
-/* Simple submenu titles - uniform styling */
-.enhanced-admin-menu .ant-menu-submenu-open > .ant-menu-submenu-title {
-    color: rgba(255, 255, 255, 0.95) !important;
-    text-shadow: none !important;
+.ant-menu-item-selected::after {
+  content: none !important;
+  display: none !important;
 }
 
-.ant-layout.dark-mode .enhanced-admin-menu .ant-menu-submenu-open > .ant-menu-submenu-title {
-    color: rgba(255, 255, 255, 0.9) !important;
-    text-shadow: none !important;
+.ant-menu-item-icon,
+.ant-menu-submenu-arrow {
+  color: inherit !important;
+  font-size: 18px !important;
 }
 
-/* Simple uniform icon styling */
-.enhanced-admin-menu .ant-menu-item-icon,
-.enhanced-admin-menu .ant-menu-submenu-title .ant-menu-item-icon {
-    color: rgba(255, 255, 255, 0.8) !important;
-    background: none !important;
-    -webkit-background-clip: unset !important;
-    -webkit-text-fill-color: unset !important;
-    background-clip: unset !important;
-    filter: none !important;
+/* SubMenu styling */
+.ant-menu-sub,
+.ant-menu-dark .ant-menu-sub {
+  background: rgba(0, 0, 0, 0.2) !important;
+  border-radius: 8px !important;
+  margin: 4px 8px !important;
 }
 
-/* Simple main menu item hover and selected states */
-.enhanced-admin-menu .ant-menu-item:hover {
-    background: rgba(59, 130, 246, 0.2) !important;
-    border: 1px solid rgba(59, 130, 246, 0.4) !important;
-    color: rgba(255, 255, 255, 0.95) !important;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2) !important;
-    transform: translateX(2px) !important;
+.ant-menu-sub .ant-menu-item {
+  padding-left: 44px !important;
+  font-size: 13px !important;
+  margin: 4px 0 !important;
 }
 
-.enhanced-admin-menu .ant-menu-item-selected {
-    background: rgba(59, 130, 246, 0.3) !important;
-    border: 1px solid rgba(59, 130, 246, 0.6) !important;
-    transform: translateX(4px) !important;
-    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3) !important;
-    color: rgba(255, 255, 255, 1) !important;
-    font-weight: 600 !important;
+/* Status Section */
+.sidebar-status {
+  padding: 20px !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
-.enhanced-admin-menu .ant-menu-item .anticon,
-.enhanced-admin-menu .ant-menu-submenu-title .anticon {
-    font-size: 18px !important;
-    margin-right: 12px !important;
-    color: rgba(255, 255, 255, 0.85) !important;
-    transition: all 0.3s ease !important;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-    z-index: 3 !important;
-    position: relative !important;
+.status-item {
+  background: linear-gradient(135deg, rgba(79, 172, 254, 0.15) 0%, rgba(0, 242, 254, 0.08) 100%) !important;
+  padding: 12px !important;
+  border-radius: 10px !important;
+  margin-bottom: 12px !important;
+  border: 1px solid rgba(79, 172, 254, 0.3) !important;
 }
 
-.enhanced-admin-menu .ant-menu-item:hover .anticon,
-.enhanced-admin-menu .ant-menu-submenu-title:hover .anticon {
-    color: rgba(255, 255, 255, 1) !important;
-    text-shadow: 0 0 8px currentColor !important;
-    transform: scale(1.1) !important;
+.status-label {
+  color: rgba(255, 255, 255, 0.6) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  display: block !important;
+  margin-bottom: 8px !important;
 }
 
-/* Menu item text with enhanced visibility */
-.enhanced-admin-menu .ant-menu-item span,
-.enhanced-admin-menu .ant-menu-submenu-title span {
-    color: rgba(255, 255, 255, 0.9) !important;
-    font-weight: 500 !important;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
-    z-index: 3 !important;
-    position: relative !important;
+.status-value {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
 }
 
-.enhanced-admin-menu .ant-menu-item:hover span,
-.enhanced-admin-menu .ant-menu-submenu-title:hover span,
-.enhanced-admin-menu .ant-menu-item-selected span {
-    color: rgba(255, 255, 255, 1) !important;
-    font-weight: 600 !important;
+.status-percent,
+.status-number {
+  color: #ffffff !important;
+  font-weight: 700 !important;
 }
 
-/* Glass scrollbar styling */
-.enhanced-admin-menu::-webkit-scrollbar {
-    width: 6px !important;
+.status-percent {
+  color: #4facfe !important;
+  font-size: 16px !important;
 }
 
-.enhanced-admin-menu::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.08) !important;
-    border-radius: 3px !important;
-    backdrop-filter: blur(10px) !important;
+.status-number {
+  font-size: 20px !important;
 }
 
-.enhanced-admin-menu::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, 
-        rgba(255, 255, 255, 0.3) 0%,
-        rgba(255, 255, 255, 0.2) 50%,
-        rgba(255, 255, 255, 0.1) 100%) !important;
-    border-radius: 3px !important;
-    backdrop-filter: blur(10px) !important;
+.status-icon {
+  color: rgba(255, 255, 255, 0.8) !important;
+  font-size: 18px !important;
 }
 
-.enhanced-admin-menu::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, 
-        rgba(255, 255, 255, 0.5) 0%,
-        rgba(255, 255, 255, 0.4) 50%,
-        rgba(255, 255, 255, 0.3) 100%) !important;
+/* User Profile Section */
+.sidebar-user-section {
+  padding: 20px !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.2) !important;
+  margin-top: auto !important;
 }
 
-/* Additional submenu container overrides to ensure no dark backgrounds */
-.enhanced-admin-menu .ant-menu-submenu-popup,
-.enhanced-admin-menu .ant-menu-submenu-popup .ant-menu,
-.enhanced-admin-menu .ant-menu-submenu-popup .ant-menu-sub {
-    background: transparent !important;
-    box-shadow: none !important;
+.user-profile-card {
+  background: rgba(255, 255, 255, 0.2) !important;
+  padding: 12px !important;
+  border-radius: 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
 }
 
-/* Force remove any default Ant Design dark backgrounds */
-.enhanced-admin-menu .ant-menu.ant-menu-sub.ant-menu-inline {
-    background: transparent !important;
+.user-profile-card:hover {
+  background: rgba(255, 255, 255, 0.3) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 5px 20px rgba(255, 255, 255, 0.2) !important;
 }
 
-.enhanced-admin-menu .ant-menu-submenu-popup > .ant-menu {
-    background: transparent !important;
-    border-radius: 16px !important;
-    padding: 0 !important;
+.user-avatar-modern,
+.ant-avatar {
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%) !important;
+  border-radius: 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  font-size: 16px !important;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4) !important;
 }
 
-/* Responsive Design */
+.user-info-modern {
+  flex: 1 !important;
+  min-width: 0 !important;
+}
+
+.user-name-modern {
+  color: #ffffff !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  margin-bottom: 2px !important;
+  display: block !important;
+}
+
+.user-role-modern {
+  color: rgba(255, 255, 255, 0.6) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  display: block !important;
+}
+
+.logout-icon {
+  color: rgba(255, 255, 255, 0.6) !important;
+  font-size: 16px !important;
+  transition: all 0.3s ease !important;
+}
+
+/* Sidebar Toggle Button */
+.ant-layout-sider-trigger {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.2) !important;
+  height: 48px !important;
+  line-height: 48px !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-size: 18px !important;
+}
+
+.ant-layout-sider-trigger:hover {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%) !important;
+  color: #ffffff !important;
+}
+
+/* Collapsed state */
+.ant-layout-sider-collapsed .logo-text-wrapper {
+  display: none !important;
+}
+
+.ant-layout-sider-collapsed .status-label,
+.ant-layout-sider-collapsed .status-percent {
+  display: none !important;
+}
+
+.ant-layout-sider-collapsed .user-info-modern,
+.ant-layout-sider-collapsed .logout-icon {
+  display: none !important;
+}
+
+.ant-layout-sider-collapsed .ant-menu-item,
+.ant-layout-sider-collapsed .ant-menu-submenu-title {
+  padding: 14px 20px !important;
+}
+
+/* Main Layout */
+.ant-layout .main-layout {
+  margin-left: 200px !important;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  background: #f5f7fa !important;
+  min-height: 100vh !important;
+}
+
+.ant-layout-sider-collapsed + .main-layout {
+  margin-left: 80px !important;
+}
+
+/* Header */
+.ant-layout-header.modern-header {
+  background: #ffffff !important;
+  padding: 0 !important;
+  height: auto !important;
+  line-height: normal !important;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05) !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 999 !important;
+}
+
+.header-wrapper {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 20px 30px !important;
+  height: 70px !important;
+}
+
+/* Content */
+.ant-layout-content.modern-content {
+  padding: 30px !important;
+  background: transparent !important;
+}
+
+/* CRITICAL: Override Ant Design white backgrounds */
+.ant-layout-sider,
+.ant-layout-sider-dark,
+.ant-layout-sider * {
+  background-color: transparent !important;
+}
+
+.ant-layout-sider > * {
+  background: transparent !important;
+}
+
+/* Ensure dark background on sidebar root */
+.ant-layout > .ant-layout-sider {
+  background: #797fa3 !important;
+}
+
+/* Force menu dark theme */
+.ant-menu-root,
+.ant-menu-dark,
+.ant-menu-inline,
+.ant-menu-vertical {
+  background: transparent !important;
+  border: none !important;
+}
+
+/* Remove any white backgrounds from menu items */
+.ant-menu-item a,
+.ant-menu-item-selected a,
+.ant-menu-submenu-title {
+  color: inherit !important;
+}
+
+/* Ensure visibility */
+.ant-layout-sider,
+.sidebar-logo-section,
+.modern-menu,
+.sidebar-status,
+.sidebar-user-section {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Additional awesome theme enforcement */
+body .ant-layout-sider {
+  background: linear-gradient(180deg, #667eea 0%, #764ba2 50%, #f093fb 100%) !important;
+}
+
+body .ant-layout-sider-children {
+  background: transparent !important;
+}
+
+body .ant-menu-dark {
+  background: transparent !important;
+}
+
+body .ant-menu-dark .ant-menu-item {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+body .ant-menu-dark .ant-menu-item-selected {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%) !important;
+}
+
+/* Progress bars in status section */
+.ant-progress-inner {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.ant-progress-bg {
+  background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%) !important;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
-    .enhanced-admin-menu .ant-menu-item,
-    .enhanced-admin-menu .ant-menu-submenu .ant-menu-item {
-        height: 40px !important;
-        padding: 10px 14px !important;
-        font-size: 14px !important;
-    }
-    
-    .enhanced-admin-menu .ant-menu-submenu-title {
-        padding: 14px 16px !important;
-    }
-    
-    .enhanced-admin-menu .ant-menu-item .anticon,
-    .enhanced-admin-menu .ant-menu-submenu-title .anticon {
-        font-size: 16px !important;
-        margin-right: 10px !important;
-    }
+  .ant-layout-sider.modern-sidebar {
+    position: fixed !important;
+    z-index: 1001 !important;
+  }
+  
+  .main-layout {
+    margin-left: 0 !important;
+  }
 }
