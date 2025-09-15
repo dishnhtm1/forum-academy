@@ -211,35 +211,166 @@ export const authAPI = {
   }
 };
 
+// Quiz API
+export const quizAPI = {
+  // Get all quizzes
+  getAll: async () => {
+    const response = await fetch(`${API_BASE_URL}/api/quizzes`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  },
+
+  // Get quiz by ID
+  getById: async (id) => {
+    const response = await fetch(`${API_BASE_URL}/api/quizzes/${id}`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  },
+
+  // Create new quiz
+  create: async (quizData) => {
+    console.log('🌐 quizAPI.create called with data:', quizData);
+    console.log('🔗 API_BASE_URL:', API_BASE_URL);
+    console.log('🔐 Auth headers:', getAuthHeaders());
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/quizzes`, {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(quizData)
+      });
+      
+      console.log('📡 Response status:', response.status);
+      console.log('📡 Response ok:', response.ok);
+      
+      const result = await handleResponse(response);
+      console.log('✅ Quiz created successfully:', result);
+      return result;
+    } catch (error) {
+      console.error('❌ Error in quizAPI.create:', error);
+      throw error;
+    }
+  },
+
+  // Update quiz
+  update: async (id, quizData) => {
+    const response = await fetch(`${API_BASE_URL}/api/quizzes/${id}`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(quizData)
+    });
+    return handleResponse(response);
+  },
+
+  // Delete quiz
+  delete: async (id) => {
+    const response = await fetch(`${API_BASE_URL}/api/quizzes/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  },
+
+  // Get quiz submissions
+  getSubmissions: async (quizId) => {
+    const response = await fetch(`${API_BASE_URL}/api/quizzes/${quizId}/submissions`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  },
+
+  // Submit quiz answers
+  submit: async (quizId, answers) => {
+    const response = await fetch(`${API_BASE_URL}/api/quizzes/${quizId}/submit`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ answers })
+    });
+    return handleResponse(response);
+  },
+
+  // Add question to quiz
+  addQuestion: async (quizId, questionData) => {
+    const response = await fetch(`${API_BASE_URL}/api/quizzes/${quizId}/questions`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(questionData)
+    });
+    return handleResponse(response);
+  },
+
+  // Update question
+  updateQuestion: async (quizId, questionId, questionData) => {
+    const response = await fetch(`${API_BASE_URL}/api/quizzes/${quizId}/questions/${questionId}`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(questionData)
+    });
+    return handleResponse(response);
+  },
+
+  // Delete question
+  deleteQuestion: async (quizId, questionId) => {
+    const response = await fetch(`${API_BASE_URL}/api/quizzes/${quizId}/questions/${questionId}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
+};
+
 // Dashboard Stats API
 export const statsAPI = {
   getDashboardStats: async () => {
     try {
-      const [courses, materials, users] = await Promise.all([
+      console.log('📊 Fetching dashboard stats...');
+      
+      const [coursesResponse, materialsResponse, usersResponse, quizzesResponse] = await Promise.all([
         courseAPI.getAll(),
         materialAPI.getAll(),
-        userAPI.getAll()
+        userAPI.getAll(),
+        quizAPI.getAll()
       ]);
+
+      console.log('📚 Courses response:', coursesResponse);
+      console.log('📖 Materials response:', materialsResponse);
+      console.log('👥 Users response:', usersResponse);
+      console.log('❓ Quizzes response:', quizzesResponse);
+
+      // Handle your server's response format: { success: true, data: [...], count: X }
+      const courses = coursesResponse.courses || coursesResponse || [];
+      const materials = materialsResponse.materials || materialsResponse || [];
+      const users = usersResponse.users || usersResponse || [];
+      const quizzes = quizzesResponse.quizzes || quizzesResponse || [];
 
       const students = users.filter(user => user.role === 'student');
       
-      return {
+      const stats = {
         totalCourses: courses.length,
         totalStudents: students.length,
         totalMaterials: materials.length,
+        activeQuizzes: quizzes.length,
         completionRate: Math.floor(Math.random() * 30 + 70), // Mock data for now
         activeUsers: Math.floor(students.length * 0.8),
-        newEnrollments: Math.floor(Math.random() * 20 + 5)
+        newEnrollments: Math.floor(Math.random() * 20 + 5),
+        pendingSubmissions: Math.floor(Math.random() * 20 + 5)
       };
+
+      console.log('📊 Calculated stats:', stats);
+      return stats;
     } catch (error) {
       console.error('Failed to fetch dashboard stats:', error);
       return {
         totalCourses: 0,
         totalStudents: 0,
         totalMaterials: 0,
+        activeQuizzes: 0,
         completionRate: 0,
         activeUsers: 0,
-        newEnrollments: 0
+        newEnrollments: 0,
+        pendingSubmissions: 0
       };
     }
   }
@@ -250,5 +381,6 @@ export default {
   materialAPI,
   userAPI,
   authAPI,
-  statsAPI
+  statsAPI,
+  quizAPI
 };

@@ -8,8 +8,10 @@ import Footer from './components/Footer';
 import Preloader from './components/Preloader';
 import LoginModal from './components/LoginModal';
 import RegisterPage from './components/RegisterPage';
-import Dashboard from './components/Dashboard1';
 import AdminFacultyDashboard from './components/AdminFacultyDashboard';
+import TeacherDashboard from './components/TeacherDashboard';
+import StudentDashboard from './components/StudentDashboard';
+import DashboardRouter from './components/DashboardRouter';
 import OTPVerification from './components/OTPVerification';
 import ResetPassword from './components/ResetPassword';
 import HomePage from './pages/HomePage';
@@ -85,10 +87,13 @@ function App() {
             <Router>
                 <Switch>
                     {/* Dashboard Routes - No Header/Footer */}
-                    <Route path="/dashboard" component={Dashboard} />
-                    <Route path="/student/dashboard" component={Dashboard} />
-                    <Route path="/faculty/dashboard" component={Dashboard} />
+                    <Route path="/dashboard" component={DashboardRouter} />
                     <Route path="/admin/dashboard" component={AdminFacultyDashboard} />
+                    <Route path="/teacher/dashboard" component={TeacherDashboard} />
+                    <Route path="/student/dashboard" component={StudentDashboard} />
+                    
+                    {/* Legacy dashboard routes for compatibility */}
+                    <Route path="/faculty/dashboard" component={AdminFacultyDashboard} />
 
                     <Route path="/verify-otp" component={OTPVerification} />
                     <Route path="/reset-password" component={ResetPassword} />
