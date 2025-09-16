@@ -7,15 +7,18 @@ import {
 import {
   PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined,
   QuestionCircleOutlined, CheckCircleOutlined, CloseCircleOutlined,
-  PlayCircleOutlined, ClockCircleOutlined, BarChartOutlined
+  PlayCircleOutlined, ClockCircleOutlined, BarChartOutlined, DownloadOutlined
 } from '@ant-design/icons';
 import moment from 'moment';
+import { quizAPI, courseAPI } from '../../utils/apiClient';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
 const { TextArea } = Input;
 
 const QuizManagement = ({ currentUser }) => {
+  console.log('🎯 QuizManagement component rendering, currentUser:', currentUser);
+  
   const [quizzes, setQuizzes] = useState([]);
   const [courses, setCourses] = useState([]);
   const [submissions, setSubmissions] = useState([]);
@@ -30,76 +33,66 @@ const QuizManagement = ({ currentUser }) => {
   const [questionForm] = Form.useForm();
 
   useEffect(() => {
-    fetchQuizzes();
-    fetchCourses();
-  }, []);
+    console.log('🔄 QuizManagement component mounted');
+    console.log('👤 Current user:', currentUser);
+    console.log('📡 QuizAPI object:', quizAPI);
+    
+    if (currentUser) {
+      console.log('✅ User exists, fetching quizzes...');
+      fetchQuizzes();
+      fetchCourses();
+    } else {
+      console.log('❌ No current user, waiting...');
+    }
+  }, [currentUser]);
 
   const fetchQuizzes = async () => {
+    console.log('📝 Starting fetchQuizzes...');
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('/api/quizzes', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setQuizzes(data);
-      } else {
-        message.error('Failed to fetch quizzes');
-      }
+      console.log('🚀 Calling quizAPI.getAll()...');
+      const data = await quizAPI.getAll();
+      console.log('📝 Fetched quizzes:', data);
+      console.log('📊 Quiz count:', data ? data.length : 'undefined');
+      setQuizzes(data);
     } catch (error) {
-      console.error('Error fetching quizzes:', error);
-      message.error('Error fetching quizzes');
+      console.error('❌ Error fetching quizzes:', error);
+      message.error('Error fetching quizzes: ' + error.message);
     } finally {
       setLoading(false);
+      console.log('✅ fetchQuizzes completed');
     }
   };
 
   const fetchCourses = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('/api/courses', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setCourses(data);
-      }
+      const data = await courseAPI.getAll();
+      console.log('📚 Fetched courses:', data);
+      setCourses(data.courses || data || []);
     } catch (error) {
       console.error('Error fetching courses:', error);
+      message.error('Error fetching courses: ' + error.message);
     }
   };
 
   const fetchQuizSubmissions = async (quizId) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`/api/quiz-submissions/quiz/${quizId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setSubmissions(data);
-      }
+      const data = await quizAPI.getSubmissions(quizId);
+      console.log('📊 Fetched quiz submissions:', data);
+      setSubmissions(data);
     } catch (error) {
       console.error('Error fetching submissions:', error);
+      message.error('Error fetching submissions: ' + error.message);
     }
   };
 
   const handleCreateQuiz = async (values) => {
     try {
-      const token = localStorage.getItem('token');
+      console.log('🚀 Starting quiz creation process...');
+      console.log('📝 Form values received:', values);
+      console.log('❓ Questions to include:', questions);
+      console.log('👤 Current user:', currentUser);
+
       const quizData = {
         ...values,
         dueDate: values.dueDate ? values.dueDate.format() : null,
@@ -109,54 +102,48 @@ const QuizManagement = ({ currentUser }) => {
         questions: questions
       };
 
-      const url = editingQuiz ? `/api/quizzes/${editingQuiz._id}` : '/api/quizzes';
-      const method = editingQuiz ? 'PUT' : 'POST';
+      console.log('📊 Final quiz data to send:', JSON.stringify(quizData, null, 2));
 
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(quizData)
-      });
-
-      if (response.ok) {
-        message.success(`Quiz ${editingQuiz ? 'updated' : 'created'} successfully`);
-        setQuizModalVisible(false);
-        form.resetFields();
-        setEditingQuiz(null);
-        setQuestions([]);
-        fetchQuizzes();
+      let result;
+      if (editingQuiz) {
+        console.log('✏️ Updating existing quiz...');
+        result = await quizAPI.update(editingQuiz._id, quizData);
       } else {
-        const error = await response.json();
-        message.error(error.message || 'Failed to save quiz');
+        console.log('🆕 Creating new quiz...');
+        console.log('🌐 About to call quizAPI.create()...');
+        result = await quizAPI.create(quizData);
+        console.log('✅ API call completed, result:', result);
       }
+
+      console.log('💾 Quiz saved successfully:', result);
+      message.success(`Quiz ${editingQuiz ? 'updated' : 'created'} successfully`);
+      
+      // Close modal and reset form
+      setQuizModalVisible(false);
+      form.resetFields();
+      setEditingQuiz(null);
+      setQuestions([]);
+      
+      // Refresh the quiz list
+      console.log('🔄 Refreshing quiz list...');
+      await fetchQuizzes();
+      console.log('✅ Quiz creation process completed');
+      
     } catch (error) {
-      console.error('Error saving quiz:', error);
-      message.error('Error saving quiz');
+      console.error('❌ Error saving quiz:', error);
+      console.error('❌ Error details:', error.stack);
+      message.error('Error saving quiz: ' + error.message);
     }
   };
 
   const handleDeleteQuiz = async (quizId) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`/api/quizzes/${quizId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (response.ok) {
-        message.success('Quiz deleted successfully');
-        fetchQuizzes();
-      } else {
-        message.error('Failed to delete quiz');
-      }
+      await quizAPI.delete(quizId);
+      message.success('Quiz deleted successfully');
+      fetchQuizzes();
     } catch (error) {
       console.error('Error deleting quiz:', error);
-      message.error('Error deleting quiz');
+      message.error('Error deleting quiz: ' + error.message);
     }
   };
 
@@ -204,9 +191,9 @@ const QuizManagement = ({ currentUser }) => {
       key: 'course',
       render: (courseTitle, record) => (
         <div>
-          <Text>{courseTitle}</Text>
+          <Text>{courseTitle || 'No Course'}</Text>
           <br />
-          <Tag color="blue" size="small">{record.course.code}</Tag>
+          <Tag color="blue" size="small">{record.course?.code || 'N/A'}</Tag>
         </div>
       )
     },
@@ -331,9 +318,9 @@ const QuizManagement = ({ currentUser }) => {
       key: 'student',
       render: (_, record) => (
         <div>
-          <Text>{record.student.firstName} {record.student.lastName}</Text>
+          <Text>{record.student?.firstName || 'Unknown'} {record.student?.lastName || 'Student'}</Text>
           <br />
-          <Text type="secondary">{record.student.email}</Text>
+          <Text type="secondary">{record.student?.email || 'No email'}</Text>
         </div>
       )
     },
@@ -383,6 +370,15 @@ const QuizManagement = ({ currentUser }) => {
 
   return (
     <div>
+      {/* Debug Info */}
+      <div style={{ background: '#f0f2f5', padding: '8px', marginBottom: '16px', fontSize: '12px' }}>
+        <strong>🔍 Debug Info:</strong> 
+        Quizzes loaded: {quizzes?.length || 0} | 
+        Loading: {loading ? 'Yes' : 'No'} | 
+        Current User: {currentUser?.email || 'None'} |
+        API Available: {typeof quizAPI !== 'undefined' ? 'Yes' : 'No'}
+      </div>
+      
       <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
         <Col>
           <Title level={2}>Quiz Engine</Title>
@@ -473,7 +469,7 @@ const QuizManagement = ({ currentUser }) => {
                 <Select placeholder="Select course">
                   {courses.map(course => (
                     <Option key={course._id} value={course._id}>
-                      {course.title} ({course.code})
+                      {course.title} ({course.code || 'No Code'})
                     </Option>
                   ))}
                 </Select>

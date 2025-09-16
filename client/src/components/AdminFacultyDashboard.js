@@ -32,6 +32,7 @@ import HomeworkManagement from './dashboard/HomeworkManagement';
 import ListeningExercises from './dashboard/ListeningExercises';
 import StudentProgress from './dashboard/StudentProgress';
 import Analytics from './dashboard/Analytics';
+import ApplicationManagement from './dashboard/ApplicationManagement';
 
 // Import API client
 import { authAPI, statsAPI } from '../utils/apiClient';
@@ -97,14 +98,13 @@ const AdminFacultyDashboard = () => {
 
   const fetchDashboardStats = async () => {
     try {
+      console.log('🔄 Starting to fetch dashboard stats...');
       const stats = await statsAPI.getDashboardStats();
-      setDashboardStats({
-        ...stats,
-        pendingSubmissions: Math.floor(Math.random() * 20 + 5),
-        activeQuizzes: Math.floor(Math.random() * 10 + 3)
-      });
+      console.log('✅ Received dashboard stats:', stats);
+      setDashboardStats(stats);
+      console.log('📊 Dashboard stats updated in state');
     } catch (error) {
-      console.error('Error fetching dashboard stats:', error);
+      console.error('❌ Error fetching dashboard stats:', error);
       // Set fallback data
       setDashboardStats({
         totalCourses: 0,
@@ -165,6 +165,11 @@ const AdminFacultyDashboard = () => {
       label: 'Student Progress',
     },
     {
+      key: 'applications',
+      icon: <FileTextOutlined />,
+      label: 'Applications & Messages',
+    },
+    {
       key: 'analytics',
       icon: <BarChartOutlined />,
       label: 'Analytics & Reports',
@@ -216,6 +221,16 @@ const AdminFacultyDashboard = () => {
               value={dashboardStats.pendingSubmissions}
               prefix={<ClockCircleOutlined />}
               valueStyle={{ color: '#f5222d' }}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} md={8} lg={6}>
+          <Card>
+            <Statistic
+              title="Active Quizzes"
+              value={dashboardStats.activeQuizzes}
+              prefix={<QuestionCircleOutlined />}
+              valueStyle={{ color: '#722ed1' }}
             />
           </Card>
         </Col>
@@ -326,6 +341,9 @@ const AdminFacultyDashboard = () => {
         </div>
         <div style={{ display: activeTab === 'analytics' ? 'block' : 'none' }}>
           <Analytics currentUser={currentUser} />
+        </div>
+        <div style={{ display: activeTab === 'applications' ? 'block' : 'none' }}>
+          <ApplicationManagement currentUser={currentUser} />
         </div>
       </>
     );
