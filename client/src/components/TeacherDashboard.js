@@ -21,7 +21,8 @@ import {
   FileTextOutlined, PlayCircleOutlined, HomeOutlined, UserOutlined,
   BarChartOutlined, CalendarOutlined, BellOutlined, SettingOutlined,
   MenuFoldOutlined, MenuUnfoldOutlined, StarOutlined, ClockCircleOutlined,
-  TrophyOutlined, MessageOutlined, TeamOutlined
+  TrophyOutlined, MessageOutlined, TeamOutlined, LogoutOutlined,
+  ReadOutlined, CheckSquareOutlined, LineChartOutlined
 } from '@ant-design/icons';
 
 // Import components
@@ -32,16 +33,15 @@ import HomeworkManagement from './dashboard/HomeworkManagement';
 import ListeningExercises from './dashboard/ListeningExercises';
 import StudentProgress from './dashboard/StudentProgress';
 import Analytics from './dashboard/Analytics';
-import ApplicationManagement from './dashboard/ApplicationManagement';
+import TeacherGrading from './TeacherGrading';
 
 // Import API client
 import { authAPI, statsAPI } from '../utils/apiClient';
 
 const { Header, Sider, Content } = Layout;
 const { Title, Text } = Typography;
-const { TabPane } = Tabs;
 
-const AdminFacultyDashboard = () => {
+const TeacherDashboard = () => {
   const { t } = useTranslation();
   const history = useHistory();
   
@@ -49,14 +49,32 @@ const AdminFacultyDashboard = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  // Responsive handler
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+      // Auto-collapse on mobile
+      if (mobile) {
+        setCollapsed(true);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    handleResize(); // Initial check
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   const [activeTab, setActiveTab] = useState('overview');
   const [dashboardStats, setDashboardStats] = useState({
-    totalCourses: 0,
-    totalStudents: 0,
+    myCourses: 0,
+    myStudents: 0,
     totalMaterials: 0,
     pendingSubmissions: 0,
     activeQuizzes: 0,
-    completionRate: 0
+    avgClassPerformance: 0
   });
 
   // Check authentication and user role
@@ -73,9 +91,9 @@ const AdminFacultyDashboard = () => {
         return;
       }
 
-      // Check if user has admin/faculty permissions
-      if (!['superadmin', 'admin', 'faculty', 'teacher'].includes(userRole)) {
-        message.error('Access denied. Admin/Faculty role required.');
+      // Check if user has teacher permissions
+      if (!['teacher', 'faculty', 'admin', 'superadmin'].includes(userRole)) {
+        message.error('Access denied. Teacher role required.');
         history.push('/');
         return;
       }
@@ -98,21 +116,20 @@ const AdminFacultyDashboard = () => {
 
   const fetchDashboardStats = async () => {
     try {
-      console.log('🔄 Starting to fetch dashboard stats...');
-      const stats = await statsAPI.getDashboardStats();
-      console.log('✅ Received dashboard stats:', stats);
+      console.log('🔄 Starting to fetch teacher dashboard stats...');
+      const stats = await statsAPI.getTeacherStats();
+      console.log('✅ Received teacher stats:', stats);
       setDashboardStats(stats);
-      console.log('📊 Dashboard stats updated in state');
     } catch (error) {
-      console.error('❌ Error fetching dashboard stats:', error);
+      console.error('❌ Error fetching teacher stats:', error);
       // Set fallback data
       setDashboardStats({
-        totalCourses: 0,
-        totalStudents: 0,
+        myCourses: 0,
+        myStudents: 0,
         totalMaterials: 0,
         pendingSubmissions: 0,
         activeQuizzes: 0,
-        completionRate: 0
+        avgClassPerformance: 0
       });
     }
   };
@@ -128,7 +145,7 @@ const AdminFacultyDashboard = () => {
     history.push('/');
   };
 
-  const menuItems = [
+  const teacherMenuItems = [
     {
       key: 'overview',
       icon: <HomeOutlined />,
@@ -137,22 +154,22 @@ const AdminFacultyDashboard = () => {
     {
       key: 'courses',
       icon: <BookOutlined />,
-      label: 'Course Management',
+      label: 'My Classes',
     },
     {
       key: 'materials',
       icon: <FileOutlined />,
-      label: 'Course Materials',
+      label: 'Teaching Materials',
     },
     {
       key: 'quizzes',
       icon: <QuestionCircleOutlined />,
-      label: 'Quiz Engine',
+      label: 'Quiz Management',
     },
     {
       key: 'homework',
       icon: <FileTextOutlined />,
-      label: 'Homework System',
+      label: 'Assignment Center',
     },
     {
       key: 'listening',
@@ -161,34 +178,34 @@ const AdminFacultyDashboard = () => {
     },
     {
       key: 'students',
-      icon: <UserOutlined />,
-      label: 'Student Progress',
+      icon: <TeamOutlined />,
+      label: 'Student Management',
     },
     {
-      key: 'applications',
-      icon: <FileTextOutlined />,
-      label: 'Applications & Messages',
+      key: 'grading',
+      icon: <CheckSquareOutlined />,
+      label: 'Grading Center',
     },
     {
       key: 'analytics',
       icon: <BarChartOutlined />,
-      label: 'Analytics & Reports',
+      label: 'Class Analytics',
     }
   ];
 
   const renderOverview = () => (
     <div style={{ padding: '24px' }}>
-      <Title level={2}>Dashboard Overview</Title>
+      <Title level={2}>Teacher Dashboard</Title>
       <Text type="secondary">
-        Welcome back, {currentUser?.firstName} {currentUser?.lastName}
+        Welcome back, {currentUser?.name}
       </Text>
       
       <Row gutter={[16, 16]} style={{ marginTop: '24px' }}>
         <Col xs={24} sm={12} md={8} lg={6}>
           <Card>
             <Statistic
-              title="Total Courses"
-              value={dashboardStats.totalCourses}
+              title="My Classes"
+              value={dashboardStats.myCourses}
               prefix={<BookOutlined />}
               valueStyle={{ color: '#1890ff' }}
             />
@@ -198,8 +215,8 @@ const AdminFacultyDashboard = () => {
           <Card>
             <Statistic
               title="Total Students"
-              value={dashboardStats.totalStudents}
-              prefix={<UserOutlined />}
+              value={dashboardStats.myStudents}
+              prefix={<TeamOutlined />}
               valueStyle={{ color: '#52c41a' }}
             />
           </Card>
@@ -207,7 +224,7 @@ const AdminFacultyDashboard = () => {
         <Col xs={24} sm={12} md={8} lg={6}>
           <Card>
             <Statistic
-              title="Course Materials"
+              title="Teaching Materials"
               value={dashboardStats.totalMaterials}
               prefix={<FileOutlined />}
               valueStyle={{ color: '#faad14' }}
@@ -267,7 +284,7 @@ const AdminFacultyDashboard = () => {
                 block
                 onClick={() => setActiveTab('materials')}
               >
-                Upload Course Material
+                Upload Teaching Material
               </Button>
               <Button 
                 icon={<QuestionCircleOutlined />} 
@@ -288,7 +305,7 @@ const AdminFacultyDashboard = () => {
                 block
                 onClick={() => setActiveTab('analytics')}
               >
-                View Analytics
+                View Class Analytics
               </Button>
             </Space>
           </Card>
@@ -297,9 +314,9 @@ const AdminFacultyDashboard = () => {
 
       <Row style={{ marginTop: '24px' }}>
         <Col span={24}>
-          <Card title="Course Completion Rates">
+          <Card title="Class Performance Overview">
             <Progress 
-              percent={dashboardStats.completionRate} 
+              percent={dashboardStats.avgClassPerformance} 
               status="active"
               strokeColor={{
                 from: '#108ee9',
@@ -307,12 +324,16 @@ const AdminFacultyDashboard = () => {
               }}
             />
             <Text type="secondary">
-              Overall student completion rate across all courses
+              Average performance across all your classes this semester
             </Text>
           </Card>
         </Col>
       </Row>
     </div>
+  );
+
+  const renderGradingCenter = () => (
+    <TeacherGrading currentUser={currentUser} />
   );
 
   const renderContent = () => {
@@ -339,11 +360,11 @@ const AdminFacultyDashboard = () => {
         <div style={{ display: activeTab === 'students' ? 'block' : 'none' }}>
           <StudentProgress currentUser={currentUser} />
         </div>
+        <div style={{ display: activeTab === 'grading' ? 'block' : 'none' }}>
+          {renderGradingCenter()}
+        </div>
         <div style={{ display: activeTab === 'analytics' ? 'block' : 'none' }}>
           <Analytics currentUser={currentUser} />
-        </div>
-        <div style={{ display: activeTab === 'applications' ? 'block' : 'none' }}>
-          <ApplicationManagement currentUser={currentUser} />
         </div>
       </>
     );
@@ -389,7 +410,7 @@ const AdminFacultyDashboard = () => {
           theme="dark"
           mode="inline"
           selectedKeys={[activeTab]}
-          items={menuItems}
+          items={teacherMenuItems}
           onClick={(e) => setActiveTab(e.key)}
         />
       </Sider>
@@ -418,7 +439,7 @@ const AdminFacultyDashboard = () => {
               style={{ backgroundColor: '#87d068' }} 
               icon={<UserOutlined />} 
             />
-            <Text strong>{currentUser?.firstName}</Text>
+            <Text strong>{currentUser?.name}</Text>
             <Button type="link" onClick={handleLogout}>
               Logout
             </Button>
@@ -438,4 +459,4 @@ const AdminFacultyDashboard = () => {
   );
 };
 
-export default AdminFacultyDashboard;
+export default TeacherDashboard;

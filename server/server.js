@@ -32,12 +32,12 @@ app.use(cors({
         process.env.CLIENT_URL
     ].filter(Boolean),
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-// Handle preflight requests - TEMPORARILY COMMENTED OUT
-// app.options('*', cors());
+// Handle preflight requests explicitly
+app.options('*', cors());
 
 
 app.use(express.json());
@@ -54,7 +54,7 @@ app.get('/api/health', (req, res) => {
         message: 'Server is running',
         status: 'OK',
         timestamp: new Date().toISOString(),
-        routes: ['auth', 'applications', 'contact', 'admin', 'users']
+        routes: ['auth', 'applications', 'contact', 'admin', 'users', 'quizzes']
     });
 });
 
@@ -66,29 +66,7 @@ app.get('/', (req, res) => {
 // ROUTES - LOAD ONLY ONCE!
 console.log('🔧 Loading routes...');
 
-// Test routes one by one to find the problematic route
-// Uncomment ONE route at a time to identify which one causes the error
-
-// Test auth routes first
-try {
-    const authRoutes = require('./routes/authRoutes');
-    app.use('/api/auth', authRoutes);
-    console.log('✅ Auth routes loaded and mounted');
-} catch (error) {
-    console.error('❌ Failed to load auth routes:', error.message);
-}
-
-
-// Keep other routes commented for now
-
-try {
-    const applicationRoutes = require('./routes/applicationRoutes');
-    app.use('/api/applications', applicationRoutes);
-    console.log('✅ Application routes loaded and mounted');
-} catch (error) {
-    console.error('❌ Failed to load application routes:', error.message);
-}
-
+// Contact Routes - Essential for form submissions
 try {
     const contactRoutes = require('./routes/contactRoutes');
     app.use('/api/contact', contactRoutes);
@@ -97,6 +75,25 @@ try {
     console.error('❌ Failed to load contact routes:', error.message);
 }
 
+// Application Routes - Essential for form submissions
+try {
+    const applicationRoutes = require('./routes/applicationRoutes');
+    app.use('/api/applications', applicationRoutes);
+    console.log('✅ Application routes loaded and mounted');
+} catch (error) {
+    console.error('❌ Failed to load application routes:', error.message);
+}
+
+// Auth Routes - Essential for admin login
+try {
+    const authRoutes = require('./routes/authRoutes');
+    app.use('/api/auth', authRoutes);
+    console.log('✅ Auth routes loaded and mounted');
+} catch (error) {
+    console.error('❌ Failed to load auth routes:', error.message);
+}
+
+// User Routes - For user management
 try {
     const userRoutes = require('./routes/userRoutes');
     app.use('/api/users', userRoutes);
@@ -105,28 +102,22 @@ try {
     console.error('❌ Failed to load user routes:', error.message);
 }
 
+// Progress Routes - For student progress tracking
 try {
-    const adminRoutes = require('./routes/adminRoutes');
-    app.use('/api/admin', adminRoutes);
-    console.log('✅ Admin routes loaded and mounted');
+    const progressRoutes = require('./routes/progressRoutes');
+    app.use('/api/progress', progressRoutes);
+    console.log('✅ Progress routes loaded and mounted');
 } catch (error) {
-    console.error('❌ Failed to load admin routes:', error.message);
+    console.error('❌ Failed to load progress routes:', error.message);
 }
 
+// Announcement Routes - For announcements and notifications
 try {
-    const courseRoutes = require('./routes/courseRoutes');
-    app.use('/api/courses', courseRoutes);
-    console.log('✅ Course routes loaded and mounted');
+    const announcementRoutes = require('./routes/announcementRoutes');
+    app.use('/api/announcements', announcementRoutes);
+    console.log('✅ Announcement routes loaded and mounted');
 } catch (error) {
-    console.error('❌ Failed to load course routes:', error.message);
-}
-
-try {
-    const courseMaterialRoutes = require('./routes/courseMaterialRoutes');
-    app.use('/api/course-materials', courseMaterialRoutes);
-    console.log('✅ Course material routes loaded and mounted');
-} catch (error) {
-    console.error('❌ Failed to load course material routes:', error.message);
+    console.error('❌ Failed to load announcement routes:', error.message);
 }
 
 console.log('🔧 All routes loaded successfully');
@@ -148,7 +139,8 @@ app.use((req, res) => {
             '/api/applications/*',
             '/api/contact/*',
             '/api/admin/*',
-            '/api/users/*'
+            '/api/users/*',
+            '/api/quizzes/*'
         ]
     });
 });
