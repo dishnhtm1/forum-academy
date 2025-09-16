@@ -169,13 +169,17 @@ const ApplyPage = () => {
             });
 
             const applicationData = {
+                // Personal Information
+                fullName: formData.personalInfo.fullName,
                 firstName: formData.personalInfo.fullName?.split(' ')[0] || '',
                 lastName: formData.personalInfo.fullName?.split(' ').slice(1).join(' ') || '',
                 email: formData.personalInfo.email,
                 phone: formData.personalInfo.phone,
                 dateOfBirth: formData.personalInfo.dateOfBirth,
                 address: formData.personalInfo.address || '',
+                nationality: formData.personalInfo.nationality || '',
                 
+                // Education Information
                 highestEducation: formData.educationInfo.highestEducation,
                 schoolName: formData.educationInfo.schoolName || '',
                 graduationYear: formData.educationInfo.graduationYear || '',
@@ -183,15 +187,18 @@ const ApplyPage = () => {
                 currentEmployment: formData.educationInfo.currentEmployment || '',
                 techExperience: formData.educationInfo.relevantExperience || '',
                 
-                program: formData.courseSelection.course,
+                // Course Selection
+                course: formData.courseSelection.course,
+                program: formData.courseSelection.course, // Use course as program
                 startDate: formData.courseSelection.startDate,
                 format: formData.courseSelection.studyFormat || '',
-                heardAboutUs: formData.additionalInfo.howDidYouHear || '',
                 
+                // Additional Information
                 goals: formData.additionalInfo.careerGoals || '',
                 whyThisProgram: formData.courseSelection.programInterest || '',
                 challenges: '',
                 extraInfo: formData.additionalInfo.questions || '',
+                howDidYouHear: formData.additionalInfo.howDidYouHear || '',
                 agreeToTerms: formData.additionalInfo.agreeToTerms || false
             };
 
