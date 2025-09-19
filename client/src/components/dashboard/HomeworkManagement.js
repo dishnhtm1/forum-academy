@@ -11,6 +11,9 @@ import {
 } from '@ant-design/icons';
 import moment from 'moment';
 
+// Import API client
+import { courseAPI, homeworkAPI, homeworkSubmissionAPI } from '../../utils/apiClient';
+
 const { Title, Text } = Typography;
 const { Option } = Select;
 const { TextArea } = Input;
@@ -20,6 +23,7 @@ const HomeworkManagement = ({ currentUser }) => {
   const [courses, setCourses] = useState([]);
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [coursesLoading, setCoursesLoading] = useState(false);
   const [homeworkModalVisible, setHomeworkModalVisible] = useState(false);
   const [submissionsModalVisible, setSubmissionsModalVisible] = useState(false);
   const [gradingModalVisible, setGradingModalVisible] = useState(false);
@@ -30,6 +34,7 @@ const HomeworkManagement = ({ currentUser }) => {
   const [gradingForm] = Form.useForm();
 
   useEffect(() => {
+    console.log('🏠 HomeworkManagement component mounted, fetching data...');
     fetchHomework();
     fetchCourses();
   }, []);
@@ -37,69 +42,53 @@ const HomeworkManagement = ({ currentUser }) => {
   const fetchHomework = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('/api/homework', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setHomework(data);
-      } else {
-        message.error('Failed to fetch homework assignments');
-      }
+      console.log('📚 Fetching homework assignments...');
+      const data = await homeworkAPI.getAll();
+      console.log('✅ Homework fetched successfully:', data);
+      setHomework(data);
     } catch (error) {
-      console.error('Error fetching homework:', error);
-      message.error('Error fetching homework');
+      console.error('❌ Error fetching homework:', error);
+      message.error('Failed to fetch homework assignments');
+      setHomework([]); // Set empty array as fallback
     } finally {
       setLoading(false);
     }
   };
 
   const fetchCourses = async () => {
+    setCoursesLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('/api/courses', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setCourses(data);
-      }
+      console.log('🔄 Fetching courses for homework management...');
+      const data = await courseAPI.getAll();
+      console.log('✅ Courses fetched successfully:', data);
+      setCourses(data);
     } catch (error) {
-      console.error('Error fetching courses:', error);
+      console.error('❌ Error fetching courses:', error);
+      message.error('Failed to fetch courses');
+      setCourses([]); // Set empty array as fallback
+    } finally {
+      setCoursesLoading(false);
     }
   };
 
   const fetchSubmissions = async (homeworkId) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`/api/homework-submissions/homework/${homeworkId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setSubmissions(data);
-      }
+      console.log('📄 Fetching submissions for homework:', homeworkId);
+      const data = await homeworkSubmissionAPI.getByHomework(homeworkId);
+      console.log('✅ Submissions fetched successfully:', data);
+      setSubmissions(data);
     } catch (error) {
-      console.error('Error fetching submissions:', error);
+      console.error('❌ Error fetching submissions:', error);
+      message.error('Failed to fetch submissions');
+      setSubmissions([]); // Set empty array as fallback
     }
   };
 
   const handleCreateHomework = async (values) => {
     try {
-      const token = localStorage.getItem('token');
+      console.log('📝 Creating new homework assignment...');
+      console.log('Form values:', values);
+
       const homeworkData = {
         ...values,
         dueDate: values.dueDate.format(),
@@ -107,59 +96,43 @@ const HomeworkManagement = ({ currentUser }) => {
         assignedBy: currentUser.id
       };
 
-      const url = editingHomework ? `/api/homework/${editingHomework._id}` : '/api/homework';
-      const method = editingHomework ? 'PUT' : 'POST';
+      console.log('📋 Homework data to send:', homeworkData);
 
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(homeworkData)
-      });
-
-      if (response.ok) {
-        message.success(`Homework ${editingHomework ? 'updated' : 'created'} successfully`);
-        setHomeworkModalVisible(false);
-        form.resetFields();
-        setEditingHomework(null);
-        fetchHomework();
+      let result;
+      if (editingHomework) {
+        result = await homeworkAPI.update(editingHomework._id, homeworkData);
+        message.success('Homework updated successfully');
       } else {
-        const error = await response.json();
-        message.error(error.message || 'Failed to save homework');
+        result = await homeworkAPI.create(homeworkData);
+        message.success('Homework created successfully');
       }
+
+      console.log('✅ Homework saved successfully:', result);
+      setHomeworkModalVisible(false);
+      form.resetFields();
+      setEditingHomework(null);
+      fetchHomework();
     } catch (error) {
-      console.error('Error saving homework:', error);
-      message.error('Error saving homework');
+      console.error('❌ Error saving homework:', error);
+      message.error(error.message || 'Failed to save homework');
     }
   };
 
   const handleDeleteHomework = async (homeworkId) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`/api/homework/${homeworkId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (response.ok) {
-        message.success('Homework deleted successfully');
-        fetchHomework();
-      } else {
-        message.error('Failed to delete homework');
-      }
+      console.log('🗑️ Deleting homework:', homeworkId);
+      await homeworkAPI.delete(homeworkId);
+      message.success('Homework deleted successfully');
+      fetchHomework();
     } catch (error) {
-      console.error('Error deleting homework:', error);
-      message.error('Error deleting homework');
+      console.error('❌ Error deleting homework:', error);
+      message.error(error.message || 'Failed to delete homework');
     }
   };
 
   const handleGradeSubmission = async (values) => {
     try {
-      const token = localStorage.getItem('token');
+      console.log('📊 Grading submission:', selectedSubmission._id);
       const gradeData = {
         ...values,
         gradedBy: currentUser.id,
@@ -167,28 +140,15 @@ const HomeworkManagement = ({ currentUser }) => {
         status: 'graded'
       };
 
-      const response = await fetch(`/api/homework-submissions/${selectedSubmission._id}/grade`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(gradeData)
-      });
-
-      if (response.ok) {
-        message.success('Submission graded successfully');
-        setGradingModalVisible(false);
-        gradingForm.resetFields();
-        setSelectedSubmission(null);
-        fetchSubmissions(selectedHomework._id);
-      } else {
-        const error = await response.json();
-        message.error(error.message || 'Failed to grade submission');
-      }
+      await homeworkSubmissionAPI.grade(selectedSubmission._id, gradeData);
+      message.success('Submission graded successfully');
+      setGradingModalVisible(false);
+      gradingForm.resetFields();
+      setSelectedSubmission(null);
+      fetchSubmissions(selectedHomework._id);
     } catch (error) {
-      console.error('Error grading submission:', error);
-      message.error('Error grading submission');
+      console.error('❌ Error grading submission:', error);
+      message.error(error.message || 'Failed to grade submission');
     }
   };
 
@@ -370,7 +330,7 @@ const HomeworkManagement = ({ currentUser }) => {
                 type="link" 
                 size="small" 
                 icon={<DownloadOutlined />}
-                onClick={() => window.open(`/api/homework-submissions/download/${file._id}`)}
+                onClick={() => homeworkSubmissionAPI.download(file._id)}
               >
                 {file.fileName}
               </Button>
@@ -442,15 +402,27 @@ const HomeworkManagement = ({ currentUser }) => {
       <Row justify="space-between" align="middle" style={{ marginBottom: 24 }}>
         <Col>
           <Title level={2}>Homework Management</Title>
+          <Text type="secondary">
+            {coursesLoading ? 'Loading courses...' : `${courses.length} courses available`}
+          </Text>
         </Col>
         <Col>
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => setHomeworkModalVisible(true)}
-          >
-            Create New Homework
-          </Button>
+          <Space>
+            <Button
+              loading={coursesLoading}
+              onClick={fetchCourses}
+              size="small"
+            >
+              Refresh Courses
+            </Button>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => setHomeworkModalVisible(true)}
+            >
+              Create New Homework
+            </Button>
+          </Space>
         </Col>
       </Row>
 
@@ -483,6 +455,13 @@ const HomeworkManagement = ({ currentUser }) => {
           form={form}
           layout="vertical"
           onFinish={handleCreateHomework}
+          initialValues={{
+            submissionType: 'file_upload',
+            maxFileSize: 10,
+            latePenalty: 5,
+            lateSubmissionAllowed: true,
+            isPublished: false
+          }}
         >
           <Form.Item
             name="title"
@@ -511,10 +490,19 @@ const HomeworkManagement = ({ currentUser }) => {
                 label="Course"
                 rules={[{ required: true, message: 'Please select a course' }]}
               >
-                <Select placeholder="Select course">
+                <Select 
+                  placeholder={coursesLoading ? "Loading courses..." : "Select course"}
+                  showSearch
+                  loading={coursesLoading}
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>
+                    option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }
+                  notFoundContent={coursesLoading ? "Loading..." : courses.length === 0 ? "No courses available" : "No matching courses"}
+                >
                   {courses.map(course => (
                     <Option key={course._id} value={course._id}>
-                      {course.title} ({course.code})
+                      {course.title} {course.code ? `(${course.code})` : ''}
                     </Option>
                   ))}
                 </Select>
@@ -574,7 +562,7 @@ const HomeworkManagement = ({ currentUser }) => {
           <Row gutter={16}>
             <Col span={8}>
               <Form.Item name="submissionType" label="Submission Type">
-                <Select placeholder="Select type" defaultValue="file_upload">
+                <Select placeholder="Select type">
                   <Option value="file_upload">File Upload</Option>
                   <Option value="text_entry">Text Entry</Option>
                   <Option value="both">Both</Option>
@@ -595,13 +583,13 @@ const HomeworkManagement = ({ currentUser }) => {
 
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item name="lateSubmissionAllowed" valuePropName="checked">
-                <Switch /> Allow Late Submissions
+              <Form.Item name="lateSubmissionAllowed" valuePropName="checked" label="Allow Late Submissions">
+                <Switch />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item name="isPublished" valuePropName="checked">
-                <Switch /> Published
+              <Form.Item name="isPublished" valuePropName="checked" label="Published">
+                <Switch />
               </Form.Item>
             </Col>
           </Row>

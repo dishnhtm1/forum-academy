@@ -36,7 +36,7 @@ app.get('/api/health', (req, res) => {
         message: 'Server is running',
         status: 'OK',
         timestamp: new Date().toISOString(),
-        routes: ['auth', 'users', 'course-materials', 'applications', 'contact', 'admin', 'quizzes', 'courses']
+        routes: ['auth', 'users', 'course-materials', 'applications', 'contact', 'admin', 'quizzes', 'courses', 'homework', 'homework-submissions']
     });
 });
 
@@ -123,6 +123,26 @@ try {
     console.log('✅ Course routes loaded');
 } catch (error) {
     console.error('❌ Failed to load course routes:', error.message);
+}
+
+// Load homework routes (needed for homework management)
+console.log('🔧 Loading homework routes...');
+try {
+    const homeworkRoutes = require('./routes/homeworkRoutes');
+    app.use('/api/homework', homeworkRoutes);
+    console.log('✅ Homework routes loaded');
+} catch (error) {
+    console.error('❌ Failed to load homework routes:', error.message);
+}
+
+// Load homework submission routes (needed for homework submissions)
+console.log('🔧 Loading homework submission routes...');
+try {
+    const homeworkSubmissionRoutes = require('./routes/homeworkSubmissionRoutes');
+    app.use('/api/homework-submissions', homeworkSubmissionRoutes);
+    console.log('✅ Homework submission routes loaded');
+} catch (error) {
+    console.error('❌ Failed to load homework submission routes:', error.message);
 }
 
 // 404 handler

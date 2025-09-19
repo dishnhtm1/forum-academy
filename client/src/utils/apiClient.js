@@ -376,11 +376,95 @@ export const statsAPI = {
   }
 };
 
+// Homework API
+export const homeworkAPI = {
+  // Get all homework assignments
+  getAll: async () => {
+    const response = await fetch(`${API_BASE_URL}/api/homework`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  },
+
+  // Get homework by ID
+  getById: async (id) => {
+    const response = await fetch(`${API_BASE_URL}/api/homework/${id}`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  },
+
+  // Create new homework
+  create: async (homeworkData) => {
+    const response = await fetch(`${API_BASE_URL}/api/homework`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(homeworkData)
+    });
+    return handleResponse(response);
+  },
+
+  // Update homework
+  update: async (id, homeworkData) => {
+    const response = await fetch(`${API_BASE_URL}/api/homework/${id}`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(homeworkData)
+    });
+    return handleResponse(response);
+  },
+
+  // Delete homework
+  delete: async (id) => {
+    const response = await fetch(`${API_BASE_URL}/api/homework/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  },
+
+  // Get homework for a specific course
+  getByCourse: async (courseId) => {
+    const response = await fetch(`${API_BASE_URL}/api/homework/course/${courseId}`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
+};
+
+// Homework Submissions API
+export const homeworkSubmissionAPI = {
+  // Get submissions for a homework
+  getByHomework: async (homeworkId) => {
+    const response = await fetch(`${API_BASE_URL}/api/homework-submissions/homework/${homeworkId}`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  },
+
+  // Grade a submission
+  grade: async (submissionId, gradeData) => {
+    const response = await fetch(`${API_BASE_URL}/api/homework-submissions/${submissionId}/grade`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(gradeData)
+    });
+    return handleResponse(response);
+  },
+
+  // Download submission file
+  download: (fileId) => {
+    window.open(`${API_BASE_URL}/api/homework-submissions/download/${fileId}`);
+  }
+};
+
 export default {
   courseAPI,
   materialAPI,
   userAPI,
   authAPI,
   statsAPI,
-  quizAPI
+  quizAPI,
+  homeworkAPI,
+  homeworkSubmissionAPI
 };

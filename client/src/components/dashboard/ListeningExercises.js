@@ -10,6 +10,76 @@ import {
   UploadOutlined, ClockCircleOutlined, CheckCircleOutlined
 } from '@ant-design/icons';
 
+// Import API client
+import { courseAPI } from '../../utils/apiClient';
+
+// API Configuration
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
+// Helper function to get auth headers (consistent with apiClient.js)
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('authToken') || localStorage.getItem('token');
+  console.log('🔍 Token check:', token ? 'Token exists' : 'No token found');
+  return {
+    'Authorization': token ? `Bearer ${token}` : ''
+  };
+};
+
+// Helper function to handle API responses
+const handleResponse = async (response) => {
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+  }
+  return response.json();
+};
+
+// Listening Exercise API
+const listeningExerciseAPI = {
+  // Get all listening exercises
+  getAll: async () => {
+    const response = await fetch(`${API_BASE_URL}/api/listening-exercises`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  },
+
+  // Create new listening exercise
+  create: async (formData) => {
+    const response = await fetch(`${API_BASE_URL}/api/listening-exercises`, {
+      method: 'POST',
+      headers: {
+        ...getAuthHeaders()
+        // Don't set Content-Type for FormData
+      },
+      body: formData
+    });
+    return handleResponse(response);
+  },
+
+  // Update listening exercise
+  update: async (id, formData) => {
+    const response = await fetch(`${API_BASE_URL}/api/listening-exercises/${id}`, {
+      method: 'PUT',
+      headers: {
+        ...getAuthHeaders()
+        // Don't set Content-Type for FormData
+      },
+      body: formData
+    });
+    return handleResponse(response);
+  },
+
+  // Delete listening exercise
+  delete: async (id) => {
+    const response = await fetch(`${API_BASE_URL}/api/listening-exercises/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
+};
+
 const { Title, Text } = Typography;
 const { Option } = Select;
 const { TextArea } = Input;
@@ -18,6 +88,7 @@ const { Dragger } = Upload;
 const ListeningExercises = ({ currentUser }) => {
   const [exercises, setExercises] = useState([]);
   const [courses, setCourses] = useState([]);
+  const [coursesLoading, setCoursesLoading] = useState(false);
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [exerciseModalVisible, setExerciseModalVisible] = useState(false);
@@ -30,7 +101,9 @@ const ListeningExercises = ({ currentUser }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [playingExerciseId, setPlayingExerciseId] = useState(null);
   const audioRef = useRef(null);
+  const tableAudioRef = useRef(null);
   const [form] = Form.useForm();
   const [questionForm] = Form.useForm();
 
@@ -42,55 +115,53 @@ const ListeningExercises = ({ currentUser }) => {
   const fetchExercises = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('/api/listening-exercises', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setExercises(data);
-      } else {
-        message.error('Failed to fetch listening exercises');
-      }
+      const data = await listeningExerciseAPI.getAll();
+      setExercises(data);
+      console.log('📚 Listening exercises fetched successfully:', data);
     } catch (error) {
       console.error('Error fetching exercises:', error);
-      message.error('Error fetching exercises');
+      message.error('Failed to fetch listening exercises');
     } finally {
       setLoading(false);
     }
   };
 
   const fetchCourses = async () => {
+    setCoursesLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('/api/courses', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setCourses(data);
-      }
+      const data = await courseAPI.getAll();
+      setCourses(data);
+      console.log('📚 Courses fetched successfully:', data);
     } catch (error) {
       console.error('Error fetching courses:', error);
+      message.error('Failed to fetch courses');
+    } finally {
+      setCoursesLoading(false);
     }
   };
 
   const handleCreateExercise = async (values) => {
+    console.log('🎯 Creating exercise with values:', values);
+    console.log('📁 Audio file:', audioFile);
+
     if (!audioFile) {
       message.error('Please upload an audio file');
       return;
     }
 
+    // Validate file again before upload
+    if (audioFile.size > 30 * 1024 * 1024) {
+      message.error(`File too large: ${(audioFile.size / 1024 / 1024).toFixed(2)}MB. Maximum is 30MB.`);
+      return;
+    }
+
     const formData = new FormData();
+    
+    // Add the audio file first
+    console.log('📤 Appending audio file to FormData...');
     formData.append('audioFile', audioFile);
+    
+    // Add other form fields
     formData.append('title', values.title);
     formData.append('description', values.description || '');
     formData.append('course', values.course);
@@ -102,56 +173,54 @@ const ListeningExercises = ({ currentUser }) => {
     formData.append('questions', JSON.stringify(questions));
     formData.append('createdBy', currentUser.id);
 
-    try {
-      const token = localStorage.getToken('token');
-      const url = editingExercise ? `/api/listening-exercises/${editingExercise._id}` : '/api/listening-exercises';
-      const method = editingExercise ? 'PUT' : 'POST';
-
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
-        body: formData
-      });
-
-      if (response.ok) {
-        message.success(`Exercise ${editingExercise ? 'updated' : 'created'} successfully`);
-        setExerciseModalVisible(false);
-        form.resetFields();
-        setEditingExercise(null);
-        setAudioFile(null);
-        setQuestions([]);
-        fetchExercises();
+    // Debug FormData contents
+    console.log('📋 FormData contents:');
+    for (let [key, value] of formData.entries()) {
+      if (key === 'audioFile') {
+        console.log(`  ${key}:`, value.name, value.size, value.type);
       } else {
-        const error = await response.json();
-        message.error(error.message || 'Failed to save exercise');
+        console.log(`  ${key}:`, value);
       }
+    }
+
+    try {
+      console.log('🚀 Sending request...');
+      if (editingExercise) {
+        await listeningExerciseAPI.update(editingExercise._id, formData);
+      } else {
+        await listeningExerciseAPI.create(formData);
+      }
+
+      message.success(`Exercise ${editingExercise ? 'updated' : 'created'} successfully`);
+      setExerciseModalVisible(false);
+      form.resetFields();
+      setEditingExercise(null);
+      setAudioFile(null);
+      setQuestions([]);
+      fetchExercises();
     } catch (error) {
-      console.error('Error saving exercise:', error);
-      message.error('Error saving exercise');
+      console.error('❌ Error saving exercise:', error);
+      console.error('❌ Error stack:', error.stack);
+      
+      // More detailed error messages
+      if (error.message.includes('File too large')) {
+        message.error('Audio file is too large. Please use a file smaller than 5MB.');
+      } else if (error.message.includes('LIMIT_FILE_SIZE')) {
+        message.error('File size limit exceeded. Maximum allowed size is 5MB.');
+      } else {
+        message.error(error.message || 'Error saving exercise. Please check your file and try again.');
+      }
     }
   };
 
   const handleDeleteExercise = async (exerciseId) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`/api/listening-exercises/${exerciseId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (response.ok) {
-        message.success('Exercise deleted successfully');
-        fetchExercises();
-      } else {
-        message.error('Failed to delete exercise');
-      }
+      await listeningExerciseAPI.delete(exerciseId);
+      message.success('Exercise deleted successfully');
+      fetchExercises();
     } catch (error) {
       console.error('Error deleting exercise:', error);
-      message.error('Error deleting exercise');
+      message.error(error.message || 'Error deleting exercise');
     }
   };
 
@@ -174,32 +243,168 @@ const ListeningExercises = ({ currentUser }) => {
 
   const handleAudioUpload = {
     beforeUpload: (file) => {
-      const isAudio = file.type.startsWith('audio/');
+      console.log('📁 File upload attempt:', {
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        lastModified: file.lastModified
+      });
+
+      const isAudio = file.type.startsWith('audio/') || file.name.toLowerCase().match(/\.(mp3|wav|aac|m4a|ogg)$/);
       if (!isAudio) {
-        message.error('You can only upload audio files!');
+        console.error('❌ Invalid file type:', file.type, 'Name:', file.name);
+        message.error('You can only upload audio files! Supported formats: MP3, WAV, AAC, M4A, OGG');
         return false;
       }
       
-      const isLt50M = file.size / 1024 / 1024 < 50;
-      if (!isLt50M) {
-        message.error('Audio file must be smaller than 50MB!');
+      const fileSizeMB = file.size / 1024 / 1024;
+      const isLt30M = fileSizeMB < 30;
+      if (!isLt30M) {
+        console.error('❌ File too large:', fileSizeMB.toFixed(2) + 'MB');
+        message.error(`Audio file must be smaller than 30MB! Your file is ${fileSizeMB.toFixed(2)}MB`);
         return false;
       }
       
+      console.log('✅ File validation passed:', file.name, 'Size:', fileSizeMB.toFixed(2) + 'MB', 'Type:', file.type);
       setAudioFile(file);
-      return false;
+      message.success(`File "${file.name}" ready to upload (${fileSizeMB.toFixed(2)}MB)`);
+      return false; // Prevent automatic upload
+    },
+    onChange: (info) => {
+      console.log('📝 Upload onChange:', info);
+    },
+    onRemove: () => {
+      console.log('🗑️ File removed');
+      setAudioFile(null);
+      message.info('Audio file removed');
     }
   };
 
-  const playAudio = () => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-      } else {
+  const playAudio = async () => {
+    try {
+      if (audioRef.current && audioRef.current.src && !isPlaying) {
+        // If audio source already set, just play
         audioRef.current.play();
+        setIsPlaying(true);
+      } else if (audioRef.current && isPlaying) {
+        // Pause if currently playing
+        audioRef.current.pause();
+        setIsPlaying(false);
+      } else if (selectedExercise) {
+        // Load audio with authentication
+        const response = await fetch(`${API_BASE_URL}/api/listening-exercises/audio/${selectedExercise._id}`, {
+          headers: getAuthHeaders()
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to load audio: ${response.status} ${response.statusText}`);
+        }
+
+        const audioBlob = await response.blob();
+        const audioUrl = URL.createObjectURL(audioBlob);
+
+        audioRef.current.src = audioUrl;
+        audioRef.current.play();
+        setIsPlaying(true);
+
+        // Clean up blob URL when audio ends
+        audioRef.current.onended = () => {
+          URL.revokeObjectURL(audioUrl);
+          setIsPlaying(false);
+        };
       }
-      setIsPlaying(!isPlaying);
+    } catch (error) {
+      console.error('Error playing audio:', error);
+      message.error('Failed to play audio. Please check if the file exists and you have permission.');
+      setIsPlaying(false);
     }
+  };
+
+  const playTableAudio = async (exerciseId) => {
+    try {
+      console.log('🎵 Attempting to play audio for exercise:', exerciseId);
+      
+      // Stop any currently playing audio
+      if (tableAudioRef.current && !tableAudioRef.current.paused) {
+        tableAudioRef.current.pause();
+        tableAudioRef.current.currentTime = 0;
+      }
+
+      if (playingExerciseId === exerciseId) {
+        // If clicking the same exercise, toggle play/pause
+        if (tableAudioRef.current.paused) {
+          tableAudioRef.current.play();
+          setPlayingExerciseId(exerciseId);
+        } else {
+          tableAudioRef.current.pause();
+          setPlayingExerciseId(null);
+        }
+      } else {
+        // Fetch audio with authentication headers
+        console.log('🔐 Fetching audio with auth headers...');
+        const headers = getAuthHeaders();
+        console.log('🔑 Auth headers:', headers);
+        
+        const audioUrl = `${API_BASE_URL}/api/listening-exercises/audio/${exerciseId}`;
+        console.log('📡 Fetching from URL:', audioUrl);
+        
+        const response = await fetch(audioUrl, {
+          headers: headers
+        });
+
+        console.log('📥 Response status:', response.status, response.statusText);
+        console.log('📄 Response headers:', Object.fromEntries(response.headers.entries()));
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          if (response.status === 404 && errorData.hint) {
+            throw new Error(`${errorData.message} ${errorData.hint}`);
+          }
+          throw new Error(`Failed to load audio: ${response.status} ${response.statusText}`);
+        }
+
+        // Create blob URL from response
+        console.log('🔄 Creating blob from response...');
+        const audioBlob = await response.blob();
+        console.log('📦 Blob created:', audioBlob.type, audioBlob.size + ' bytes');
+        
+        const blobUrl = URL.createObjectURL(audioBlob);
+        console.log('🔗 Blob URL created:', blobUrl);
+
+        // Set audio source and play
+        tableAudioRef.current.src = blobUrl;
+        console.log('▶️ Starting audio playback...');
+        
+        await tableAudioRef.current.play();
+        setPlayingExerciseId(exerciseId);
+
+        // Clean up blob URL when audio ends
+        tableAudioRef.current.onended = () => {
+          console.log('🏁 Audio playback ended');
+          URL.revokeObjectURL(blobUrl);
+          handleTableAudioEnded();
+        };
+      }
+    } catch (error) {
+      console.error('❌ Error playing audio:', error);
+      console.error('❌ Error details:', {
+        message: error.message,
+        stack: error.stack,
+        exerciseId
+      });
+      message.error('Failed to play audio. Please check if the file exists and you have permission.');
+      setPlayingExerciseId(null);
+    }
+  };
+
+  const handleTableAudioEnded = () => {
+    setPlayingExerciseId(null);
+  };
+
+  const handleTableAudioError = (error) => {
+    console.error('Audio playback error:', error);
+    message.error('Failed to play audio. Please check if the file exists.');
+    setPlayingExerciseId(null);
   };
 
   const handleTimeUpdate = () => {
@@ -310,6 +515,14 @@ const ListeningExercises = ({ currentUser }) => {
       key: 'actions',
       render: (_, record) => (
         <Space>
+          <Tooltip title={playingExerciseId === record._id ? "Pause Audio" : "Play Audio"}>
+            <Button 
+              icon={playingExerciseId === record._id ? <PauseCircleOutlined /> : <PlayCircleOutlined />} 
+              size="small"
+              type={playingExerciseId === record._id ? "primary" : "default"}
+              onClick={() => playTableAudio(record._id)}
+            />
+          </Tooltip>
           <Tooltip title="Preview Exercise">
             <Button 
               icon={<EyeOutlined />} 
@@ -377,6 +590,14 @@ const ListeningExercises = ({ currentUser }) => {
         />
       </Card>
 
+      {/* Hidden audio element for table playback */}
+      <audio
+        ref={tableAudioRef}
+        onEnded={handleTableAudioEnded}
+        onError={handleTableAudioError}
+        style={{ display: 'none' }}
+      />
+
       {/* Exercise Creation/Edit Modal */}
       <Modal
         title={editingExercise ? 'Edit Listening Exercise' : 'Create New Listening Exercise'}
@@ -418,6 +639,10 @@ const ListeningExercises = ({ currentUser }) => {
           form={form}
           layout="vertical"
           onFinish={handleCreateExercise}
+          initialValues={{
+            timeLimit: 30,
+            playLimit: 3
+          }}
         >
           <Form.Item
             name="title"
@@ -438,10 +663,19 @@ const ListeningExercises = ({ currentUser }) => {
                 label="Course"
                 rules={[{ required: true, message: 'Please select a course' }]}
               >
-                <Select placeholder="Select course">
+                <Select 
+                  placeholder={coursesLoading ? "Loading courses..." : "Select course"}
+                  showSearch
+                  loading={coursesLoading}
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>
+                    option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }
+                  notFoundContent={coursesLoading ? "Loading..." : courses.length === 0 ? "No courses available" : "No matching courses"}
+                >
                   {courses.map(course => (
                     <Option key={course._id} value={course._id}>
-                      {course.title} ({course.code})
+                      {course.title} {course.code ? `(${course.code})` : ''}
                     </Option>
                   ))}
                 </Select>
@@ -465,7 +699,7 @@ const ListeningExercises = ({ currentUser }) => {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item name="timeLimit" label="Time Limit (minutes)">
-                <Select defaultValue={30}>
+                <Select>
                   <Option value={15}>15 minutes</Option>
                   <Option value={30}>30 minutes</Option>
                   <Option value={45}>45 minutes</Option>
@@ -475,7 +709,7 @@ const ListeningExercises = ({ currentUser }) => {
             </Col>
             <Col span={12}>
               <Form.Item name="playLimit" label="Audio Play Limit">
-                <Select defaultValue={3}>
+                <Select>
                   <Option value={1}>1 time</Option>
                   <Option value={2}>2 times</Option>
                   <Option value={3}>3 times</Option>
@@ -493,13 +727,28 @@ const ListeningExercises = ({ currentUser }) => {
               </p>
               <p className="ant-upload-text">Click or drag audio file to this area to upload</p>
               <p className="ant-upload-hint">
-                Support for MP3, WAV, AAC files. Maximum file size: 50MB
+                Support for MP3, WAV, AAC files. Maximum file size: 30MB
               </p>
             </Dragger>
             {audioFile && (
               <Alert 
-                message={`Selected: ${audioFile.name}`} 
+                message={`✅ Audio file ready: ${audioFile.name}`}
+                description={`Size: ${(audioFile.size / 1024 / 1024).toFixed(2)}MB | Type: ${audioFile.type || 'Unknown'}`}
                 type="success" 
+                style={{ marginTop: 8 }}
+                showIcon 
+                closable
+                onClose={() => {
+                  setAudioFile(null);
+                  message.info('Audio file removed');
+                }}
+              />
+            )}
+            {!audioFile && (
+              <Alert 
+                message="No audio file selected"
+                description="Please select an audio file to continue"
+                type="warning" 
                 style={{ marginTop: 8 }}
                 showIcon 
               />
@@ -528,6 +777,9 @@ const ListeningExercises = ({ currentUser }) => {
           form={questionForm}
           layout="vertical"
           onFinish={addQuestion}
+          initialValues={{
+            points: 1
+          }}
         >
           <Card title="Add New Question" style={{ marginBottom: 16 }}>
             <Form.Item
@@ -560,7 +812,7 @@ const ListeningExercises = ({ currentUser }) => {
               </Col>
               <Col span={8}>
                 <Form.Item name="points" label="Points">
-                  <Input type="number" min={1} max={10} defaultValue={1} />
+                  <Input type="number" min={1} max={10} />
                 </Form.Item>
               </Col>
             </Row>
@@ -698,7 +950,6 @@ const ListeningExercises = ({ currentUser }) => {
               <Card title="Audio Player" style={{ marginBottom: 16 }}>
                 <audio
                   ref={audioRef}
-                  src={`/api/listening-exercises/audio/${selectedExercise._id}`}
                   onTimeUpdate={handleTimeUpdate}
                   onLoadedMetadata={handleLoadedMetadata}
                   onEnded={() => setIsPlaying(false)}
