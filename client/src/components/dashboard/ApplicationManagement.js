@@ -56,7 +56,7 @@ const ApplicationManagement = ({ currentUser }) => {
       console.log('🔄 Fetching applications...');
       const token = localStorage.getItem('authToken') || localStorage.getItem('token');
       
-      const response = await fetch('http://localhost:5000/api/applications', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/applications`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -110,7 +110,7 @@ const ApplicationManagement = ({ currentUser }) => {
       console.log('🔄 Fetching contact messages...');
       const token = localStorage.getItem('authToken') || localStorage.getItem('token');
       
-      const response = await fetch('http://localhost:5000/api/contact', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/contact`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -158,8 +158,8 @@ const ApplicationManagement = ({ currentUser }) => {
     try {
       console.log('👥 Fetching users...');
       const token = localStorage.getItem('authToken') || localStorage.getItem('token');
-      
-      const response = await fetch('http://localhost:5000/api/users', {
+
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/users`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -199,8 +199,8 @@ const ApplicationManagement = ({ currentUser }) => {
     try {
       console.log('🔄 Updating application status:', applicationId, status);
       const token = localStorage.getItem('authToken') || localStorage.getItem('token');
-      
-      const response = await fetch(`http://localhost:5000/api/applications/${applicationId}/status`, {
+
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/applications/${applicationId}/status`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -229,8 +229,8 @@ const ApplicationManagement = ({ currentUser }) => {
     try {
       console.log('🔄 Updating contact status:', messageId, newStatus);
       const token = localStorage.getItem('authToken') || localStorage.getItem('token');
-      
-      const response = await fetch(`http://localhost:5000/api/contact/${messageId}/status`, {
+
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/contact/${messageId}/status`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -271,8 +271,8 @@ const ApplicationManagement = ({ currentUser }) => {
     try {
       const token = localStorage.getItem('authToken') || localStorage.getItem('token');
       const endpoint = replyType === 'contact' 
-        ? `http://localhost:5000/api/contact/${replyTarget._id}/reply`
-        : `http://localhost:5000/api/applications/${replyTarget._id}/reply`;
+        ? `${process.env.REACT_APP_API_URL}/api/contact/${replyTarget._id}/reply`
+        : `${process.env.REACT_APP_API_URL}/api/applications/${replyTarget._id}/reply`;
 
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -312,8 +312,8 @@ const ApplicationManagement = ({ currentUser }) => {
   const updateUserStatus = async (userId, isApproved, rejectionReason = '') => {
     try {
       const token = localStorage.getItem('authToken') || localStorage.getItem('token');
-      
-      const response = await fetch(`http://localhost:5000/api/users/${userId}/approval`, {
+
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/users/${userId}/approval`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -343,8 +343,8 @@ const ApplicationManagement = ({ currentUser }) => {
   const createUser = async (userData) => {
     try {
       const token = localStorage.getItem('authToken') || localStorage.getItem('token');
-      
-      const response = await fetch('http://localhost:5000/api/users', {
+
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/users`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -373,8 +373,8 @@ const ApplicationManagement = ({ currentUser }) => {
   const updateUser = async (userData) => {
     try {
       const token = localStorage.getItem('authToken') || localStorage.getItem('token');
-      
-      const response = await fetch(`http://localhost:5000/api/users/${selectedUser._id}`, {
+
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/users/${selectedUser._id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
