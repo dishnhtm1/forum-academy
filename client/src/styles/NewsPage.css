@@ -1,0 +1,155 @@
+/* Global page styles */
+.news-page {
+    overflow-x: hidden; /* Prevent horizontal scroll from animations */
+}
+
+/* --- Hero Section - 3D Effects & Core Animations (Keep these) --- */
+.news-hero {
+    position: relative;
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.news-hero.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.news-hero-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.news-particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+.news-particle {
+    position: absolute;
+    background-color: rgba(14, 165, 233, 0.15);
+    border-radius: 50%;
+    z-index: 3;
+    animation: floatParticle 15s infinite ease-in-out;
+    box-shadow: 0 0 8px rgba(14, 165, 233, 0.3), 0 0 12px rgba(14, 165, 233, 0.2);
+}
+
+@keyframes floatParticle {
+    0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+    25% { transform: translate(-25px, 25px) rotate(8deg) scale(1.05); }
+    50% { transform: translate(-45px, -35px) rotate(15deg) scale(1.1); }
+    75% { transform: translate(25px, -45px) rotate(8deg) scale(1.05); }
+}
+
+.floating-news-icon {
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(5px);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+    z-index: 3;
+    animation: floatIcon 18s infinite ease-in-out;
+}
+
+.floating-news-icon .material-icons {
+    font-size: 24px;
+    color: #0ea5e9;
+}
+
+@keyframes floatIcon {
+    0%, 100% { transform: translateY(0) scale(1) rotate(0deg); opacity: 0.7; }
+    25% { transform: translateY(-20px) scale(1.1) rotate(6deg); opacity: 1; }
+    50% { transform: translateY(-35px) scale(1.15) rotate(0deg); opacity: 0.8; }
+    75% { transform: translateY(-20px) scale(1.1) rotate(-6deg); opacity: 1; }
+}
+
+.news-glow {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    z-index: 1;
+    opacity: 0.2;
+}
+
+.news-glow-1 {
+    width: 45%;
+    height: 45%;
+    background: #0ea5e9;
+    top: 15%;
+    left: 5%;
+    animation: pulseGlow 8s infinite alternate ease-in-out;
+}
+
+.news-glow-2 {
+    width: 35%;
+    height: 35%;
+    background: #f59e0b;
+    bottom: 5%;
+    right: 10%;
+    animation: pulseGlow 10s infinite alternate-reverse ease-in-out;
+}
+
+@keyframes pulseGlow {
+    from { transform: scale(0.9); opacity: 0.15; }
+    to { transform: scale(1.1); opacity: 0.25; }
+}
+
+/* Scroll indicator animation */
+.scroll-indicator {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    animation: bounceIndicator 2.5s infinite ease-out;
+}
+
+@keyframes bounceIndicator {
+    0%, 20%, 50%, 80%, 100% { transform: translate(-50%, 0); }
+    40% { transform: translate(-50%, -12px); }
+    60% { transform: translate(-50%, -6px); }
+}
+
+/* --- Animation utilities for hero section --- */
+@keyframes animate-fade-in-up {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in-up {
+    animation: animate-fade-in-up 0.6s ease-out forwards;
+}
+
+.animation-delay-200 { animation-delay: 0.2s; }
+.animation-delay-400 { animation-delay: 0.4s; }
+.animation-delay-600 { animation-delay: 0.6s; }
+.animation-delay-800 { animation-delay: 0.8s; }
+
+/* News item animation for JS interaction */
+.news-item-animate {
+    opacity: 0;
+    transform: translateY(25px) scale(0.98);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+.news-item-animate.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
