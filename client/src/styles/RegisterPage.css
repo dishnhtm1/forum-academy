@@ -1,0 +1,843 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+:root {
+    --modal-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --primary-color: #3b82f6;
+    --secondary-color: #6366f1;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --error-color: #ef4444;
+    
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+    --text-muted: #9ca3af;
+    --text-light: #f9fafb;
+    
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8fafc;
+    --bg-tertiary: #f1f5f9;
+    --bg-overlay: rgba(15, 23, 42, 0.6);
+    
+    --border-color: #e5e7eb;
+    --border-light: #f3f4f6;
+    --border-focus: #3b82f6;
+    
+    --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    
+    --border-radius-sm: 8px;
+    --border-radius-md: 12px;
+    --border-radius-lg: 16px;
+    --border-radius-xl: 24px;
+    
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-fast: all 0.15s ease;
+}
+
+/* Modal Overlay */
+.register-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--bg-overlay);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: var(--transition);
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.register-modal-overlay.active {
+    display: flex;
+}
+
+.register-modal-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Floating Background Elements */
+.animated-element {
+    position: absolute;
+    opacity: 0.04;
+    animation: floatElement 30s infinite ease-in-out;
+    pointer-events: none;
+}
+
+.animated-element.circle {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 50%;
+}
+
+.animated-element.hexagon {
+    background: linear-gradient(45deg, var(--success-color), var(--primary-color));
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+
+.animated-element.triangle {
+    background: linear-gradient(135deg, var(--warning-color), var(--secondary-color));
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}
+
+.animated-element.diamond {
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+
+@keyframes floatElement {
+    0%, 100% {
+        transform: translate(0, 0) rotate(0deg) scale(1);
+    }
+    25% {
+        transform: translate(40px, -40px) rotate(90deg) scale(1.2);
+    }
+    50% {
+        transform: translate(-30px, 50px) rotate(180deg) scale(0.8);
+    }
+    75% {
+        transform: translate(50px, 30px) rotate(270deg) scale(1.1);
+    }
+}
+
+/* Modal Container */
+.register-modal {
+    width: 100%;
+    max-width: 550px;
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-xl);
+    overflow: hidden;
+    position: relative;
+    box-shadow: var(--shadow-2xl);
+    transform: scale(0.9) translateY(20px);
+    transition: var(--transition);
+    max-height: 90vh;
+    border: 1px solid var(--border-light);
+}
+
+.register-modal-overlay.visible .register-modal {
+    transform: scale(1) translateY(0);
+}
+
+/* Modal Header Accent */
+.modal-glass-effect {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color), var(--success-color));
+    pointer-events: none;
+}
+
+/* Close Button */
+.modal-close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--border-radius-sm);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+    z-index: 10;
+    color: var(--text-secondary);
+}
+
+.modal-close-btn:hover {
+    background: var(--bg-tertiary);
+    color: var(--error-color);
+    transform: rotate(90deg);
+    box-shadow: var(--shadow-md);
+}
+
+.modal-close-btn .material-icons {
+    font-size: 20px;
+    transition: var(--transition);
+}
+
+/* Modal Content */
+.register-modal-content {
+    position: relative;
+    z-index: 1;
+    overflow-y: auto;
+    max-height: 90vh;
+}
+
+/* Form Container */
+.register-form-container {
+    padding: 60px 40px 40px;
+}
+
+/* Register Header */
+.register-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.register-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+.register-header .ring-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 160px;
+    height: 160px;
+    margin-bottom: 20px;
+    perspective: 800px;
+}
+
+/* Ring elements for register */
+.register-header .ring {
+    width: 160px;
+    height: 160px;
+    border: 1px solid transparent;
+    border-radius: 50%;
+    position: absolute;
+}
+
+.register-header .ring:nth-child(1) {
+    border-bottom: 6px solid rgb(255, 141, 249);
+    animation: rotate1 2.5s linear infinite;
+}
+
+.register-header .ring:nth-child(2) {
+    border-bottom: 6px solid rgb(255, 65, 106);
+    animation: rotate2 2.5s linear infinite;
+}
+
+.register-header .ring:nth-child(3) {
+    border-bottom: 6px solid rgb(0, 255, 255);
+    animation: rotate3 2.5s linear infinite;
+}
+
+.register-header .ring:nth-child(4) {
+    border-bottom: 6px solid rgb(252, 183, 55);
+    animation: rotate4 2.5s linear infinite;
+}
+
+.register-header .logo-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-align: center;
+    width: 100%;
+    color: #334155;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(90deg, #3a7bd5, #00d2ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+}
+
+/* Ring animations */
+@keyframes rotate1 {
+    from {
+        transform: rotateX(50deg) rotateZ(110deg);
+    }
+    to {
+        transform: rotateX(50deg) rotateZ(470deg);
+    }
+}
+
+@keyframes rotate2 {
+    from {
+        transform: rotateX(20deg) rotateY(50deg) rotateZ(20deg);
+    }
+    to {
+        transform: rotateX(20deg) rotateY(50deg) rotateZ(380deg);
+    }
+}
+
+@keyframes rotate3 {
+    from {
+        transform: rotateX(40deg) rotateY(130deg) rotateZ(450deg);
+    }
+    to {
+        transform: rotateX(40deg) rotateY(130deg) rotateZ(90deg);
+    }
+}
+
+@keyframes rotate4 {
+    from {
+        transform: rotateX(70deg) rotateZ(270deg);
+    }
+    to {
+        transform: rotateX(70deg) rotateZ(630deg);
+    }
+}
+
+.register-header h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 8px;
+    font-family: var(--modal-font);
+}
+
+.register-header p {
+    color: var(--text-secondary);
+    font-size: 16px;
+    margin: 0 0 30px;
+    font-weight: 400;
+}
+
+/* Stepper */
+.stepper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    padding: 0 20px;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+    transition: var(--transition);
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--bg-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    border: 2px solid var(--border-color);
+    transition: var(--transition);
+    font-size: 14px;
+}
+
+.step.active .step-number {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+}
+
+.step.completed .step-number {
+    background: var(--success-color);
+    border-color: var(--success-color);
+    color: white;
+}
+
+.step.completed .step-number .material-icons {
+    font-size: 20px;
+}
+
+.step-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    transition: var(--transition);
+    font-weight: 500;
+}
+
+.step.active .step-label {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.step-line {
+    flex: 1;
+    height: 2px;
+    background: var(--border-color);
+    margin: 0 15px;
+    position: relative;
+    top: -20px;
+}
+
+/* Form Styles */
+.register-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.form-steps-container {
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    position: relative;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    left: 16px;
+    color: var(--text-muted);
+    font-size: 20px;
+    pointer-events: none;
+    transition: var(--transition);
+    z-index: 1;
+}
+
+.form-input.modern {
+    width: 100%;
+    padding: 16px 16px 16px 48px;
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    background: var(--bg-primary);
+    font-family: var(--modal-font);
+    font-size: 16px;
+    color: var(--text-primary);
+    transition: var(--transition);
+    outline: none;
+    font-weight: 400;
+}
+
+.form-input.modern::placeholder {
+    color: var(--text-muted);
+}
+
+.form-input.modern:focus {
+    border-color: var(--border-focus);
+    background: var(--bg-secondary);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    transform: translateY(-1px);
+}
+
+.form-input.modern:focus + .input-icon {
+    color: var(--primary-color);
+    transform: scale(1.1);
+}
+
+/* Student Info Box */
+.student-info-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border: 2px solid #bae6fd;
+    border-radius: var(--border-radius-md);
+    margin-top: 8px;
+}
+
+.info-icon {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.info-icon .material-icons {
+    font-size: 20px;
+}
+
+.info-content h4 {
+    margin: 0 0 8px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.info-content p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* Navigation Buttons */
+.form-navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+    gap: 12px;
+}
+
+.btn-prev.modern,
+.btn-next.modern,
+.btn-submit.modern {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 24px;
+    border: none;
+    border-radius: var(--border-radius-md);
+    font-family: var(--modal-font);
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-prev.modern {
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    border: 2px solid var(--border-color);
+}
+
+.btn-prev.modern:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border-color: var(--text-muted);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-prev.modern .material-icons {
+    font-size: 20px;
+}
+
+.btn-next.modern,
+.btn-submit.modern {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    margin-left: auto;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+    min-width: 140px;
+}
+
+.btn-next.modern::before,
+.btn-submit.modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.6s;
+}
+
+.btn-next.modern:hover::before,
+.btn-submit.modern:hover::before {
+    left: 100%;
+}
+
+.btn-next.modern:hover,
+.btn-submit.modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+}
+
+.btn-next.modern:active,
+.btn-submit.modern:active {
+    transform: translateY(0);
+}
+
+.btn-submit.modern.loading {
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+.btn-next.modern .material-icons,
+.btn-submit.modern .material-icons {
+    font-size: 20px;
+    transition: transform 0.3s ease;
+}
+
+.btn-next.modern:hover .material-icons {
+    transform: translateX(4px);
+}
+
+.btn-submit.modern:hover .material-icons {
+    transform: scale(1.1);
+}
+
+/* Loading Spinner */
+.button-loader {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 0.8s infinite linear;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Form Error */
+.form-error.modern {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-left: 4px solid var(--error-color);
+    border-radius: var(--border-radius-sm);
+    margin-bottom: 20px;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-10px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.form-error.modern .material-icons {
+    color: var(--error-color);
+    font-size: 20px;
+}
+
+.form-error.modern span:last-child {
+    color: #991b1b;
+    font-size: 14px;
+    line-height: 1.5;
+    font-weight: 400;
+}
+
+/* Success Message */
+.success-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.success-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--success-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+    animation: successPulse 2s infinite;
+}
+
+.success-icon .material-icons {
+    font-size: 40px;
+    color: white;
+}
+
+@keyframes successPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 15px rgba(16, 185, 129, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+    }
+}
+
+.success-message h3 {
+    color: var(--text-primary);
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0 0 12px;
+    font-family: var(--modal-font);
+}
+
+.success-message p {
+    color: var(--text-secondary);
+    font-size: 16px;
+    margin: 0 0 24px;
+    line-height: 1.5;
+}
+
+.success-loader {
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+    background-size: 200% 100%;
+    animation: loadProgress 2s infinite;
+    border-radius: 2px;
+}
+
+@keyframes loadProgress {
+    0% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .register-form-container {
+        padding: 50px 30px 30px;
+    }
+    
+    .register-modal {
+        max-width: 420px;
+        margin: 20px;
+    }
+    
+    .register-header h2 {
+        font-size: 24px;
+    }
+    
+    .register-header .ring-container {
+        width: 140px;
+        height: 140px;
+    }
+    
+    .register-header .ring {
+        width: 140px;
+        height: 140px;
+        border-bottom-width: 5px;
+    }
+    
+    .register-header .logo-text {
+        font-size: 1.4rem;
+    }
+    
+    .form-input.modern {
+        padding: 14px 14px 14px 44px;
+        font-size: 16px;
+    }
+    
+    .input-icon {
+        left: 14px;
+        font-size: 18px;
+    }
+    
+    .stepper {
+        padding: 0 10px;
+    }
+    
+    .step-number {
+        width: 35px;
+        height: 35px;
+        font-size: 12px;
+    }
+    
+    .step-label {
+        font-size: 11px;
+    }
+    
+    .step-line {
+        margin: 0 8px;
+    }
+    
+    .form-navigation {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .btn-prev.modern,
+    .btn-next.modern,
+    .btn-submit.modern {
+        width: 100%;
+        margin: 0;
+    }
+    
+    .student-info-box {
+        padding: 16px;
+        gap: 12px;
+    }
+    
+    .info-icon {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .info-icon .material-icons {
+        font-size: 18px;
+    }
+    
+    .info-content h4 {
+        font-size: 15px;
+    }
+    
+    .info-content p {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 480px) {
+    .register-form-container {
+        padding: 40px 20px 20px;
+    }
+    
+    .register-modal {
+        margin: 10px;
+    }
+    
+    .register-header .ring-container {
+        width: 120px;
+        height: 120px;
+        margin-bottom: 15px;
+    }
+    
+    .register-header .ring {
+        width: 120px;
+        height: 120px;
+        border-bottom-width: 4px;
+    }
+    
+    .register-header .logo-text {
+        font-size: 1.2rem;
+    }
+    
+    .register-header h2 {
+        font-size: 22px;
+    }
+    
+    .register-header p {
+        font-size: 15px;
+    }
+}
