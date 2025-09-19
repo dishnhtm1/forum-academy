@@ -1,0 +1,2330 @@
+{
+  "error": "エラー",
+  "table": {
+    "applicant": "申請者",
+    "contact": "連絡先",
+    "program": "プログラム",
+    "status": "ステータス",
+    "applied": "申請日",
+    "actions": "アクション",
+    "startDate": "開始日"
+  },
+  "actions": {
+    "viewDetails": "詳細を表示",
+    "sendMessage": "メッセージ送信",
+    "delete": "削除",
+    "approve": "承認",
+    "reject": "拒否",
+    "markPending": "保留中にマーク",
+    "close": "閉じる",
+    "cancel": "キャンセル",
+    "yesDelete": "はい、削除"
+  },
+  "programs": {
+    "webDevelopment": "ウェブ開発",
+    "dataScience": "データサイエンス", 
+    "cybersecurity": "サイバーセキュリティ",
+    "cloudComputing": "クラウドコンピューティング",
+    "aiMachineLearning": "AI・機械学習",
+    "Web Development": "ウェブ開発",
+    "Data Science": "データサイエンス",
+    "Cybersecurity": "サイバーセキュリティ",
+    "Cloud Computing": "クラウドコンピューティング",
+    "AI & Machine Learning": "AI・機械学習",
+    "AI and Machine Learning": "AI・機械学習",
+    "Machine Learning": "機械学習",
+    "Mobile App Development": "モバイルアプリ開発",
+    "mobileAppDevelopment": "モバイルアプリ開発",
+    "WebDevelopment": "ウェブ開発",
+    "DataScience": "データサイエンス",
+    "CyberSecurity": "サイバーセキュリティ",
+    "CloudComputing": "クラウドコンピューティング",
+    "AIMachineLearning": "AI・機械学習"
+  },
+  "status": {
+    "pending": "保留中",
+    "approved": "承認済み",
+    "rejected": "拒否済み",
+    "underReview": "審査中",
+    "under_review": "審査中",
+    "Pending": "保留中",
+    "Approved": "承認済み", 
+    "Rejected": "拒否済み",
+    "Under Review": "審査中",
+    "PENDING": "保留中",
+    "APPROVED": "承認済み",
+    "REJECTED": "拒否済み"
+  },
+  "about": {
+    "hero": {
+      "badge": "FIAについて",
+      "title": "テクノロジー教育を通じて",
+      "highlight": "人生を変革",
+      "description": "15年以上にわたり、デジタル世界で優れた成果を上げるための最先端のスキルと知識を学生に提供してまいりました。",
+      "ourJourney": "私たちの歩み",
+      "getInTouch": "お問い合わせ",
+      "discoverStory": "私たちのストーリーを発見"
+    },
+    "stats": {
+      "yearsExcellence": "年の実績",
+      "graduates": "卒業生",
+      "partners": "業界パートナー",
+      "employmentRate": "就職率"
+    },
+    "story": {
+      "title": "私たちのストーリー",
+      "subtitle": "革新、献身、そしてテクノロジー教育を通じた人生の変革への旅。",
+      "imageAlt": "FIAアカデミーストーリー",
+      "paragraph1": "2010年に設立されたフォーラム・インスティテュート・オブ・アドバンスド・コンピューティング（FIA）は、大きなビジョンを持った小さなトレーニングセンターとして始まりました：急速に発展する情報技術分野において、学術的学習と業界要件のギャップを埋めることです。",
+      "paragraph2": "長年にわたり、私たちは控えめな研究所から、この地域で最も尊敬されるテクノロジー教育プロバイダーの一つに成長しました。卓越性への取り組み、業界関連のカリキュラム、学生中心のアプローチにより、何千人もの学生がキャリア目標を達成するお手伝いをしてきました。",
+      "paragraph3": "今日、FIAは質の高い教育の灯台として立ち、最新の技術トレンドに継続的に適応し、卒業生が明日のデジタル環境の課題に十分備えられるよう確保しています。"
+    },
+    "timeline": {
+      "founded": "IT教育の変革というビジョンでFIAを設立",
+      "dataScience": "データサイエンスとAIプログラムを開始",
+      "osaka": "大阪にブランチキャンパスを開設",
+      "celebration": "10周年と5000人以上の卒業生を祝う"
+    },
+    "whyChoose": {
+      "title": "なぜFIAを選ぶのか？",
+      "subtitle": "テクノロジー教育とキャリア向上の分野で私たちが選ばれる理由をご覧ください。"
+    },
+    "features": {
+      "partnerships": {
+        "title": "業界パートナーシップ",
+        "description": "主要テクノロジー企業との強いつながりにより、カリキュラムを最新に保ち、卒業生が優れた就職機会を見つけることを保証します。"
+      },
+      "instructors": {
+        "title": "エキスパート講師",
+        "description": "実世界での経験を持つ業界のプロフェッショナルから学び、教室に実践的な洞察をもたらします。"
+      },
+      "facilities": {
+        "title": "最新設備",
+        "description": "最先端のラボ、最新ソフトウェア、最新機器により、実践的な学習体験を提供します。"
+      },
+      "careerServices": {
+        "title": "キャリアサービス",
+        "description": "就職支援、面接準備、ネットワーキング機会を含む包括的なキャリアサポート。"
+      },
+      "certifications": {
+        "title": "業界認定",
+        "description": "スキルを検証し、雇用主との信頼性を高める認定された資格を取得。"
+      },
+      "support": {
+        "title": "24時間サポート",
+        "description": "学習の旅で決して一人ではないことを保証する24時間体制の学術・技術サポート。"
+      }
+    },
+    "mission": {
+      "title": "私たちの使命",
+      "description": "デジタル時代で優れた成果を上げ、グローバルなテクノロジー環境に有意義に貢献するために必要なスキル、知識、自信を個人に与える世界クラスのテクノロジー教育を提供すること。"
+    },
+    "vision": {
+      "title": "私たちのビジョン",
+      "description": "革新、卓越性、そして卒業生がテクノロジーの未来を形作る成功において世界的に認められる、テクノロジー教育の主導的機関となること。"
+    },
+    "team": {
+      "title": "私たちのチームをご紹介",
+      "subtitle": "テクノロジー分野でのあなたの成功と成長に専念する専門家たち。",
+      "members": {
+        "shashini": {
+          "name": "シャシニ・ペレラ",
+          "role": "学術ディレクター",
+          "bio": "教育とカリキュラム開発において15年以上の経験があり、プログラムが業界標準を満たすことを保証します。"
+        },
+        "thilini": {
+          "name": "ティリニ・シルバ",
+          "role": "学生サービスマネージャー",
+          "bio": "キャリアカウンセリングと就職サービスの専門知識を持つ学生の成功に専念。"
+        },
+        "diushan": {
+          "name": "ディウシャン・フェルナンド",
+          "role": "テクノロジーリード",
+          "bio": "技術インフラと教育技術ソリューションの革新をリードします。"
+        },
+        "john": {
+          "name": "ジョン・ミッチェル",
+          "role": "国際関係",
+          "bio": "世界中の学生と卒業生のためのグローバルパートナーシップと機会を構築します。"
+        }
+      }
+    }
+  },
+  "applyPage": {
+    "hero": {
+      "badge": "今すぐ申し込む",
+      "title": {
+        "part1": "テック・エクセレンスへの",
+        "highlight": "旅を始めよう"
+      },
+      "description": "包括的なテクノロジープログラムを通じてキャリアを変革した何千人もの成功した卒業生の仲間入りをしましょう。テクノロジーでのあなたの未来がここから始まります。",
+      "badges": {
+        "duration": "柔軟な期間",
+        "experience": "15年以上の経験",
+        "guidance": "専門指導"
+      },
+      "startButton": "申し込み開始"
+    },
+    "confirmation": {
+      "title": "申請が正常に送信されました！",
+      "message": "フォーラム・インスティテュート・オブ・アドバンスド・コンピューティングへのご関心をありがとうございます。申請を受理し、入学審査チームが慎重に審査いたします。",
+      "emailSent": "確認メールが送信されました：",
+      "emailDetails": "申請詳細と次のステップをご確認ください。",
+      "nextSteps": {
+        "title": "次に何が起こりますか？",
+        "step1": "入学審査チームが3-5営業日以内に申請を審査します。",
+        "step2": "面接や追加書類の提出についてご連絡することがあります。",
+        "step3": "提出から2週間以内にメールで決定通知を受け取ります。"
+      },
+      "buttons": {
+        "exploreCourses": "コースを探索",
+        "contactAdmissions": "入学相談"
+      }
+    },
+    "sidebar": {
+      "needHelp": {
+        "title": "ヘルプが必要ですか？",
+        "description": "入学審査チームが申請プロセス全体を通してサポートいたします。",
+        "faq": "FAQ を見る"
+      },
+      "deadlines": {
+        "title": "申請締切日",
+        "summer": {
+          "date": "6月30日",
+          "label": "2025年夏期入学"
+        },
+        "fall": {
+          "date": "8月31日",
+          "label": "2025年秋期入学"
+        },
+        "winter": {
+          "date": "12月15日",
+          "label": "2026年冬期入学"
+        }
+      }
+    },
+    "testimonials": [
+      {
+        "name": "サラ・ジョンソン",
+        "program": "フルスタック開発",
+        "quote": "FIAのプログラムは私のキャリアを完全に変えました。実践的なアプローチと業界とのつながりにより、一流のテクノロジー企業で夢の仕事に就くことができました。"
+      },
+      {
+        "name": "田中博",
+        "program": "データサイエンス",
+        "quote": "ここで学んだ実践的なスキルは、データサイエンティストとしての日々の業務で使っているものそのものです。講師陣は本当に専門知識が豊富です。"
+      },
+      {
+        "name": "マリア・ロドリゲス",
+        "program": "サイバーセキュリティ",
+        "quote": "FIAのサイバーセキュリティプログラムは、このエキサイティングな分野への転身に必要な自信と専門知識を与えてくれました。教員のサポートは素晴らしかったです。"
+      }
+    ],
+    "testimonialsSection": {
+      "title": "成功事例",
+      "subtitle": "プログラムを通じてキャリアを変革した卒業生の声をお聞きください。",
+      "graduateLabel": "卒業生"
+    },
+    "faqSection": {
+      "title": "よくある質問",
+      "items": {
+        "requirements": {
+          "question": "入学要件は何ですか？",
+          "answer": "基本的なコンピュータスキルと高校教育またはそれに相当するもの。一部のプログラムには特定の前提条件があります。"
+        },
+        "duration": {
+          "question": "申請プロセスにはどのくらい時間がかかりますか？",
+          "answer": "通常、提出から決定まで2-3週間です。プロセス全体を通してお知らせいたします。"
+        },
+        "payment": {
+          "question": "どのような支払いオプションがありますか？",
+          "answer": "柔軟な支払いプラン、奨学金、分割払いを含む様々な支払い方法を受け付けています。"
+        },
+        "defer": {
+          "question": "入学を延期できますか？",
+          "answer": "はい、事前にお知らせいただければ、次回の入学時期に延期できます。"
+        }
+      }
+    },
+    "submitting": "申請を送信中...",
+    "submitSuccess": "申請が正常に送信されました！",
+    "submitError": "申請の送信に失敗しました",
+    "submitErrorMessage": "申請の送信中にエラーが発生しました。再度お試しください。"
+  },
+  "careerServicesPage": {
+    "hero": {
+      "badge": "キャリアサービス",
+      "title": {
+        "part1": "夢の",
+        "highlight": "キャリアを開始"
+      },
+      "subtitle": "トレーニングから就職まで、キャリアの歩みのあらゆるステップでサポートいたします。世界中のトップ企業で働く何千人もの成功した卒業生の仲間入りをしましょう。",
+      "buttons": {
+        "applyNow": "今すぐ申し込む",
+        "talkToAdvisor": "キャリアアドバイザーと話す"
+      },
+      "graduatesWorkAt": "卒業生の就職先"
+    },
+    "stats": {
+      "employmentRate": "就職率",
+      "averageSalary": "平均初任給",
+      "hiringPartners": "採用パートナー",
+      "careerEvents": "年間キャリアイベント"
+    },
+    "careerSupport": {
+      "title": "包括的キャリアサポート",
+      "subtitle": "履歴書作成から就職まで、テクノロジー業界での成功を確実にするエンドツーエンドのキャリアサービスを提供します。",
+      "services": {
+        "resumeBuilding": {
+          "title": "履歴書・ポートフォリオ作成",
+          "description": "スキルを効果的にアピールし、雇用主の目に留まる魅力的な履歴書とポートフォリオ作成の専門指導。"
+        },
+        "interviewPrep": {
+          "title": "面接準備",
+          "description": "模擬面接、技術アセスメント、行動面接の練習により、自信とパフォーマンスを向上させます。"
+        },
+        "networkingEvents": {
+          "title": "ネットワーキングイベント",
+          "description": "業界のプロフェッショナルや潜在的な雇用主との定期的なミートアップ、技術講演、ネットワーキングセッション。"
+        },
+        "jobPlacement": {
+          "title": "就職支援",
+          "description": "採用パートナーとの直接的なつながりと、スキルとキャリア目標に基づく個別の求人マッチング。"
+        },
+        "globalOpportunities": {
+          "title": "グローバル機会",
+          "description": "グローバルなパートナー企業ネットワークを通じて、国際的な就職市場と機会へのアクセス。"
+        },
+        "careerAdvancement": {
+          "title": "キャリア向上",
+          "description": "職業人生を通じたキャリア成長、昇進、転職に関する継続的なサポート。"
+        }
+      }
+    },
+    "careerJourney": {
+      "title": "あなたのキャリアの歩み",
+      "subtitle": "構造化されたアプローチにより、夢のテクノロジーキャリアに向けて万全の準備を整えます。",
+      "steps": {
+        "assessment": {
+          "title": "スキル評価",
+          "description": "現在のスキルの包括的評価と改善すべき分野の特定。"
+        },
+        "skillsDevelopment": {
+          "title": "スキル開発",
+          "description": "スキルギャップを埋め、技術的専門知識を向上させる対象トレーニングプログラム。"
+        },
+        "portfolioReview": {
+          "title": "ポートフォリオレビュー",
+          "description": "最高の作品を効果的にアピールするためのプロフェッショナルなポートフォリオのレビューと最適化。"
+        },
+        "interviewTraining": {
+          "title": "面接トレーニング",
+          "description": "技術面接と行動面接の両方に対する集中的な模擬面接と準備。"
+        },
+        "jobMatching": {
+          "title": "求人マッチング",
+          "description": "スキル、希望、キャリア目標に基づく個別の求人推薦。"
+        },
+        "ongoingSupport": {
+          "title": "継続サポート",
+          "description": "就職成功後も継続されるキャリアガイダンスとサポート。"
+        }
+      }
+    },
+    "hiringPartners": {
+      "title": "採用パートナー",
+      "subtitle": "様々な業界の主要企業と連携し、卒業生に優れたキャリア機会を提供しています。",
+      "viewAllButton": "全パートナーを見る"
+    },
+    "successStories": {
+      "title": "成功事例",
+      "subtitle": "実際の卒業生による実際の成功事例。キャリアサービスがどのように人生を変え、テクノロジーキャリアを開始したかをご覧ください。",
+      "stories": {
+        "taroYamada": {
+          "name": "山田太郎",
+          "role": "Google ソフトウェアエンジニア",
+          "quote": "FIAのキャリアサービスは素晴らしかったです。卒業から3ヶ月でGoogleの夢の仕事に就くことができました。"
+        },
+        "hanakoSato": {
+          "name": "佐藤花子",
+          "role": "Yahoo データサイエンティスト",
+          "quote": "受けた面接準備と技術コーチングは、キャリア転換を成功させるために必要なものそのものでした。"
+        },
+        "michaelChen": {
+          "name": "マイケル・チェン",
+          "role": "Amazon クラウドアーキテクト",
+          "quote": "履歴書作成から給与交渉まで、FIAは求職活動の全プロセスをサポートしてくれました。"
+        }
+      },
+      "moreStoriesButton": "さらなる成功事例"
+    },
+    "faq": {
+      "title": "キャリアサービス FAQ",
+      "subtitle": "キャリアサポートサービスと就職支援に関するよくある質問。",
+      "items": {
+        "whenBegins": {
+          "question": "キャリアサービスはいつ始まりますか？",
+          "answer": "キャリアサービスはプログラムの初日から始まります。終了時だけでなく、学習の歩み全体を通してキャリア準備を統合しています。"
+        },
+        "accessDuration": {
+          "question": "キャリアサービスにはどのくらいアクセスできますか？",
+          "answer": "キャリアサービスには生涯アクセスできます。転職や昇進の機会を含め、キャリア全体を通してサポートを継続します。"
+        },
+        "jobGuarantee": {
+          "question": "就職を保証していますか？",
+          "answer": "特定の就職を保証することはできませんが、93%の就職率を誇り、適切なポジションが見つかるまで広範囲なサポートを提供します。"
+        },
+        "visaSponsorship": {
+          "question": "国際的な機会でのビザスポンサーシップを支援していますか？",
+          "answer": "はい、ビザをスポンサーするパートナー企業と連携し、国際的なポジションのビザ申請プロセスに関するガイダンスを提供しています。"
+        },
+        "freelancing": {
+          "question": "フリーランスやリモートワークの機会をサポートしていますか？",
+          "answer": "もちろんです！フリーランスポートフォリオの構築、リモートワーク機会の発見、独立した仕事に必要なスキルの開発をお手伝いします。"
+        }
+      }
+    }
+  },
+  "contact": {
+    "hero": {
+      "badge": "お問い合わせ",
+      "title": "お気軽にお問い合わせください",
+      "highlight": "FIAアカデミー",
+      "description": "プログラムについてご質問はありますか？テクノロジーの旅を始める準備はできましたか？あらゆるステップでサポートいたします。",
+      "sendMessage": "メッセージを送信",
+      "callUs": "お電話ください"
+    },
+    "info": {
+      "title": "お問い合わせ情報",
+      "description": "お手伝いいたします",
+      "address": {
+        "title": "お越しください",
+        "value": "〒134-0084 東京都江戸川区東葛西2-40-12"
+      },
+      "phone": {
+        "title": "お電話ください",
+        "general": "総合：0120-406-194",
+        "admissions": "入学相談：0120-568-239"
+      },
+      "email": {
+        "title": "メールでお問い合わせ",
+        "general": "総合：info@forumacademy.jp",
+        "admissions": "入学相談：admissions@forumacademy.jp"
+      },
+      "hours": {
+        "title": "営業時間",
+        "weekdays": "月曜日 - 金曜日：午前9時 - 午後6時",
+        "saturday": "土曜日：午前10時 - 午後4時"
+      }
+    },
+    "social": {
+      "title": "フォローしてください"
+    },
+    "form": {
+      "title": "メッセージをお送りください",
+      "description": "24時間以内にご返信いたします",
+      "fields": {
+        "name": "お名前",
+        "email": "メールアドレス",
+        "phone": "電話番号（任意）",
+        "subject": "件名を選択",
+        "message": "メッセージ"
+      },
+      "subjects": {
+        "general": "一般的なお問い合わせ",
+        "admissions": "入学に関する情報",
+        "courses": "コースに関する情報",
+        "careers": "キャリアサービス",
+        "other": "その他"
+      },
+      "privacy": {
+        "text": "私は",
+        "link": "プライバシーポリシー",
+        "consent": "に同意し、お問い合わせへの回答のために個人情報が使用されることに同意します。"
+      },
+      "submit": "メッセージを送信",
+      "messages": {
+        "sending": "メッセージを送信中...",
+        "success": "ありがとうございます！メッセージが正常に送信されました。24時間以内にご返信いたします。",
+        "error": "申し訳ございません。メッセージの送信中にエラーが発生しました。再度お試しいただくか、直接お問い合わせください。"
+      }
+    },
+    "map": {
+      "title": "アクセス"
+    },
+    "faq": {
+      "title": "よくある質問",
+      "items": {
+        "response": {
+          "question": "どのくらい早くお返事をいただけますか？",
+          "answer": "営業日内のお問い合わせには通常24時間以内にご返信いたします。緊急の場合は、直接お電話ください。"
+        },
+        "tour": {
+          "question": "キャンパス見学を予約できますか？",
+          "answer": "もちろんです！月曜日から金曜日まで、ガイド付きキャンパス見学を実施しています。お問い合わせいただければ見学をスケジュールし、施設を直接ご覧いただけます。"
+        },
+        "virtual": {
+          "question": "バーチャル相談は提供していますか？",
+          "answer": "はい、直接お越しいただけない学生の方にはビデオ通話によるバーチャル相談を提供しています。プログラム情報やキャリアガイダンスも含まれます。"
+        },
+        "financial": {
+          "question": "経済的支援のオプションについて相談できますか？",
+          "answer": "経済的支援アドバイザーが支払いプラン、奨学金、資金調達オプションについて相談いたします。選択肢をご検討いただくため、相談をスケジュールしてください。"
+        }
+      }
+    }
+  },
+  "courses": {
+    "hero": {
+      "badge": "プログラム",
+      "title": "最先端コースで",
+      "highlight": "未来をマスター",
+      "description": "業界対応のプロフェッショナルに変身させるよう設計された包括的なテクノロジーコースの幅広いラインナップをご覧ください。エキスパートから学び、実際のプロジェクトを構築し、テクノロジー分野での夢のキャリアを開始しましょう。",
+      "findCourse": "コースを見つける",
+      "programGuide": "プログラムガイド",
+      "imageAlt": "テクノロジーを学ぶ学生"
+    },
+    "stats": {
+      "courses": "コース",
+      "jobPlacement": "就職率",
+      "studentRating": "学生評価"
+    },
+    "categories": {
+      "badge": "コースカテゴリー",
+      "title": "テクノロジー",
+      "highlight": "プログラムを探索",
+      "subtitle": "現在の市場需要と将来のテクノロジートレンドに対応するよう設計された、業界に焦点を当てた幅広いコースからお選びください。"
+    },
+    "allCategories": "全カテゴリー",
+    "webDevelopment": "ウェブ開発",
+    "dataScience": "データサイエンス",
+    "cybersecurity": "サイバーセキュリティ",
+    "cloudComputing": "クラウドコンピューティング",
+    "aiMl": "AI・機械学習",
+    "news": {
+      "title": "最新コース情報",
+      "description": "新しいコース、カリキュラムの更新、プログラムのエキサイティングな発展について最新情報をお届けします。"
+    }
+  },
+  "home": {
+    "courses": {
+      "title": "コースを探索",
+      "description": "最先端のスキルを身につけた業界対応のプロフェッショナルに変身させるよう設計された包括的なテクノロジープログラムをご覧ください。",
+      "allCourses": "全コース"
+    },
+    "stats": {
+      "title": "私たちの実績",
+      "description": "卓越性への取り組みとテクノロジー業界における学生の成功を示す数字です。"
+    },
+    "news": {
+      "title": "最新ニュース・アップデート",
+      "subtitle": "FIAアカデミーからの最新の発展、コースアップデート、エキサイティングな発表について最新情報をお届けします。"
+    },
+    "contact": {
+      "title": "旅を始める準備はできましたか？",
+      "subtitle": "入学チームにお問い合わせいただき、テクノロジーキャリア変革への第一歩を踏み出しましょう。"
+    }
+  },
+  "newsPage": {
+    "hero": {
+      "badge": "最新ニュース",
+      "title": {
+        "part1": "FIAニュースで",
+        "highlight": "最新情報をチェック"
+      },
+      "description": "活気ある学術コミュニティからの最新の発展、成果、エキサイティングな発表をご覧ください。",
+      "trending": {
+        "label": "トレンド",
+        "tags": {
+          "techSymposium": "テックシンポジウム",
+          "hackathon": "ハッカソン",
+          "newCourses": "新コース"
+        }
+      },
+      "stats": {
+        "upcomingEvents": "今後のイベント",
+        "recentAnnouncements": "最新のお知らせ",
+        "studentAchievements": "学生の成果"
+      }
+    },
+    "filters": {
+      "all": "すべてのニュース",
+      "events": "イベント",
+      "announcements": "お知らせ",
+      "achievements": "成果"
+    },
+    "sectionTitles": {
+      "all": "すべてのニュース・アップデート",
+      "events": "今後のイベント",
+      "announcements": "最新のお知らせ",
+      "achievements": "学生の成果"
+    },
+    "categoryLabels": {
+      "event": "イベント",
+      "announcement": "お知らせ",
+      "achievement": "成果"
+    },
+    "itemCount": {
+      "singular": "件",
+      "plural": "件"
+    },
+    "featured": {
+      "tag": "注目",
+      "title": "年次テクノロジーシンポジウム2025",
+      "excerpt": "業界リーダー、革新的なワークショップ、テクノロジー教育の未来を形作るネットワーキング機会を特集する年間最大のテクノロジーイベントにご参加ください。"
+    },
+    "buttons": {
+      "learnMore": "詳細を見る",
+      "registerNow": "今すぐ登録",
+      "readMore": "続きを読む"
+    },
+    "items": {
+      "techSymposium": {
+        "date": "2025年3月15日",
+        "title": "年次テクノロジーシンポジウム2025",
+        "excerpt": "業界リーダーと革新的なワークショップを特集する最大のテクノロジーイベントにご参加ください。"
+      },
+      "industryPartnership": {
+        "date": "2025年3月10日",
+        "title": "グローバルテクノロジー大手との新たな業界パートナーシップ",
+        "excerpt": "FIAが学生の機会を拡大するため、主要テクノロジー企業との戦略的パートナーシップを発表。"
+      },
+      "springOpenHouse": {
+        "date": "2025年3月8日",
+        "title": "春のオープンハウスイベント",
+        "excerpt": "キャンパスを探索し、教員と会い、あなたのキャリアを変革するプログラムを発見してください。"
+      },
+      "hackathonWinners": {
+        "date": "2025年3月5日",
+        "title": "FIA学生が全国ハッカソンで優勝",
+        "excerpt": "才能ある学生たちが革新的なAIソリューションで全国コーディング競技会で1位を獲得。"
+      },
+      "quantumCourse": {
+        "date": "2025年3月1日",
+        "title": "新量子コンピューティングコース開始",
+        "excerpt": "次世代のテクノロジープロフェッショナル向けに設計された最先端の量子コンピューティングカリキュラムを導入。"
+      },
+      "aiEthicsLecture": {
+        "date": "2025年2月28日",
+        "title": "AI倫理に関する特別講義",
+        "excerpt": "著名な専門家が現代社会における人工知能の倫理的意味について議論します。"
+      }
+    },
+    "noResults": {
+      "title": "",
+      "items": "件該当なし",
+      "description": "別のカテゴリーを選択するか、後で新しい更新をご確認ください。"
+    },
+    "loading": "動画読み込み中...",
+    "videoNotSupported": "お使いのブラウザは動画タグをサポートしていません。",
+    "readTime": "5分で読める",
+    "navigation": {
+      "campusNavigationHub": "キャンパスナビゲーションハブ",
+      "liveMap": "ライブキャンパスマップ",
+      "updatedToday": "本日更新",
+      "youAreHere": "現在地"
+    },
+    "actions": {
+      "exploreMore": "詳細を探索"
+    }
+  },
+  "campusLife": {
+    "badge": "キャンパスライフ",
+    "title": "キャンパスライフを体験",
+    "subtitle": "キャンパスで待っている活気あるコミュニティと豊かな体験を発見してください。",
+    "items": {
+      "studentLife": {
+        "title": "学生生活",
+        "description": "ダイナミックなキャンパス環境で活気ある学生コミュニティ、文化イベント、生涯の友情を体験してください。"
+      },
+      "clubs": {
+        "title": "クラブ・活動",
+        "description": "あなたの興味に合った多様なクラブや組織に参加し、新しいスキルとつながりを育ててください。"
+      },
+      "dining": {
+        "title": "キャンパスダイニング",
+        "description": "地元料理と国際料理を特色とする様々なダイニングオプションから美味しくて栄養価の高い食事をお楽しみください。"
+      },
+      "sports": {
+        "title": "スポーツ・レクリエーション",
+        "description": "包括的なスポーツ施設、フィットネスセンター、すべてのスキルレベル向けのレクリエーション活動でアクティブに過ごしましょう。"
+      }
+    },
+    "map": {
+      "title": "キャンパスを探索",
+      "description": "インタラクティブマップで美しいキャンパスをナビゲートし、学生が利用できるすべての素晴らしい施設とスペースを発見してください。"
+    },
+    "dining": {
+      "title": "新潟グルメ体験",
+      "gallery": "新潟料理の旅",
+      "galleryDesc": "新潟の豊かな食文化を物語る本格的な新潟料理と地元の特産品をご堪能ください",
+      "foods": {
+        "mabomen": "まぼめん",
+        "rice": "ライス",
+        "pear": "洋梨",
+        "kiwamiSushi": "極み寿司",
+        "matsubaCrab": "松葉蟹",
+        "tareKatsudon": "タレカツ丼",
+        "edamame": "枝豆",
+        "sasaDango": "笹だんご",
+        "kenchinJiru": "けんちん汁",
+        "hegiSoba": "へぎそば",
+        "keiKaisendon": "海鮮丼",
+        "tomiSushi": "富寿司"
+      },
+      "sports": {
+        "title": "スポーツ・レクリエーション",
+        "description": "フィットネスセンター、スポーツ施設、すべてのスキルレベル向けのレクリエーション活動でアクティブに過ごしましょう。"
+      }
+    }
+  },
+  "facilities": {
+    "badge": "世界クラスの施設",
+    "title": "モダンな学習環境",
+    "subtitle": "テクノロジー進歩の中心地で革新を刺激し、協力的学習を促進するよう設計された最先端施設で教育を体験してください。",
+    "items": {
+      "campus": {
+        "tag": "メインキャンパス",
+        "title": "最先端キャンパス",
+        "description": "モダンなキャンパスには最先端のテクノロジーラボ、協力的学習スペース、最高の教育体験を提供するよう設計された革新的施設があります。",
+        "features": {
+          "modernBuildings": "モダン建築",
+          "laboratories": "先進ラボ",
+          "library": "デジタル図書館",
+          "sportsFacilities": "スポーツ複合施設"
+        }
+      },
+      "niigataLife": {
+        "tag": "都市生活",
+        "title": "新潟での生活",
+        "description": "豊かな歴史、美味しい料理、美しい自然景観で知られる美しい新潟で、伝統的な日本文化とモダンな都市生活の完璧な融合を体験してください。",
+        "features": {
+          "culturalSites": "文化遺産",
+          "localCuisine": "地元料理",
+          "naturalBeauty": "自然の美しさ",
+          "festivals": "伝統的祭り"
+        }
+      }
+    }
+  },
+  "team": {
+    "hero": {
+      "badge": "私たちのチーム",
+      "title": "専門",
+      "highlight": "教員陣に会う",
+      "description": "革新的な教育と実世界の経験を通じて次世代のテクノロジーリーダーを育成することに専念する情熱的な教育者と業界のプロフェッショナルをご紹介します。",
+      "stats": {
+        "facultyMembers": "教員数",
+        "experience": "年の経験",
+        "satisfactionRate": "満足度",
+        "certifications": "資格数"
+      },
+      "buttons": {
+        "exploreFaculty": "教員を探索",
+        "joinTeam": "チームに参加"
+      }
+    },
+    "faculty": {
+      "badge": "私たちの教員",
+      "title": "優秀な",
+      "highlight": "教育",
+      "subtitle": "チームに会う",
+      "description": "多様な教育者チームは、数十年の業界経験、学術的優秀性、学生の成功への情熱を結集し、比類のない学習環境を創造しています。"
+    },
+    "industryPartners": {
+      "badge": "業界パートナー",
+      "title": "戦略的パートナー",
+      "description": "世界有数のテクノロジー企業と連携し、学生に実世界の経験、インターンシップの機会、成功したキャリアへの直接的な道筋を提供しています。",
+      "benefits": {
+        "internships": {
+          "title": "業界インターンシップ",
+          "description": "様々なテクノロジー分野のパートナー企業でのインターンシップを通じて実践的な経験を積みます。"
+        },
+        "mentorship": {
+          "title": "プロフェッショナルメンタリング",
+          "description": "指導、キャリアアドバイス、ネットワーキングの機会を提供する業界のプロフェッショナルと繋がります。"
+        },
+        "placement": {
+          "title": "就職斡旋",
+          "description": "卒業時にパートナー企業での競争力のある給与での直接就職機会を提供します。"
+        }
+      },
+      "cta": {
+        "title": "テクノロジーキャリアを始める準備はできましたか？",
+        "description": "業界と繋がったプログラムに参加し、広範なパートナーシップネットワークを通じてトップテクノロジー企業への直接アクセスを得ましょう。",
+        "buttons": {
+          "joinProgram": "プログラムに参加",
+          "partnerWithUs": "パートナーになる"
+        }
+      }
+    },
+    "testimonials": {
+      "badge": "学生の成功",
+      "title": "成功した",
+      "highlight": "卒業生の",
+      "subtitle": "声を聞く",
+      "description": "包括的なプログラムと業界とのつながりを通じて、学生がどのようにキャリアを変革し、夢を実現したかをご覧ください。",
+      "students": {
+        "yuki": {
+          "name": "佐藤 雪",
+          "role": "ソフトウェアエンジニア",
+          "company": "テックイノベーション株式会社",
+          "year": "2023年卒業",
+          "program": "フルスタック開発",
+          "quote": "FIAは私に夢の仕事に就くためのスキルと自信を与えてくれました。教員のサポートと業界とのつながりが私のキャリアの旅において大きな違いを生みました。"
+        },
+        "arjun": {
+          "name": "アルジュン・クマール",
+          "role": "データサイエンティスト",
+          "company": "AIソリューションズ有限会社",
+          "year": "2022年卒業",
+          "program": "データサイエンス・AI",
+          "quote": "実践的なプロジェクトと実世界の応用が業界に完璧に準備してくれました。現在、最先端のAIソリューションに取り組んでいます。"
+        },
+        "maria": {
+          "name": "マリア・トンプソン",
+          "role": "プロダクトマネージャー",
+          "company": "グローバルテック株式会社",
+          "year": "2023年卒業",
+          "program": "デジタルマーケティング",
+          "quote": "FIAの包括的なカリキュラムと業界パートナーシップは、私が思いもしなかった扉を開いてくれました。素晴らしい教育に感謝しています。"
+        }
+      },
+      "connectButton": "接続",
+      "successStats": {
+        "badge": "成功指標",
+        "title": "実証された",
+        "highlight": "結果",
+        "description": "卓越性への私たちのコミットメントは、卒業生の優れた成果とテクノロジー業界への成功した統合に反映されています。",
+        "employmentRate": {
+          "value": "95%",
+          "title": "就職率",
+          "description": "卒業後6ヶ月以内"
+        },
+        "averageSalary": {
+          "value": "420万",
+          "title": "平均給与",
+          "description": "卒業生の初任給"
+        },
+        "jobSearchTime": {
+          "value": "2.5",
+          "title": "就職までの月数",
+          "description": "平均就職活動期間"
+        },
+        "partnerCompanies": {
+          "value": "150+",
+          "title": "パートナー企業",
+          "description": "グローバル業界とのつながり"
+        }
+      },
+      "cta": {
+        "badge": "私たちの成功ストーリーに参加",
+        "title": "あなたの成功ストーリーは",
+        "highlight": "ここから始まります",
+        "description": "テクノロジーでのエキサイティングなキャリアへの第一歩を踏み出しましょう。私たちのプログラムを通じて人生を変革した何千人もの成功した卒業生に加わりましょう。",
+        "buttons": {
+          "startJourney": "旅を始める",
+          "readMoreStories": "もっとストーリーを読む"
+        },
+        "trustIndicators": {
+          "noFee": "出願料無料",
+          "response": "24時間以内回答",
+          "support": "生涯サポート",
+          "certification": "業界認定"
+        }
+      }
+    }
+  },
+  "aboutSection": {
+    "header": {
+      "badge": "FIAについて",
+      "title": "なぜFIAを選ぶのか？",
+      "subtitle": "革新と機会が出会い、夢が現実となる日本のテクノロジー教育の最高の目的地であるFIAの特別な点をご発見ください。"
+    },
+    "features": {
+      "partnerships": {
+        "title": "業界パートナーシップ",
+        "description": "広範な業界パートナーシップと協力プログラムのネットワークを通じて、主要テクノロジー企業とつながります。",
+        "highlight": "グローバルネットワーク"
+      },
+      "instructors": {
+        "title": "専門講師",
+        "description": "実世界の知識を教室に持ち込む業界のプロフェッショナルと経験豊富な教育者から学びます。",
+        "highlight": "プロフェッショナルの卓越性"
+      },
+      "facilities": {
+        "title": "モダンな施設",
+        "description": "最新のテクノロジーと協力的な学習スペースを備えた最先端の施設で学習します。",
+        "highlight": "最先端テクノロジー"
+      },
+      "career": {
+        "title": "キャリアサポート",
+        "description": "就職斡旋支援、面接準備、専門能力開発を含む包括的なキャリアサービス。",
+        "highlight": "成功保証"
+      },
+      "certifications": {
+        "title": "業界認定",
+        "description": "主要テクノロジー企業と業界組織から認められた資格を取得します。",
+        "highlight": "認定された卓越性"
+      },
+      "support": {
+        "title": "学生サポート",
+        "description": "学術指導、個人カウンセリング、技術支援を含む24時間365日の学生サポートサービス。",
+        "highlight": "常時利用可能"
+      }
+    },
+    "cta": {
+      "badge": "今日FIAに参加",
+      "title": "あなたの未来を変革",
+      "description": "テクノロジーでのエキサイティングなキャリアへの第一歩を踏み出しましょう。包括的なプログラムを通じて人生を変革した何千人もの成功した卒業生に加わりましょう。",
+      "imageAlt": "FIA学生",
+      "stats": {
+        "years": "年の経験",
+        "graduates": "卒業生"
+      },
+      "button": "FIAについてもっと学ぶ"
+    },
+    "testimonial": {
+      "quote": "FIAは私に教育だけでなく、成功への道筋を提供してくれました。実践的な学習アプローチと業界とのつながりが、私が想像もしなかった扉を開いてくれました。ここで得たスキルと自信のおかげで、現在夢の会社で働いています。",
+      "author": {
+        "name": "田中 雪",
+        "title": "テック株式会社 ソフトウェアエンジニア"
+      }
+    }
+  },
+  "applicationForm": {
+    "steps": {
+      "personalInfo": {
+        "title": "個人情報",
+        "description": "あなたについて教えてください。連絡方法も含めてお聞かせください"
+      },
+      "education": {
+        "title": "教育背景",
+        "description": "学歴と関連する経験を共有してください"
+      },
+      "programSelection": {
+        "title": "プログラム選択",
+        "description": "希望するコースと学習形式を選択してください"
+      },
+      "additionalInfo": {
+        "title": "追加情報",
+        "description": "あなたの目標を理解し、応募を完了するのに役立ちます"
+      },
+      "default": "応募ステップ"
+    },
+    "fields": {
+      "fullName": "氏名",
+      "email": "メールアドレス",
+      "phone": "電話番号",
+      "dateOfBirth": "生年月日",
+      "address": "住所",
+      "highestEducation": "最終学歴",
+      "schoolName": "学校・大学名",
+      "fieldOfStudy": "専攻分野",
+      "graduationYear": "卒業年",
+      "relevantExperience": "関連経験（任意）",
+      "course": "希望コース",
+      "studyFormat": "学習形式",
+      "startDate": "希望開始日",
+      "programInterest": "このプログラムに興味を持った理由は何ですか？",
+      "howDidYouHear": "どのようにして私たちを知りましたか？",
+      "careerGoals": "キャリア目標",
+      "questions": "質問やコメント（任意）",
+      "agreeToTerms": "同意します"
+    },
+    "options": {
+      "education": {
+        "highSchool": "高等学校卒業",
+        "associates": "短期大学士",
+        "bachelors": "学士",
+        "masters": "修士",
+        "doctorate": "博士",
+        "other": "その他"
+      },
+      "courses": {
+        "webDevelopment": "ウェブ開発",
+        "dataScience": "データサイエンス・アナリティクス",
+        "cybersecurity": "サイバーセキュリティ",
+        "cloudComputing": "クラウドコンピューティング",
+        "aiMachineLearning": "AI・機械学習"
+      },
+      "studyFormat": {
+        "fullTime": "フルタイム",
+        "partTime": "パートタイム",
+        "weekend": "週末クラス"
+      },
+      "startDate": {
+        "summer2025": "2025年夏学期",
+        "fall2025": "2025年秋学期",
+        "winter2026": "2026年冬学期"
+      },
+      "howDidYouHear": {
+        "searchEngine": "検索エンジン（Google、Yahoo等）",
+        "socialMedia": "ソーシャルメディア",
+        "friend": "友人・家族の推薦",
+        "advertisement": "オンライン広告",
+        "event": "説明会・イベント",
+        "other": "その他"
+      }
+    },
+    "validation": {
+      "required": "この項目は必須です",
+      "emailInvalid": "有効なメールアドレスを入力してください"
+    },
+    "buttons": {
+      "back": "戻る",
+      "continue": "続行",
+      "submit": "応募を送信"
+    },
+    "stepIndicator": "ステップ {{current}} / {{total}}",
+    "termsLink": "利用規約",
+    "dataConsent": " および応募目的でのデータ処理に同意します。",
+    "unknownStep": "不明なステップです。ページを更新してください。"
+  },
+  "contactSection": {
+    "header": {
+      "badge": "お問い合わせ",
+      "title": "お気軽にご連絡ください",
+      "subtitle": "あなたの旅を始める準備はできましたか？私たちはあなたのあらゆるステップをサポートします。入学、コース情報、またはご質問がございましたら、お気軽にお問い合わせください。"
+    },
+    "info": {
+      "title": "お問い合わせ情報",
+      "subtitle": "あなたの成功をサポートします"
+    },
+    "contact": {
+      "location": {
+        "title": "キャンパス所在地",
+        "address": "〒950-2076 新潟県新潟市西区上新栄町5番地1"
+      },
+      "phone": {
+        "title": "電話・FAX",
+        "tel": "電話",
+        "fax": "FAX"
+      },
+      "website": {
+        "title": "公式ウェブサイト"
+      },
+      "hours": {
+        "title": "受付時間",
+        "time": "月曜日 - 金曜日: 午前9:00 - 午後6:00"
+      }
+    },
+    "social": {
+      "connect": "SNSでつながる"
+    },
+    "buttons": {
+      "contactUs": "お問い合わせ",
+      "getDirections": "アクセス",
+      "viewAllFAQs": "よくある質問一覧"
+    },
+    "map": {
+      "title": "FIAキャンパス位置マップ"
+    },
+    "faq": {
+      "title": "よくある質問",
+      "items": {
+        "campusTour": {
+          "question": "キャンパス見学を予約できますか？",
+          "answer": "はい！平日毎日ガイド付きキャンパスツアーを実施しています。お気軽にお問い合わせいただき、最先端の施設を直接ご覧ください。"
+        },
+        "deadlines": {
+          "question": "出願締切日はいつですか？",
+          "answer": "出願締切日はプログラムと入学時期により異なります。一般的に年3回の入学時期があります。具体的な日程については入学相談室までお問い合わせください。"
+        }
+      }
+    }
+  },
+  "courseSection": {
+    "header": {
+      "badge": "私たちのコース",
+      "title": "注目のコース",
+      "subtitle": "今日のデジタル環境で優れた能力を発揮するために必要なスキルを身につけるよう設計された包括的なテクノロジーコースをご覧ください。"
+    },
+    "filters": {
+      "all": "すべてのコース",
+      "webDevelopment": "ウェブ開発",
+      "dataScience": "データサイエンス",
+      "cybersecurity": "サイバーセキュリティ",
+      "cloudComputing": "クラウドコンピューティング"
+    },
+    "courses": {
+      "webDev": {
+        "title": "フルスタックウェブ開発",
+        "description": "React、Node.js、MongoDBを使用したモダンなウェブ開発をマスターします。フロントエンドからバックエンドまで、レスポンシブでスケーラブルなアプリケーションを構築します。",
+        "duration": "16週間",
+        "startDate": "2025年4月15日",
+        "category": "ウェブ開発",
+        "level": "初級",
+        "features": [
+          "React & Node.jsマスタリー",
+          "データベース設計・管理",
+          "実世界プロジェクトポートフォリオ"
+        ]
+      },
+      "dataScience": {
+        "title": "データサイエンス・アナリティクス",
+        "description": "Python、機械学習、データ可視化を学び、複雑なデータセットから洞察を抽出し、ビジネス決定を推進します。",
+        "duration": "20週間",
+        "startDate": "2025年5月1日",
+        "category": "データサイエンス",
+        "level": "中級",
+        "features": [
+          "Python & Rプログラミング",
+          "機械学習アルゴリズム",
+          "データ可視化ツール"
+        ]
+      },
+      "cybersecurity": {
+        "title": "サイバーセキュリティスペシャリスト",
+        "description": "エシカルハッキング、ネットワークセキュリティ、インシデント対応を含む包括的なセキュリティトレーニングで組織をサイバー脅威から保護します。",
+        "duration": "18週間",
+        "startDate": "2025年6月1日",
+        "category": "サイバーセキュリティ",
+        "level": "上級",
+        "features": [
+          "エシカルハッキング技術",
+          "ネットワークセキュリティプロトコル",
+          "インシデント対応計画"
+        ]
+      },
+      "cloudComputing": {
+        "title": "クラウドコンピューティング・DevOps",
+        "description": "AWSやAzureなどのクラウドプラットフォームをマスターし、Dockerでのコンテナ化を学び、CI/CDパイプラインを実装します。",
+        "duration": "14週間",
+        "startDate": "2025年4月20日",
+        "category": "クラウドコンピューティング",
+        "level": "中級",
+        "features": [
+          "AWS & Azure認定",
+          "Docker & Kubernetes",
+          "CI/CDパイプライン実装"
+        ]
+      },
+      "aiMl": {
+        "title": "AI・機械学習",
+        "description": "TensorFlow、PyTorch、高度なニューラルネットワークアーキテクチャを使用して人工知能と機械学習を深く学びます。",
+        "duration": "24週間",
+        "startDate": "2025年7月1日",
+        "category": "人工知能",
+        "level": "上級",
+        "features": [
+          "TensorFlow & PyTorch",
+          "ニューラルネットワーク設計",
+          "AIモデルデプロイメント"
+        ]
+      },
+      "mobileDev": {
+        "title": "モバイルアプリ開発",
+        "description": "React Native、Flutter、ネイティブiOS/Android開発を使用してネイティブおよびクロスプラットフォームモバイルアプリケーションを作成します。",
+        "duration": "16週間",
+        "startDate": "2025年5月15日",
+        "category": "モバイル開発",
+        "level": "初級",
+        "features": [
+          "React Native & Flutter",
+          "iOS & Androidネイティブ",
+          "アプリストアデプロイメント"
+        ]
+      }
+    },
+    "buttons": {
+      "enrollNow": "今すぐ登録",
+      "viewDetails": "詳細を見る",
+      "viewAllCourses": "すべてのコースを見る",
+      "browseAllPrograms": "すべてのプログラムを閲覧"
+    },
+    "cta": {
+      "title": "テクノロジーの旅を始める準備はできましたか？",
+      "description": "業界をリードするプログラムでキャリアを変革した何千人もの学生に加わりましょう。"
+    },
+    "courseCard": {
+      "starts": "開始"
+    }
+  },
+  "footer": {
+    "aboutAcademy": "フォーラム情報アカデミー",
+    "aboutDescription": "革新的なプログラムと業界パートナーシップを通じて、デジタル経済における成功したキャリアのために学生を準備することに専念する主要なテクノロジー教育機関です。",
+    "followUs": "フォローする",
+    "quickLinks": "クイックリンク",
+    "contactUs": "お問い合わせ",
+    "address": "〒950-2076 新潟県新潟市西区上新栄町5番地1",
+    "phone": "電話: 025-247-6300",
+    "fax": "FAX: 025-247-6305", 
+    "websiteLabel": "https://www.forum.ac.jp/",
+    "hours": "月-金: 午前9:00 - 午後6:00",
+    "copyright": "© {{year}} フォーラム情報アカデミー. 全著作権所有.",
+    "privacyPolicy": "プライバシーポリシー",
+    "termsOfService": "利用規約"
+  },
+  "social": {
+    "facebook": "Facebookでフォロー",
+    "twitter": "Twitterでフォロー",
+    "instagram": "Instagramでフォロー", 
+    "linkedin": "LinkedInで接続",
+    "youtube": "YouTubeチャンネル登録"
+  },
+  "header": {
+    "academy": "フォーラムアカデミー",
+    "programs": {
+      "title": "私たちのプログラム",
+      "subtitle": "成功への道を選択しましょう",
+      "certifiedTrack": "業界認定 • プロフェッショナルトラック",
+      "viewAll": "すべてのプログラムを探索"
+    },
+    "about": {
+      "title": "私たちについて",
+      "subtitle": "私たちのストーリーとミッションを発見",
+      "learnMore": "私たちについてもっと学ぶ",
+      "description": "私たちのストーリーについてもっと学ぶ"
+    },
+    "mobile": {
+      "programs": "プログラム",
+      "about": "私たちについて"
+    }
+  },
+  "navigation": {
+    "home": "ホーム",
+    "programs": "プログラム",
+    "about": "私たちについて",
+    "newsEvents": "ニュース・イベント",
+    "careerServices": "キャリアサービス",
+    "contact": "お問い合わせ",
+    "aboutUs": "私たちについて",
+    "ourTeam": "私たちのチーム",
+    "industryPartners": "業界パートナー",
+    "studentSuccess": "学生の成功",
+    "viewAllPrograms": "すべてのプログラムを探索"
+  },
+  "buttons": {
+    "login": "ログイン",
+    "applyNow": "今すぐ応募",
+    "getStarted": "始める",
+    "learnMore": "詳細を見る",
+    "viewDetails": "詳細を表示",
+    "enrollNow": "今すぐ登録"
+  },
+  "hero": {
+    "title": {
+      "line1": "テクノロジー",
+      "highlight": "教育で",
+      "line2": "未来を変革しよう"
+    },
+    "description": "最先端テクノロジーをマスターする何千人もの学生に加わりましょう。今日から成功するテクノロジーキャリアへの旅を始めましょう。",
+    "buttons": {
+      "explorePrograms": "プログラムを探索",
+      "applyNow": "今すぐ応募"
+    },
+    "stats": {
+      "jobPlacement": "就職率",
+      "industryPartners": "パートナー",
+      "yearsExcellence": "年の実績"
+    },
+    "techTags": {
+      "webDevelopment": "ウェブ開発",
+      "cybersecurity": "セキュリティ",
+      "dataScience": "データサイエンス",
+      "cloudComputing": "クラウド"
+    },
+    "imageAlt": "テクノロジー教育"
+  },
+  "login": {
+    "closeModal": "ログインモーダルを閉じる",
+    "header": {
+      "title": "おかえりなさい",
+      "subtitle": "アカウントにサインインして続行してください"
+    },
+    "form": {
+      "emailPlaceholder": "メールアドレス",
+      "passwordPlaceholder": "パスワード",
+      "rememberMe": "ログイン状態を保持",
+      "showPassword": "パスワードを表示",
+      "hidePassword": "パスワードを非表示",
+      "signIn": "サインイン",
+      "signingIn": "サインイン中..."
+    },
+    "register": {
+      "createAccount": "アカウント作成",
+      "newToPlatform": "初めてご利用ですか？"
+    },
+    "errors": {
+      "loginFailed": "ログインに失敗しました。もう一度お試しください。",
+      "invalidCredentials": "メールアドレスまたはパスワードが正しくありません",
+      "serverError": "サーバーエラーです。バックエンドが正常に動作しているか確認してください。",
+      "connectionError": "サーバーに接続できません。インターネット接続を確認してください。",
+      "serviceUnavailable": "サービスが一時的に利用できません。サポートにお問い合わせください。"
+    },
+    "success": {
+      "loginSuccessful": "ログイン成功！ダッシュボードにリダイレクト中...",
+      "welcomeBack": "おかえりなさい！"
+    },
+    "placeholders": {
+      "enterEmail": "メールアドレスを入力",
+      "enterPassword": "パスワードを入力"
+    },
+    "buttons": {
+      "loginButton": "アカウントにサインイン",
+      "registerButton": "新しいアカウントを作成",
+      "forgotPassword": "パスワードをお忘れですか？",
+      "backToLogin": "ログインに戻る"
+    },
+    "labels": {
+      "email": "メール",
+      "password": "パスワード",
+      "rememberDevice": "このデバイスを記憶する"
+    },
+    "validation": {
+      "emailRequired": "メールアドレスは必須です",
+      "passwordRequired": "パスワードは必須です",
+      "invalidEmailFormat": "有効なメールアドレスを入力してください",
+      "passwordTooShort": "パスワードは6文字以上である必要があります"
+    }
+  },
+  "newsSection": {
+    "header": {
+      "badge": "最新情報",
+      "title": "最新ニュースで情報をキャッチアップ",
+      "subtitle": "活気ある学術コミュニティと業界パートナーシップからの最新の発展、成果、エキサイティングな発表をご覧ください。"
+    },
+    "filters": {
+      "all": "すべての更新",
+      "news": "ニュース",
+      "events": "イベント"
+    },
+    "categoryLabels": {
+      "event": "イベント",
+      "news": "ニュース"
+    },
+    "items": {
+      "techSymposium": {
+        "date": "2025年3月15日",
+        "title": "年次テクノロジーシンポジウム2025",
+        "excerpt": "業界リーダー、革新的なワークショップ、ネットワーキングの機会を特集する最大のテクノロジーイベントにご参加ください。"
+      },
+      "industryPartnership": {
+        "date": "2025年3月10日",
+        "title": "新たな業界パートナーシップ発表",
+        "excerpt": "FIAが学生の機会とキャリアの見通しを向上させるため、主要テクノロジー企業との戦略的パートナーシップを発表。"
+      },
+      "springOpenHouse": {
+        "date": "2025年3月8日",
+        "title": "春のオープンハウスイベント",
+        "excerpt": "キャンパスを探索し、教員と会い、テクノロジーでのキャリアを変革するプログラムを発見してください。"
+      },
+      "studentAwards": {
+        "date": "2025年3月5日",
+        "title": "学生成果表彰式",
+        "excerpt": "今学期の才能ある学生による優秀な学業成績と革新的なプロジェクトを称えます。"
+      },
+      "careerFair": {
+        "date": "2025年3月1日",
+        "title": "バーチャルキャリアフェア2025",
+        "excerpt": "トップ企業とつながり、テクノロジーと革新における刺激的なキャリア機会を探索しましょう。"
+      },
+      "aiLab": {
+        "date": "2025年2月28日",
+        "title": "新AI研究ラボ開設",
+        "excerpt": "最先端の機器とリソースを備えた最新の人工知能研究施設がオープンします。"
+      }
+    },
+    "buttons": {
+      "readMore": "続きを読む",
+      "viewAllNews": "すべてのニュースを見る"
+    },
+    "loading": "動画読み込み中...",
+    "videoNotSupported": "お使いのブラウザは動画タグをサポートしていません。"
+  },
+  "preloader": {
+    "messages": {
+      "initializing": "アプリケーション初期化中...",
+      "preparing": "リソース準備中...",
+      "loading": "コンテンツ読み込み中...",
+      "almostReady": "準備完了まであと少し..."
+    },
+    "techIcons": {
+      "development": "開発",
+      "cloud": "クラウド", 
+      "security": "セキュリティ",
+      "data": "データ"
+    }
+  },
+  "register": {
+    "closeModal": "登録モーダルを閉じる",
+    "header": {
+      "title": "アカウントを作成",
+      "subtitle": "コミュニティに参加して成功への旅を始めましょう"
+    },
+    "steps": {
+      "personal": "個人情報",
+      "account": "アカウント",
+      "security": "セキュリティ"
+    },
+    "form": {
+      "firstName": "名前を入力してください",
+      "lastName": "姓を入力してください",
+      "email": "メールアドレスを入力してください",
+      "password": "パスワードを作成（最低6文字）",
+      "confirmPassword": "パスワードを確認してください",
+      "createAccount": "アカウント作成",
+      "creatingAccount": "アカウント作成中..."
+    },
+    "studentInfo": {
+      "title": "学生アカウントの特典",
+      "description": "限定学習リソースへのアクセス、進捗の追跡、講師や仲間の学生とのつながりを得られます。"
+    },
+    "navigation": {
+      "back": "戻る",
+      "next": "次へ"
+    },
+    "success": {
+      "pendingTitle": "登録審査中",
+      "pendingMessage": "ご登録ありがとうございます！アカウントは現在入学審査チームによって審査中です。アカウントが承認され、使用可能になりましたらメールでお知らせいたします。"
+    },
+    "errors": {
+      "fillAllFields": "必須項目をすべて入力してください",
+      "validEmail": "有効なメールアドレスを入力してください",
+      "passwordsNoMatch": "パスワードが一致しません",
+      "passwordLength": "パスワードは最低6文字以上である必要があります",
+      "registrationFailed": "登録に失敗しました。後でもう一度お試しください。"
+    }
+  },
+  "statsSection": {
+    "header": {
+      "badge": "私たちの成功指標",
+      "title": "実証された卓越性",
+      "subtitle": "質の高い教育と学生の成功への私たちのコミットメントは、テクノロジー教育分野における私たちの献身と影響力を物語るこれらの優れた成果に反映されています。"
+    },
+    "stats": {
+      "jobPlacement": {
+        "label": "就職率"
+      },
+           "industryPartners": {
+        "label": "業界パートナー"
+      },
+      "programs": {
+        "label": "専門プログラム"
+      },
+      "graduates": {
+        "label": "成功した卒業生"
+      }
+    }
+  },
+  "admin": {
+    "systemHealth": {
+      "title": "システムヘルス",
+      "description": "リアルタイムシステム監視",
+      "status": "システム状態"
+    },
+    "metrics": {
+      "serverLoad": {
+        "title": "サーバー負荷",
+        "subtitle": "現在のシステム負荷"
+      },
+      "storage": {
+        "title": "ストレージ使用量",
+        "subtitle": "ディスク領域使用率"
+      },
+      "response": {
+        "title": "応答時間",
+        "subtitle": "平均API応答時間"
+      },
+      "sessions": {
+        "title": "アクティブセッション",
+        "subtitle": "現在のユーザーセッション"
+      },
+      "totalUsers": "総ユーザー数",
+      "applications": "申請",
+      "messages": "メッセージ",
+      "uptime": "システム稼働時間",
+      "pendingApproval": "承認待ち",
+      "pendingReview": "審査待ち",
+      "needsResponse": "対応が必要",
+      "last30Days": "過去30日間",
+      "downtime": "分のダウンタイム",
+      "totalActiveUsers": "総アクティブユーザー数",
+      "growthRate": "成長率",
+      "thisMonth": "今月"
+    },
+    "status": {
+      "optimal": "最適",
+      "growing": "増加中",
+      "fast": "高速",
+      "active": "アクティブ",
+      "approved": "承認済み",
+      "resolved": "解決済み",
+      "excellent": "優秀",
+      "live": "ライブ",
+      "liveMonitoring": "ライブ監視",
+      "automated": "自動化",
+      "allClear": "すべて正常"
+    },
+    "userDistribution": {
+      "title": "ユーザー分布",
+      "subtitle": "ユーザーの役割とタイプの概要"
+    },
+    "roles": {
+      "students": "学生",
+      "studentsDesc": "登録学習者",
+      "teachers": "教師",
+      "teachersDesc": "教職員",
+      "administrators": "管理者",
+      "administratorsDesc": "システム管理者"
+    },
+    "activity": {
+      "title": "リアルタイムアクティビティ",
+      "subtitle": "ライブシステムイベントとユーザーアクション",
+      "newRegistration": "新しい{{role}}登録",
+      "awaitingApproval": "承認待ち",
+      "newContactMessage": "新しいお問い合わせメッセージ",
+      "securityScan": "セキュリティスキャン完了",
+      "noThreats": "脅威は検出されませんでした。すべてのシステムが安全です。",
+      "databaseBackup": "データベースバックアップ完了",
+      "backupSuccess": "日次バックアップが正常に完了しました。2.4GB アーカイブされました。"
+    },
+    "time": {
+      "fiveMinutesAgo": "5分前",
+      "oneHourAgo": "1時間前"
+    },
+    "actions": {
+      "approve": "承認",
+      "reject": "拒否",
+      "priority": "優先",
+      "resolve": "解決"
+    },
+    "quickActions": {
+      "title": "クイックアクション",
+      "manageUsers": "ユーザー管理",
+      "applications": "申請書",
+      "messages": "メッセージ",
+      "settings": "設定"
+    },
+    "alerts": {
+      "title": "システムアラート",
+      "subtitle": "最近の通知と警告"
+    }
+  },
+  "userManagement": {
+      "title": "ユーザー管理",
+      "stats": {
+        "totalUsers": "総ユーザー数",
+        "pending": "承認待ち",
+        "approved": "承認済み"
+      },
+      "search": {
+        "placeholder": "名前、メール、またはIDで検索..."
+      },
+      "filters": {
+        "allRoles": "すべての役割",
+        "allStatus": "すべてのステータス",
+        "students": "学生",
+        "teachers": "教師",
+        "admins": "管理者",
+        "approved": "承認済み",
+        "pending": "保留中"
+      },
+      "roles": {
+        "student": "学生",
+        "teacher": "教師",
+        "admin": "管理者"
+      },
+      "status": {
+        "approved": "承認済み",
+        "pending": "保留中",
+        "needsReview": "要審査"
+      },
+      "actions": {
+        "createUser": "新規ユーザー作成",
+        "cancel": "キャンセル",
+        "updateUser": "ユーザー更新",
+        "confirmDelete": "はい、削除",
+        "approveUser": "ユーザーを承認",
+        "rejectUser": "ユーザーを拒否",
+        "editUser": "ユーザーを編集",
+        "deleteUser": "ユーザーを削除",
+        "sendMessage": "メッセージを送信",
+        "resetPassword": "パスワードをリセット"
+      },
+      "modals": {
+        "createUser": {
+          "title": "新規ユーザー作成"
+        },
+        "editUser": {
+          "title": "ユーザー編集"
+        },
+        "deleteUser": {
+          "title": "ユーザー削除",
+          "message": "{{name}} ({{email}}) を削除してもよろしいですか？",
+          "warning": "この操作は元に戻せません。"
+        },
+        "sendMessage": {
+          "title": "メッセージを送信",
+          "subtitle": "{{firstName}} {{lastName}} にメッセージを送信",
+          "to": "宛先:",
+          "subject": "件名:",
+          "message": "メッセージ:",
+          "subjectPlaceholder": "件名を入力...",
+          "messagePlaceholder": "メッセージをこちらに入力...",
+          "cancel": "キャンセル",
+          "send": "メッセージを送信"
+        }
+      },
+      "fields": {
+        "firstName": "名",
+        "lastName": "姓",
+        "email": "メールアドレス",
+        "password": "パスワード",
+        "newPassword": "新しいパスワード",
+        "role": "役割"
+      },
+      "placeholders": {
+        "firstName": "名を入力",
+        "lastName": "姓を入力",
+        "email": "メールアドレスを入力",
+        "password": "パスワードを入力",
+        "newPassword": "現在のパスワードを保持する場合は空白のまま"
+      },
+      "hints": {
+        "passwordHint": "現在のパスワードを保持する場合は空白のまま"
+      },
+      "table": {
+        "headers": {
+          "user": "ユーザー",
+          "contact": "連絡先",
+          "role": "役割",
+          "status": "ステータス",
+          "joined": "登録日",
+          "actions": "アクション"
+        },
+        "footer": {
+          "showing": "{{showing}} / {{total}} ユーザーを表示中",
+          "filtered": "フィルター済み"
+        },
+        "pagination": {
+          "previous": "前へ",
+          "next": "次へ",
+          "showing": "{{from}}〜{{to}}件 / 全{{total}}ユーザー",
+          "filtered": "フィルタ済み"
+        }
+      },
+      "time": {
+        "today": "今日",
+        "daysAgo": "{{days}}日前"
+      }
+  },
+  "applicationManagement": {
+    "title": "申請管理",
+    "subtitle": "学生の申請を効率的に審査・管理",
+    "total": "総申請数",
+    "pending": "保留中",
+    "approved": "承認済み",
+    "rejected": "却下済み",
+    "searchPlaceholder": "申請を検索...",
+    "allPrograms": "すべてのプログラム",
+    "allStatus": "すべてのステータス",
+    "export": "申請をエクスポート",
+    "viewDetails": "申請詳細",
+    "personalInfo": "個人情報",
+    "contactInfo": "連絡先情報",
+    "academicInfo": "学術情報",
+    "status": "申請ステータス",
+    "submittedOn": "提出日",
+    "applicationId": "申請ID",
+    "deleteApplication": "申請を削除",
+    "deleteConfirmation": "「{{name}}」の{{program}}への申請を本当に削除しますか？",
+    "noApplications": "申請が見つかりません",
+    "noFilteredApplications": "検索条件またはフィルター条件を調整してみてください。",
+    "noApplicationsYet": "申請が提出されるとここに表示されます。",
+    "stats": {
+      "totalApplications": "総申請数",
+      "pending": "保留中",
+      "approved": "承認済み",
+      "rejected": "拒否済み"
+    },
+    "search": {
+      "placeholder": "名前、メール、または申請IDで検索...",
+      "allPrograms": "すべてのプログラム",
+      "allStatus": "すべてのステータス"
+    },
+    "programs": {
+      "webDevelopment": "ウェブ開発",
+      "dataScience": "データサイエンス",
+      "cybersecurity": "サイバーセキュリティ",
+      "cloudComputing": "クラウドコンピューティング",
+      "aiMachineLearning": "AI・機械学習",
+      "webdevelopment": "ウェブ開発",
+      "datascience": "データサイエンス",
+      "machinelearning": "機械学習",
+      "mobileappdevelopment": "モバイルアプリ開発",
+      "Web Development": "ウェブ開発",
+      "Data Science": "データサイエンス",
+      "Cybersecurity": "サイバーセキュリティ",
+      "Cloud Computing": "クラウドコンピューティング",
+      "AI & Machine Learning": "AI・機械学習",
+      "AI and Machine Learning": "AI・機械学習",
+      "Machine Learning": "機械学習",
+      "Mobile App Development": "モバイルアプリ開発",
+      "WebDevelopment": "ウェブ開発",
+      "DataScience": "データサイエンス",
+      "CyberSecurity": "サイバーセキュリティ",
+      "CloudComputing": "クラウドコンピューティング",
+      "AIMachineLearning": "AI・機械学習",
+      "cloudcomputing": "クラウドコンピューティング",
+      "aimachinelearning": "AI・機械学習"
+    },
+    "buttons": {
+      "exportData": "データエクスポート",
+      "approve": "承認",
+      "reject": "拒否",
+      "sendMessage": "メッセージ送信",
+      "close": "閉じる",
+      "cancel": "キャンセル",
+      "yesDelete": "はい、削除",
+      "clearFilters": "フィルターをクリア",
+      "selectAll": "すべて選択",
+      "approveSelected": "選択したものを承認",
+      "reviewSelected": "選択したものを審査",
+      "rejectSelected": "選択したものを拒否",
+      "exportFiltered": "フィルター済みをエクスポート"
+    },
+    "table": {
+      "headers": {
+        "applicant": "申請者",
+        "contact": "連絡先",  
+        "program": "プログラム",
+        "status": "ステータス",
+        "submitted": "申請日",
+        "actions": "アクション"
+      },
+      "actions": {
+        "viewDetails": "詳細を表示",
+        "sendMessage": "メッセージ送信",
+        "delete": "削除",
+        "approve": "承認",
+        "reject": "拒否",
+        "view": "表示",
+        "underReview": "審査中"
+      },
+      "startDate": "開始日"
+    },
+    "actions": {
+      "viewDetails": "詳細を表示",
+      "sendMessage": "メッセージ送信",
+      "delete": "削除",
+      "approve": "承認",
+      "reject": "拒否",
+      "markPending": "保留中にマーク",
+      "close": "閉じる",
+      "cancel": "キャンセル",
+      "yesDelete": "はい、削除"
+    },
+    "modals": {
+      "viewApplication": {
+        "title": "申請詳細",
+        "applicationId": "申請ID",
+        "personalInfo": "個人情報",
+        "contactInfo": "連絡先情報",
+        "academicInfo": "学術情報",
+        "personalStatement": "志望理由書",
+        "notProvided": "未記入",
+        "sendMessage": "メッセージ送信",
+        "close": "閉じる",
+        "fields": {
+          "submittedOn": "提出日",
+          "fullName": "氏名",
+          "email": "メールアドレス",
+          "phone": "電話番号",
+          "dateOfBirth": "生年月日",
+          "address": "住所",
+          "city": "市区町村",
+          "country": "国",
+          "programInterested": "希望プログラム",
+          "educationLevel": "学歴"
+        }
+      },
+      "deleteConfirm": {
+        "title": "申請を削除",
+        "message": "{{firstName}} {{lastName}}の{{program}}への申請を削除してもよろしいですか？",
+        "warning": "この操作は元に戻せません。",
+        "cancel": "キャンセル",
+        "delete": "削除"
+      },
+      "sendMessage": {
+        "title": "{{firstName}} {{lastName}}へメッセージ送信",
+        "fields": {
+          "to": "宛先",
+          "subject": "件名",
+          "message": "メッセージ"
+        },
+        "send": "メッセージ送信",
+        "cancel": "キャンセル",
+        "subjectPlaceholder": "メッセージの件名を入力...",
+        "placeholder": "メッセージをここに入力..."
+      }
+    },
+  "common": {
+    "notProvided": "未記入",
+    "today": "今日",
+    "daysAgo": "{{days}}日前",
+    "needsReview": "要審査",
+    "needsResponse": "要返信",
+    "items": "項目",
+    "messages": "メッセージ",
+    "cannotBeUndone": "この操作は元に戻せません。",
+    "showing": "表示中",
+    "of": "の",
+    "filtered": "フィルタ済み"
+  },
+    "pagination": {
+      "showing": "表示中",
+      "of": "の",
+      "results": "件のアプリケーション", 
+      "filtered": "フィルタ済み",
+      "previous": "前へ",
+      "prev": "前",
+      "next": "次へ",
+      "page": "ページ"
+    }
+  },
+  "contactManagement": {
+    "title": "お問い合わせ管理",
+    "subtitle": "お問い合わせメッセージを効率的に管理・対応",
+    "stats": {
+      "totalMessages": "総メッセージ数",
+      "pending": "保留中",
+      "resolved": "解決済み",
+      "priority": "優先"
+    },
+    "search": {
+      "placeholder": "名前、メール、または件名で検索...",
+      "allCategories": "すべてのカテゴリー",
+      "allStatus": "すべてのステータス"
+    },
+    "categories": {
+      "general": "一般",
+      "admissions": "入学案内",
+      "courses": "コース",
+      "careers": "キャリア",
+      "others": "その他"
+    },
+    "status": {
+      "pending": "保留中",
+      "approved": "承認済み",
+      "resolved": "解決済み",
+      "ignored": "無視"
+    },
+    "table": {
+      "headers": {
+        "contact": "お問い合わせ",
+        "details": "詳細",
+        "message": "メッセージ",
+        "status": "ステータス",
+        "received": "受信日",
+        "actions": "アクション"
+      },
+      "actions": {
+        "viewDetails": "お問い合わせ詳細を表示",
+        "deleteContact": "お問い合わせを削除"
+      },
+      "statusLabels": {
+        "pendingStatus": "保留中",
+        "priorityStatus": "優先",
+        "resolvedStatus": "解決済み",
+        "ignoredStatus": "無視",
+        "needsResponse": "要返信"
+      }
+    },
+    "pagination": {
+      "showing": "表示中",
+      "of": "の",
+      "messages": "メッセージ",
+      "filtered": "フィルタ済み",
+      "previous": "前へ",
+      "next": "次へ",
+      "page": "ページ"
+    },
+    "buttons": {
+      "exportMessages": "メッセージをエクスポート",
+      "view": "表示",
+      "delete": "削除",
+      "close": "閉じる",
+      "cancel": "キャンセル",
+      "deleteContact": "お問い合わせを削除",
+      "resolveSelected": "選択したものを解決",
+      "markPriority": "優先としてマーク",
+      "ignoreSelected": "選択したものを無視",
+      "exportFiltered": "フィルター済みをエクスポート"
+    },
+    "section": {
+      "title": "お問い合わせメッセージ",
+      "description": "お問い合わせフォームの提出を管理・対応",
+      "noSubmissions": "お問い合わせはまだありません",
+      "noSubmissionsText": "ユーザーがお問い合わせフォームを送信すると、審査・返信のためにここに表示されます。"
+    },
+    "modals": {
+      "contactDetails": {
+        "title": "お問い合わせ詳細",
+        "fields": {
+          "name": "名前",
+          "email": "メールアドレス",
+          "phone": "電話番号",
+          "subject": "件名",
+          "message": "メッセージ",
+          "status": "ステータス",
+          "submitted": "提出日"
+        }
+      },
+      "deleteConfirm": {
+        "title": "お問い合わせを削除",
+        "message": "このお問い合わせの提出を削除してもよろしいですか？",
+        "warning": "この操作は元に戻せません。",
+        "fields": {
+          "name": "名前：",
+          "email": "メール：",
+          "subject": "件名："
+        }
+      }
+    },
+    "footer": {
+      "showing": "表示中",
+      "of": "／",
+      "messages": "メッセージ",
+      "filtered": "フィルター済み",
+      "previous": "前へ",
+      "next": "次へ",
+      "selectAll": "すべて選択",
+      "items": "件"
+    },
+    "time": {
+      "today": "今日",
+      "dayAgo": "1日前",
+      "daysAgo": "日前"
+    }
+  },
+  "adminDashboard": {
+    "breadcrumb": {
+      "adminPortal": "管理ポータル",
+      "dashboard": "ダッシュボード",
+      "overview": "概要",
+      "users": "ユーザー管理",
+      "applications": "申請管理",
+      "contacts": "お問い合わせ管理",
+      "settings": "システム設定"
+    },
+    "quickStats": {
+      "pendingUsers": "保留中ユーザー",
+      "newApplications": "新規申請",
+      "unreadMessages": "未読メッセージ"
+    },
+    "floatingActions": {
+      "createNewUser": "新規ユーザー作成",
+      "sendAnnouncement": "お知らせ送信",
+      "generateReport": "レポート生成",
+      "systemSettings": "システム設定"
+    }
+  },
+  "adminSettings": {
+    "title": "システム設定",
+    "description": "システムの設定を構成し、管理者設定を管理する",
+    "buttons": {
+      "resetDefaults": "デフォルトにリセット",
+      "saveAllSettings": "すべての設定を保存",
+      "changePassword": "パスワード変更",
+      "twoFactorSettings": "二要素認証"
+    },
+    "profile": {
+      "title": "管理者プロフィール",
+      "role": "管理者",
+      "fields": {
+        "fullName": "氏名",
+        "emailAddress": "メールアドレス",
+        "adminId": "管理者ID",
+        "accessLevel": "アクセスレベル",
+        "phoneNumber": "電話番号",
+        "lastLogin": "最終ログイン"
+      },
+      "placeholders": {
+        "enterFullName": "氏名を入力してください",
+        "enterEmail": "メールアドレスを入力してください",
+        "enterPhone": "電話番号を入力してください"
+      },
+      "accessLevels": {
+        "superAdmin": "スーパー管理者",
+        "systemAdmin": "システム管理者",
+        "contentAdmin": "コンテンツ管理者",
+        "userAdmin": "ユーザー管理者"
+      }
+    },
+    "language": {
+      "title": "言語設定",
+      "interfaceLanguage": "インターフェース言語",
+      "description": "管理者インターフェースの優先言語を選択してください",
+      "languages": {
+        "english": "English",
+        "japanese": "日本語",
+        "japaneseName": "日本語"
+      },
+      "changeNotification": {
+        "title": "言語変更完了",
+        "message": "インターフェース言語が{{language}}に更新されました"
+      },
+      "switcher": {
+        "currentJapanese": "日本語 (現在)",
+        "switchToJapanese": "日本語に切り替え",
+        "currentEnglish": "English (現在)",
+        "switchToEnglish": "Englishに切り替え"
+      },
+      "adminNote": {
+        "title": "管理者への注意",
+        "message": "言語変更は管理者インターフェース全体に影響し、セッション間で保持されます。"
+      }
+    },
+    "display": {
+      "title": "表示設定",
+      "darkMode": "ダークモード",
+      "description": "ライトテーマとダークテーマを切り替える",
+      "light": "ライト",
+      "dark": "ダーク"
+    },
+    "system": {
+      "title": "システム構成",
+      "preferences": {
+        "title": "システム設定",
+        "automaticBackups": "自動バックアップ",
+        "automaticBackupsDesc": "日次システムバックアップを有効にする",
+        "maintenanceNotifications": "メンテナンス通知",
+        "maintenanceNotificationsDesc": "システムメンテナンスアラートを受信する",
+        "debugLogging": "デバッグログ",
+        "debugLoggingDesc": "詳細なエラーログを有効にする",
+        "realtimeMonitoring": "リアルタイム監視",
+        "realtimeMonitoringDesc": "システムパフォーマンスをライブ監視する"
+      },
+      "notifications": {
+        "title": "通知設定",
+        "userRegistration": "新規ユーザー登録",
+        "systemErrors": "システムエラーアラート",
+        "securityAlerts": "セキュリティ通知",
+        "backupStatus": "バックアップ状況レポート",
+        "performanceWarnings": "パフォーマンス警告"
+      },
+      "security": {
+        "title": "セキュリティ設定",
+        "description": "セキュリティ強化のためのパスワードと認証設定を管理"
+      }
+    }
+  },
+  "adminSidebar": {
+    "navigation": {
+      "overview": "概要",
+      "users": "ユーザー",
+      "applications": "申請",
+      "contacts": "お問い合わせ",
+      "settings": "設定"
+    },
+    "quickStats": {
+      "title": "クイック統計",
+      "systemHealth": "システム状態",
+      "onlineUsers": "オンラインユーザー"
+    },
+    "darkMode": {
+      "title": "ダークモード有効",
+      "subtitle": "夜間閲覧に最適化"
+    }
+  },
+  "defaultSidebar": {
+    "navigation": {
+      "overview": "概要",
+      "courses": "コース",
+      "analytics": "分析",
+      "messages": "メッセージ",
+      "settings": "設定"
+    },
+    "learningProgress": {
+      "title": "学習の進捗",
+      "complete": "完了"
+    },
+    "quickAccess": {
+      "title": "クイックアクセス",
+      "latestLesson": "最新のレッスン",
+      "todaysGoals": "今日の目標",
+      "gradeReport": "成績表"
+    },
+    "helpSupport": {
+      "title": "ヘルプ & サポート"
+    }
+  },
+  "dashboard": {
+      "loading": {
+        "title": "ダッシュボードを読み込み中...",
+        "message": "パーソナライズされたダッシュボードを読み込んでいます。しばらくお待ちください"
+      },
+      "error": {
+        "title": "ダッシュボードエラー",
+        "message": "ダッシュボードのコンテンツを読み込めません。ページを更新してください。",
+        "retry": "再試行"
+      },
+      "roleSwitch": {
+        "loading": "ダッシュボードビューを切り替え中...",
+        "error": "ダッシュボードビューを切り替えできません"
+      },
+      "applicationManagement": {
+        "title": "申請管理",
+        "subtitle": "コース申請の確認と管理",
+        "stats": {
+          "totalApplications": "総申請数",
+          "pending": "保留中",
+          "approved": "承認済み",
+          "rejected": "拒否済み"
+        },
+        "search": {
+          "placeholder": "申請を検索...",
+          "allPrograms": "すべてのプログラム",
+          "allStatus": "すべてのステータス"
+        },
+        "table": {
+          "applicant": "申請者",
+          "contact": "連絡先",
+          "program": "プログラム",
+          "status": "ステータス",
+          "applied": "申請日",
+          "actions": "アクション",
+          "startDate": "開始日:",
+          "needsReview": "要確認",
+          "today": "今日",
+          "daysAgo": "日前"
+        },
+        "actions": {
+          "viewDetails": "申請詳細を表示",
+          "sendMessage": "申請者にメッセージ送信",
+          "deleteApplication": "申請を削除",
+          "approveApplication": "申請を承認",
+          "rejectApplication": "申請を拒否",
+          "markAsPending": "保留中にマーク"
+        },
+        "modals": {
+          "viewApplication": {
+            "title": "申請詳細",
+            "personalInfo": "個人情報",
+            "contactInfo": "連絡先情報",
+            "academicInfo": "学術情報",
+            "personalStatement": "志望動機書",
+            "applicationStatus": "申請ステータス",
+            "submittedOn": "提出日",
+            "applicationId": "申請ID",
+            "fullName": "氏名",
+            "email": "メールアドレス",
+            "phone": "電話番号",
+            "dateOfBirth": "生年月日",
+            "address": "住所",
+            "city": "市区町村",
+            "country": "国",
+            "programInterested": "希望プログラム",
+            "educationLevel": "学歴",
+            "notProvided": "未記入",
+            "sendMessage": "メッセージ送信",
+            "close": "閉じる"
+          },
+          "deleteConfirm": {
+            "title": "申請を削除",
+            "message": "{{firstName}} {{lastName}}の{{program}}への申請を削除してもよろしいですか？",
+            "warning": "この操作は取り消すことができません。",
+            "cancel": "キャンセル",
+            "delete": "はい、削除"
+          },
+          "sendMessage": {
+            "title": "{{firstName}} {{lastName}}にメッセージ送信",
+            "to": "宛先:",
+            "subject": "件名:",
+            "message": "メッセージ:",
+            "placeholder": "ここにメッセージを入力してください...",
+            "send": "メッセージ送信",
+            "cancel": "キャンセル"
+          }
+        },
+        "pagination": {
+          "showing": "{{from}}〜{{to}}件を表示（全{{total}}件中）",
+          "filtered": "（絞り込み済み）",
+          "previous": "前",
+          "next": "次"
+        }
+      }
+  },
+  "dashboardTabs": {
+    "student": {
+      "overview": "概要",
+      "courses": "コース",
+      "analytics": "分析",
+      "messages": "メッセージ",
+      "settings": "設定"
+    },
+    "teacher": {
+      "overview": "概要",
+      "courses": "マイコース",
+      "analytics": "分析",
+      "messages": "コミュニケーション",
+      "settings": "設定"
+    },
+    "portal": {
+      "fia": "FIAポータル",
+      "studentDashboard": "学生ダッシュボード",
+      "teacherDashboard": "教師ダッシュボード",
+      "logout": "ログアウト"
+    },
+    "header": {
+      "welcomeBack": "おかえりなさい、{{name}}さん！",
+      "todayActivity": "今日の{{role}}活動の様子です",
+      "lightMode": "ライトモード",
+      "darkMode": "ダークモード",
+      "online": "オンライン"
+    }
+  },
+  "roleUtilities": {
+    "roles": {
+      "student": "学生",
+      "teacher": "教師",
+      "admin": "管理者",
+      "default": "ユーザー"
+    },
+    "dashboardTitles": {
+      "student": "学生ダッシュボード",
+      "teacher": "教師ダッシュボード",
+      "admin": "管理者ダッシュボード",
+      "default": "ダッシュボード"
+    },
+    "roleDescriptions": {
+      "student": "学習とコース管理",
+      "teacher": "教育と学生エンゲージメント",
+      "admin": "システム管理と監督",
+      "default": "一般ポータルアクセス"
+    },
+    "roleIcons": {
+      "student": "🎓",
+      "teacher": "👨‍🏫",
+      "admin": "👨‍💼",
+      "default": "👤"
+    }
+  },
+  "roleBadge": {
+    "sizes": {
+      "small": "小さなバッジ",
+      "medium": "中サイズバッジ",
+      "large": "大きなバッジ", 
+      "extraLarge": "特大バッジ"
+    },
+    "animations": {
+      "enabled": "アニメーション有効",
+      "disabled": "アニメーション無効"
+    },
+    "accessibility": {
+      "roleIndicator": "{{role}}の役割表示",
+      "clickable": "クリック可能な役割バッジ",
+      "decorative": "装飾的な役割表示"
+    }
+  },
+  "dashboardTitle": {
+    "todaysActivity": "今日の活動",
+    "performance": "成績",
+    "status": "ステータス", 
+    "active": "アクティブ",
+    "stats": {
+      "student": {
+        "activity": "5",
+        "performance": "92%",
+        "status": "アクティブ"
+      },
+      "teacher": {
+        "activity": "12",
+        "performance": "98%", 
+        "status": "アクティブ"
+      },
+      "admin": {
+        "activity": "47",
+        "performance": "99%",
+        "status": "アクティブ"
+      }
+    },
+    "accessibility": {
+      "titleCard": "{{role}}のダッシュボードタイトルカード",
+      "statsGrid": "パフォーマンス統計グリッド",
+      "statItem": "{{statType}}統計: {{value}}"
+    }
+  },
+  "roleSelector": {
+    "label": "役割を選択",
+    "description": "このユーザーに適切な役割を選択してください",
+    "placeholder": "役割を選択してください",
+    "required": "役割の選択は必須です",
+    "disabled": "役割の選択は現在無効です",
+    "accessibility": {
+      "roleOption": "役割オプション: {{role}}",
+      "selectedRole": "現在選択されている役割: {{role}}",
+      "selectionGroup": "役割選択グループ",
+      "selectionIndicator": "選択された役割の表示"
+    },
+    "validation": {
+      "required": "役割を選択してください",
+      "invalid": "有効な役割を選択してください",
+      "unauthorized": "この役割を割り当てる権限がありません"
+    },
+    "states": {
+      "loading": "役割を読み込み中...",
+      "error": "役割の読み込みエラー",
+      "success": "役割が正常に更新されました"
+    },
+    "help": {
+      "student": "学生はコースにアクセスし、学習の進捗を追跡できます",
+      "teacher": "教師はコースを作成し、学生を管理し、エンゲージメントを追跡できます",
+      "admin": "管理者は完全なシステムアクセスとユーザー管理機能を持ちます"
+    }
+  },
+  "loadingScreen": {
+    "title": "ダッシュボードを読み込み中",
+    "subtitle": "パーソナライズされた体験を準備しています",
+    "steps": {
+      "authenticating": "ユーザー認証中",
+      "loadingData": "ユーザーデータを読み込み中",
+      "customizing": "インターフェースをカスタマイズ中"
+    },
+    "messages": {
+      "pleaseWait": "すべてをセットアップしている間お待ちください",
+      "almostReady": "もうすぐ完了します...",
+      "finalizing": "セットアップを完了しています"
+    }
+  },
+  "adminPortal": {
+    "title": "管理者ポータル",
+    "subtitle": "システム管理",
+    "welcomeBack": "おかえりなさい、{{name}}さん！",
+    "todayActivity": "今日の管理概要をご覧ください",
+    "online": "オンライン",
+    "logout": "ログアウト",
+    "accessibility": {
+      "adminSidebar": "管理ナビゲーションサイドバー",
+      "mainContent": "メイン管理コンテンツエリア",
+      "headerControls": "ヘッダーコントロールボタン"
+    }
+  },
+  "dashboardAlerts": {
+    "noApplicationSelected": "削除する申請が選択されていません",
+    "noAuthToken": "認証トークンが見つかりません",
+    "applicationDeletedSuccess": "申請が正常に削除されました！",
+    "applicationDeleteError": "申請の削除中にエラーが発生しました。もう一度お試しください。",
+    "messageSentSuccess": "メッセージが正常に送信されました！",
+    "messageSendError": "メッセージの送信中にエラーが発生しました。もう一度お試しください。",
+    "userApprovedSuccess": "ユーザーが正常に承認されました！",
+    "userRejectedSuccess": "ユーザーが正常に拒否されました！",
+    "userApprovalError": "ユーザーの承認に失敗しました",
+    "userRejectionError": "ユーザーの拒否に失敗しました",
+    "contactApprovedSuccess": "お問い合わせが正常に承認されました！",
+    "contactRejectedSuccess": "お問い合わせが正常に拒否されました！",
+    "contactApprovalError": "お問い合わせの承認に失敗しました",
+    "contactRejectionError": "お問い合わせの拒否に失敗しました",
+    "applicationApprovedSuccess": "申請が正常に承認されました！",
+    "applicationRejectedSuccess": "申請が正常に拒否されました！",
+    "applicationPendingSuccess": "申請が保留中としてマークされました！",
+    "applicationUnderReviewSuccess": "申請が審査中としてマークされました！",
+    "applicationUpdateError": "申請ステータスの更新に失敗しました",
+    "applicationApprovalError": "申請の承認に失敗しました",
+    "applicationRejectionError": "申請の拒否に失敗しました",
+    "userCreatedSuccess": "ユーザーが正常に作成されました！",
+    "userCreationError": "ユーザーの作成中にエラーが発生しました"
+  }
+}

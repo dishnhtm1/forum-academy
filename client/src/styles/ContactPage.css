@@ -1,0 +1,346 @@
+/* 3D Animated Hero for Contact Page */
+
+.contact-hero {
+    position: relative;
+    min-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    perspective: 1000px;
+    opacity: 0;
+    transition: opacity 1s ease;
+}
+
+.contact-hero.visible {
+    opacity: 1;
+}
+
+/* 3D Scene Elements */
+.contact-scene {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    perspective: 1000px;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.contact-world {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transform: rotateX(65deg) rotateZ(0deg);
+}
+
+.contact-floor {
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    background: transparent;
+    background-image:
+        linear-gradient(90deg, rgba(79, 70, 229, 0.07) 1px, transparent 1px),
+        linear-gradient(rgba(79, 70, 229, 0.07) 1px, transparent 1px);
+    background-size: 40px 40px;
+    transform: rotateX(90deg);
+    transform-origin: center center;
+}
+
+.contact-cube {
+    position: absolute;
+    transform-style: preserve-3d;
+}
+
+.contact-cube-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(79, 70, 229, 0.1);
+    border: 1px solid rgba(79, 70, 229, 0.3);
+    backface-visibility: visible;
+}
+
+.front {
+    transform: translateZ(50px);
+}
+
+.back {
+    transform: rotateY(180deg) translateZ(50px);
+}
+
+.right {
+    transform: rotateY(90deg) translateZ(50px);
+}
+
+.left {
+    transform: rotateY(-90deg) translateZ(50px);
+}
+
+.top {
+    transform: rotateX(90deg) translateZ(50px);
+}
+
+.bottom {
+    transform: rotateX(-90deg) translateZ(50px);
+}
+
+.contact-particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+.contact-particle {
+    position: absolute;
+    background-color: rgba(79, 70, 229, 0.4);
+    border-radius: 50%;
+    z-index: 3;
+    animation: float 15s infinite ease-in-out;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0) translateX(0);
+    }
+    25% {
+        transform: translateY(-50px) translateX(50px);
+    }
+    50% {
+        transform: translateY(-100px) translateX(0);
+    }
+    75% {
+        transform: translateY(-50px) translateX(-50px);
+    }
+}
+
+/* Glowing effects */
+.contact-glow {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(40px);
+    opacity: 0.4;
+    animation: glowPulse 4s ease-in-out infinite;
+}
+
+.contact-glow-1 {
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(79, 70, 229, 0.6), transparent);
+    top: 20%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.contact-glow-2 {
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.4), transparent);
+    bottom: 20%;
+    right: 15%;
+    animation-delay: 2s;
+}
+
+@keyframes glowPulse {
+    0%, 100% { 
+        transform: scale(1); 
+        opacity: 0.4; 
+    }
+    50% { 
+        transform: scale(1.2); 
+        opacity: 0.6; 
+    }
+}
+
+/* Hero Content Styles */
+.contact-hero .contact-hero-content {
+    position: relative;
+    z-index: 10;
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 2rem 1rem;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.contact-hero-content.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.contact-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    background-color: rgba(79, 70, 229, 0.1);
+    border: 1px solid rgba(79, 70, 229, 0.3);
+    border-radius: 30px;
+    padding: 0.5rem 1rem;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+}
+
+.contact-badge-icon {
+    margin-right: 0.5rem;
+    color: var(--primary, #4F46E5);
+}
+
+.contact-hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+}
+
+.contact-highlight-text {
+    color: var(--primary, #4F46E5);
+    position: relative;
+}
+
+.contact-highlight-text::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 8px;
+    background: var(--accent, #10b981);
+    left: 0;
+    bottom: 5px;
+    z-index: -1;
+    opacity: 0.3;
+}
+
+.contact-hero-description {
+    font-size: 1.125rem;
+    line-height: 1.6;
+    color: var(--gray-600, #4b5563);
+    margin-bottom: 2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.contact-quick-links {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 2.5rem;
+}
+
+.contact-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.5rem;
+    border-radius: 30px;
+    font-weight: 600;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+}
+
+.contact-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(-100%) skewX(-15deg);
+    transition: transform 0.5s ease;
+}
+
+.contact-btn:hover {
+    transform: translateY(-3px);
+}
+
+.contact-btn:hover::before {
+    transform: translateX(100%) skewX(-15deg);
+}
+
+.contact-btn-primary {
+    background: var(--primary, #4F46E5);
+    color: white;
+    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+}
+
+.contact-btn-primary:hover {
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.5);
+}
+
+.contact-btn-outline {
+    border: 2px solid var(--primary, #4F46E5);
+    color: var(--primary, #4F46E5);
+}
+
+/* Scroll Indicator */
+.contact-scroll-indicator {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    animation: bounce 2s infinite;
+}
+
+.contact-scroll-indicator a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: var(--gray-500, #6b7280);
+}
+
+.contact-scroll-indicator .material-icons {
+    font-size: 2rem;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+/* Container for hero content */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* Responsive styles for hero section */
+@media (max-width: 768px) {
+    .contact-hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .contact-hero-description {
+        font-size: 1rem;
+    }
+    
+    .contact-quick-links {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .contact-btn {
+        padding: 0.75rem 1.25rem;
+        font-size: 0.9rem;
+    }
+}
