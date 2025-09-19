@@ -1,0 +1,2242 @@
+{
+  "error": "Error",
+  "about": {
+    "hero": {
+      "badge": "About FIA",
+      "title": "Transforming Lives Through",
+      "highlight": "Technology Education",
+      "description": "For over 15 years, we've been empowering students with cutting-edge skills and knowledge to excel in the digital world.",
+      "ourJourney": "Our Journey",
+      "getInTouch": "Get In Touch",
+      "discoverStory": "Discover Our Story"
+    },
+    "stats": {
+      "yearsExcellence": "Years of Excellence",
+      "graduates": "Graduates",
+      "partners": "Industry Partners",
+      "employmentRate": "Employment Rate"
+    },
+    "story": {
+      "title": "Our Story",
+      "subtitle": "A journey of innovation, dedication, and transforming lives through technology education.",
+      "imageAlt": "FIA Academy Story",
+      "paragraph1": "Founded in 2010, the Forum Institute of Advanced Computing (FIA) began as a small training center with a big vision: to bridge the gap between academic learning and industry requirements in the rapidly evolving field of information technology.",
+      "paragraph2": "Over the years, we have grown from a modest institute to one of the most respected technology education providers in the region. Our commitment to excellence, industry-relevant curriculum, and student-centered approach has helped thousands of students achieve their career goals.",
+      "paragraph3": "Today, FIA stands as a beacon of quality education, continuously adapting to the latest technological trends and ensuring our graduates are well-prepared for the challenges of tomorrow's digital landscape."
+    },
+    "timeline": {
+      "founded": "Founded FIA with a vision to transform IT education",
+      "dataScience": "Launched Data Science and AI programs",
+      "osaka": "Opened branch campus in Osaka, Japan",
+      "celebration": "Celebrated 10 years and 5000+ graduates"
+    },
+    "whyChoose": {
+      "title": "Why Choose FIA?",
+      "subtitle": "Discover what makes us the preferred choice for technology education and career advancement."
+    },
+    "features": {
+      "partnerships": {
+        "title": "Industry Partnerships",
+        "description": "Strong connections with leading tech companies ensuring our curriculum stays current and our graduates find excellent job opportunities."
+      },
+      "instructors": {
+        "title": "Expert Instructors",
+        "description": "Learn from industry professionals with years of real-world experience who bring practical insights to the classroom."
+      },
+      "facilities": {
+        "title": "Modern Facilities",
+        "description": "State-of-the-art labs, latest software, and cutting-edge equipment to provide hands-on learning experience."
+      },
+      "careerServices": {
+        "title": "Career Services",
+        "description": "Comprehensive career support including job placement assistance, interview preparation, and networking opportunities."
+      },
+      "certifications": {
+        "title": "Industry Certifications",
+        "description": "Earn recognized certifications that validate your skills and enhance your credibility with employers."
+      },
+      "support": {
+        "title": "24/7 Support",
+        "description": "Round-the-clock academic and technical support to ensure you never feel alone in your learning journey."
+      }
+    },
+    "mission": {
+      "title": "Our Mission",
+      "description": "To provide world-class technology education that empowers individuals with the skills, knowledge, and confidence needed to excel in the digital age and contribute meaningfully to the global technology landscape."
+    },
+    "vision": {
+      "title": "Our Vision",
+      "description": "To be the leading institution for technology education, recognized globally for innovation, excellence, and the success of our graduates in shaping the future of technology."
+    },
+    "team": {
+      "title": "Meet Our Team",
+      "subtitle": "Dedicated professionals committed to your success and growth in the technology field.",
+      "members": {
+        "shashini": {
+          "name": "Shashini Perera",
+          "role": "Academic Director",
+          "bio": "15+ years in education and curriculum development, ensuring our programs meet industry standards."
+        },
+        "thilini": {
+          "name": "Thilini Silva",
+          "role": "Student Services Manager",
+          "bio": "Dedicated to student success with expertise in career counseling and placement services."
+        },
+        "diushan": {
+          "name": "Diushan Fernando",
+          "role": "Technology Lead",
+          "bio": "Leading our technical infrastructure and innovation in educational technology solutions."
+        },
+        "john": {
+          "name": "John Mitchell",
+          "role": "International Relations",
+          "bio": "Building global partnerships and opportunities for our students and graduates worldwide."
+        }
+      }
+    }
+  },
+  "applyPage": {
+    "hero": {
+      "badge": "Apply Now",
+      "title": {
+        "part1": "Start Your Journey to",
+        "highlight": "Tech Excellence"
+      },
+      "description": "Join thousands of successful graduates who have transformed their careers through our comprehensive technology programs. Your future in tech starts here.",
+      "badges": {
+        "duration": "Flexible Duration",
+        "experience": "15+ Years Experience",
+        "guidance": "Expert Guidance"
+      },
+      "startButton": "Start Application"
+    },
+    "confirmation": {
+      "title": "Application Submitted Successfully!",
+      "message": "Thank you for your interest in Forum Institute of Advanced Computing. We have received your application and our admissions team will review it carefully.",
+      "emailSent": "A confirmation email has been sent to",
+      "emailDetails": "with your application details and next steps.",
+      "nextSteps": {
+        "title": "What Happens Next?",
+        "step1": "Our admissions team will review your application within 3-5 business days.",
+        "step2": "You may be contacted for an interview or to provide additional documentation.",
+        "step3": "You will receive a decision notification via email within 2 weeks of submission."
+      },
+      "buttons": {
+        "exploreCourses": "Explore Our Courses",
+        "contactAdmissions": "Contact Admissions"
+      }
+    },
+    "sidebar": {
+      "needHelp": {
+        "title": "Need Help?",
+        "description": "Our admissions team is here to assist you throughout the application process.",
+        "faq": "View FAQ"
+      },
+      "deadlines": {
+        "title": "Application Deadlines",
+        "summer": {
+          "date": "June 30",
+          "label": "Summer Intake 2025"
+        },
+        "fall": {
+          "date": "August 31",
+          "label": "Fall Intake 2025"
+        },
+        "winter": {
+          "date": "December 15",
+          "label": "Winter Intake 2026"
+        }
+      }
+    },
+    "testimonials": [
+      {
+        "name": "Sarah Johnson",
+        "program": "Full Stack Development",
+        "quote": "The program at FIA completely transformed my career. The hands-on approach and industry connections helped me land my dream job at a top tech company."
+      },
+      {
+        "name": "Hiroshi Tanaka",
+        "program": "Data Science",
+        "quote": "The practical skills I learned here are exactly what I use every day in my role as a data scientist. The instructors really know their stuff."
+      },
+      {
+        "name": "Maria Rodriguez",
+        "program": "Cybersecurity",
+        "quote": "FIA's cybersecurity program gave me the confidence and expertise to transition into this exciting field. The support from faculty was incredible."
+      }
+    ],
+    "testimonialsSection": {
+      "title": "Success Stories",
+      "subtitle": "Hear from our graduates who have transformed their careers through our programs.",
+      "graduateLabel": "Graduate"
+    },
+    "faqSection": {
+      "title": "Frequently Asked Questions",
+      "items": {
+        "requirements": {
+          "question": "What are the admission requirements?",
+          "answer": "Basic computer literacy and high school education or equivalent. Some programs may have specific prerequisites."
+        },
+        "duration": {
+          "question": "How long does the application process take?",
+          "answer": "Typically 2-3 weeks from submission to decision. We'll keep you updated throughout the process."
+        },
+        "payment": {
+          "question": "What payment options are available?",
+          "answer": "We offer flexible payment plans, scholarships, and accept various payment methods including installments."
+        },
+        "defer": {
+          "question": "Can I defer my enrollment?",
+          "answer": "Yes, you can defer your enrollment to the next available intake with advance notice."
+        }
+      }
+    },
+    "submitting": "Submitting your application...",
+    "submitSuccess": "Application submitted successfully!",
+    "submitError": "Failed to submit application",
+    "submitErrorMessage": "There was an error submitting your application. Please try again."
+  },
+  "careerServicesPage": {
+    "hero": {
+      "badge": "Career Services",
+      "title": {
+        "part1": "Launch Your",
+        "highlight": "Dream Career"
+      },
+      "subtitle": "From training to placement, we're with you every step of your career journey. Join thousands of successful graduates working at top companies worldwide.",
+      "buttons": {
+        "applyNow": "Apply Now",
+        "talkToAdvisor": "Talk to Career Advisor"
+      },
+      "graduatesWorkAt": "Our graduates work at"
+    },
+    "stats": {
+      "employmentRate": "Employment Rate",
+      "averageSalary": "Average Starting Salary",
+      "hiringPartners": "Hiring Partners",
+      "careerEvents": "Career Events/Year"
+    },
+    "careerSupport": {
+      "title": "Comprehensive Career Support",
+      "subtitle": "From resume building to job placement, we provide end-to-end career services to ensure your success in the tech industry.",
+      "services": {
+        "resumeBuilding": {
+          "title": "Resume & Portfolio Building",
+          "description": "Expert guidance to create compelling resumes and portfolios that showcase your skills and stand out to employers."
+        },
+        "interviewPrep": {
+          "title": "Interview Preparation",
+          "description": "Mock interviews, technical assessments, and behavioral question practice to boost your confidence and performance."
+        },
+        "networkingEvents": {
+          "title": "Networking Events",
+          "description": "Regular meetups, tech talks, and networking sessions with industry professionals and potential employers."
+        },
+        "jobPlacement": {
+          "title": "Job Placement Assistance",
+          "description": "Direct connections with hiring partners and personalized job matching based on your skills and career goals."
+        },
+        "globalOpportunities": {
+          "title": "Global Opportunities",
+          "description": "Access to international job markets and opportunities with our global network of partner companies."
+        },
+        "careerAdvancement": {
+          "title": "Career Advancement",
+          "description": "Ongoing support for career growth, promotions, and transitions throughout your professional journey."
+        }
+      }
+    },
+    "careerJourney": {
+      "title": "Your Career Journey",
+      "subtitle": "Our structured approach ensures you're fully prepared for your dream tech career.",
+      "steps": {
+        "assessment": {
+          "title": "Skills Assessment",
+          "description": "Comprehensive evaluation of your current skills and identification of areas for improvement."
+        },
+        "skillsDevelopment": {
+          "title": "Skills Development",
+          "description": "Targeted training programs to bridge skill gaps and enhance your technical expertise."
+        },
+        "portfolioReview": {
+          "title": "Portfolio Review",
+          "description": "Professional review and optimization of your portfolio to showcase your best work."
+        },
+        "interviewTraining": {
+          "title": "Interview Training",
+          "description": "Intensive mock interviews and preparation for both technical and behavioral questions."
+        },
+        "jobMatching": {
+          "title": "Job Matching",
+          "description": "Personalized job recommendations based on your skills, preferences, and career goals."
+        },
+        "ongoingSupport": {
+          "title": "Ongoing Support",
+          "description": "Continued career guidance and support even after successful job placement."
+        }
+      }
+    },
+    "hiringPartners": {
+      "title": "Our Hiring Partners",
+      "subtitle": "We work with leading companies across various industries to provide our graduates with excellent career opportunities.",
+      "viewAllButton": "View All Partners"
+    },
+    "successStories": {
+      "title": "Success Stories",
+      "subtitle": "Real graduates, real success stories. See how our career services have transformed lives and launched tech careers.",
+      "stories": {
+        "taroYamada": {
+          "name": "Taro Yamada",
+          "role": "Software Engineer at Google",
+          "quote": "FIA's career services were incredible. They helped me land my dream job at Google within 3 months of graduation."
+        },
+        "hanakoSato": {
+          "name": "Hanako Sato",
+          "role": "Data Scientist at Yahoo",
+          "quote": "The interview preparation and technical coaching I received were exactly what I needed to succeed in my career transition."
+        },
+        "michaelChen": {
+          "name": "Michael Chen",
+          "role": "Cloud Architect at Amazon",
+          "quote": "From resume building to salary negotiation, FIA supported me throughout my entire job search process."
+        }
+      },
+      "moreStoriesButton": "More Success Stories"
+    },
+    "faq": {
+      "title": "Career Services FAQ",
+      "subtitle": "Common questions about our career support services and job placement assistance.",
+      "items": {
+        "whenBegins": {
+          "question": "When do career services begin?",
+          "answer": "Career services begin from day one of your program. We integrate career preparation throughout your learning journey, not just at the end."
+        },
+        "accessDuration": {
+          "question": "How long do I have access to career services?",
+          "answer": "You have lifetime access to our career services. We continue to support you throughout your career, including job transitions and advancement opportunities."
+        },
+        "jobGuarantee": {
+          "question": "Do you guarantee job placement?",
+          "answer": "While we cannot guarantee specific job placements, we have a 93% employment rate and provide extensive support until you find a suitable position."
+        },
+        "visaSponsorship": {
+          "question": "Do you help with visa sponsorship for international opportunities?",
+          "answer": "Yes, we work with partner companies that sponsor visas and provide guidance on the visa application process for international positions."
+        },
+        "freelancing": {
+          "question": "Do you support freelancing and remote work opportunities?",
+          "answer": "Absolutely! We help you build a freelance portfolio, find remote opportunities, and develop the skills needed for independent work."
+        }
+      }
+    }
+  },
+  "contact": {
+    "hero": {
+      "badge": "Contact Us",
+      "title": "Get in Touch with",
+      "highlight": "FIA Academy",
+      "description": "Have questions about our programs? Ready to start your tech journey? We're here to help you every step of the way.",
+      "sendMessage": "Send Message",
+      "callUs": "Call Us"
+    },
+    "info": {
+      "title": "Contact Information",
+      "description": "We're here to help",
+      "address": {
+        "title": "Visit Us",
+        "value": "2-40-12 Higashikasai, Edogawa-ku, Tokyo 134-0084, Japan"
+      },
+      "phone": {
+        "title": "Call Us",
+        "general": "General: 0120-406-194",
+        "admissions": "Admissions: 0120-568-239"
+      },
+      "email": {
+        "title": "Email Us",
+        "general": "General: info@forumacademy.jp",
+        "admissions": "Admissions: admissions@forumacademy.jp"
+      },
+      "hours": {
+        "title": "Office Hours",
+        "weekdays": "Monday - Friday: 9:00 AM - 6:00 PM",
+        "saturday": "Saturday: 10:00 AM - 4:00 PM"
+      }
+    },
+    "social": {
+      "title": "Follow Us"
+    },
+    "form": {
+      "title": "Send us a Message",
+      "description": "We'll get back to you within 24 hours",
+      "fields": {
+        "name": "Full Name",
+        "email": "Email Address",
+        "phone": "Phone Number (Optional)",
+        "subject": "Select Subject",
+        "message": "Your Message",
+        "fullName": "Full Name",
+        "dateOfBirth": "Date of Birth",
+        "address": "Address",
+        "city": "City",
+        "country": "Country",
+        "programInterested": "Program Interested",
+        "educationLevel": "Education Level",
+        "personalStatement": "Personal Statement"
+      },
+      "subjects": {
+        "general": "General Inquiry",
+        "admissions": "Admissions Information",
+        "courses": "Course Information",
+        "careers": "Career Services",
+        "other": "Other"
+      },
+      "privacy": {
+        "text": "I agree to the",
+        "link": "Privacy Policy",
+        "consent": "and consent to my information being used to respond to my inquiry."
+      },
+      "submit": "Send Message",
+      "messages": {
+        "sending": "Sending your message...",
+        "success": "Thank you! Your message has been sent successfully. We'll get back to you within 24 hours.",
+        "error": "Sorry, there was an error sending your message. Please try again or contact us directly."
+      }
+    },
+    "map": {
+      "title": "Find Us"
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "items": {
+        "response": {
+          "question": "How quickly will I receive a response?",
+          "answer": "We typically respond to all inquiries within 24 hours during business days. For urgent matters, please call us directly."
+        }
+      }
+    }
+  },
+  "status": {
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "underReview": "Under Review"
+  },
+  "programs": {
+    "webDevelopment": "Web Development",
+    "dataScience": "Data Science",
+    "cybersecurity": "Cybersecurity",
+    "cloudComputing": "Cloud Computing",
+    "aiMachineLearning": "AI & Machine Learning"
+  },
+  "table": {
+    "applicant": "Applicant",
+    "contact": "Contact",
+    "program": "Program",
+    "status": "Status",
+    "applied": "Applied",
+    "actions": "Actions",
+    "startDate": "Start"
+  },
+  "actions": {
+    "viewDetails": "View Application Details",
+    "sendMessage": "Send Message",
+    "delete": "Delete Application",
+    "close": "Close",
+    "cancel": "Cancel",
+    "yesDelete": "Yes, Delete",
+    "approve": "Approve Application",
+    "reject": "Reject Application",
+    "markPending": "Mark as Pending",
+    "selectAll": "Select All",
+    "approveSelected": "Approve Selected",
+    "reviewSelected": "Review Selected", 
+    "rejectSelected": "Reject Selected",
+    "exportFiltered": "Export Filtered"
+  },
+  "form": {
+    "fullName": "Full Name",
+    "email": "Email",
+    "phone": "Phone",
+    "dateOfBirth": "Date of Birth",
+    "address": "Address",
+    "city": "City",
+    "country": "Country",
+    "programInterested": "Program Interested",
+    "educationLevel": "Education Level",
+    "personalStatement": "Personal Statement"
+  },
+  "pagination": {
+    "showing": "Showing {{start}} to {{end}} of {{total}} applications",
+    "filtered": "filtered",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "common": {
+    "notProvided": "Not provided",
+    "today": "Today",
+    "daysAgo": "{{days}} days ago",
+    "needsReview": "Needs Review",
+    "items": "items",
+    "cannotBeUndone": "This action cannot be undone."
+  },
+  "courses": {
+    "hero": {
+      "badge": "Our Programs",
+      "title": "Master the Future with",
+      "highlight": "Cutting-Edge Courses",
+      "description": "Discover our comprehensive range of technology courses designed to transform you into an industry-ready professional. Learn from experts, build real projects, and launch your dream career in tech.",
+      "findCourse": "Find Your Course",
+      "programGuide": "Program Guide",
+      "imageAlt": "Students learning technology"
+    },
+    "stats": {
+      "courses": "Courses",
+      "jobPlacement": "Job Placement",
+      "studentRating": "Student Rating"
+    },
+    "categories": {
+      "badge": "Course Categories",
+      "title": "Explore Our",
+      "highlight": "Tech Programs",
+      "subtitle": "Choose from our wide range of industry-focused courses designed to meet current market demands and future technology trends."
+    },
+    "allCategories": "All Categories",
+    "webDevelopment": "Web Development",
+    "dataScience": "Data Science",
+    "cybersecurity": "Cybersecurity",
+    "cloudComputing": "Cloud Computing",
+    "aiMl": "AI & Machine Learning",
+    "news": {
+      "title": "Latest Course Updates",
+      "description": "Stay informed about new courses, curriculum updates, and exciting developments in our programs."
+    }
+  },
+  "home": {
+    "courses": {
+      "title": "Explore Our Courses",
+      "description": "Discover comprehensive technology programs designed to transform you into an industry-ready professional with cutting-edge skills.",
+      "allCourses": "All Courses"
+    },
+    "stats": {
+      "title": "Our Achievements",
+      "description": "Numbers that showcase our commitment to excellence and the success of our students in the technology industry."
+    },
+    "news": {
+      "title": "Latest News & Updates",
+      "subtitle": "Stay informed about the latest developments, course updates, and exciting announcements from FIA Academy."
+    },
+    "contact": {
+      "title": "Ready to Start Your Journey?",
+      "subtitle": "Get in touch with our admissions team and take the first step towards your technology career transformation."
+    }
+  },
+  "newsPage": {
+    "hero": {
+      "badge": "Latest News",
+      "title": {
+        "part1": "Stay Updated with",
+        "highlight": "FIA News"
+      },
+      "description": "Discover the latest developments, achievements, and exciting announcements from our vibrant academic community.",
+      "trending": {
+        "label": "Trending",
+        "tags": {
+          "techSymposium": "Tech Symposium",
+          "hackathon": "Hackathon",
+          "newCourses": "New Courses"
+        }
+      },
+      "stats": {
+        "upcomingEvents": "Upcoming Events",
+        "recentAnnouncements": "Recent Announcements", 
+        "studentAchievements": "Student Achievements"
+      }
+    },
+    "filters": {
+      "all": "All News",
+      "events": "Events",
+      "announcements": "Announcements",
+      "achievements": "Achievements"
+    },
+    "sectionTitles": {
+      "all": "All News & Updates",
+      "events": "Upcoming Events",
+      "announcements": "Latest Announcements",
+      "achievements": "Student Achievements"
+    },
+    "categoryLabels": {
+      "event": "Event",
+      "announcement": "Announcement",
+      "achievement": "Achievement"
+    },
+    "itemCount": {
+      "singular": "item",
+      "plural": "items"
+    },
+    "featured": {
+      "tag": "Featured",
+      "title": "Annual Tech Symposium 2025",
+      "excerpt": "Join us for our biggest technology event of the year featuring industry leaders, innovative workshops, and networking opportunities that will shape the future of tech education."
+    },
+    "buttons": {
+      "learnMore": "Learn More",
+      "registerNow": "Register Now",
+      "readMore": "Read More"
+    },
+    "items": {
+      "techSymposium": {
+        "date": "March 15, 2025",
+        "title": "Annual Tech Symposium 2025",
+        "excerpt": "Join us for our biggest technology event featuring industry leaders and innovative workshops."
+      },
+      "industryPartnership": {
+        "date": "March 10, 2025",
+        "title": "New Industry Partnership with Global Tech Giants",
+        "excerpt": "FIA announces strategic partnerships with leading technology companies to enhance student opportunities."
+      },
+      "springOpenHouse": {
+        "date": "March 8, 2025",
+        "title": "Spring Open House Event",
+        "excerpt": "Explore our campus, meet faculty, and discover the programs that will transform your career."
+      },
+      "hackathonWinners": {
+        "date": "March 5, 2025",
+        "title": "FIA Students Win National Hackathon",
+        "excerpt": "Our talented students secured first place in the national coding competition with their innovative AI solution."
+      },
+      "quantumCourse": {
+        "date": "March 1, 2025",
+        "title": "New Quantum Computing Course Launch",
+        "excerpt": "Introducing cutting-edge quantum computing curriculum designed for the next generation of tech professionals."
+      },
+      "aiEthicsLecture": {
+        "date": "February 28, 2025",
+        "title": "Special Lecture on AI Ethics",
+        "excerpt": "Renowned expert discusses the ethical implications of artificial intelligence in modern society."
+      }
+    },
+    "noResults": {
+      "title": "No",
+      "items": "items",
+      "description": "Try selecting a different category or check back later for new updates."
+    },
+    "loading": "Loading video...",
+    "videoNotSupported": "Your browser does not support the video tag.",
+    "readTime": "5 min read",
+    "navigation": {
+      "campusNavigationHub": "Campus Navigation Hub",
+      "liveMap": "Live Campus Map",
+      "updatedToday": "Updated Today",
+      "youAreHere": "You are here"
+    },
+    "actions": {
+      "exploreMore": "Explore More",
+      "viewDetails": "View Details",
+      "sendMessage": "Send Message",
+      "close": "Close",
+      "cancel": "Cancel",
+      "yesDelete": "Yes, Delete",
+      "delete": "Delete",
+      "approve": "Approve Application",
+      "reject": "Reject Application",
+      "markPending": "Mark as Pending",
+      "selectAll": "Select All",
+      "approveSelected": "Approve Selected",
+      "reviewSelected": "Review Selected",
+      "rejectSelected": "Reject Selected",
+      "exportFiltered": "Export Filtered"
+    }
+  },
+  "campusLife": {
+    "badge": "Campus Life",
+    "title": "Experience Campus Life",
+    "subtitle": "Discover the vibrant community and rich experiences that await you at our campus.",
+    "items": {
+      "studentLife": {
+        "title": "Student Life",
+        "description": "Experience vibrant student communities, cultural events, and lifelong friendships in our dynamic campus environment."
+      },
+      "clubs": {
+        "title": "Clubs & Activities", 
+        "description": "Join diverse clubs and organizations that match your interests and help you develop new skills and connections."
+      },
+      "dining": {
+        "title": "Campus Dining",
+        "description": "Enjoy delicious and nutritious meals from our variety of dining options featuring local and international cuisine."
+      },
+      "sports": {
+        "title": "Sports & Recreation",
+        "description": "Stay active with our comprehensive sports facilities, fitness centers, and recreational activities for all skill levels."
+      }
+    },
+    "map": {
+      "title": "Explore Our Campus",
+      "description": "Navigate our beautiful campus with our interactive map and discover all the amazing facilities and spaces available to students."
+    },
+    "dining": {
+      "title": "Niigata Dining Experience",
+      "gallery": "Niigata Culinary Journey",
+      "galleryDesc": "Discover authentic Niigata cuisine and local specialties that showcase the region's rich culinary heritage",
+      "foods": {
+        "mabomen": "Mabomen",
+        "rice": "Rice",
+        "pear": "Pear", 
+        "kiwamiSushi": "Kiwami Sushi",
+        "matsubaCrab": "Matsuba Crab",
+        "tareKatsudon": "Tare Katsudon",
+        "edamame": "Edamame",
+        "sasaDango": "Sasa Dango",
+        "kenchinJiru": "Kenchin-jiru",
+        "hegiSoba": "Hegi Soba",
+        "keiKaisendon": "Kei Kaisendon",
+        "tomiSushi": "Tomi Sushi"
+      },
+      "sports": {
+        "title": "Sports & Recreation",
+        "description": "Stay active with our fitness center, sports facilities, and recreational activities for all skill levels."
+      }
+    }
+  },
+  "facilities": {
+    "badge": "World-Class Facilities",
+    "title": "Modern Learning Environment",
+    "subtitle": "Experience education in state-of-the-art facilities designed to inspire innovation and foster collaborative learning in the heart of technology advancement.",
+    "items": {
+      "campus": {
+        "tag": "Main Campus",
+        "title": "State-of-the-Art Campus",
+        "description": "Our modern campus features cutting-edge technology labs, collaborative learning spaces, and innovative facilities designed to provide the best educational experience.",
+        "features": {
+          "modernBuildings": "Modern Architecture",
+          "laboratories": "Advanced Labs",
+          "library": "Digital Library",
+          "sportsFacilities": "Sports Complex"
+        }
+      },
+      "niigataLife": {
+        "tag": "City Life",
+        "title": "Life in Niigata",
+        "description": "Experience the perfect blend of traditional Japanese culture and modern city life in beautiful Niigata, known for its rich history, delicious cuisine, and stunning natural landscapes.",
+        "features": {
+          "culturalSites": "Cultural Heritage",
+          "localCuisine": "Local Cuisine",
+          "naturalBeauty": "Natural Beauty",
+          "festivals": "Traditional Festivals"
+        }
+      }
+    }
+  },
+  "team": {
+    "hero": {
+      "badge": "Our Team",
+      "title": "Meet Our",
+      "highlight": "Expert Faculty",
+      "description": "Discover the passionate educators and industry professionals dedicated to shaping the next generation of technology leaders through innovative teaching and real-world experience.",
+      "stats": {
+        "facultyMembers": "Faculty Members",
+        "experience": "Years Experience",
+        "satisfactionRate": "Satisfaction Rate",
+        "certifications": "Certifications"
+      },
+      "buttons": {
+        "exploreFaculty": "Explore Faculty",
+        "joinTeam": "Join Our Team"
+      }
+    },
+    "faculty": {
+      "badge": "Our Faculty",
+      "title": "Meet Our",
+      "highlight": "Distinguished",
+      "subtitle": "Teaching Team",
+      "description": "Our diverse team of educators brings together decades of industry experience, academic excellence, and a passion for student success to create an unparalleled learning environment."
+    },
+    "industryPartners": {
+      "badge": "Industry Partners",
+      "title": "Strategic Partners",
+      "description": "We collaborate with leading technology companies worldwide to provide students with real-world experience, internship opportunities, and direct pathways to successful careers.",
+      "benefits": {
+        "internships": {
+          "title": "Industry Internships",
+          "description": "Gain hands-on experience through internships with our partner companies across various technology sectors."
+        },
+        "mentorship": {
+          "title": "Professional Mentorship",
+          "description": "Connect with industry professionals who provide guidance, career advice, and networking opportunities."
+        },
+        "placement": {
+          "title": "Job Placement",
+          "description": "Direct placement opportunities with our partner companies upon graduation with competitive salaries."
+        }
+      },
+      "cta": {
+        "title": "Ready to Launch Your Tech Career?",
+        "description": "Join our industry-connected programs and get direct access to top technology companies through our extensive partnership network.",
+        "buttons": {
+          "joinProgram": "Join Program",
+          "partnerWithUs": "Partner With Us"
+        }
+      }
+    },
+    "testimonials": {
+      "badge": "Student Success",
+      "title": "Hear from Our",
+      "highlight": "Successful",
+      "subtitle": "Graduates",
+      "description": "Discover how our students have transformed their careers and achieved their dreams through our comprehensive programs and industry connections.",
+      "students": {
+        "yuki": {
+          "name": "Yuki Sato",
+          "role": "Software Engineer",
+          "company": "Tech Innovations Inc",
+          "year": "Class of 2023",
+          "program": "Full-Stack Development",
+          "quote": "FIA gave me the skills and confidence to land my dream job. The faculty support and industry connections made all the difference in my career journey."
+        },
+        "arjun": {
+          "name": "Arjun Kumar",
+          "role": "Data Scientist",
+          "company": "AI Solutions Ltd",
+          "year": "Class of 2022",
+          "program": "Data Science & AI",
+          "quote": "The hands-on projects and real-world applications prepared me perfectly for the industry. I'm now working on cutting-edge AI solutions."
+        },
+        "maria": {
+          "name": "Maria Thompson",
+          "role": "Product Manager",
+          "company": "Global Tech Corp",
+          "year": "Class of 2023",
+          "program": "Digital Marketing",
+          "quote": "The comprehensive curriculum and industry partnerships at FIA opened doors I never thought possible. I'm grateful for the excellent education."
+        }
+      },
+      "connectButton": "Connect",
+      "successStats": {
+        "badge": "Success Metrics",
+        "title": "Proven",
+        "highlight": "Results",
+        "description": "Our commitment to excellence is reflected in the outstanding achievements of our graduates and their successful integration into the technology industry.",
+        "employmentRate": {
+          "value": "95%",
+          "title": "Employment Rate",
+          "description": "Within 6 months of graduation"
+        },
+        "averageSalary": {
+          "value": "4.2M",
+          "title": "Average Salary",
+          "description": "Starting salary for graduates"
+        },
+        "jobSearchTime": {
+          "value": "2.5",
+          "title": "Months to Job",
+          "description": "Average job search duration"
+        },
+        "partnerCompanies": {
+          "value": "150+",
+          "title": "Partner Companies",
+          "description": "Global industry connections"
+        }
+      },
+      "cta": {
+        "badge": "Join Our Success Story",
+        "title": "Your Success Story",
+        "highlight": "Starts Here",
+        "description": "Take the first step towards an exciting career in technology. Join thousands of successful graduates who have transformed their lives through our programs.",
+        "buttons": {
+          "startJourney": "Start Your Journey",
+          "readMoreStories": "Read More Stories"
+        },
+        "trustIndicators": {
+          "noFee": "No Application Fee",
+          "response": "24hr Response",
+          "support": "Lifetime Support",
+          "certification": "Industry Certified"
+        }
+      }
+    }
+  },
+  "aboutSection": {
+    "header": {
+      "badge": "About FIA",
+      "title": "Why Choose FIA?",
+      "subtitle": "Discover what makes FIA the premier destination for technology education in Japan, where innovation meets opportunity and dreams become reality."
+    },
+    "features": {
+      "partnerships": {
+        "title": "Industry Partnerships",
+        "description": "Connect with leading technology companies through our extensive network of industry partnerships and collaboration programs.",
+        "highlight": "Global Network"
+      },
+      "instructors": {
+        "title": "Expert Instructors",
+        "description": "Learn from industry professionals and experienced educators who bring real-world knowledge to the classroom.",
+        "highlight": "Professional Excellence"
+      },
+      "facilities": {
+        "title": "Modern Facilities",
+        "description": "Study in state-of-the-art facilities equipped with the latest technology and collaborative learning spaces.",
+        "highlight": "Cutting-Edge Tech"
+      },
+      "career": {
+        "title": "Career Support",
+        "description": "Comprehensive career services including job placement assistance, interview preparation, and professional development.",
+        "highlight": "Success Guaranteed"
+      },
+      "certifications": {
+        "title": "Industry Certifications",
+        "description": "Earn recognized certifications from leading technology companies and industry organizations.",
+        "highlight": "Certified Excellence"
+      },
+      "support": {
+        "title": "Student Support",
+        "description": "24/7 student support services including academic guidance, personal counseling, and technical assistance.",
+        "highlight": "Always Available"
+      }
+    },
+    "cta": {
+      "badge": "Join FIA Today",
+      "title": "Transform Your Future",
+      "description": "Take the first step towards an exciting career in technology. Join thousands of successful graduates who have transformed their lives through our comprehensive programs.",
+      "imageAlt": "FIA Students",
+      "stats": {
+        "years": "Years Experience",
+        "graduates": "Graduates"
+      },
+      "button": "Learn More About FIA"
+    },
+    "testimonial": {
+      "quote": "FIA provided me with not just education, but a pathway to success. The hands-on learning approach and industry connections opened doors I never imagined possible. I'm now working at my dream company thanks to the skills and confidence I gained here.",
+      "author": {
+        "name": "Yuki Tanaka",
+        "title": "Software Engineer at Tech Corp"
+      }
+    }
+  },
+  "applicationForm": {
+    "steps": {
+      "personalInfo": {
+        "title": "Personal Information",
+        "description": "Tell us about yourself and how we can reach you"
+      },
+      "education": {
+        "title": "Educational Background", 
+        "description": "Share your academic history and relevant experience"
+      },
+      "programSelection": {
+        "title": "Program Selection",
+        "description": "Choose your preferred course and study format"
+      },
+      "additionalInfo": {
+        "title": "Additional Information",
+        "description": "Help us understand your goals and complete your application"
+      },
+      "default": "Application Step"
+    },
+    "fields": {
+      "fullName": "Full Name",
+      "email": "Email Address",
+      "phone": "Phone Number",
+      "dateOfBirth": "Date of Birth",
+      "address": "Address",
+      "highestEducation": "Highest Education Level",
+      "schoolName": "School/University Name",
+      "fieldOfStudy": "Field of Study",
+      "graduationYear": "Graduation Year",
+      "relevantExperience": "Relevant Experience (Optional)",
+      "course": "Preferred Course",
+      "studyFormat": "Study Format",
+      "startDate": "Preferred Start Date",
+      "programInterest": "Why are you interested in this program?",
+      "howDidYouHear": "How did you hear about us?",
+      "careerGoals": "Career Goals",
+      "questions": "Questions or Comments (Optional)",
+      "agreeToTerms": "I agree to the"
+    },
+    "options": {
+      "education": {
+        "highSchool": "High School Diploma",
+        "associates": "Associate's Degree",
+        "bachelors": "Bachelor's Degree",
+        "masters": "Master's Degree",
+        "doctorate": "Doctorate/PhD",
+        "other": "Other"
+      },
+      "courses": {
+        "webDevelopment": "Web Development",
+        "dataScience": "Data Science & Analytics",
+        "cybersecurity": "Cybersecurity",
+        "cloudComputing": "Cloud Computing",
+        "aiMachineLearning": "AI & Machine Learning"
+      },
+      "studyFormat": {
+        "fullTime": "Full-time",
+        "partTime": "Part-time",
+        "weekend": "Weekend Classes"
+      },
+      "startDate": {
+        "summer2025": "Summer 2025",
+        "fall2025": "Fall 2025",
+        "winter2026": "Winter 2026"
+      },
+      "howDidYouHear": {
+        "searchEngine": "Search Engine (Google, Yahoo, etc.)",
+        "socialMedia": "Social Media",
+        "friend": "Friend or Family Recommendation",
+        "advertisement": "Online Advertisement",
+        "event": "Information Session/Event",
+        "other": "Other"
+      }
+    },
+    "validation": {
+      "required": "This field is required",
+      "emailInvalid": "Please enter a valid email address"
+    },
+    "buttons": {
+      "back": "Back",
+      "continue": "Continue",
+      "submit": "Submit Application"
+    },
+    "stepIndicator": "Step {{current}} of {{total}}",
+    "termsLink": "Terms and Conditions",
+    "dataConsent": " and consent to data processing for application purposes.",
+    "unknownStep": "Unknown step. Please refresh the page."
+  },
+  "contactSection": {
+    "header": {
+      "badge": "Get in Touch",
+      "title": "Contact Us",
+      "subtitle": "Ready to start your journey? We're here to help you every step of the way. Reach out to us for admissions, course information, or any questions you may have."
+    },
+    "info": {
+      "title": "Contact Information",
+      "subtitle": "We're here to help you succeed"
+    },
+    "contact": {
+      "location": {
+        "title": "Campus Location",
+        "address": "1-1-10 Minamikamata, Ota-ku, Tokyo 144-0035, Japan"
+      },
+      "phone": {
+        "title": "Phone & Fax",
+        "tel": "Tel",
+        "fax": "Fax"
+      },
+      "website": {
+        "title": "Official Website"
+      },
+      "hours": {
+        "title": "Office Hours",
+        "time": "Monday - Friday: 9:00 AM - 6:00 PM JST"
+      }
+    },
+    "social": {
+      "connect": "Connect with us"
+    },
+    "buttons": {
+      "contactUs": "Contact Us",
+      "getDirections": "Get Directions",
+      "viewAllFAQs": "View All FAQs"
+    },
+    "map": {
+      "title": "FIA Campus Location Map"
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "items": {
+        "campusTour": {
+          "question": "Can I schedule a campus tour?",
+          "answer": "Yes! We offer guided campus tours every weekday. Contact us to schedule your visit and see our state-of-the-art facilities firsthand."
+        },
+        "deadlines": {
+          "question": "What are the application deadlines?",
+          "answer": "Application deadlines vary by program and intake period. Generally, we have three intake periods per year. Contact our admissions team for specific dates."
+        }
+      }
+    }
+  },
+  "courseSection": {
+    "header": {
+      "badge": "Our Courses",
+      "title": "Our Featured Courses",
+      "subtitle": "Discover our comprehensive range of technology courses designed to equip you with the skills needed to excel in today's digital landscape."
+    },
+    "filters": {
+      "all": "All Courses",
+      "webDevelopment": "Web Development",
+      "dataScience": "Data Science",
+      "cybersecurity": "Cybersecurity",
+      "cloudComputing": "Cloud Computing"
+    },
+    "courses": {
+      "webDev": {
+        "title": "Full-Stack Web Development",
+        "description": "Master modern web development with React, Node.js, and MongoDB. Build responsive, scalable applications from frontend to backend.",
+        "duration": "16 weeks",
+        "startDate": "April 15, 2025",
+        "category": "Web Development",
+        "level": "Beginner",
+        "features": [
+          "React & Node.js Mastery",
+          "Database Design & Management",
+          "Real-world Project Portfolio"
+        ]
+      },
+      "dataScience": {
+        "title": "Data Science & Analytics",
+        "description": "Learn Python, machine learning, and data visualization to extract insights from complex datasets and drive business decisions.",
+        "duration": "20 weeks",
+        "startDate": "May 1, 2025",
+        "category": "Data Science",
+        "level": "Intermediate",
+        "features": [
+          "Python & R Programming",
+          "Machine Learning Algorithms",
+          "Data Visualization Tools"
+        ]
+      },
+      "cybersecurity": {
+        "title": "Cybersecurity Specialist",
+        "description": "Protect organizations from cyber threats with comprehensive security training covering ethical hacking, network security, and incident response.",
+        "duration": "18 weeks",
+        "startDate": "June 1, 2025",
+        "category": "Cybersecurity",
+        "level": "Advanced",
+        "features": [
+          "Ethical Hacking Techniques",
+          "Network Security Protocols",
+          "Incident Response Planning"
+        ]
+      },
+      "cloudComputing": {
+        "title": "Cloud Computing & DevOps",
+        "description": "Master cloud platforms like AWS and Azure, learn containerization with Docker, and implement CI/CD pipelines.",
+        "duration": "14 weeks",
+        "startDate": "April 20, 2025",
+        "category": "Cloud Computing",
+        "level": "Intermediate",
+        "features": [
+          "AWS & Azure Certification",
+          "Docker & Kubernetes",
+          "CI/CD Pipeline Implementation"
+        ]
+      },
+      "aiMl": {
+        "title": "AI & Machine Learning",
+        "description": "Dive deep into artificial intelligence and machine learning with TensorFlow, PyTorch, and advanced neural network architectures.",
+        "duration": "24 weeks",
+        "startDate": "July 1, 2025",
+        "category": "Artificial Intelligence",
+        "level": "Advanced",
+        "features": [
+          "TensorFlow & PyTorch",
+          "Neural Network Design",
+          "AI Model Deployment"
+        ]
+      },
+      "mobileDev": {
+        "title": "Mobile App Development",
+        "description": "Create native and cross-platform mobile applications using React Native, Flutter, and native iOS/Android development.",
+        "duration": "16 weeks",
+        "startDate": "May 15, 2025",
+        "category": "Mobile Development",
+        "level": "Beginner",
+        "features": [
+          "React Native & Flutter",
+          "iOS & Android Native",
+          "App Store Deployment"
+        ]
+      }
+    },
+    "buttons": {
+      "enrollNow": "Enroll Now",
+      "viewDetails": "View Details",
+      "viewAllCourses": "View All Courses",
+      "browseAllPrograms": "Browse All Programs"
+    },
+    "cta": {
+      "title": "Ready to Start Your Tech Journey?",
+      "description": "Join thousands of students who have transformed their careers with our industry-leading programs."
+    },
+    "courseCard": {
+      "starts": "Starts"
+    }
+  },
+  "footer": {
+    "aboutAcademy": "Forum Information Academy",
+    "aboutDescription": "Leading technology education institution dedicated to preparing students for successful careers in the digital economy through innovative programs and industry partnerships.",
+    "followUs": "Follow Us",
+    "quickLinks": "Quick Links",
+    "contactUs": "Contact Us",
+    "address": "〒950-2076 5-1 Kamishineimachi, Nishi-ku, Niigata City, Niigata Prefecture, Japan",
+    "phone": "TEL: 025-247-6300",
+    "fax": "FAX: 025-247-6305",
+    "websiteLabel": "https://www.forum.ac.jp/",
+    "hours": "Mon-Fri: 9:00 AM - 6:00 PM JST",
+    "copyright": "© {{year}} Forum Information Academy. All rights reserved.",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service"
+  },
+  "social": {
+    "facebook": "Follow us on Facebook",
+    "twitter": "Follow us on Twitter", 
+    "instagram": "Follow us on Instagram",
+    "linkedin": "Connect on LinkedIn",
+    "youtube": "Subscribe to our YouTube channel"
+  },
+    "header": {
+      "academy": "Forum Academy",
+      "programs": {
+        "title": "Our Programs",
+        "subtitle": "Choose your path to success",
+        "certifiedTrack": "Industry-certified • Professional track",
+        "viewAll": "Explore All Programs"
+      },
+      "about": {
+        "title": "About Us", 
+        "subtitle": "Discover our story and mission",
+        "learnMore": "Learn More About Us",
+        "description": "Learn more about our story"
+      },
+      "mobile": {
+        "programs": "Programs",
+        "about": "About"
+      }
+  },
+  "navigation": {
+    "home": "Home",
+    "programs": "Programs",
+    "about": "About",
+    "newsEvents": "News & Events",
+    "careerServices": "Career Services", 
+    "contact": "Contact",
+    "aboutUs": "About Us",
+    "ourTeam": "Our Team",
+    "industryPartners": "Industry Partners",
+    "studentSuccess": "Student Success",
+    "viewAllPrograms": "Explore All Programs"
+  },
+  "buttons": {
+    "login": "Login",
+    "applyNow": "Apply Now",
+    "getStarted": "Get Started",
+    "learnMore": "Learn More",
+    "viewDetails": "View Details",
+    "enrollNow": "Enroll Now"
+  },
+  "hero": {
+    "title": {
+      "line1": "Transform Your Future with",
+      "highlight": "Technology",
+      "line2": "Education"
+    },
+    "description": "Join thousands of students mastering cutting-edge technologies. Start your journey to a successful tech career today.",
+    "buttons": {
+      "explorePrograms": "Explore Programs",
+      "applyNow": "Apply Now"
+    },
+    "stats": {
+      "jobPlacement": "Job Placement",
+      "industryPartners": "Partners",
+      "yearsExcellence": "Years"
+    },
+    "techTags": {
+      "webDevelopment": "Web Dev",
+      "cybersecurity": "Security",
+      "dataScience": "Data Science",
+      "cloudComputing": "Cloud"
+    },
+    "imageAlt": "Technology Education"
+  },
+  "login": {
+    "closeModal": "Close login modal",
+    "header": {
+      "title": "Welcome Back",
+      "subtitle": "Sign in to your account to continue"
+    },
+    "form": {
+      "emailPlaceholder": "Email Address",
+      "passwordPlaceholder": "Password",
+      "rememberMe": "Remember me",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "signIn": "Sign In",
+      "signingIn": "Signing in..."
+    },
+    "register": {
+      "createAccount": "Create Account",
+      "newToPlatform": "New to our platform?"
+    },
+    "errors": {
+      "loginFailed": "Login failed. Please try again.",
+      "invalidCredentials": "Invalid email or password",
+      "serverError": "Server error. Please check if the backend is running properly.",
+      "connectionError": "Cannot connect to server. Please check your internet connection.",
+      "serviceUnavailable": "Service temporarily unavailable. Please contact support."
+    },
+    "success": {
+      "loginSuccessful": "Login successful! Redirecting to dashboard...",
+      "welcomeBack": "Welcome back!"
+    },
+    "placeholders": {
+      "enterEmail": "Enter your email",
+      "enterPassword": "Enter your password"
+    },
+    "buttons": {
+      "loginButton": "Sign In to Your Account",
+      "registerButton": "Create New Account",
+      "forgotPassword": "Forgot Password?",
+      "backToLogin": "Back to Login"
+    },
+    "labels": {
+      "email": "Email",
+      "password": "Password",
+      "rememberDevice": "Remember this device"
+    },
+    "validation": {
+      "emailRequired": "Email is required",
+      "passwordRequired": "Password is required",
+      "invalidEmailFormat": "Please enter a valid email address",
+      "passwordTooShort": "Password must be at least 6 characters"
+    }
+  },
+  "newsSection": {
+    "header": {
+      "badge": "Latest Updates",
+      "title": "Stay Updated with Latest News",
+      "subtitle": "Discover the latest developments, achievements, and exciting announcements from our vibrant academic community and industry partnerships."
+    },
+    "filters": {
+      "all": "All Updates",
+      "news": "News",
+      "events": "Events"
+    },
+    "categoryLabels": {
+      "event": "Event",
+      "news": "News"
+    },
+    "items": {
+      "techSymposium": {
+        "date": "March 15, 2025",
+        "title": "Annual Tech Symposium 2025",
+        "excerpt": "Join us for our biggest technology event featuring industry leaders, innovative workshops, and networking opportunities."
+      },
+      "industryPartnership": {
+        "date": "March 10, 2025", 
+        "title": "New Industry Partnership Announcement",
+        "excerpt": "FIA announces strategic partnerships with leading technology companies to enhance student opportunities and career prospects."
+      },
+      "springOpenHouse": {
+        "date": "March 8, 2025",
+        "title": "Spring Open House Event",
+        "excerpt": "Explore our campus, meet faculty, and discover the programs that will transform your career in technology."
+      },
+      "studentAwards": {
+        "date": "March 5, 2025",
+        "title": "Student Achievement Awards Ceremony",
+        "excerpt": "Celebrating outstanding academic performance and innovative projects by our talented students this semester."
+      },
+      "careerFair": {
+        "date": "March 1, 2025",
+        "title": "Virtual Career Fair 2025",
+        "excerpt": "Connect with top employers and explore exciting career opportunities in technology and innovation."
+      },
+      "aiLab": {
+        "date": "February 28, 2025",
+        "title": "New AI Research Lab Opening",
+        "excerpt": "State-of-the-art artificial intelligence research facility opens with cutting-edge equipment and resources."
+      }
+    },
+    "buttons": {
+      "readMore": "Read More",
+      "viewAllNews": "View All News"
+    },
+    "loading": "Loading video...",
+    "videoNotSupported": "Your browser does not support the video tag."
+  },
+  "preloader": {
+    "messages": {
+      "initializing": "Initializing application...",
+      "preparing": "Preparing resources...", 
+      "loading": "Loading content...",
+      "almostReady": "Almost ready..."
+    },
+    "techIcons": {
+      "development": "Development",
+      "cloud": "Cloud",
+      "security": "Security",
+      "data": "Data"
+    }
+  },
+  "register": {
+    "closeModal": "Close registration modal",
+    "header": {
+      "title": "Create Your Account",
+      "subtitle": "Join our community and start your journey to success"
+    },
+    "steps": {
+      "personal": "Personal",
+      "account": "Account", 
+      "security": "Security"
+    },
+    "form": {
+      "firstName": "Enter your first name",
+      "lastName": "Enter your last name",
+      "email": "Enter your email address",
+      "password": "Create a password (min 6 characters)",
+      "confirmPassword": "Confirm your password",
+      "createAccount": "Create Account",
+      "creatingAccount": "Creating Account..."
+    },
+    "studentInfo": {
+      "title": "Student Account Benefits",
+      "description": "Access exclusive learning resources, track your progress, and connect with instructors and fellow students."
+    },
+    "navigation": {
+      "back": "Back",
+      "next": "Next"
+    },
+    "success": {
+      "pendingTitle": "Registration Under Review",
+      "pendingMessage": "Thank you for registering! Your account is currently being reviewed by our admissions team. We'll notify you via email once your account is approved and ready to use."
+    },
+    "errors": {
+      "fillAllFields": "Please fill in all required fields",
+      "validEmail": "Please enter a valid email address",
+      "passwordsNoMatch": "Passwords do not match",
+      "passwordLength": "Password must be at least 6 characters long",
+      "registrationFailed": "Registration failed. Please try again later."
+    }
+  },
+  "statsSection": {
+    "header": {
+      "badge": "Our Success Metrics",
+      "title": "Proven Excellence",
+      "subtitle": "Our commitment to quality education and student success is reflected in these outstanding achievements that speak to our dedication and impact in the technology education sector."
+    },
+    "stats": {
+      "jobPlacement": {
+        "label": "Job Placement Rate"
+      },
+      "industryPartners": {
+        "label": "Industry Partners"
+      },
+      "programs": {
+        "label": "Specialized Programs"
+      },
+      "graduates": {
+        "label": "Successful Graduates"
+      }
+    }
+  },
+  "admin": {
+    "systemHealth": {
+      "title": "System Health",
+      "description": "Real-time system monitoring",
+      "status": "System Status"
+    },
+    "metrics": {
+      "serverLoad": {
+        "title": "Server Load",
+        "subtitle": "Current system load"
+      },
+      "storage": {
+        "title": "Storage Used",
+        "subtitle": "Disk space utilization"
+      },
+      "response": {
+        "title": "Response Time",
+        "subtitle": "Average API response"
+      },
+      "sessions": {
+        "title": "Active Sessions",
+        "subtitle": "Current user sessions"
+      },
+      "totalUsers": "Total Users",
+      "applications": "Applications",
+      "messages": "Messages",
+      "uptime": "System Uptime",
+      "pendingApproval": "Pending Approval",
+      "pendingReview": "Pending Review",
+      "needsResponse": "Needs Response",
+      "last30Days": "Last 30 days",
+      "downtime": "minutes downtime",
+      "totalActiveUsers": "Total Active Users",
+      "growthRate": "Growth rate",
+      "thisMonth": "this month"
+    },
+    "status": {
+      "optimal": "Optimal",
+      "growing": "Growing",
+      "fast": "Fast",
+      "active": "Active",
+      "approved": "Approved",
+      "resolved": "Resolved",
+      "excellent": "Excellent",
+      "live": "Live",
+      "liveMonitoring": "Live monitoring",
+      "automated": "Automated",
+      "allClear": "All Clear",
+      "pending": "Pending",
+      "rejected": "Rejected",
+      "underReview": "Under Review"
+    },
+    "userDistribution": {
+      "title": "User Distribution",
+      "subtitle": "Overview of user roles and types"
+    },
+    "roles": {
+      "students": "Students",
+      "studentsDesc": "Enrolled learners",
+      "teachers": "Teachers",
+      "teachersDesc": "Faculty members",
+      "administrators": "Administrators",
+      "administratorsDesc": "System admins"
+    },
+    "activity": {
+      "title": "Real-time Activity",
+      "subtitle": "Live system events and user actions",
+      "newRegistration": "New {{role}} registration",
+      "awaitingApproval": "awaiting approval",
+      "newContactMessage": "New contact message",
+      "securityScan": "Security scan completed",
+      "noThreats": "No threats detected. All systems secure.",
+      "databaseBackup": "Database backup completed",
+      "backupSuccess": "Daily backup successful. 2.4GB archived."
+    },
+    "time": {
+      "fiveMinutesAgo": "5 minutes ago",
+      "oneHourAgo": "1 hour ago"
+    },
+    "actions": {
+      "approve": "Approve",
+      "reject": "Reject",
+      "priority": "Priority",
+      "resolve": "Resolve"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "manageUsers": "Manage Users",
+      "applications": "Applications",
+      "messages": "Messages",
+      "settings": "Settings"
+    },
+    "alerts": {
+      "title": "System Alerts",
+      "subtitle": "Recent notifications and warnings"
+    }
+  },
+  "userManagement": {
+      "title": "User Management",
+      "stats": {
+        "totalUsers": "total users",
+        "pending": "pending approval",
+        "approved": "approved"
+      },
+      "search": {
+        "placeholder": "Search by name, email, or ID..."
+      },
+      "filters": {
+        "allRoles": "All Roles",
+        "allStatus": "All Status",
+        "students": "Students",
+        "teachers": "Teachers",
+        "admins": "Administrators",
+        "approved": "Approved",
+        "pending": "Pending"
+      },
+      "roles": {
+        "student": "Student",
+        "teacher": "Teacher",
+        "admin": "Administrator"
+      },
+      "status": {
+        "approved": "Approved",
+        "pending": "Pending",
+        "needsReview": "Needs Review"
+      },
+      "actions": {
+        "createUser": "Create New User",
+        "cancel": "Cancel",
+        "updateUser": "Update User",
+        "confirmDelete": "Yes, Delete",
+        "approveUser": "Approve User",
+        "rejectUser": "Reject User",
+        "editUser": "Edit User",
+        "deleteUser": "Delete User",
+        "sendMessage": "Send Message",
+        "resetPassword": "Reset Password"
+      },
+      "modals": {
+        "createUser": {
+          "title": "Create New User"
+        },
+        "editUser": {
+          "title": "Edit User"
+        },
+        "deleteUser": {
+          "title": "Delete User",
+          "message": "Are you sure you want to delete {{name}} ({{email}})?",
+          "warning": "This action cannot be undone."
+        },
+        "sendMessage": {
+          "title": "Send Message",
+          "subtitle": "Send message to {{firstName}} {{lastName}}",
+          "to": "To:",
+          "subject": "Subject:",
+          "message": "Message:",
+          "subjectPlaceholder": "Enter subject...",
+          "messagePlaceholder": "Enter your message here...",
+          "cancel": "Cancel",
+          "send": "Send Message"
+        }
+      },
+      "fields": {
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "email": "Email Address",
+        "password": "Password",
+        "newPassword": "New Password",
+        "role": "Role"
+      },
+      "placeholders": {
+        "firstName": "Enter first name",
+        "lastName": "Enter last name",
+        "email": "Enter email address",
+        "password": "Enter password",
+        "newPassword": "Leave blank to keep current password"
+      },
+      "hints": {
+        "passwordHint": "Leave blank to keep current password"
+      },
+      "table": {
+        "headers": {
+          "user": "User",
+          "contact": "Contact",
+          "role": "Role",
+          "status": "Status",
+          "joined": "Joined",
+          "actions": "Actions"
+        },
+        "footer": {
+          "showing": "Showing {{showing}} of {{total}} users",
+          "filtered": "Filtered"
+        },
+        "pagination": {
+          "previous": "Previous",
+          "next": "Next",
+          "showing": "Showing {{from}} to {{to}} of {{total}} users",
+          "filtered": "filtered"
+        }
+      },
+      "time": {
+        "today": "Today",
+        "daysAgo": "{{days}} days ago"
+      }
+  },
+  "applicationManagement": {
+    "title": "Application Management",
+    "subtitle": "Review and manage student applications efficiently",
+    "total": "Total Applications",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "searchPlaceholder": "Search applications...",
+    "allPrograms": "All Programs",
+    "allStatus": "All Status",
+    "export": "Export Applications",
+    "viewDetails": "Application Details",
+    "personalInfo": "Personal Information",
+    "contactInfo": "Contact Information", 
+    "academicInfo": "Academic Information",
+    "submittedOn": "Submitted On",
+    "applicationId": "Application ID",
+    "deleteApplication": "Delete Application",
+    "deleteConfirmation": "Are you sure you want to delete the application from \"{{name}}\" for {{program}}?",
+    "noApplications": "No applications found",
+    "noFilteredApplications": "Try adjusting your search or filter criteria.",
+    "noApplicationsYet": "Applications will appear here once submitted.",
+    "stats": {
+      "totalApplications": "Total Applications",
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "search": {
+      "placeholder": "Search by name, email, or application ID...",
+      "allPrograms": "All Programs",
+      "allStatus": "All Status"
+    },
+    "programs": {
+      "webDevelopment": "Web Development",
+      "dataScience": "Data Science",
+      "cybersecurity": "Cybersecurity",
+      "cloudComputing": "Cloud Computing",
+      "aiMachineLearning": "AI & Machine Learning",
+      "webdevelopment": "Web Development",
+      "datascience": "Data Science",
+      "machinelearning": "Machine Learning",
+      "mobileappdevelopment": "Mobile App Development"
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "underReview": "Under Review",
+      "needsReview": "Needs Review"
+    },
+    "buttons": {
+      "exportData": "Export Data",
+      "approve": "Approve",
+      "reject": "Reject",
+      "sendMessage": "Send Message",
+      "close": "Close",
+      "cancel": "Cancel",
+      "yesDelete": "Yes, Delete",
+      "clearFilters": "Clear Filters",
+      "selectAll": "Select All",
+      "approveSelected": "Approve Selected",
+      "reviewSelected": "Review Selected",
+      "rejectSelected": "Reject Selected",
+      "exportFiltered": "Export Filtered"
+    },
+    "table": {
+      "headers": {
+        "applicant": "Applicant",
+        "contact": "Contact",
+        "program": "Program",
+        "status": "Status",
+        "submitted": "Submitted",
+        "actions": "Actions"
+      },
+      "actions": {
+        "view": "View Application",
+        "approve": "Approve Application",
+        "reject": "Reject Application",
+        "sendMessage": "Send Message",
+        "delete": "Delete Application",
+        "underReview": "Under Review",
+        "viewDetails": "View Application Details",
+        "sendMessageToApplicant": "Send Message to Applicant"
+      },
+      "daysAgo": "days ago"
+    },
+    "emptyState": {
+      "noApplicationsFound": "No Applications Found",
+      "noApplicationsOnPage": "No Applications on This Page",
+      "adjustFilters": "Try adjusting your search filters or check back later for new applications.",
+      "navigateToOtherPage": "Navigate to other pages to view more applications.",
+      "noApplications": "No applications found",
+      "noFilteredApplications": "Try adjusting your search or filter criteria.",
+      "noApplicationsYet": "Applications will appear here once submitted."
+    },
+    "modals": {
+      "viewApplication": {
+        "title": "Application Details",
+        "applicationId": "Application ID",
+        "personalInfo": "Personal Information",
+        "contactInfo": "Contact Information",
+        "academicInfo": "Academic Information",
+        "personalStatement": "Personal Statement",
+        "notProvided": "Not provided",
+        "sendMessage": "Send Message",
+        "close": "Close",
+        "fields": {
+          "submittedOn": "Submitted On",
+          "fullName": "Full Name",
+          "email": "Email Address",
+          "phone": "Phone Number",
+          "dateOfBirth": "Date of Birth",
+          "address": "Address",
+          "city": "City",
+          "country": "Country",
+          "programInterested": "Program of Interest",
+          "educationLevel": "Education Level"
+        }
+      },
+      "deleteConfirm": {
+        "title": "Delete Application",
+        "message": "Are you sure you want to delete the application from {{firstName}} {{lastName}} for {{program}}?",
+        "warning": "This action cannot be undone.",
+        "cancel": "Cancel",
+        "delete": "Delete"
+      },
+      "sendMessage": {
+        "title": "Send Message to {{firstName}} {{lastName}}",
+        "fields": {
+          "to": "To",
+          "subject": "Subject", 
+          "message": "Message"
+        },
+        "send": "Send Message",
+        "cancel": "Cancel",
+        "placeholder": "Type your message here..."
+      }
+    },
+    "common": {
+      "notProvided": "Not provided",
+      "today": "Today",
+      "daysAgo": "{{days}} days ago",
+      "needsReview": "Needs Review",
+      "items": "items",
+      "cannotBeUndone": "This action cannot be undone."
+    },
+    "pagination": {
+      "showing": "Showing",
+      "of": "of", 
+      "results": "applications",
+      "filtered": "Filtered",
+      "previous": "Previous",
+      "prev": "Prev",
+      "next": "Next",
+      "page": "Page"
+    }
+  },
+  "contactManagement": {
+    "title": "Contact Management",
+    "stats": {
+      "totalMessages": "total messages",
+      "pending": "pending",
+      "resolved": "resolved",
+      "priority": "priority"
+    },
+    "search": {
+      "placeholder": "Search by name, email, or subject...",
+      "allCategories": "All Categories",
+      "allStatus": "All Status"
+    },
+    "categories": {
+      "general": "General",
+      "admissions": "Admissions",
+      "courses": "Courses",
+      "careers": "Careers",
+      "others": "Others"
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "resolved": "Resolved",
+      "ignored": "Ignored"
+    },
+    "buttons": {
+      "exportMessages": "Export Messages",
+      "view": "View",
+      "delete": "Delete",
+      "close": "Close",
+      "cancel": "Cancel",
+      "deleteContact": "Delete Contact",
+      "resolveSelected": "Resolve Selected",
+      "markPriority": "Mark Priority",
+      "ignoreSelected": "Ignore Selected",
+      "exportFiltered": "Export Filtered"
+    },
+    "section": {
+      "title": "Contact Messages",
+      "description": "Manage and respond to contact form submissions",
+      "noSubmissions": "No Contact Submissions Yet",
+      "noSubmissionsText": "When users submit contact forms, they will appear here for review and response."
+    },
+    "table": {
+      "headers": {
+        "contact": "Contact",
+        "details": "Details",
+        "message": "Message",
+        "status": "Status",
+        "received": "Received",
+        "actions": "Actions"
+      },
+      "actions": {
+        "viewDetails": "View Contact Details",
+        "deleteContact": "Delete Contact"
+      },
+      "statusLabels": {
+        "pendingStatus": "Pending",
+        "priorityStatus": "Priority",
+        "resolvedStatus": "Resolved",
+        "ignoredStatus": "Ignored",
+        "needsResponse": "Needs Response"
+      }
+    },
+    "modals": {
+      "contactDetails": {
+        "title": "Contact Details",
+        "fields": {
+          "name": "Name",
+          "email": "Email Address",
+          "phone": "Phone Number",
+          "subject": "Subject",
+          "message": "Message",
+          "status": "Status",
+          "submitted": "Submitted On"
+        }
+      },
+      "deleteConfirm": {
+        "title": "Delete Contact",
+        "message": "Are you sure you want to delete this contact submission?",
+        "warning": "This action cannot be undone.",
+        "fields": {
+          "name": "Name: ",
+          "email": "Email: ",
+          "subject": "Subject: "
+        }
+      }
+    },
+    "footer": {
+      "showing": "Showing",
+      "of": "of",
+      "messages": "messages",
+      "filtered": "filtered",
+      "previous": "Previous",
+      "next": "Next",
+      "selectAll": "Select All",
+      "items": "items"
+    },
+    "time": {
+      "today": "Today",
+      "dayAgo": "1 day ago",
+      "daysAgo": "days ago"
+    }
+  },
+  "adminDashboard": {
+    "breadcrumb": {
+      "adminPortal": "Admin Portal",
+      "dashboard": "Dashboard",
+      "overview": "Overview",
+      "users": "User Management",
+      "applications": "Application Management",
+      "contacts": "Contact Management",
+      "settings": "System Settings"
+    },
+    "quickStats": {
+      "pendingUsers": "Pending Users",
+      "newApplications": "New Applications",
+      "unreadMessages": "Unread Messages"
+    },
+    "floatingActions": {
+      "createNewUser": "Create New User",
+      "sendAnnouncement": "Send Announcement",
+      "generateReport": "Generate Report",
+      "systemSettings": "System Settings"
+    }
+  },
+  "adminSettings": {
+    "title": "System Settings",
+    "description": "Configure system preferences and manage administrative settings",
+    "buttons": {
+      "resetDefaults": "Reset to Defaults",
+      "saveAllSettings": "Save All Settings",
+      "changePassword": "Change Password",
+      "twoFactorSettings": "Two-Factor Auth"
+    },
+    "profile": {
+      "title": "Administrator Profile",
+      "role": "Administrator",
+      "fields": {
+        "fullName": "Full Name",
+        "emailAddress": "Email Address",
+        "adminId": "Administrator ID",
+        "accessLevel": "Access Level",
+        "phoneNumber": "Phone Number",
+        "lastLogin": "Last Login"
+      },
+      "placeholders": {
+        "enterFullName": "Enter your full name",
+        "enterEmail": "Enter your email address",
+        "enterPhone": "Enter your phone number"
+      },
+      "accessLevels": {
+        "superAdmin": "Super Administrator",
+        "systemAdmin": "System Administrator",
+        "contentAdmin": "Content Administrator",
+        "userAdmin": "User Administrator"
+      }
+    },
+    "language": {
+      "title": "Language Settings",
+      "interfaceLanguage": "Interface Language",
+      "description": "Choose your preferred language for the admin interface",
+      "languages": {
+        "english": "English",
+        "japanese": "Japanese",
+        "japaneseName": "日本語"
+      },
+      "changeNotification": {
+        "title": "Language Changed",
+        "message": "Interface language has been updated to {{language}}"
+      },
+      "switcher": {
+        "currentJapanese": "日本語 (Current)",
+        "switchToJapanese": "Switch to 日本語",
+        "currentEnglish": "English (Current)",
+        "switchToEnglish": "Switch to English"
+      },
+      "adminNote": {
+        "title": "Administrator Note",
+        "message": "Language changes affect the entire admin interface and will persist across sessions."
+      }
+    },
+    "display": {
+      "title": "Display Preferences",
+      "darkMode": "Dark Mode",
+      "description": "Toggle between light and dark interface themes",
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "system": {
+      "title": "System Configuration",
+      "preferences": {
+        "title": "System Preferences",
+        "automaticBackups": "Automatic Backups",
+        "automaticBackupsDesc": "Enable daily system backups",
+        "maintenanceNotifications": "Maintenance Notifications",
+        "maintenanceNotificationsDesc": "Receive system maintenance alerts",
+        "debugLogging": "Debug Logging",
+        "debugLoggingDesc": "Enable detailed error logging",
+        "realtimeMonitoring": "Real-time Monitoring",
+        "realtimeMonitoringDesc": "Monitor system performance live"
+      },
+      "notifications": {
+        "title": "Notification Settings",
+        "userRegistration": "New User Registrations",
+        "systemErrors": "System Error Alerts",
+        "securityAlerts": "Security Notifications",
+        "backupStatus": "Backup Status Reports",
+        "performanceWarnings": "Performance Warnings"
+      },
+      "security": {
+        "title": "Security Settings",
+        "description": "Manage password and authentication settings for enhanced security"
+      }
+    }
+  },
+  "adminSidebar": {
+    "navigation": {
+      "overview": "Overview",
+      "users": "Users",
+      "applications": "Applications",
+      "contacts": "Contacts",
+      "settings": "Settings"
+    },
+    "quickStats": {
+      "title": "Quick Stats",
+      "systemHealth": "System Health",
+      "onlineUsers": "Online Users"
+    },
+    "darkMode": {
+      "title": "Dark Mode Active",
+      "subtitle": "Enhanced for night viewing"
+    }
+  },
+  "defaultSidebar": {
+    "navigation": {
+      "overview": "Overview",
+      "courses": "Courses",
+      "analytics": "Analytics", 
+      "messages": "Messages",
+      "settings": "Settings"
+    },
+    "learningProgress": {
+      "title": "Learning Progress",
+      "complete": "Complete"
+    },
+    "quickAccess": {
+      "title": "Quick Access",
+      "latestLesson": "Latest Lesson",
+      "todaysGoals": "Today's Goals",
+      "gradeReport": "Grade Report"
+    },
+    "helpSupport": {
+      "title": "Help & Support"
+    }
+  },
+  "dashboard": {
+    "loading": {
+      "title": "Loading Dashboard...",
+      "message": "Please wait while we load your personalized dashboard"
+    },
+    "error": {
+      "title": "Dashboard Error",
+      "message": "Unable to load dashboard content. Please try refreshing the page.",
+      "retry": "Retry"
+    },
+    "roleSwitch": {
+      "loading": "Switching dashboard view...",
+      "error": "Unable to switch dashboard view"
+    }
+  },
+  "dashboardTabs": {
+    "student": {
+      "overview": "Overview",
+      "courses": "Courses",
+      "analytics": "Analytics",
+      "messages": "Messages",
+      "settings": "Settings"
+    },
+    "teacher": {
+      "overview": "Overview",
+      "courses": "My Courses",
+      "analytics": "Analytics",
+      "messages": "Communications",
+      "settings": "Settings"
+    },
+    "portal": {
+      "fia": "FIA Portal",
+      "studentDashboard": "Student Dashboard",
+      "teacherDashboard": "Teacher Dashboard",
+      "logout": "Logout"
+    },
+    "header": {
+      "welcomeBack": "Welcome back, {{name}}!",
+      "todayActivity": "Here's what's happening with your {{role}} activities today",
+      "lightMode": "Light Mode",
+      "darkMode": "Dark Mode",
+      "online": "Online"
+    }
+  },
+  "roleUtilities": {
+    "roles": {
+      "student": "Student",
+      "teacher": "Teacher",
+      "admin": "Administrator",
+      "default": "User"
+    },
+    "dashboardTitles": {
+      "student": "Student Dashboard",
+      "teacher": "Teacher Dashboard",
+      "admin": "Admin Dashboard",
+      "default": "Dashboard"
+    },
+    "roleDescriptions": {
+      "student": "Learning and course management",
+      "teacher": "Teaching and student engagement",
+      "admin": "System administration and oversight",
+      "default": "General portal access"
+    },
+    "roleIcons": {
+      "student": "🎓",
+      "teacher": "👨‍🏫",
+      "admin": "👨‍💼",
+      "default": "👤"
+    }
+  },
+  "roleBadge": {
+    "sizes": {
+      "small": "Small Badge",
+      "medium": "Medium Badge", 
+      "large": "Large Badge",
+      "extraLarge": "Extra Large Badge"
+    },
+    "animations": {
+      "enabled": "Animations enabled",
+      "disabled": "Animations disabled"
+    },
+    "accessibility": {
+      "roleIndicator": "Role indicator for {{role}}",
+      "clickable": "Clickable role badge",
+      "decorative": "Decorative role display"
+    }
+  },
+  "dashboardTitle": {
+    "todaysActivity": "Today's Activity",
+    "performance": "Performance", 
+    "status": "Status",
+    "active": "Active",
+    "stats": {
+      "student": {
+        "activity": "5",
+        "performance": "92%",
+        "status": "Active"
+      },
+      "teacher": {
+        "activity": "12", 
+        "performance": "98%",
+        "status": "Active"
+      },
+      "admin": {
+        "activity": "47",
+        "performance": "99%", 
+        "status": "Active"
+      }
+    },
+    "accessibility": {
+      "titleCard": "Dashboard title card for {{role}}",
+      "statsGrid": "Performance statistics grid",
+      "statItem": "{{statType}} statistic: {{value}}"
+    }
+  },
+  "roleSelector": {
+    "label": "Select Role",
+    "description": "Choose the appropriate role for this user",
+    "placeholder": "Please select a role",
+    "required": "Role selection is required",
+    "disabled": "Role selection is currently disabled",
+    "accessibility": {
+      "roleOption": "Role option: {{role}}",
+      "selectedRole": "Currently selected role: {{role}}",
+      "selectionGroup": "Role selection group",
+      "selectionIndicator": "Selected role indicator"
+    },
+    "validation": {
+      "required": "Please select a role",
+      "invalid": "Please select a valid role",
+      "unauthorized": "You don't have permission to assign this role"
+    },
+    "states": {
+      "loading": "Loading roles...",
+      "error": "Error loading roles",
+      "success": "Role updated successfully"
+    },
+    "help": {
+      "student": "Students can access courses and track their learning progress",
+      "teacher": "Teachers can create courses, manage students, and track engagement",
+      "admin": "Administrators have full system access and user management capabilities"
+    }
+  },
+  "loadingScreen": {
+    "title": "Loading Dashboard",
+    "subtitle": "Preparing your personalized experience",
+    "steps": {
+      "authenticating": "Authenticating user",
+      "loadingData": "Loading user data",
+      "customizing": "Customizing interface"
+    },
+    "messages": {
+      "pleaseWait": "Please wait while we set everything up",
+      "almostReady": "Almost ready...",
+      "finalizing": "Finalizing setup"
+    }
+  },
+  "adminPortal": {
+    "title": "Admin Portal",
+    "subtitle": "System Administration",
+    "welcomeBack": "Welcome back, {{name}}!",
+    "todayActivity": "Here's your administrative overview for today",
+    "online": "Online",
+    "logout": "Logout",
+    "accessibility": {
+      "adminSidebar": "Administrative navigation sidebar",
+      "mainContent": "Main administrative content area",
+      "headerControls": "Header control buttons"
+    }
+  },
+  "dashboardAlerts": {
+    "noApplicationSelected": "No application selected for deletion",
+    "noAuthToken": "No authentication token found",
+    "applicationDeletedSuccess": "Application deleted successfully!",
+    "applicationDeleteError": "Error deleting application. Please try again.",
+    "messageSentSuccess": "Message sent successfully!",
+    "messageSendError": "Error sending message. Please try again.",
+    "userApprovedSuccess": "User approved successfully!",
+    "userRejectedSuccess": "User rejected successfully!",
+    "userApprovalError": "Failed to approve user",
+    "userRejectionError": "Failed to reject user",
+    "contactApprovedSuccess": "Contact submission approved successfully!",
+    "contactRejectedSuccess": "Contact submission rejected successfully!",
+    "contactApprovalError": "Failed to approve contact",
+    "contactRejectionError": "Failed to reject contact",
+    "applicationApprovedSuccess": "Application approved successfully!",
+    "applicationRejectedSuccess": "Application rejected successfully!",
+    "applicationApprovalError": "Failed to approve application",
+    "applicationRejectionError": "Failed to reject application",
+    "userCreatedSuccess": "User created successfully!",
+    "userCreationError": "Error creating user"
+  }
+}
