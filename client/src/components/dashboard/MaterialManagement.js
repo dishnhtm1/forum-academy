@@ -199,7 +199,7 @@ const MaterialManagement = ({ currentUser }) => {
 
   const filteredMaterials = materials.filter(material => {
     return (
-      (selectedCourse === '' || material.course._id === selectedCourse) &&
+      (selectedCourse === '' || (material.course && material.course._id === selectedCourse)) &&
       (selectedCategory === '' || material.category === selectedCategory) &&
       (selectedFileType === '' || material.fileType === selectedFileType)
     );
