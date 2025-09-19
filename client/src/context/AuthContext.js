@@ -1,8 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api";
-const AuthContext = createContext();
+// src/context/AuthContext.js
+const API_URL =
+  process.env.REACT_APP_API_URL ||
+  "http://localhost:5000/api"; // fallback for local dev
+
 
 export function useAuth() {
     return useContext(AuthContext);
