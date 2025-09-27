@@ -31,12 +31,13 @@ const StudentProgress = ({ currentUser }) => {
     try {
       console.log('📊 Fetching student progress...');
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/progress', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/progress`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
+
 
       if (response.ok) {
         const result = await response.json();
@@ -57,12 +58,16 @@ const StudentProgress = ({ currentUser }) => {
     try {
       console.log('📈 Fetching progress summary...');
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/progress/student/${currentUser.id}/summary`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/progress/student/${currentUser.id}/summary`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
         }
-      });
+      );
+
 
       if (response.ok) {
         const result = await response.json();
@@ -81,7 +86,7 @@ const StudentProgress = ({ currentUser }) => {
     try {
       console.log('📢 Fetching announcements...');
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/announcements', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/announcements`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -106,13 +111,16 @@ const StudentProgress = ({ currentUser }) => {
   const markAnnouncementAsRead = async (announcementId) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/announcements/${announcementId}/read`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/announcements/${announcementId}/read`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
         }
-      });
+      );
 
       if (response.ok) {
         // Update local state

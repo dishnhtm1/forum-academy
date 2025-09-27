@@ -1,5 +1,6 @@
-// routes/analyticsRoutes.js
-const router = require('express').Router();
+﻿// routes/analyticsRoutes.js
+const express = require('express');
+const router = express.Router();
 
 // Example: Return fake dashboard stats so frontend stops 404
 router.get('/dashboard', (req, res) => {
@@ -14,4 +15,62 @@ router.get('/dashboard', (req, res) => {
   });
 });
 
-module.exports = router;
+// Stats endpoint for dashboard
+router.get('/stats', (req, res) => {
+  res.json({
+    totalUsers: 150,
+    totalCourses: 12,
+    totalQuizzes: 25,
+    totalHomework: 18,
+    totalListeningExercises: 8,
+    activeUsers: 75,
+    completedCourses: 45,
+    averageScore: 85
+  });
+});
+
+// Enrollments endpoint
+router.get('/enrollments', (req, res) => {
+  res.json([
+    {
+      id: 1,
+      studentName: 'John Doe',
+      courseName: 'JavaScript Fundamentals',
+      enrolledAt: new Date().toISOString(),
+      progress: 75,
+      status: 'active'
+    },
+    {
+      id: 2,
+      studentName: 'Jane Smith', 
+      courseName: 'React Advanced',
+      enrolledAt: new Date().toISOString(),
+      progress: 60,
+      status: 'active'
+    }
+  ]);
+});
+
+// Enrollment logs endpoint
+router.get('/enrollment-logs', (req, res) => {
+  res.json([
+    {
+      id: 1,
+      action: 'enrolled',
+      studentName: 'John Doe',
+      courseName: 'JavaScript Fundamentals',
+      timestamp: new Date().toISOString(),
+      details: 'Student enrolled in course'
+    },
+    {
+      id: 2,
+      action: 'completed',
+      studentName: 'Jane Smith',
+      courseName: 'HTML & CSS Basics',
+      timestamp: new Date().toISOString(),
+      details: 'Student completed course'
+    }
+  ]);
+});
+
+module.exports = router;

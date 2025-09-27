@@ -51,15 +51,19 @@ router.post('/send-email', authenticate, authorizeRoles('admin', 'superadmin', '
         }
         
         // Check if email configuration exists
-        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-            console.log('⚠️ Email configuration missing, simulating email send...');
+        const emailConfigured = !!(process.env.EMAIL_USER && process.env.EMAIL_PASS && process.env.EMAIL_PASS !== 'your-gmail-app-password-here');
+        
+        if (!emailConfigured) {
+            console.log('⚠️ Email configuration missing or incomplete, simulating email send...');
+            console.log('  EMAIL_USER:', process.env.EMAIL_USER ? 'Configured' : 'Missing');
+            console.log('  EMAIL_PASS:', process.env.EMAIL_PASS ? (process.env.EMAIL_PASS === 'your-gmail-app-password-here' ? 'Using placeholder' : 'Configured') : 'Missing');
             
-            // Simulate email sending for development
+            // Simulate email sending for development/testing
             await new Promise(resolve => setTimeout(resolve, 1000));
             
             return res.json({
                 success: true,
-                message: 'Email simulated successfully (email service not configured)',
+                message: 'Reply processed successfully (email service not configured)',
                 details: {
                     recipient: to,
                     subject: subject,
@@ -211,14 +215,47 @@ router.post('/send-email', authenticate, authorizeRoles('admin', 'superadmin', '
 
 // Test email configuration
 router.get('/test-config', authenticate, authorizeRoles('admin', 'superadmin'), (req, res) => {
+    const emailConfigured = !!(process.env.EMAIL_USER && process.env.EMAIL_PASS && process.env.EMAIL_PASS !== 'your-gmail-app-password-here');
+    
     res.json({
         success: true,
-        emailConfigured: !!(process.env.EMAIL_USER && process.env.EMAIL_PASS),
+        emailConfigured: emailConfigured,
         emailUser: process.env.EMAIL_USER ? `${process.env.EMAIL_USER.substring(0, 3)}***` : 'Not configured',
-        message: process.env.EMAIL_USER && process.env.EMAIL_PASS 
-            ? 'Email service is configured' 
+        emailPassStatus: process.env.EMAIL_PASS 
+            ? (process.env.EMAIL_PASS === 'your-gmail-app-password-here' ? 'Using placeholder' : 'Configured') 
+            : 'Not configured',
+        message: emailConfigured 
+            ? 'Email service is configured and ready' 
             : 'Email service not configured - emails will be simulated'
     });
+});
+
+// Test email sending (for debugging)
+router.post('/test-send', authenticate, authorizeRoles('admin', 'superadmin'), async (req, res) => {
+    try {
+        console.log('🧪 Testing email send functionality...');
+        
+        // Use admin's email as recipient for testing
+        const testEmailData = {
+            to: req.user.email,
+            subject: 'Test Email from Forum Academy',
+            message: 'This is a test email to verify the email service is working correctly.',
+            type: 'test',
+            relatedId: null
+        };
+        
+        // Forward to the main send-email endpoint
+        req.body = testEmailData;
+        return router.stack.find(r => r.route && r.route.path === '/send-email').route.stack[0].handle(req, res);
+        
+    } catch (error) {
+        console.error('❌ Test email error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Test email failed',
+            error: error.message
+        });
+    }
 });
 
 console.log('✅ emailRoutes.js loaded successfully');

@@ -18,14 +18,56 @@ const storage = multer.memoryStorage();
 const upload = multer({
   storage: storage,
   limits: {
-    fileSize: 30 * 1024 * 1024 // 30MB limit to handle larger files temporarily
+    fileSize: 50 * 1024 * 1024 // Increase to 50MB limit
   },
   fileFilter: function (req, file, cb) {
     console.log('🔍 File upload filter - File:', file.originalname, 'Size:', file.size, 'Type:', file.mimetype);
-    if (file.mimetype.startsWith('audio/')) {
+    
+    // Accept audio files with proper MIME type detection
+    const allowedMimeTypes = [
+      'audio/mpeg',     // MP3
+      'audio/mp3',      // Alternative MP3
+      'audio/wav',      // WAV
+      'audio/wave',     // Alternative WAV
+      'audio/x-wav',    // Another WAV variant
+      'audio/ogg',      // OGG
+      'audio/mp4',      // MP4 audio
+      'audio/aac'       // AAC
+    ];
+    
+    // Also check file extension as fallback
+    const fileExt = file.originalname.toLowerCase().split('.').pop();
+    const allowedExtensions = ['mp3', 'wav', 'ogg', 'aac', 'm4a'];
+    
+    const isValidMimeType = allowedMimeTypes.includes(file.mimetype);
+    const isValidExtension = allowedExtensions.includes(fileExt);
+    
+    if (isValidMimeType || isValidExtension) {
+      // If MIME type is generic but extension is valid, set proper MIME type
+      if (file.mimetype === 'application/octet-stream' || !file.mimetype) {
+        switch (fileExt) {
+          case 'mp3':
+            file.mimetype = 'audio/mpeg';
+            break;
+          case 'wav':
+            file.mimetype = 'audio/wav';
+            break;
+          case 'ogg':
+            file.mimetype = 'audio/ogg';
+            break;
+          case 'aac':
+          case 'm4a':
+            file.mimetype = 'audio/aac';
+            break;
+          default:
+            file.mimetype = 'audio/mpeg'; // Default fallback
+        }
+        console.log('🔧 Corrected MIME type to:', file.mimetype);
+      }
       cb(null, true);
     } else {
-      cb(new Error('Only audio files are allowed!'), false);
+      console.log('❌ Rejected file - invalid type/extension');
+      cb(new Error(`Only audio files are allowed! Received: ${file.mimetype} (${fileExt})`), false);
     }
   }
 });
@@ -109,32 +151,56 @@ const createListeningExercise = async (req, res) => {
       console.log('📁 Processing uploaded file:', {
         filename: req.file.originalname,
         size: req.file.size,
-        mimetype: req.file.mimetype
+        mimetype: req.file.mimetype,
+        buffer_length: req.file.buffer.length
       });
 
       // Check file size limit
-      const maxSize = 30 * 1024 * 1024; // 30MB limit for testing
+      const maxSize = 50 * 1024 * 1024; // 50MB limit
       if (req.file.size > maxSize) {
         console.log('❌ File too large:', req.file.size, 'Max:', maxSize);
         return res.status(400).json({ 
-          message: 'Audio file too large. Maximum size is 30MB.',
+          message: 'Audio file too large. Maximum size is 50MB.',
           fileSize: req.file.size,
           maxSize: maxSize
         });
       }
 
-      // Store file in GridFS instead of base64
-      console.log('� Storing file in GridFS...');
+      // Validate and correct MIME type
+      let correctedMimeType = req.file.mimetype;
+      const fileExt = req.file.originalname.toLowerCase().split('.').pop();
+      
+      if (!correctedMimeType || correctedMimeType === 'application/octet-stream') {
+        switch (fileExt) {
+          case 'mp3':
+            correctedMimeType = 'audio/mpeg';
+            break;
+          case 'wav':
+            correctedMimeType = 'audio/wav';
+            break;
+          case 'ogg':
+            correctedMimeType = 'audio/ogg';
+            break;
+          default:
+            correctedMimeType = 'audio/mpeg';
+        }
+        console.log('🔧 Corrected MIME type from', req.file.mimetype, 'to', correctedMimeType);
+      }
+
+      // Store file in GridFS
+      console.log('📦 Storing file in GridFS...');
       
       try {
         // Create a readable stream from the buffer
         const uploadStream = gfsBucket.openUploadStream(req.file.originalname, {
+          contentType: correctedMimeType,
           metadata: {
             exerciseId: null, // Will be updated after exercise is created
             originalName: req.file.originalname,
-            mimetype: req.file.mimetype,
+            mimetype: correctedMimeType,
             size: req.file.size,
-            uploadDate: new Date()
+            uploadDate: new Date(),
+            fileExtension: fileExt
           }
         });
 
@@ -144,16 +210,23 @@ const createListeningExercise = async (req, res) => {
         exerciseData.audioFile = {
           filename: req.file.originalname,
           originalName: req.file.originalname,
-          gridfsId: fileId, // Store GridFS ObjectId instead of base64 data
+          gridfsId: fileId,
           size: req.file.size,
-          mimetype: req.file.mimetype,
-          uploadDate: new Date()
+          mimetype: correctedMimeType,
+          uploadDate: new Date(),
+          fileExtension: fileExt
         };
 
         // Upload the file to GridFS
         uploadStream.end(req.file.buffer);
 
-        console.log('✅ File stored in GridFS with ID:', fileId);
+        // Wait for upload to complete
+        await new Promise((resolve, reject) => {
+          uploadStream.on('finish', resolve);
+          uploadStream.on('error', reject);
+        });
+
+        console.log('✅ File stored in GridFS with ID:', fileId, 'MIME type:', correctedMimeType);
       } catch (error) {
         console.error('❌ Error storing file in GridFS:', error);
         return res.status(500).json({ 
@@ -329,11 +402,10 @@ const deleteListeningExercise = async (req, res) => {
 
 // @desc    Serve audio file
 // @route   GET /api/listening-exercises/audio/:id
-// @access  Private
+// @access  Public (for better browser audio compatibility)
 const getAudioFile = async (req, res) => {
   try {
     console.log('🎵 Audio file request for exercise ID:', req.params.id);
-    console.log('👤 Request user:', req.user ? req.user.id : 'No user');
     
     const exercise = await ListeningExercise.findById(req.params.id);
     console.log('📚 Exercise found:', exercise ? 'Yes' : 'No');
@@ -364,35 +436,144 @@ const getAudioFile = async (req, res) => {
     console.log('✅ Audio file found in GridFS, streaming...');
     
     try {
-      // Create download stream from GridFS
-      const downloadStream = gfsBucket.openDownloadStream(exercise.audioFile.gridfsId);
+      // Verify the file exists in GridFS first
+      const files = await gfsBucket.find({ _id: exercise.audioFile.gridfsId }).toArray();
+      if (!files || files.length === 0) {
+        console.log('❌ File not found in GridFS storage');
+        return res.status(404).json({ message: 'Audio file not found in storage' });
+      }
       
-      // Set appropriate headers for audio streaming
-      const mimetype = exercise.audioFile.mimetype || 'audio/mpeg';
-      res.setHeader('Content-Type', mimetype);
-      res.setHeader('Accept-Ranges', 'bytes');
-      res.setHeader('Content-Length', exercise.audioFile.size);
-      res.setHeader('Content-Disposition', `inline; filename="${exercise.audioFile.filename}"`);
-      
-      // Handle stream errors
-      downloadStream.on('error', (error) => {
-        console.error('❌ GridFS download error:', error);
-        if (!res.headersSent) {
-          res.status(404).json({ message: 'Audio file not found in storage', error: error.message });
-        }
+      const file = files[0];
+      console.log('📂 GridFS file found:', {
+        filename: file.filename,
+        length: file.length,
+        contentType: file.contentType,
+        uploadDate: file.uploadDate
       });
       
-      // Pipe the file stream to the response
-      downloadStream.pipe(res);
+      // Handle range requests for better browser compatibility
+      const range = req.headers.range;
+      const fileSize = file.length;
+      
+      // Enhanced MIME type detection with browser compatibility fixes
+      let mimetype = file.contentType || exercise.audioFile.mimetype;
+      const filename = file.filename || exercise.audioFile.filename || '';
+      const fileExtension = exercise.audioFile.fileExtension || filename.toLowerCase().split('.').pop();
+      
+      // Fix MIME type based on file extension for better browser compatibility
+      if (!mimetype || mimetype === 'application/octet-stream' || mimetype === 'binary/octet-stream') {
+        switch (fileExtension) {
+          case 'mp3':
+            mimetype = 'audio/mpeg';
+            break;
+          case 'wav':
+            mimetype = 'audio/wav';
+            break;
+          case 'ogg':
+            mimetype = 'audio/ogg';
+            break;
+          case 'aac':
+            mimetype = 'audio/aac';
+            break;
+          case 'm4a':
+            mimetype = 'audio/mp4';
+            break;
+          default:
+            mimetype = 'audio/mpeg'; // Default to MP3 for better browser support
+        }
+      }
+      
+      // Ensure MIME type is browser-compatible
+      if (mimetype === 'audio/mp3') {
+        mimetype = 'audio/mpeg'; // Convert to standard MIME type
+      }
+      
+      console.log('🎯 Using MIME type:', mimetype, 'for extension:', fileExtension);
+      
+      // Set comprehensive CORS headers for audio streaming
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+      res.setHeader('Access-Control-Allow-Headers', 'Range, Content-Type, Authorization');
+      res.setHeader('Access-Control-Expose-Headers', 'Content-Length, Content-Range, Accept-Ranges');
+      
+      if (range) {
+        console.log('🎯 Range request:', range);
+        const parts = range.replace(/bytes=/, "").split("-");
+        const start = parseInt(parts[0], 10);
+        const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+        const chunksize = (end - start) + 1;
+        
+        // Validate range
+        if (start >= fileSize || end >= fileSize || start > end) {
+          console.log('❌ Invalid range:', { start, end, fileSize });
+          return res.status(416).json({ message: 'Range not satisfiable' });
+        }
+        
+        // Create download stream from GridFS with range
+        const downloadStream = gfsBucket.openDownloadStream(exercise.audioFile.gridfsId, {
+          start: start,
+          end: end
+        });
+        
+        // Set headers for partial content
+        res.status(206);
+        res.setHeader('Content-Range', `bytes ${start}-${end}/${fileSize}`);
+        res.setHeader('Accept-Ranges', 'bytes');
+        res.setHeader('Content-Length', chunksize);
+        res.setHeader('Content-Type', mimetype);
+        res.setHeader('Cache-Control', 'public, max-age=3600');
+        
+        downloadStream.on('error', (error) => {
+          console.error('❌ GridFS range download error:', error);
+          if (!res.headersSent) {
+            res.status(500).json({ message: 'Error streaming audio file', error: error.message });
+          }
+        });
+        
+        downloadStream.pipe(res);
+        
+      } else {
+        // Regular full file download
+        const downloadStream = gfsBucket.openDownloadStream(exercise.audioFile.gridfsId);
+        
+        // Set appropriate headers for audio streaming
+        res.status(200);
+        res.setHeader('Content-Type', mimetype);
+        res.setHeader('Accept-Ranges', 'bytes');
+        res.setHeader('Content-Length', fileSize);
+        res.setHeader('Content-Disposition', `inline; filename="${file.filename}"`);
+        res.setHeader('Cache-Control', 'public, max-age=3600');
+        
+        console.log('📤 Streaming full file with headers:', {
+          'Content-Type': mimetype,
+          'Content-Length': fileSize,
+          'Accept-Ranges': 'bytes'
+        });
+        
+        // Handle stream errors
+        downloadStream.on('error', (error) => {
+          console.error('❌ GridFS download error:', error);
+          if (!res.headersSent) {
+            res.status(500).json({ message: 'Error streaming audio file', error: error.message });
+          }
+        });
+        
+        downloadStream.on('end', () => {
+          console.log('✅ Audio file streaming completed');
+        });
+        
+        // Pipe the file stream to the response
+        downloadStream.pipe(res);
+      }
       
     } catch (gridfsError) {
       console.error('❌ GridFS error:', gridfsError);
-      res.status(500).json({ message: 'Error retrieving audio file', error: gridfsError.message });
+      res.status(500).json({ message: 'Error retrieving audio file from storage', error: gridfsError.message });
     }
     
   } catch (error) {
     console.error('❌ Error serving audio file:', error);
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({ message: 'Server error while serving audio', error: error.message });
   }
 };
 
