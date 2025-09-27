@@ -40,7 +40,7 @@ Successfully implemented a complete application management system for Forum Acad
 ```javascript
 const updateApplicationStatus = async (id, status) => {
   try {
-    const response = await fetch(`http://localhost:5000/api/applications/status/${id}`, {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/applications/status/${id}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -48,6 +48,7 @@ const updateApplicationStatus = async (id, status) => {
       },
       body: JSON.stringify({ status })
     });
+
     
     if (response.ok) {
       message.success(`Application ${status} successfully`);

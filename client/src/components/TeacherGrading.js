@@ -45,7 +45,7 @@ const TeacherGrading = ({ currentUser }) => {
       }
 
       // Try the dedicated students endpoint first, fallback to general users endpoint
-      let response = await fetch('http://localhost:5000/api/users/students/list', {
+      let response = await fetch(`${process.env.REACT_APP_API_URL}/api/users/students/list`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -55,13 +55,14 @@ const TeacherGrading = ({ currentUser }) => {
       // Fallback to general users endpoint if dedicated endpoint fails
       if (!response.ok) {
         console.log('🔄 Fallback to general users endpoint...');
-        response = await fetch('http://localhost:5000/api/users?role=student', {
+        response = await fetch(`${process.env.REACT_APP_API_URL}/api/users?role=student`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         });
       }
+
 
       if (response.ok) {
         const result = await response.json();
@@ -107,12 +108,13 @@ const TeacherGrading = ({ currentUser }) => {
     try {
       console.log('📊 Fetching progress records...');
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/progress', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/progress`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
+
 
       if (response.ok) {
         const result = await response.json();
@@ -133,7 +135,7 @@ const TeacherGrading = ({ currentUser }) => {
     try {
       console.log('📢 Fetching announcements...');
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/announcements', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/announcements`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -160,7 +162,7 @@ const TeacherGrading = ({ currentUser }) => {
       console.log('📝 Creating progress record...', values);
       const token = localStorage.getItem('token');
       
-      const response = await fetch('http://localhost:5000/api/progress', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/progress`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -196,7 +198,7 @@ const TeacherGrading = ({ currentUser }) => {
       console.log('✏️ Updating progress record...', values);
       const token = localStorage.getItem('token');
       
-      const response = await fetch(`http://localhost:5000/api/progress/${selectedProgress._id}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/progress/${selectedProgress._id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -233,8 +235,7 @@ const TeacherGrading = ({ currentUser }) => {
       console.log('🗑️ Deleting progress record...', progressId);
       const token = localStorage.getItem('token');
       
-      const response = await fetch(`http://localhost:5000/api/progress/${progressId}`, {
-        method: 'DELETE',
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/progress/${progressId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -262,7 +263,7 @@ const TeacherGrading = ({ currentUser }) => {
       console.log('📢 Creating announcement...', values);
       const token = localStorage.getItem('token');
       
-      const response = await fetch('http://localhost:5000/api/announcements', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/announcements`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
