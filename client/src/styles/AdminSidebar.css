@@ -31,8 +31,7 @@ div.ant-layout-sider.ant-layout-sider-dark.ant-layout-sider-has-trigger,
   z-index: 1000 !important;
   background: linear-gradient(180deg, #667eea 0%, #764ba2 50%, #f093fb 100%) !important;
   box-shadow: 4px 0 30px rgba(102, 126, 234, 0.4) !important;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
+  overflow: visible !important;
 }
 
 /* Sidebar children container */
@@ -41,21 +40,27 @@ div.ant-layout-sider.ant-layout-sider-dark.ant-layout-sider-has-trigger,
   display: flex !important;
   flex-direction: column !important;
   height: 100% !important;
+  overflow: visible !important;
 }
 
 /* Logo Section - Make it visible */
 .sidebar-logo-section {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%) !important;
-  padding: 30px 20px !important;
+  padding: 40px 20px 50px 20px !important;
   border-bottom: 2px solid rgba(255, 255, 255, 0.2) !important;
   text-align: center !important;
+  overflow: visible !important;
+  min-height: 160px !important;
 }
 
 .logo-container {
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
+  justify-content: center !important;
   gap: 15px !important;
+  width: 100% !important;
+  position: relative !important;
 }
 
 .logo-icon-box {
@@ -67,12 +72,51 @@ div.ant-layout-sider.ant-layout-sider-dark.ant-layout-sider-has-trigger,
   align-items: center !important;
   justify-content: center !important;
   box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4) !important;
-  animation: logoFloat 3s ease-in-out infinite !important;
+  /* animation: logoFloat 3s ease-in-out infinite !important; */
+  margin: 0 auto 10px auto !important;
+  flex-shrink: 0 !important;
+  position: static !important;
+  z-index: 1 !important;
 }
 
 @keyframes logoFloat {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-5px); }
+}
+
+/* Force the logo to be fully visible */
+.modern-sidebar .sidebar-logo-section {
+  padding: 40px 20px 50px 20px !important;
+  overflow: visible !important;
+  min-height: 160px !important;
+}
+
+.modern-sidebar .logo-icon-box {
+  margin: 10px auto 20px auto !important;
+  position: static !important;
+}
+
+/* Resize logo when sidebar is collapsed */
+.ant-layout-sider-collapsed .sidebar-logo-section {
+  padding: 20px 10px !important;
+  min-height: 80px !important;
+}
+
+.ant-layout-sider-collapsed .logo-icon-box {
+  width: 60px !important;
+  height: 60px !important;
+  margin: 0 auto 10px auto !important;
+  border-radius: 10px !important;
+}
+
+.ant-layout-sider-collapsed .logo-icon-box .anticon {
+  font-size: 20px !important;
+}
+
+/* Keep icons visible and properly sized */
+.ant-layout-sider-collapsed .ant-menu-item .anticon {
+  font-size: 16px !important;
+  color: inherit !important;
 }
 
 .logo-icon {
@@ -335,9 +379,26 @@ div.ant-layout-sider.ant-layout-sider-dark.ant-layout-sider-has-trigger,
   display: none !important;
 }
 
-.ant-layout-sider-collapsed .ant-menu-item,
-.ant-layout-sider-collapsed .ant-menu-submenu-title {
-  padding: 14px 20px !important;
+/* Simple collapsed menu styling - just filled backgrounds */
+.ant-layout-sider-collapsed .ant-menu-item {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 8px !important;
+  margin: 6px 8px !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.ant-layout-sider-collapsed .ant-menu-item:hover {
+  background: rgba(255, 255, 255, 0.25) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: #ffffff !important;
+}
+
+.ant-layout-sider-collapsed .ant-menu-item-selected {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3) !important;
 }
 
 /* Main Layout */

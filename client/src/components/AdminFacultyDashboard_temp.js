@@ -98,7 +98,7 @@ ChartJS.register(
 );
 
 // Import API clients
-import { authAPI, statsAPI, courseAPI, materialAPI, userAPI } from '../utils/apiClient';
+import { authAPI, statsAPI, courseAPI, materialAPI, quizAPI, homeworkAPI, userAPI } from '../utils/apiClient';
 
 const { Header, Sider, Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -223,12 +223,13 @@ const AdminFacultyDashboard = () => {
   // Component-specific states
   const [courses, setCourses] = useState([]);
   const [materials, setMaterials] = useState([]);
-  // Quiz and homework management moved to TeacherDashboard
+  const [quizzes, setQuizzes] = useState([]);
+  const [homework, setHomework] = useState([]);
   const [students, setStudents] = useState([]);
   const [teachers, setTeachers] = useState([]);
   const [applications, setApplications] = useState([]);
   const [contactMessages, setContactMessages] = useState([]);
-  // Listening exercises moved to TeacherDashboard
+  const [listeningExercises, setListeningExercises] = useState([]);
   const [analyticsData, setAnalyticsData] = useState({});
   const [progressRecords, setProgressRecords] = useState([]);
   const [announcements, setAnnouncements] = useState([]);
@@ -237,11 +238,6 @@ const AdminFacultyDashboard = () => {
   const [enrollments, setEnrollments] = useState([]);
   const [enrollmentLogs, setEnrollmentLogs] = useState([]);
   const [enrollmentFilter, setEnrollmentFilter] = useState({ status: '', course: '', dateRange: null });
-  
-  // Notification system states
-  const [notifications, setNotifications] = useState([]);
-  const [notificationVisible, setNotificationVisible] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(0);
   
   // Real enrollment analytics data states
   const [enrollmentAnalytics, setEnrollmentAnalytics] = useState({
@@ -275,7 +271,10 @@ const AdminFacultyDashboard = () => {
   const [courseModalVisible, setCourseModalVisible] = useState(false);
   const [courseViewModalVisible, setCourseViewModalVisible] = useState(false);
   const [materialModalVisible, setMaterialModalVisible] = useState(false);
-  // Quiz, homework, and exercise modals moved to TeacherDashboard
+  const [quizModalVisible, setQuizModalVisible] = useState(false);
+  const [homeworkModalVisible, setHomeworkModalVisible] = useState(false);
+  const [exerciseModalVisible, setExerciseModalVisible] = useState(false);
+  const [questionsModalVisible, setQuestionsModalVisible] = useState(false);
   const [submissionsModalVisible, setSubmissionsModalVisible] = useState(false);
   const [gradingModalVisible, setGradingModalVisible] = useState(false);
   const [resultsModalVisible, setResultsModalVisible] = useState(false);
@@ -283,7 +282,6 @@ const AdminFacultyDashboard = () => {
   const [progressModalVisible, setProgressModalVisible] = useState(false);
   const [announcementModalVisible, setAnnouncementModalVisible] = useState(false);
   const [viewModalVisible, setViewModalVisible] = useState(false);
-  const [profileModalVisible, setProfileModalVisible] = useState(false);
   
   // Selected items
   const [selectedApplication, setSelectedApplication] = useState(null);
@@ -291,7 +289,9 @@ const AdminFacultyDashboard = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [selectedMaterial, setSelectedMaterial] = useState(null);
-  // Selected quiz, homework, exercise states moved to TeacherDashboard
+  const [selectedQuiz, setSelectedQuiz] = useState(null);
+  const [selectedHomework, setSelectedHomework] = useState(null);
+  const [selectedExercise, setSelectedExercise] = useState(null);
   const [selectedSubmission, setSelectedSubmission] = useState(null);
   const [selectedProgress, setSelectedProgress] = useState(null);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
@@ -304,9 +304,12 @@ const AdminFacultyDashboard = () => {
   
   // Form states
   const [editingCourse, setEditingCourse] = useState(null);
-  // Editing quiz, homework, exercise states moved to TeacherDashboard
+  const [editingQuiz, setEditingQuiz] = useState(null);
+  const [editingHomework, setEditingHomework] = useState(null);
+  const [editingExercise, setEditingExercise] = useState(null);
+  const [questions, setQuestions] = useState([]);
+  const [audioFile, setAudioFile] = useState(null);
   const [fileList, setFileList] = useState([]);
-  const [avatarUploading, setAvatarUploading] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -322,12 +325,14 @@ const AdminFacultyDashboard = () => {
   // Forms
   const [courseForm] = Form.useForm();
   const [materialForm] = Form.useForm();
+  const [quizForm] = Form.useForm();
+  const [homeworkForm] = Form.useForm();
+  const [exerciseForm] = Form.useForm();
+  const [questionForm] = Form.useForm();
   const [replyForm] = Form.useForm();
   const [createUserForm] = Form.useForm();
   const [editUserForm] = Form.useForm();
   const [gradingForm] = Form.useForm();
-  const [profileForm] = Form.useForm();
-  const [settingsForm] = Form.useForm();
   
   // Refs for audio players
   const audioRef = useRef(null);
@@ -439,10 +444,6 @@ const AdminFacultyDashboard = () => {
       };
       
       setCurrentUser(userData);
-      
-      // Load complete user profile data
-      loadCurrentUserProfile();
-      
       fetchInitialData();
       setLoading(false);
     };
@@ -453,22 +454,20 @@ const AdminFacultyDashboard = () => {
   // Fetch initial data
   const fetchInitialData = async () => {
     try {
-      // Fetch basic data first
       await Promise.all([
+        fetchDashboardStats(),
         fetchCourses(),
         fetchStudents(),
-        fetchTeachers(),
         fetchApplications(),
         fetchContactMessages(),
         fetchUsers(),
+        fetchQuizzes(),
+        fetchHomework(),
         fetchMaterials(),
+        fetchListeningExercises(),
         fetchEnrollments(),
-        fetchEnrollmentLogs(),
-        fetchNotifications()
+        fetchEnrollmentLogs()
       ]);
-      
-      // Fetch dashboard stats after basic data is loaded
-      await fetchDashboardStats();
       
       // Fetch enrollment analytics after all basic data is loaded
       await fetchEnrollmentAnalytics();
@@ -532,7 +531,7 @@ const AdminFacultyDashboard = () => {
   // Fetch real enrollment analytics data
   const fetchEnrollmentAnalytics = async () => {
     try {
-      console.log('Fetching enrollment analytics...');
+      console.log('剥 Fetching enrollment analytics...');
       const authHeaders = getAuthHeaders();
 
       // Fetch enrollment analytics data
@@ -549,7 +548,7 @@ const AdminFacultyDashboard = () => {
 
       if (response.ok) {
         const analyticsData = await response.json();
-        console.log('Analytics data received:', analyticsData);
+        console.log('投 Analytics data received:', analyticsData);
         
         // Process and set the analytics data
         setEnrollmentAnalytics({
@@ -587,7 +586,7 @@ const AdminFacultyDashboard = () => {
   // Calculate analytics from existing data when API is not available
   const calculateAnalyticsFromExistingData = async () => {
     try {
-      console.log('Calculating analytics from existing data...');
+      console.log('売 Calculating analytics from existing data...');
       
       // Calculate stats from existing data
       const totalEnrollments = enrollments.length || dashboardStats.totalEnrollments || 0;
@@ -635,7 +634,7 @@ const AdminFacultyDashboard = () => {
         attentionItems
       });
 
-      console.log('Analytics calculated from existing data');
+      console.log('笨・Analytics calculated from existing data');
     } catch (error) {
       console.error('Error calculating analytics from existing data:', error);
     }
@@ -820,17 +819,14 @@ const AdminFacultyDashboard = () => {
       const authHeaders = getAuthHeaders();
       
       // Fetch various stats
-      const [coursesRes, studentsRes, teachersRes, applicationsRes, messagesRes, materialsRes, enrollmentsRes, quizzesRes, homeworkRes, listeningRes] = await Promise.all([
+      const [coursesRes, studentsRes, teachersRes, applicationsRes, messagesRes, materialsRes, enrollmentsRes] = await Promise.all([
         fetch(`${API_BASE_URL}/api/courses`, { headers: authHeaders }),
         fetch(`${API_BASE_URL}/api/users?role=student`, { headers: authHeaders }),
         fetch(`${API_BASE_URL}/api/users?role=teacher`, { headers: authHeaders }),
         fetch(`${API_BASE_URL}/api/applications`, { headers: authHeaders }),
         fetch(`${API_BASE_URL}/api/contact`, { headers: authHeaders }),
         fetch(`${API_BASE_URL}/api/course-materials`, { headers: authHeaders }),
-        fetch(`${API_BASE_URL}/api/enrollments/stats`, { headers: authHeaders }),
-        fetch(`${API_BASE_URL}/api/quizzes`, { headers: authHeaders }).catch(() => ({ ok: false })),
-        fetch(`${API_BASE_URL}/api/homework`, { headers: authHeaders }).catch(() => ({ ok: false })),
-        fetch(`${API_BASE_URL}/api/listening-exercises`, { headers: authHeaders }).catch(() => ({ ok: false }))
+        fetch(`${API_BASE_URL}/api/enrollments/stats`, { headers: authHeaders })
       ]);
 
       // Check for authentication errors
@@ -849,9 +845,6 @@ const AdminFacultyDashboard = () => {
       const messagesData = await messagesRes.json();
       const materialsData = materialsRes.ok ? await materialsRes.json() : { materials: [] };
       const enrollmentsData = enrollmentsRes.ok ? await enrollmentsRes.json() : { total: 0, active: 0, pending: 0, newThisMonth: 0 };
-      const quizzesData = quizzesRes.ok ? await quizzesRes.json() : { quizzes: [] };
-      const homeworkData = homeworkRes.ok ? await homeworkRes.json() : { homework: [] };
-      const listeningData = listeningRes.ok ? await listeningRes.json() : { exercises: [] };
 
       // Calculate stats
       const stats = {
@@ -864,17 +857,17 @@ const AdminFacultyDashboard = () => {
         rejectedApplications: (applicationsData.applications || applicationsData || []).filter(a => a.status === 'rejected').length,
         totalMessages: messagesData.contacts?.length || messagesData.length || 0,
         unreadMessages: (messagesData.contacts || messagesData || []).filter(m => m.status === 'pending').length,
-        totalMaterials: materialsData.materials?.length || materialsData.length || 0,
-        totalHomework: homeworkData.homework?.length || homeworkData.length || 0,
-        totalQuizzes: quizzesData.quizzes?.length || quizzesData.length || 0,
-        totalListeningExercises: listeningData.exercises?.length || listeningData.length || 0,
-        totalEnrollments: enrollmentsData.total || 0,
+        totalMaterials: materialsData.materials?.length || materials.length || 0,
+        totalHomework: homework.length,
+        totalQuizzes: quizzes.length,
+        totalListeningExercises: listeningExercises.length,
+        totalEnrollments: enrollmentsData.total || enrollments.length || 0,
         newEnrollmentsThisMonth: enrollmentsData.newThisMonth || 0,
         activeEnrollments: enrollmentsData.active || 0,
         pendingEnrollments: enrollmentsData.pending || 0,
         completionRate: 75,
         pendingSubmissions: 8,
-        activeQuizzes: (quizzesData.quizzes || quizzesData || []).filter(q => {
+        activeQuizzes: quizzes.filter(q => {
           const now = moment();
           return q.availableFrom && q.availableTo &&
             now.isAfter(moment(q.availableFrom)) && 
@@ -1011,30 +1004,25 @@ const AdminFacultyDashboard = () => {
     }
   };
 
-  const fetchTeachers = async () => {
+  const fetchQuizzes = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/users?role=teacher`, {
-        headers: getAuthHeaders()
-      });
-      
-      if (response.status === 401) {
-        message.error('Authentication failed. Please login again.');
-        localStorage.clear();
-        history.push('/');
-        return;
-      }
-      
-      if (response.ok) {
-        const data = await response.json();
-        setTeachers(data.users || data || []);
-      }
+      const data = await quizAPI.getAll();
+      setQuizzes(data || []);
     } catch (error) {
-      console.error('Error fetching teachers:', error);
-      setTeachers([]);
+      console.error('Error fetching quizzes:', error);
+      setQuizzes([]);
     }
   };
 
-
+  const fetchHomework = async () => {
+    try {
+      const data = await homeworkAPI.getAll();
+      setHomework(data || []);
+    } catch (error) {
+      console.error('Error fetching homework:', error);
+      setHomework([]);
+    }
+  };
 
   const fetchMaterials = async () => {
     try {
@@ -1046,9 +1034,51 @@ const AdminFacultyDashboard = () => {
     }
   };
 
+  const fetchListeningExercises = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/listening-exercises`, {
+        headers: getAuthHeaders()
+      });
+      if (response.ok) {
+        const data = await response.json();
+        // Add audio URL to each exercise that has an audio file
+        const exercisesWithAudioUrls = data.map(exercise => ({
+          ...exercise,
+          audioUrl: exercise.audioFile && exercise.audioFile.gridfsId 
+            ? `${API_BASE_URL}/api/listening-exercises/audio/${exercise._id}` 
+            : null,
+          originalFileName: exercise.audioFile?.originalName || exercise.audioFile?.filename
+        }));
+        setListeningExercises(exercisesWithAudioUrls);
+        console.log('Listening exercises loaded:', exercisesWithAudioUrls.length);
+      }
+    } catch (error) {
+      console.error('Error fetching listening exercises:', error);
+      message.error('Failed to load listening exercises');
+      setListeningExercises([]);
+    }
+  };
 
+  const fetchQuizSubmissions = async (quizId) => {
+    try {
+      const data = await quizAPI.getSubmissions(quizId);
+      setSubmissions(data || []);
+    } catch (error) {
+      console.error('Error fetching submissions:', error);
+      setSubmissions([]);
+    }
+  };
 
-
+  // Fetch homework submissions
+  const fetchHomeworkSubmissions = async (homeworkId) => {
+    try {
+      const data = await homeworkAPI.getSubmissions(homeworkId);
+      setSubmissions(data || []);
+    } catch (error) {
+      console.error('Error fetching homework submissions:', error);
+      setSubmissions([]);
+    }
+  };
 
   // Update application status
   const updateApplicationStatus = async (applicationId, status) => {
@@ -1244,7 +1274,62 @@ const AdminFacultyDashboard = () => {
     }
   };
 
+  // Handle quiz creation/update
+  const handleCreateQuiz = async (values) => {
+    try {
+      const quizData = {
+        ...values,
+        dueDate: values.dueDate?.format(),
+        availableFrom: values.availableFrom?.format() || new Date(),
+        availableTo: values.availableTo?.format(),
+        createdBy: currentUser.id,
+        questions: questions
+      };
 
+      if (editingQuiz) {
+        await quizAPI.update(editingQuiz._id, quizData);
+      } else {
+        await quizAPI.create(quizData);
+      }
+
+      message.success(`Quiz ${editingQuiz ? 'updated' : 'created'} successfully`);
+      setQuizModalVisible(false);
+      quizForm.resetFields();
+      setEditingQuiz(null);
+      setQuestions([]);
+      fetchQuizzes();
+    } catch (error) {
+      console.error('Error saving quiz:', error);
+      message.error('Error saving quiz: ' + error.message);
+    }
+  };
+
+  // Handle homework creation/update
+  const handleCreateHomework = async (values) => {
+    try {
+      const homeworkData = {
+        ...values,
+        dueDate: values.dueDate?.format(),
+        assignedDate: values.assignedDate?.format() || new Date(),
+        assignedBy: currentUser.id
+      };
+
+      if (editingHomework) {
+        await homeworkAPI.update(editingHomework._id, homeworkData);
+      } else {
+        await homeworkAPI.create(homeworkData);
+      }
+
+      message.success(`Homework ${editingHomework ? 'updated' : 'created'} successfully`);
+      setHomeworkModalVisible(false);
+      homeworkForm.resetFields();
+      setEditingHomework(null);
+      fetchHomework();
+    } catch (error) {
+      console.error('Error saving homework:', error);
+      message.error('Failed to save homework');
+    }
+  };
 
   // Handle material upload
   const handleUploadMaterial = async (values) => {
@@ -1277,14 +1362,199 @@ const AdminFacultyDashboard = () => {
     }
   };
 
+  // Handle listening exercise creation
+  const handleCreateExercise = async (values) => {
+    if (!editingExercise && !audioFile) {
+      message.error('Please upload an MP3 audio file');
+      return;
+    }
 
+    // Get current user ID more reliably
+    const userId = currentUser?.id || currentUser?._id || localStorage.getItem('userId') || 'anonymous';
+
+    // If we have an audio file, use FormData
+    if (audioFile) {
+      const formData = new FormData();
+      
+      // Validate file type
+      const allowedTypes = ['audio/mp3', 'audio/mpeg', 'audio/wav'];
+      if (!allowedTypes.includes(audioFile.type)) {
+        message.error('Please upload a valid MP3 or WAV audio file');
+        return;
+      }
+      
+      // Check file size (limit to 50MB)
+      const maxSize = 50 * 1024 * 1024; // 50MB in bytes
+      if (audioFile.size > maxSize) {
+        message.error('File size must be less than 50MB');
+        return;
+      }
+      
+      formData.append('audioFile', audioFile);
+      formData.append('title', values.title);
+      formData.append('description', values.description || '');
+      formData.append('course', values.course);
+      formData.append('level', values.level);
+      formData.append('instructions', values.instructions || '');
+      formData.append('transcript', values.transcript || '');
+      formData.append('timeLimit', values.timeLimit || 30);
+      formData.append('playLimit', values.playLimit || 3);
+      formData.append('questions', JSON.stringify(questions));
+      formData.append('createdBy', userId);
+
+      await saveWithFormData(formData);
+    } else {
+      // If no audio file (editing without changing audio), use JSON
+      const jsonData = {
+        title: values.title,
+        description: values.description || '',
+        course: values.course,
+        level: values.level,
+        instructions: values.instructions || '',
+        transcript: values.transcript || '',
+        timeLimit: values.timeLimit || 30,
+        playLimit: values.playLimit || 3,
+        questions: questions,
+        createdBy: userId
+      };
+
+      await saveWithJSON(jsonData);
+    }
+  };
+
+  // Save function using FormData
+  const saveWithFormData = async (formData) => {
+    try {
+      // Get token using same method as audio function
+      const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+      if (!token) {
+        message.error('Authentication required. Please log in again.');
+        return;
+      }
+
+      const url = editingExercise 
+        ? `${API_BASE_URL}/api/listening-exercises/${editingExercise._id}`
+        : `${API_BASE_URL}/api/listening-exercises`;
+        
+      console.log('Saving exercise with FormData to:', url);
+      console.log('Using token:', token ? `${token.substring(0, 20)}...` : 'No token');
+      console.log('Form data fields:');
+      for (let pair of formData.entries()) {
+        console.log(pair[0] + ': ' + (pair[0] === 'questions' ? 'JSON data' : pair[1]));
+      }
+        
+      const response = await fetch(url, {
+        method: editingExercise ? 'PUT' : 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+          // Don't set Content-Type for FormData, let browser set it with boundary
+        },
+        body: formData
+      });
+
+      await handleSaveResponse(response);
+    } catch (error) {
+      console.error('Error saving exercise with FormData:', error);
+      message.error(`Error saving exercise: ${error.message}`);
+    }
+  };
+
+  // Save function using JSON
+  const saveWithJSON = async (data) => {
+    try {
+      // Get token using same method as audio function
+      const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+      if (!token) {
+        message.error('Authentication required. Please log in again.');
+        return;
+      }
+
+      const url = editingExercise 
+        ? `${API_BASE_URL}/api/listening-exercises/${editingExercise._id}`
+        : `${API_BASE_URL}/api/listening-exercises`;
+        
+      console.log('Saving exercise with JSON to:', url);
+      console.log('Using token:', token ? `${token.substring(0, 20)}...` : 'No token');
+      console.log('JSON data:', data);
+        
+      const response = await fetch(url, {
+        method: editingExercise ? 'PUT' : 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+
+      await handleSaveResponse(response);
+    } catch (error) {
+      console.error('Error saving exercise with JSON:', error);
+      message.error(`Error saving exercise: ${error.message}`);
+    }
+  };
+
+  // Handle save response
+  const handleSaveResponse = async (response) => {
+    console.log('Save response status:', response.status);
+    console.log('Save response headers:', Object.fromEntries(response.headers.entries()));
+
+    if (response.ok) {
+      const result = await response.json();
+      console.log('Save result:', result);
+      message.success(`Exercise ${editingExercise ? 'updated' : 'created'} successfully`);
+      setExerciseModalVisible(false);
+      exerciseForm.resetFields();
+      setEditingExercise(null);
+      setAudioFile(null);
+      setQuestions([]);
+      setFileList([]);
+      fetchListeningExercises();
+    } else {
+      console.log('Save failed with status:', response.status);
+      let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+      try {
+        const errorText = await response.text();
+        console.log('Error response body:', errorText);
+        try {
+          const errorObj = JSON.parse(errorText);
+          errorMessage = errorObj.message || errorMessage;
+        } catch (parseError) {
+          // If not JSON, use the raw text
+          if (errorText) {
+            errorMessage = errorText;
+          }
+        }
+      } catch (e) {
+        console.log('Could not read error response');
+      }
+      throw new Error(errorMessage);
+    }
+  };
+
+  // Add question to quiz/exercise
+  const addQuestion = () => {
+    questionForm.validateFields().then(values => {
+      const newQuestion = {
+        id: Date.now(),
+        ...values,
+        options: values.type === 'multiple_choice' ? values.options || [] : []
+      };
+      setQuestions([...questions, newQuestion]);
+      questionForm.resetFields();
+      message.success('Question added successfully');
+    });
+  };
+
+  const removeQuestion = (questionId) => {
+    setQuestions(questions.filter(q => q.id !== questionId));
+  };
 
   const handleLogout = () => {
     confirm({
-      title: t('adminPortal.logoutConfirm.title') || 'Confirm Logout',
-      content: t('adminPortal.logoutConfirm.message') || 'Are you sure you want to logout?',
-      okText: t('adminPortal.logoutConfirm.yes') || 'Yes',
-      cancelText: t('adminPortal.logoutConfirm.no') || 'No',
+      title: 'Confirm Logout',
+      content: 'Are you sure you want to logout?',
+      okText: 'Yes',
+      cancelText: 'No',
       onOk() {
         localStorage.clear();
         message.success('Logged out successfully');
@@ -1343,526 +1613,6 @@ const AdminFacultyDashboard = () => {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Notification Functions
-  const fetchNotifications = async () => {
-    try {
-      console.log('🔔 Fetching notifications...');
-      
-      const [applicationsRes, contactsRes] = await Promise.all([
-        fetch(`${API_BASE_URL}/api/applications`, {
-          headers: getAuthHeaders()
-        }),
-        fetch(`${API_BASE_URL}/api/contact`, {
-          headers: getAuthHeaders()
-        })
-      ]);
-
-      console.log('📝 Applications response status:', applicationsRes.status);
-      console.log('📧 Contacts response status:', contactsRes.status);
-
-      const applications = applicationsRes.ok ? await applicationsRes.json() : [];
-      const contacts = contactsRes.ok ? await contactsRes.json() : [];
-
-      console.log('📝 Applications data:', applications);
-      console.log('📧 Contacts data:', contacts);
-
-      // Handle different response formats
-      const applicationsArray = Array.isArray(applications) ? applications : 
-                               (applications.applications || applications.data || []);
-      const contactsArray = Array.isArray(contacts) ? contacts : 
-                           (contacts.contacts || contacts.data || []);
-
-      console.log('📝 Applications array:', applicationsArray);
-      console.log('📧 Contacts array:', contactsArray);
-
-      // Create notifications for pending applications
-      const appNotifications = applicationsArray
-        .filter(app => app.status === 'pending')
-        .map(app => ({
-          id: `app_${app._id}`,
-          type: 'application',
-          title: t('adminPortal.notifications.newApplication') || 'New Application',
-          message: t('adminPortal.notifications.applicationMessage', {
-            name: `${app.firstName || app.fullName || 'Unknown'} ${app.lastName || ''}`.trim(),
-            course: app.course || app.program || 'a course'
-          }) || `${app.firstName || app.fullName || 'Unknown'} ${app.lastName || ''} applied for ${app.course || app.program || 'a course'}`,
-          timestamp: new Date(app.createdAt),
-          data: app,
-          read: false
-        }));
-
-      // Create notifications for pending contacts
-      const contactNotifications = contactsArray
-        .filter(contact => contact.status === 'pending')
-        .map(contact => ({
-          id: `contact_${contact._id}`,
-          type: 'contact',
-          title: t('adminPortal.notifications.newContact') || 'New Contact Message',
-          message: t('adminPortal.notifications.contactMessage', {
-            name: contact.name,
-            subject: contact.subject
-          }) || `${contact.name} sent a message: ${contact.subject}`,
-          timestamp: new Date(contact.createdAt),
-          data: contact,
-          read: false
-        }));
-
-      console.log('📝 App notifications:', appNotifications);
-      console.log('📧 Contact notifications:', contactNotifications);
-
-      const allNotifications = [...appNotifications, ...contactNotifications]
-        .sort((a, b) => b.timestamp - a.timestamp);
-
-      console.log('🔔 All notifications:', allNotifications);
-
-      setNotifications(allNotifications);
-      setUnreadCount(allNotifications.filter(n => !n.read).length);
-      
-      console.log('🔔 Notifications updated, count:', allNotifications.length);
-    } catch (error) {
-      console.error('❌ Error fetching notifications:', error);
-    }
-  };
-
-  const markNotificationAsRead = (notificationId) => {
-    setNotifications(prev => 
-      prev.map(notification => 
-        notification.id === notificationId 
-          ? { ...notification, read: true }
-          : notification
-      )
-    );
-    setUnreadCount(prev => Math.max(0, prev - 1));
-  };
-
-  const handleNotificationClick = (notification) => {
-    markNotificationAsRead(notification.id);
-    
-    // Navigate to the Applications page (which contains both applications and contacts)
-    setActiveKey('applications');
-    
-    // Set a small delay to ensure the page loads before trying to switch tabs
-    setTimeout(() => {
-      if (notification.type === 'application') {
-        // Switch to applications tab
-        const applicationsTab = document.querySelector('[data-node-key="applications"]');
-        if (applicationsTab) {
-          applicationsTab.click();
-        }
-      } else if (notification.type === 'contact') {
-        // Switch to contacts tab
-        const contactsTab = document.querySelector('[data-node-key="contacts"]');
-        if (contactsTab) {
-          contactsTab.click();
-        }
-      }
-    }, 100);
-    
-    setNotificationVisible(false);
-    
-    // Show success message
-    message.success(
-      notification.type === 'application' 
-        ? t('adminPortal.notifications.navigatedToApplication') || 'Navigated to Applications'
-        : t('adminPortal.notifications.navigatedToContact') || 'Navigated to Contact Messages'
-    );
-  };
-
-  const approveItem = async (type, itemId) => {
-    try {
-      const endpoint = type === 'application' ? 'applications' : 'contact';
-      const response = await fetch(`${API_BASE_URL}/api/${endpoint}/${itemId}/approve`, {
-        method: 'PUT',
-        headers: getAuthHeaders()
-      });
-
-      if (response.ok) {
-        message.success(`${type === 'application' ? 'Application' : 'Contact'} approved successfully!`);
-        
-        // Remove notification for approved item
-        setNotifications(prev => 
-          prev.filter(n => n.id !== `${type}_${itemId}`)
-        );
-        setUnreadCount(prev => Math.max(0, prev - 1));
-        
-        // Refresh data
-        if (type === 'application') {
-          fetchApplications();
-        } else {
-          fetchContactMessages();
-        }
-        
-        // Refresh notifications
-        fetchNotifications();
-      } else {
-        throw new Error('Failed to approve');
-      }
-    } catch (error) {
-      console.error(`Error approving ${type}:`, error);
-      message.error(`Failed to approve ${type}`);
-    }
-  };
-
-  const rejectItem = async (type, itemId) => {
-    try {
-      const endpoint = type === 'application' ? 'applications' : 'contact';
-      const response = await fetch(`${API_BASE_URL}/api/${endpoint}/${itemId}/reject`, {
-        method: 'PUT',
-        headers: getAuthHeaders()
-      });
-
-      if (response.ok) {
-        message.success(`${type === 'application' ? 'Application' : 'Contact'} rejected successfully!`);
-        
-        // Remove notification for rejected item
-        setNotifications(prev => 
-          prev.filter(n => n.id !== `${type}_${itemId}`)
-        );
-        setUnreadCount(prev => Math.max(0, prev - 1));
-        
-        // Refresh data
-        if (type === 'application') {
-          fetchApplications();
-        } else {
-          fetchContactMessages();
-        }
-        
-        // Refresh notifications
-        fetchNotifications();
-      } else {
-        throw new Error('Failed to reject');
-      }
-    } catch (error) {
-      console.error(`Error rejecting ${type}:`, error);
-      message.error(`Failed to reject ${type}`);
-    }
-  };
-
-  // State for profile image preview
-  const [profileImagePreview, setProfileImagePreview] = useState(null);
-  const [profileImageFile, setProfileImageFile] = useState(null);
-  
-  // System settings state
-  const [systemSettings, setSystemSettings] = useState({
-    systemName: 'Forum Academy',
-    adminEmail: 'admin@forumacademy.com',
-    timeZone: 'UTC',
-    language: 'en',
-    emailNotifications: true,
-    smsNotifications: false,
-    pushNotifications: true,
-    weeklyReports: true,
-    maintenanceMode: false,
-    autoBackup: true,
-    sessionTimeout: 30, // minutes
-    maxLoginAttempts: 5
-  });
-  const [settingsLoading, setSettingsLoading] = useState(false);
-
-  // Handle avatar upload preview (not save yet)
-  const handleAvatarUpload = async (file) => {
-    // Create preview URL
-    const previewUrl = URL.createObjectURL(file);
-    setProfileImagePreview(previewUrl);
-    setProfileImageFile(file);
-    
-    // Don't upload automatically, just show preview
-    message.info(t('profile.imagePreviewReady') || 'Image preview ready. Click "Update Profile" to save.');
-    return false; // Prevent automatic upload
-  };
-
-  // Handle profile update
-  const handleProfileUpdate = async (values) => {
-    try {
-      setLoading(true);
-      let profileImageUrl = currentUser?.profileImage;
-      
-      // First upload the image if there's a new one
-      if (profileImageFile) {
-        setAvatarUploading(true);
-        const formData = new FormData();
-        formData.append('avatar', profileImageFile);
-        
-        try {
-          const uploadResponse = await fetch(`${API_BASE_URL}/api/auth/upload-avatar`, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${localStorage.getItem('token') || localStorage.getItem('authToken')}`
-            },
-            body: formData
-          });
-          
-          if (uploadResponse.ok) {
-            const uploadData = await uploadResponse.json();
-            profileImageUrl = uploadData.url;
-          } else {
-            throw new Error('Avatar upload failed');
-          }
-        } catch (uploadError) {
-          console.error('Avatar upload error:', uploadError);
-          message.error(t('profile.avatarUploadFailed') || 'Failed to upload avatar');
-          return;
-        } finally {
-          setAvatarUploading(false);
-        }
-      }
-      
-      // Then update the profile with all data including new avatar URL
-      const payload = { ...values };
-      if (profileImageUrl) payload.profileImage = profileImageUrl;
-      
-      const response = await fetch(`${API_BASE_URL}/api/auth/profile`, {
-        method: 'PUT',
-        headers: getAuthHeaders(),
-        body: JSON.stringify(payload)
-      });
-      
-      if (response.ok) {
-        const updatedUser = await response.json();
-        
-        // Make sure the profileImage is included in the updated user
-        if (profileImageUrl && !updatedUser.profileImage) {
-          updatedUser.profileImage = profileImageUrl;
-        }
-        
-        setCurrentUser(updatedUser);
-        
-        // Update localStorage with the new user data for persistence
-        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-        
-        message.success(t('profile.updateSuccess') || 'Profile updated successfully!');
-        setProfileModalVisible(false);
-        profileForm.resetFields();
-        // Clean up preview states
-        setProfileImagePreview(null);
-        setProfileImageFile(null);
-        if (profileImagePreview) {
-          URL.revokeObjectURL(profileImagePreview);
-        }
-      } else {
-        throw new Error('Failed to update profile');
-      }
-    } catch (error) {
-      console.error('Profile update error:', error);
-      message.error(t('profile.updateError') || 'Failed to update profile');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Load system settings
-  const loadSystemSettings = async () => {
-    try {
-      const savedSettings = localStorage.getItem('systemSettings');
-      if (savedSettings) {
-        const settings = JSON.parse(savedSettings);
-        setSystemSettings(settings);
-        settingsForm.setFieldsValue(settings);
-        
-        // Apply language setting
-        if (settings.language && translationInstance) {
-          translationInstance.changeLanguage(settings.language);
-        }
-      }
-    } catch (error) {
-      console.error('Error loading system settings:', error);
-    }
-  };
-
-  // Save system settings
-  const handleSaveSettings = async (values) => {
-    setSettingsLoading(true);
-    try {
-      const newSettings = { ...systemSettings, ...values };
-      
-      // Save to localStorage
-      localStorage.setItem('systemSettings', JSON.stringify(newSettings));
-      setSystemSettings(newSettings);
-      
-      // Apply language change immediately
-      if (values.language && translationInstance) {
-        translationInstance.changeLanguage(values.language);
-      }
-      
-      // Save to backend (optional)
-      try {
-        await fetch(`${API_BASE_URL}/api/admin/settings`, {
-          method: 'PUT',
-          headers: getAuthHeaders(),
-          body: JSON.stringify(newSettings)
-        });
-      } catch (backendError) {
-        console.log('Backend settings save failed, using local storage only');
-      }
-      
-      message.success(t('adminDashboard.settings.saveSuccess'));
-    } catch (error) {
-      console.error('Error saving settings:', error);
-      message.error(t('adminDashboard.settings.saveError'));
-    } finally {
-      setSettingsLoading(false);
-    }
-  };
-
-  // Reset settings to default
-  const handleResetSettings = () => {
-    const defaultSettings = {
-      systemName: 'Forum Academy',
-      adminEmail: 'admin@forumacademy.com',
-      timeZone: 'UTC',
-      language: 'en',
-      emailNotifications: true,
-      smsNotifications: false,
-      pushNotifications: true,
-      weeklyReports: true,
-      maintenanceMode: false,
-      autoBackup: true,
-      sessionTimeout: 30,
-      maxLoginAttempts: 5
-    };
-    
-    setSystemSettings(defaultSettings);
-    settingsForm.setFieldsValue(defaultSettings);
-    localStorage.setItem('systemSettings', JSON.stringify(defaultSettings));
-    translationInstance.changeLanguage('en');
-    message.success(t('adminDashboard.settings.resetSuccess'));
-  };
-
-  // Load current user profile data
-  const loadCurrentUserProfile = async () => {
-    try {
-      // First try to get from localStorage
-      const storedUser = localStorage.getItem('currentUser');
-      if (storedUser) {
-        const userData = JSON.parse(storedUser);
-        setCurrentUser(userData);
-      }
-      
-      // Then fetch fresh data from server
-      const response = await fetch(`${API_BASE_URL}/api/auth/profile`, {
-        method: 'GET',
-        headers: getAuthHeaders()
-      });
-      
-      if (response.ok) {
-        const userData = await response.json();
-        setCurrentUser(userData);
-        localStorage.setItem('currentUser', JSON.stringify(userData));
-        
-        // Set profile form initial values
-        profileForm.setFieldsValue({
-          firstName: userData.firstName || '',
-          lastName: userData.lastName || '',
-          email: userData.email || '',
-          phone: userData.phone || '',
-          bio: userData.bio || ''
-        });
-      }
-    } catch (error) {
-      console.error('Error loading user profile:', error);
-    }
-  };
-
-  // Load settings on component mount
-  useEffect(() => {
-    loadSystemSettings();
-    loadCurrentUserProfile();
-  }, []);
-
-  // Periodic notification refresh
-  useEffect(() => {
-    // Initial fetch
-    if (currentUser) {
-      fetchNotifications();
-    }
-
-    // Set up interval to refresh notifications every 30 seconds
-    const notificationInterval = setInterval(() => {
-      if (currentUser) {
-        fetchNotifications();
-      }
-    }, 30000);
-
-    return () => clearInterval(notificationInterval);
-  }, [currentUser, translationInstance.language]); // Add language dependency
-
-  // Test function to add demo notifications (for testing purposes)
-  const addTestNotifications = () => {
-    const testNotifications = [
-      {
-        id: 'test_app_1',
-        type: 'application',
-        title: 'New Application',
-        message: 'John Smith applied for Japanese Language Course',
-        timestamp: new Date(),
-        data: { _id: 'test1', firstName: 'John', lastName: 'Smith', course: 'Japanese Language' },
-        read: false
-      },
-      {
-        id: 'test_contact_1',
-        type: 'contact',
-        title: 'New Contact Message',
-        message: 'Sarah Johnson sent a message: Inquiry about enrollment',
-        timestamp: new Date(Date.now() - 300000), // 5 minutes ago
-        data: { _id: 'test2', name: 'Sarah Johnson', subject: 'Inquiry about enrollment' },
-        read: false
-      }
-    ];
-    
-    setNotifications(prev => [...testNotifications, ...prev]);
-    setUnreadCount(prev => prev + testNotifications.length);
-    message.success('Test notifications added!');
-  };
-
-  // Function to create a real test contact message
-  const createTestContact = async () => {
-    try {
-      const testContactData = {
-        name: 'Test User',
-        email: 'test@example.com',
-        phone: '123-456-7890',
-        subject: 'Test Contact Message',
-        message: 'This is a test contact message to check notifications.'
-      };
-
-      const response = await fetch(`${API_BASE_URL}/api/contact`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(testContactData)
-      });
-
-      if (response.ok) {
-        message.success('Test contact created! Check notifications in 5 seconds.');
-        // Refresh notifications after a short delay
-        setTimeout(() => {
-          fetchNotifications();
-        }, 2000);
-      } else {
-        const errorData = await response.json();
-        message.error(`Failed to create test contact: ${errorData.message}`);
-      }
-    } catch (error) {
-      console.error('Error creating test contact:', error);
-      message.error('Error creating test contact');
-    }
-  };
-
-  // Function to refresh notifications with current language
-  const refreshNotificationsWithLanguage = () => {
-    console.log('🌐 Refreshing notifications for language:', translationInstance.language);
-    fetchNotifications();
-  };
-
-  // Refresh notifications when language changes
-  useEffect(() => {
-    if (currentUser && notifications.length > 0) {
-      console.log('🌐 Language changed to:', translationInstance.language);
-      refreshNotificationsWithLanguage();
-    }
-  }, [translationInstance.language]);
-
   // Menu items with icons
   const menuItems = [
     {
@@ -1889,6 +1639,21 @@ const AdminFacultyDashboard = () => {
       key: 'materials',
       icon: <FolderOutlined />,
       label: t('adminSidebar.navigation.materials')
+    },
+    {
+      key: 'quizzes',
+      icon: <FormOutlined />,
+      label: t('adminSidebar.navigation.quizzes')
+    },
+    {
+      key: 'homework',
+      icon: <FileTextOutlined />,
+      label: t('adminSidebar.navigation.homework')
+    },
+    {
+      key: 'listening',
+      icon: <AudioOutlined />,
+      label: t('adminSidebar.navigation.listening')
     },
     {
       key: 'students',
@@ -2517,7 +2282,7 @@ const AdminFacultyDashboard = () => {
 
     return (
       <div>
-        <Title level={2}>{t('applicationManagement.title')}</Title>
+        <Title level={2}>搭 {t('applicationManagement.title')}</Title>
         <Text type="secondary">{t('applicationManagement.subtitle')}</Text>
 
         {/* Statistics Cards */}
@@ -2570,7 +2335,7 @@ const AdminFacultyDashboard = () => {
           items={[
             {
               key: 'applications',
-              label: `${t('adminDashboard.applications.title')}`,
+              label: `統 ${t('adminDashboard.applications.title')}`,
               children: (
                 <Card 
                   title={t('adminDashboard.applications.studentApplications')} 
@@ -2612,7 +2377,7 @@ const AdminFacultyDashboard = () => {
             },
             {
               key: 'contacts',
-              label: `${t('adminDashboard.applications.messages')}`,
+              label: `町 ${t('adminDashboard.applications.messages')}`,
               children: (
                 <Card 
                   title={t('adminDashboard.contact.title')}
@@ -2646,7 +2411,7 @@ const AdminFacultyDashboard = () => {
             },
             {
               key: 'users',
-              label: `${t('adminDashboard.applications.users')}`,
+              label: `則 ${t('adminDashboard.applications.users')}`,
               children: (
                 <Card 
                   title={t('adminDashboard.users.title')}
@@ -2827,7 +2592,7 @@ const AdminFacultyDashboard = () => {
 
     return (
       <div>
-        <Title level={2}>{t('admin.courseManagement.title')}</Title>
+        <Title level={2}>答 {t('admin.courseManagement.title')}</Title>
         <Text type="secondary">{t('admin.courseManagement.subtitle')}</Text>
 
         <Row gutter={[16, 16]} style={{ marginTop: 24, marginBottom: 24 }}>
@@ -3033,7 +2798,7 @@ const AdminFacultyDashboard = () => {
 
     return (
       <div>
-        <Title level={2}>{t('admin.materialManagement.title')}</Title>
+        <Title level={2}>刀 {t('admin.materialManagement.title')}</Title>
         <Text type="secondary">{t('admin.materialManagement.subtitle')}</Text>
 
         <Row gutter={[16, 16]} style={{ marginTop: 24, marginBottom: 24 }}>
@@ -3134,491 +2899,88 @@ const AdminFacultyDashboard = () => {
     );
   };
 
-  // Quiz Management, Homework Management, and Listening Exercises moved to TeacherDashboard
+  // Quiz Management moved to TeacherDashboard
 
-  const renderStudentProgress = () => (
-    <div>
-      <Title level={2}>{t('adminDashboard.students.title')}</Title>
-      <Text type="secondary">{t('adminDashboard.students.subtitle')}</Text>
-
-      <Row gutter={[16, 16]} style={{ marginTop: 24, marginBottom: 24 }}>
-        <Col xs={24} sm={12} md={6}>
-          <Card>
-            <Statistic
-              title={t('adminDashboard.students.totalStudents')}
-              value={students.length}
-              prefix={<TeamOutlined />}
-              valueStyle={{ color: '#1890ff' }}
-            />
+  // Homework Management moved to TeacherDashboard
+    const homeworkColumns = [
+                <Input defaultValue="Forum Academy" />
+              </Form.Item>
+              <Form.Item label={t('adminDashboard.settings.adminEmail')}>
+                <Input defaultValue="admin@forumacademy.com" />
+              </Form.Item>
+              <Form.Item label={t('adminDashboard.settings.timeZone')}>
+                <Select defaultValue="UTC">
+                  <Option value="UTC">UTC</Option>
+                  <Option value="EST">Eastern Time</Option>
+                  <Option value="PST">Pacific Time</Option>
+                  <Option value="JST">Japan Standard Time</Option>
+                </Select>
+              </Form.Item>
+              <Form.Item label={t('adminDashboard.settings.language')}>
+                <Select defaultValue="en">
+                  <Option value="en">English</Option>
+                  <Option value="ja">Japanese</Option>
+                </Select>
+              </Form.Item>
+            </Form>
           </Card>
         </Col>
-        <Col xs={24} sm={12} md={6}>
-          <Card>
-            <Statistic
-              title={t('adminDashboard.students.activeStudents')}
-              value={students.filter(s => s.isApproved === true).length}
-              prefix={<CheckCircleOutlined />}
-              valueStyle={{ color: '#52c41a' }}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} md={6}>
-          <Card>
-            <Statistic
-              title={t('adminDashboard.students.avgProgress')}
-              value={Math.round((79 + 3 + 88) / 3)}
-              suffix="%"
-              prefix={<TrophyOutlined />}
-              valueStyle={{ color: '#faad14' }}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} md={6}>
-          <Card>
-            <Statistic
-              title={t('adminDashboard.students.completionRate')}
-              value={Math.round(((79 >= 80 ? 1 : 0) + (3 >= 80 ? 1 : 0) + (88 >= 80 ? 1 : 0)) / 3 * 100)}
-              suffix="%"
-              prefix={<CheckSquareOutlined />}
-              valueStyle={{ color: '#722ed1' }}
-            />
-          </Card>
-        </Col>
-      </Row>
 
-      <Card title={t('adminDashboard.students.studentPerformance')}>
-        <Table
-          columns={[
-            {
-              title: t('adminDashboard.students.student'),
-              key: 'student',
-              render: (_, record) => (
-                <div>
-                  <Text strong>{record.firstName} {record.lastName}</Text>
-                  <br />
-                  <Text type="secondary" style={{ fontSize: '12px' }}>
-                    {record.email}
-                  </Text>
-                </div>
-              )
-            },
-            {
-              title: t('adminDashboard.students.enrolledCourses'),
-              key: 'courses',
-              render: (_, record) => {
-                // Calculate enrolled courses based on student data
-                const enrolledCount = record.email === 'mesheka@gmail.com' ? 2 : 
-                                    record.email === 'gabby1@gmail.com' ? 1 : 
-                                    record.email === 'gabby25@gmail.com' ? 3 : 1;
-                return (
-                  <Badge count={enrolledCount} showZero>
-                    <BookOutlined style={{ fontSize: 20 }} />
-                  </Badge>
-                );
-              }
-            },
-            {
-              title: t('adminDashboard.students.progress'),
-              key: 'progress',
-              render: (_, record) => {
-                // Set realistic progress based on student data
-                const progress = record.email === 'mesheka@gmail.com' ? 79 : 
-                               record.email === 'gabby1@gmail.com' ? 3 : 
-                               record.email === 'gabby25@gmail.com' ? 88 : 50;
-                return (
-                  <Progress
-                    percent={progress}
-                    size="small"
-                    strokeColor={progress >= 70 ? '#52c41a' : progress >= 40 ? '#faad14' : '#f5222d'}
-                  />
-                );
-              }
-            },
-            {
-              title: t('adminDashboard.students.lastActivity'),
-              key: 'lastActivity',
-              render: (_, record) => {
-                // Set realistic last activity dates
-                const activityDate = record.email === 'mesheka@gmail.com' ? moment('2025-09-29') : 
-                                   record.email === 'gabby1@gmail.com' ? moment('2025-10-01') : 
-                                   record.email === 'gabby25@gmail.com' ? moment('2025-09-30') : 
-                                   moment().subtract(2, 'days');
-                return activityDate.format('MMM DD, YYYY');
-              }
-            },
-            {
-              title: t('adminDashboard.applications.actions'),
-              key: 'actions',
-              render: (_, record) => (
-                <Space>
-                  <Button
-                    icon={<EyeOutlined />}
-                    size="small"
-                    onClick={() => {
-                      setSelectedProgress(record);
-                      setProgressModalVisible(true);
-                    }}
-                  >
-                    {t('adminDashboard.applications.viewDetails')}
-                  </Button>
-                </Space>
-              )
-            }
-          ]}
-          dataSource={students}
-          rowKey="_id"
-          pagination={{
-            pageSize: 10,
-            showSizeChanger: true,
-            showQuickJumper: true
-          }}
-        />
-      </Card>
-    </div>
-  );
-
-  // Render Analytics & Reports
-  const renderAnalytics = () => (
-    <div>
-      <Title level={2}>{t('adminDashboard.analytics.title')}</Title>
-      <Text type="secondary">{t('adminDashboard.analytics.subtitle')}</Text>
-
-      <Row gutter={[24, 24]} style={{ marginTop: 24 }}>
         <Col xs={24} lg={12}>
-          <Card title={t('adminDashboard.analytics.courseEnrollmentTrends')}>
-            <Bar
-              data={{
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                datasets: [{
-                  label: t('adminDashboard.analytics.newEnrollments'),
-                  data: [12, 19, 15, 25, 22, 30],
-                  backgroundColor: 'rgba(24, 144, 255, 0.6)',
-                  borderColor: '#1890ff',
-                  borderWidth: 1
-                }]
-              }}
-              options={{
-                responsive: true,
-                plugins: {
-                  legend: {
-                    position: 'top'
-                  }
-                }
-              }}
-            />
-          </Card>
-        </Col>
-        
-        <Col xs={24} lg={12}>
-          <Card title={t('adminDashboard.analytics.studentPerformanceDistribution')}>
-            <Pie
-              data={{
-                labels: [t('adminDashboard.analytics.excellent'), t('adminDashboard.analytics.good'), t('adminDashboard.analytics.average'), t('adminDashboard.analytics.belowAverage')],
-                datasets: [{
-                  data: [25, 35, 30, 10],
-                  backgroundColor: [
-                    '#52c41a',
-                    '#1890ff',
-                    '#faad14',
-                    '#f5222d'
-                  ]
-                }]
-              }}
-              options={{
-                responsive: true,
-                plugins: {
-                  legend: {
-                    position: 'bottom'
-                  }
-                }
-              }}
-            />
+          <Card title={t('adminDashboard.settings.notificationSettings')}>
+            <Form layout="vertical">
+              <Form.Item label={t('adminDashboard.settings.emailNotifications')}>
+                <Switch defaultChecked />
+              </Form.Item>
+              <Form.Item label={t('adminDashboard.settings.smsNotifications')}>
+                <Switch />
+              </Form.Item>
+              <Form.Item label={t('adminDashboard.settings.pushNotifications')}>
+                <Switch defaultChecked />
+              </Form.Item>
+              <Form.Item label={t('adminDashboard.settings.weeklyReports')}>
+                <Switch defaultChecked />
+              </Form.Item>
+            </Form>
           </Card>
         </Col>
       </Row>
 
       <Row gutter={[24, 24]} style={{ marginTop: 24 }}>
         <Col xs={24}>
-          <Card title={t('adminDashboard.analytics.monthlyActivityReport')}>
-            <Line
-              data={{
-                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                datasets: [
-                  {
-                    label: t('adminDashboard.analytics.quizSubmissions'),
-                    data: [45, 52, 48, 61],
-                    borderColor: '#1890ff',
-                    backgroundColor: 'rgba(24, 144, 255, 0.1)',
-                    tension: 0.4
-                  },
-                  {
-                    label: t('adminDashboard.analytics.homeworkSubmissions'),
-                    data: [38, 42, 35, 48],
-                    borderColor: '#52c41a',
-                    backgroundColor: 'rgba(82, 196, 26, 0.1)',
-                    tension: 0.4
-                  },
-                  {
-                    label: t('adminDashboard.analytics.materialDownloads'),
-                    data: [65, 78, 72, 85],
-                    borderColor: '#faad14',
-                    backgroundColor: 'rgba(250, 173, 20, 0.1)',
-                    tension: 0.4
-                  }
-                ]
-              }}
-              options={{
-                responsive: true,
-                plugins: {
-                  legend: {
-                    position: 'top'
-                  }
-                },
-                scales: {
-                  y: {
-                    beginAtZero: true
-                  }
-                }
-              }}
-            />
+          <Card title={t('adminDashboard.settings.systemInformation')}>
+            <Descriptions bordered column={2}>
+              <Descriptions.Item label={t('adminDashboard.settings.version')}>v2.1.0</Descriptions.Item>
+              <Descriptions.Item label={t('adminDashboard.settings.lastUpdated')}>
+                {moment().subtract(2, 'days').format('MMMM DD, YYYY')}
+              </Descriptions.Item>
+              <Descriptions.Item label={t('adminDashboard.settings.databaseStatus')}>
+                <Tag color="green">{t('adminDashboard.settings.connected')}</Tag>
+              </Descriptions.Item>
+              <Descriptions.Item label={t('adminDashboard.settings.serverStatus')}>
+                <Tag color="green">{t('adminDashboard.settings.online')}</Tag>
+              </Descriptions.Item>
+              <Descriptions.Item label={t('adminDashboard.settings.totalUsers')}>
+                {users.length}
+              </Descriptions.Item>
+              <Descriptions.Item label={t('adminDashboard.settings.totalCourses')}>
+                {courses.length}
+              </Descriptions.Item>
+            </Descriptions>
           </Card>
         </Col>
       </Row>
     </div>
   );
 
-  // Render Settings
-  const renderSettings = () => (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-        <div>
-          <Title level={2}>{t('adminDashboard.settings.title')}</Title>
-          <Text type="secondary">{t('adminDashboard.settings.subtitle')}</Text>
-        </div>
-        <Space>
-          <Button 
-            onClick={handleResetSettings}
-            icon={<UndoOutlined />}
-          >
-            {t('adminDashboard.settings.resetToDefault')}
-          </Button>
-        </Space>
-      </div>
-
-      <Form
-        form={settingsForm}
-        layout="vertical"
-        onFinish={handleSaveSettings}
-        initialValues={systemSettings}
-      >
-        <Row gutter={[24, 24]}>
-          <Col xs={24} lg={12}>
-            <Card title={t('adminDashboard.settings.generalSettings')}>
-              <Form.Item 
-                label={t('adminDashboard.settings.systemName')} 
-                name="systemName"
-                rules={[{ required: true, message: 'System name is required' }]}
-              >
-                <Input placeholder="Enter system name" />
-              </Form.Item>
-              
-              <Form.Item 
-                label={t('adminDashboard.settings.adminEmail')} 
-                name="adminEmail"
-                rules={[
-                  { required: true, message: 'Admin email is required' },
-                  { type: 'email', message: 'Please enter a valid email' }
-                ]}
-              >
-                <Input placeholder="Enter admin email" />
-              </Form.Item>
-              
-              <Form.Item label={t('adminDashboard.settings.timeZone')} name="timeZone">
-                <Select>
-                  <Option value="UTC">UTC - Coordinated Universal Time</Option>
-                  <Option value="EST">EST - Eastern Standard Time</Option>
-                  <Option value="PST">PST - Pacific Standard Time</Option>
-                  <Option value="JST">JST - Japan Standard Time</Option>
-                  <Option value="GMT">GMT - Greenwich Mean Time</Option>
-                  <Option value="CET">CET - Central European Time</Option>
-                </Select>
-              </Form.Item>
-              
-              <Form.Item label={t('adminDashboard.settings.language')} name="language">
-                <Select onChange={(value) => translationInstance.changeLanguage(value)}>
-                  <Option value="en">🇺🇸 English</Option>
-                  <Option value="ja">🇯🇵 Japanese (日本語)</Option>
-                </Select>
-              </Form.Item>
-            </Card>
-          </Col>
-
-          <Col xs={24} lg={12}>
-            <Card title={t('adminDashboard.settings.notificationSettings')}>
-              <Form.Item 
-                label={t('adminDashboard.settings.emailNotifications')} 
-                name="emailNotifications"
-                valuePropName="checked"
-              >
-                <Switch />
-              </Form.Item>
-              
-              <Form.Item 
-                label={t('adminDashboard.settings.smsNotifications')} 
-                name="smsNotifications"
-                valuePropName="checked"
-              >
-                <Switch />
-              </Form.Item>
-              
-              <Form.Item 
-                label={t('adminDashboard.settings.pushNotifications')} 
-                name="pushNotifications"
-                valuePropName="checked"
-              >
-                <Switch />
-              </Form.Item>
-              
-              <Form.Item 
-                label={t('adminDashboard.settings.weeklyReports')} 
-                name="weeklyReports"
-                valuePropName="checked"
-              >
-                <Switch />
-              </Form.Item>
-            </Card>
-          </Col>
-        </Row>
-
-        <Row gutter={[24, 24]} style={{ marginTop: 24 }}>
-          <Col xs={24} lg={12}>
-            <Card title={t('adminDashboard.settings.securitySettings')}>
-              <Form.Item 
-                label={t('adminDashboard.settings.sessionTimeout')} 
-                name="sessionTimeout"
-                rules={[{ required: true, message: 'Session timeout is required' }]}
-              >
-                <InputNumber min={5} max={120} style={{ width: '100%' }} />
-              </Form.Item>
-              
-              <Form.Item 
-                label={t('adminDashboard.settings.maxLoginAttempts')} 
-                name="maxLoginAttempts"
-                rules={[{ required: true, message: 'Max login attempts is required' }]}
-              >
-                <InputNumber min={3} max={10} style={{ width: '100%' }} />
-              </Form.Item>
-              
-              <Form.Item 
-                label={t('adminDashboard.settings.maintenanceMode')} 
-                name="maintenanceMode"
-                valuePropName="checked"
-              >
-                <Switch />
-              </Form.Item>
-              
-              <Form.Item 
-                label={t('adminDashboard.settings.autoBackup')} 
-                name="autoBackup"
-                valuePropName="checked"
-              >
-                <Switch />
-              </Form.Item>
-            </Card>
-          </Col>
-
-          <Col xs={24} lg={12}>
-            <Card title={t('adminDashboard.settings.systemInformation')}>
-              <Descriptions bordered column={1} size="small">
-                <Descriptions.Item label={t('adminDashboard.settings.version')}>
-                  <Tag color="blue">v2.1.0</Tag>
-                </Descriptions.Item>
-                <Descriptions.Item label={t('adminDashboard.settings.lastUpdated')}>
-                  {moment().subtract(2, 'days').format('MMMM DD, YYYY')}
-                </Descriptions.Item>
-                <Descriptions.Item label={t('adminDashboard.settings.databaseStatus')}>
-                  <Tag color="green" icon={<CheckCircleOutlined />}>
-                    {t('adminDashboard.settings.connected')}
-                  </Tag>
-                </Descriptions.Item>
-                <Descriptions.Item label={t('adminDashboard.settings.serverStatus')}>
-                  <Tag color="green" icon={<CheckCircleOutlined />}>
-                    {t('adminDashboard.settings.online')}
-                  </Tag>
-                </Descriptions.Item>
-                <Descriptions.Item label={t('adminDashboard.settings.totalUsers')}>
-                  <Text strong>{users.length}</Text>
-                </Descriptions.Item>
-                <Descriptions.Item label={t('adminDashboard.settings.totalCourses')}>
-                  <Text strong>{courses.length}</Text>
-                </Descriptions.Item>
-                <Descriptions.Item label={t('adminDashboard.settings.storageUsed')}>
-                  <Progress percent={65} size="small" />
-                </Descriptions.Item>
-                <Descriptions.Item label={t('adminDashboard.settings.lastBackup')}>
-                  {moment().subtract(1, 'day').format('MMM DD, YYYY HH:mm')}
-                </Descriptions.Item>
-              </Descriptions>
-              
-              <div style={{ marginTop: 16, textAlign: 'center' }}>
-                <Space>
-                  <Button 
-                    type="dashed" 
-                    icon={<DownloadOutlined />}
-                    onClick={() => message.info('Backup feature coming soon')}
-                  >
-                    {t('adminDashboard.settings.createBackup')}
-                  </Button>
-                  <Button 
-                    type="dashed" 
-                    icon={<DeleteOutlined />}
-                    onClick={() => message.info('Clear cache feature coming soon')}
-                  >
-                    {t('adminDashboard.settings.clearCache')}
-                  </Button>
-                </Space>
-              </div>
-            </Card>
-          </Col>
-        </Row>
-
-        <Row style={{ marginTop: 24 }}>
-          <Col span={24}>
-            <Card>
-              <div style={{ textAlign: 'center' }}>
-                <Space size="large">
-                  <Button 
-                    type="primary" 
-                    htmlType="submit" 
-                    size="large"
-                    loading={settingsLoading}
-                    icon={<SaveOutlined />}
-                  >
-                    {t('adminDashboard.settings.saveSettings')}
-                  </Button>
-                  <Button 
-                    size="large"
-                    onClick={() => settingsForm.resetFields()}
-                  >
-                    {t('adminDashboard.settings.cancel')}
-                  </Button>
-                </Space>
-              </div>
-            </Card>
-          </Col>
-        </Row>
-      </Form>
-    </div>
-  );
-
   const renderEnrollmentsManagement = () => {
-    console.log('Rendering enrollment analytics with real data:', { enrollmentStats, enrollmentAnalytics });
+    console.log('耳 Rendering enrollment analytics with real data:', { enrollmentStats, enrollmentAnalytics });
 
     return (
       <div style={{ background: '#f5f5f5', padding: '24px', borderRadius: '8px' }}>
         <div style={{ marginBottom: '24px' }}>
           <Title level={2} style={{ color: '#1890ff', margin: 0 }}>
-            {t('adminDashboard.enrollment.title')}
+            嶋 {t('adminDashboard.enrollment.title')}
           </Title>
           <Text type="secondary" style={{ fontSize: '16px' }}>
             {t('adminDashboard.enrollment.subtitle')}
@@ -4255,6 +3617,12 @@ const AdminFacultyDashboard = () => {
         return renderCourseManagement();
       case 'materials':
         return renderMaterialManagement();
+      case 'quizzes':
+        return renderQuizManagement();
+      case 'homework':
+        return renderHomeworkManagement();
+      case 'listening':
+        return renderListeningExercises();
       case 'students':
         return renderStudentProgress();
       case 'analytics':
@@ -4287,13 +3655,30 @@ const AdminFacultyDashboard = () => {
           top: 0,
           bottom: 0,
           zIndex: 1000,
-          boxShadow: '4px 0 30px rgba(102, 126, 234, 0.4)'
+          boxShadow: '4px 0 30px rgba(102, 126, 234, 0.4)',
+          overflow: 'auto'
         }}
       >
         {/* Logo Section */}
-        <div className="sidebar-logo-section">
+        <div className="sidebar-logo-section" style={{
+          padding: '30px 20px',
+          textAlign: 'center',
+          borderBottom: '2px solid rgba(255, 255, 255, 0.2)',
+          background: 'rgba(255, 255, 255, 0.1)'
+        }}>
           <div className="logo-container">
-            <div className="logo-icon-box">
+            <div className="logo-icon-box" style={{
+              width: 70,
+              height: 70,
+              margin: '0 auto',
+              background: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%)',
+              borderRadius: 20,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 10px 30px rgba(255, 107, 107, 0.4)',
+              marginBottom: 15
+            }}>
               <RocketOutlined style={{ fontSize: 35, color: '#fff' }} />
             </div>
             {!collapsed && (
@@ -4370,14 +3755,6 @@ const AdminFacultyDashboard = () => {
           </div>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            {/* Refresh Notifications */}
-            <Button
-              type="text"
-              icon={<ReloadOutlined />}
-              onClick={refreshNotificationsWithLanguage}
-              style={{ fontSize: 16 }}
-            />
-            
             {/* Language Toggle */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <Text type="secondary" style={{ fontSize: 12 }}>EN</Text>
@@ -4393,112 +3770,17 @@ const AdminFacultyDashboard = () => {
                   backgroundColor: i18n.language === 'ja' ? '#52c41a' : '#d9d9d9'
                 }}
               />
-              <Text type="secondary" style={{ fontSize: 12 }}>日本語</Text>
+              <Text type="secondary" style={{ fontSize: 12 }}>譌･譛ｬ隱・/Text>
             </div>
             
             {/* Notifications */}
-            <Dropdown
-              open={notificationVisible}
-              onOpenChange={setNotificationVisible}
-              dropdownRender={() => (
-                <div style={{ 
-                  backgroundColor: 'white', 
-                  borderRadius: 8, 
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                  border: '1px solid #d9d9d9',
-                  maxWidth: 400,
-                  maxHeight: 400,
-                  overflow: 'hidden'
-                }}>
-                  <div style={{ 
-                    padding: '12px 16px', 
-                    borderBottom: '1px solid #f0f0f0',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
-                  }}>
-                    <Text strong>{t('adminPortal.notifications.title') || 'Notifications'}</Text>
-                    {unreadCount > 0 && (
-                      <Badge count={unreadCount} size="small" />
-                    )}
-                  </div>
-                  <div style={{ maxHeight: 300, overflowY: 'auto' }}>
-                    {notifications.length === 0 ? (
-                      <div style={{ padding: '20px', textAlign: 'center' }}>
-                        <Text type="secondary">{t('adminPortal.notifications.noNotifications') || 'No notifications'}</Text>
-                      </div>
-                    ) : (
-                      notifications.map(notification => (
-                        <div 
-                          key={notification.id}
-                          style={{
-                            padding: '12px 16px',
-                            borderBottom: '1px solid #f0f0f0',
-                            cursor: 'pointer',
-                            backgroundColor: notification.read ? 'white' : '#f6ffed',
-                            ':hover': { backgroundColor: '#f5f5f5' }
-                          }}
-                          onClick={() => handleNotificationClick(notification)}
-                        >
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                            <div style={{ flex: 1 }}>
-                              <Text strong style={{ fontSize: 13 }}>
-                                {notification.title}
-                              </Text>
-                              <div style={{ marginTop: 4 }}>
-                                <Text style={{ fontSize: 12, color: '#666' }}>
-                                  {notification.message}
-                                </Text>
-                              </div>
-                              <div style={{ marginTop: 4 }}>
-                                <Text type="secondary" style={{ fontSize: 11 }}>
-                                  {notification.timestamp.toLocaleString()}
-                                </Text>
-                              </div>
-                            </div>
-                            {!notification.read && (
-                              <div style={{ width: 8, height: 8, backgroundColor: '#52c41a', borderRadius: '50%', marginLeft: 8, marginTop: 2 }} />
-                            )}
-                          </div>
-                          {notification.type === 'application' || notification.type === 'contact' ? (
-                            <div style={{ marginTop: 8, display: 'flex', gap: 8 }}>
-                              <Button
-                                size="small"
-                                type="primary"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  approveItem(notification.type, notification.data._id);
-                                }}
-                              >
-                                {t('adminPortal.notifications.approve') || 'Approve'}
-                              </Button>
-                              <Button
-                                size="small"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  rejectItem(notification.type, notification.data._id);
-                                }}
-                              >
-                                {t('adminPortal.notifications.reject') || 'Reject'}
-                              </Button>
-                            </div>
-                          ) : null}
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
-              )}
-              trigger={['click']}
-            >
-              <Badge count={unreadCount} size="small">
-                <Button
-                  type="text"
-                  icon={<BellOutlined />}
-                  style={{ fontSize: 18 }}
-                />
-              </Badge>
-            </Dropdown>
+            <Badge count={5}>
+              <Button
+                type="text"
+                icon={<BellOutlined />}
+                style={{ fontSize: 18 }}
+              />
+            </Badge>
             
             {/* User Profile Dropdown */}
             <Dropdown
@@ -4507,8 +3789,8 @@ const AdminFacultyDashboard = () => {
                   {
                     key: 'profile',
                     icon: <UserOutlined />,
-                    label: t('adminSidebar.navigation.profile'),
-                    onClick: () => setProfileModalVisible(true)
+                    label: 'Profile',
+                    onClick: () => message.info('Profile page coming soon')
                   },
                   {
                     key: 'settings',
@@ -4547,7 +3829,6 @@ const AdminFacultyDashboard = () => {
                     marginRight: 8,
                     flexShrink: 0
                   }}
-                  src={currentUser?.profileImage ? `${API_BASE_URL}${currentUser.profileImage}` : undefined}
                   icon={<UserOutlined />}
                 />
                 <div style={{ minWidth: 0, flex: 1 }}>
@@ -4591,7 +3872,7 @@ const AdminFacultyDashboard = () => {
           borderTop: '1px solid #f0f0f0'
         }}>
           <Text type="secondary">
-            {t('footer.aboutAcademy')} {t('adminDashboard.breadcrumb.dashboard')} © {new Date().getFullYear()} | 
+            {t('footer.aboutAcademy')} {t('adminDashboard.breadcrumb.dashboard')} ﾂｩ{new Date().getFullYear()} | 
             <span style={{ marginLeft: 8 }}>
               Made with <HeartOutlined style={{ color: '#ff4d4f' }} /> by Forum Academy Team
             </span>
@@ -5054,7 +4335,7 @@ const AdminFacultyDashboard = () => {
           layout="vertical"
           onFinish={async (values) => {
             try {
-              console.log('Attempting to send reply...', {
+              console.log('肌 Attempting to send reply...', {
                 replyType,
                 target: replyTarget?.email,
                 subject: values.subject
@@ -5069,7 +4350,7 @@ const AdminFacultyDashboard = () => {
                 relatedId: replyTarget?._id
               };
 
-              console.log('Email data prepared:', emailData);
+              console.log('透 Email data prepared:', emailData);
 
               // Send email via API
               const response = await fetch(`${API_BASE_URL}/api/send-email`, {
@@ -5078,11 +4359,11 @@ const AdminFacultyDashboard = () => {
                 body: JSON.stringify(emailData)
               });
 
-              console.log('API Response Status:', response.status);
+              console.log('藤 API Response Status:', response.status);
 
               if (response.ok) {
                 const responseData = await response.json();
-                console.log('API Response Data:', responseData);
+                console.log('笨・API Response Data:', responseData);
                 
                 if (responseData.success) {
                   if (responseData.details?.simulated || responseData.details?.queued) {
@@ -5121,11 +4402,11 @@ const AdminFacultyDashboard = () => {
                 }
               } else {
                 const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
-                console.error('API Error Response:', errorData);
+                console.error('笶・API Error Response:', errorData);
                 throw new Error(errorData.message || `Server responded with ${response.status}`);
               }
             } catch (error) {
-              console.error('Error sending reply:', error);
+              console.error('笶・Error sending reply:', error);
               
               // Provide more specific error messages
               if (error.message.includes('fetch')) {
@@ -5596,13 +4877,571 @@ const AdminFacultyDashboard = () => {
         </Form>
       </Modal>
 
+      {/* Quiz Modal */}
+      <Modal
+        title={editingQuiz ? 'Edit Quiz' : 'Create New Quiz'}
+        visible={quizModalVisible}
+        onCancel={() => {
+          setQuizModalVisible(false);
+          quizForm.resetFields();
+          setEditingQuiz(null);
+          setQuestions([]);
+        }}
+        footer={null}
+        width={900}
+      >
+        <Form
+          form={quizForm}
+          layout="vertical"
+          onFinish={handleCreateQuiz}
+        >
+          <Tabs defaultActiveKey="basic">
+            <TabPane tab="Basic Information" key="basic">
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item
+                    name="title"
+                    label="Quiz Title"
+                    rules={[{ required: true, message: 'Please enter quiz title' }]}
+                  >
+                    <Input placeholder="Enter quiz title" />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item
+                    name="course"
+                    label="Course"
+                    rules={[{ required: true, message: 'Please select course' }]}
+                  >
+                    <Select placeholder="Select course">
+                      {courses.map(course => (
+                        <Option key={course._id} value={course._id}>
+                          {course.title}
+                        </Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </Col>
+              </Row>
+              
+              <Form.Item
+                name="description"
+                label="Description"
+              >
+                <TextArea rows={3} placeholder="Enter quiz description" />
+              </Form.Item>
+              
+              <Row gutter={16}>
+                <Col span={8}>
+                  <Form.Item
+                    name="duration"
+                    label="Duration (minutes)"
+                    rules={[{ required: true, message: 'Please enter duration' }]}
+                  >
+                    <InputNumber min={1} max={300} style={{ width: '100%' }} />
+                  </Form.Item>
+                </Col>
+                <Col span={8}>
+                  <Form.Item
+                    name="passingScore"
+                    label="Passing Score (%)"
+                    rules={[{ required: true, message: 'Please enter passing score' }]}
+                  >
+                    <InputNumber min={0} max={100} style={{ width: '100%' }} />
+                  </Form.Item>
+                </Col>
+                <Col span={8}>
+                  <Form.Item
+                    name="attempts"
+                    label="Max Attempts"
+                  >
+                    <InputNumber min={1} max={10} style={{ width: '100%' }} />
+                  </Form.Item>
+                </Col>
+              </Row>
+              
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item
+                    name="availableFrom"
+                    label="Available From"
+                  >
+                    <DatePicker showTime style={{ width: '100%' }} />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item
+                    name="availableTo"
+                    label="Available Until"
+                  >
+                    <DatePicker showTime style={{ width: '100%' }} />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </TabPane>
+            
+            <TabPane tab={`Questions (${questions.length})`} key="questions">
+              <Button
+                type="dashed"
+                icon={<PlusOutlined />}
+                onClick={() => setQuestionsModalVisible(true)}
+                style={{ width: '100%', marginBottom: 16 }}
+              >
+                Add Question
+              </Button>
+              
+              {questions.length > 0 ? (
+                <List
+                  dataSource={questions}
+                  renderItem={(question, index) => (
+                    <List.Item
+                      actions={[
+                        <Button
+                          icon={<EditOutlined />}
+                          size="small"
+                          onClick={() => message.info('Edit functionality coming soon')}
+                        />,
+                        <Button
+                          icon={<DeleteOutlined />}
+                          size="small"
+                          danger
+                          onClick={() => removeQuestion(question.id)}
+                        />
+                      ]}
+                    >
+                      <List.Item.Meta
+                        avatar={<Avatar>{index + 1}</Avatar>}
+                        title={question.question}
+                        description={
+                          <div>
+                            <Tag color="blue">{question.type}</Tag>
+                            <Tag color="green">Points: {question.points || 1}</Tag>
+                            {question.type === 'multiple_choice' && (
+                              <div style={{ marginTop: 8 }}>
+                                Options: {question.options?.join(', ')}
+                              </div>
+                            )}
+                          </div>
+                        }
+                      />
+                    </List.Item>
+                  )}
+                />
+              ) : (
+                <Empty description="No questions added yet" />
+              )}
+            </TabPane>
+          </Tabs>
+          
+          <div style={{ marginTop: 24, textAlign: 'right' }}>
+            <Space>
+              <Button onClick={() => {
+                setQuizModalVisible(false);
+                quizForm.resetFields();
+                setQuestions([]);
+              }}>
+                {t('actions.cancel')}
+              </Button>
+              <Button type="primary" htmlType="submit">
+                {editingQuiz ? t('actions.updateQuiz') : t('actions.createQuiz')}
+              </Button>
+            </Space>
+          </div>
+        </Form>
+      </Modal>
 
+      {/* Add Question Modal */}
+      <Modal
+        title="Add Question"
+        visible={questionsModalVisible}
+        onCancel={() => {
+          setQuestionsModalVisible(false);
+          questionForm.resetFields();
+        }}
+        onOk={() => {
+          addQuestion();
+          setQuestionsModalVisible(false);
+        }}
+        width={600}
+      >
+        <Form
+          form={questionForm}
+          layout="vertical"
+        >
+          <Form.Item
+            name="question"
+            label="Question"
+            rules={[{ required: true, message: 'Please enter question' }]}
+          >
+            <TextArea rows={3} placeholder="Enter your question" />
+          </Form.Item>
+          
+          <Form.Item
+            name="type"
+            label="Question Type"
+            rules={[{ required: true, message: 'Please select question type' }]}
+          >
+            <Select placeholder="Select question type">
+              <Option value="multiple_choice">Multiple Choice</Option>
+              <Option value="true_false">True/False</Option>
+              <Option value="short_answer">Short Answer</Option>
+              <Option value="essay">Essay</Option>
+            </Select>
+          </Form.Item>
+          
+          <Form.Item
+            noStyle
+            shouldUpdate={(prevValues, currentValues) => 
+              prevValues.type !== currentValues.type
+            }
+          >
+            {({ getFieldValue }) =>
+              getFieldValue('type') === 'multiple_choice' ? (
+                <Form.Item
+                  name="options"
+                  label="Options"
+                  rules={[{ required: true, message: 'Please add options' }]}
+                >
+                  <Select
+                    mode="tags"
+                    placeholder="Add options (press Enter after each)"
+                    style={{ width: '100%' }}
+                  />
+                </Form.Item>
+              ) : null
+            }
+          </Form.Item>
+          
+          <Form.Item
+            name="correctAnswer"
+            label="Correct Answer"
+            rules={[{ required: true, message: 'Please enter correct answer' }]}
+          >
+            <Input placeholder="Enter the correct answer" />
+          </Form.Item>
+          
+          <Form.Item
+            name="points"
+            label="Points"
+          >
+            <InputNumber min={1} max={100} defaultValue={1} />
+          </Form.Item>
+        </Form>
+      </Modal>
 
+      {/* Homework Modal */}
+      <Modal
+        title={editingHomework ? 'Edit Homework' : 'Create New Homework'}
+        visible={homeworkModalVisible}
+        onCancel={() => {
+          setHomeworkModalVisible(false);
+          homeworkForm.resetFields();
+          setEditingHomework(null);
+        }}
+        onOk={() => homeworkForm.submit()}
+        width={800}
+      >
+        <Form
+          form={homeworkForm}
+          layout="vertical"
+          onFinish={handleCreateHomework}
+        >
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="title"
+                label="Assignment Title"
+                rules={[{ required: true, message: 'Please enter assignment title' }]}
+              >
+                <Input placeholder="Enter assignment title" />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="course"
+                label="Course"
+                rules={[{ required: true, message: 'Please select course' }]}
+              >
+                <Select placeholder="Select course">
+                  {courses.map(course => (
+                    <Option key={course._id} value={course._id}>
+                      {course.title}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
+          
+          <Form.Item
+            name="description"
+            label="Description"
+            rules={[{ required: true, message: 'Please enter assignment description' }]}
+          >
+            <TextArea rows={4} placeholder="Enter assignment description" />
+          </Form.Item>
+          
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="dueDate"
+                label="Due Date"
+                rules={[{ required: true, message: 'Please select due date' }]}
+              >
+                <DatePicker showTime style={{ width: '100%' }} />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="totalPoints"
+                label="Total Points"
+                rules={[{ required: true, message: 'Please enter total points' }]}
+              >
+                <InputNumber min={1} max={1000} style={{ width: '100%' }} />
+              </Form.Item>
+            </Col>
+          </Row>
+          
+          <Form.Item
+            name="instructions"
+            label="Instructions"
+          >
+            <TextArea rows={3} placeholder="Enter detailed instructions for students" />
+          </Form.Item>
+        </Form>
+      </Modal>
 
-
-
-
-
+      {/* Exercise Modal */}
+      <Modal
+        title={editingExercise ? 'Edit Exercise' : 'Create New Listening Exercise'}
+        visible={exerciseModalVisible}
+        onCancel={() => {
+          setExerciseModalVisible(false);
+          exerciseForm.resetFields();
+          setEditingExercise(null);
+          setAudioFile(null);
+          setFileList([]);
+          setQuestions([]);
+        }}
+        footer={null}
+        width={900}
+      >
+        <Form
+          form={exerciseForm}
+          layout="vertical"
+          onFinish={handleCreateExercise}
+        >
+          <Tabs defaultActiveKey="basic">
+            <TabPane tab="Basic Information" key="basic">
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item
+                    name="title"
+                    label="Exercise Title"
+                    rules={[{ required: true, message: 'Please enter exercise title' }]}
+                  >
+                    <Input placeholder="Enter exercise title" />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item
+                    name="course"
+                    label="Course"
+                    rules={[{ required: true, message: 'Please select course' }]}
+                  >
+                    <Select placeholder="Select course">
+                      {courses.map(course => (
+                        <Option key={course._id} value={course._id}>
+                          {course.title}
+                        </Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </Col>
+              </Row>
+              
+              <Form.Item
+                name="description"
+                label="Description"
+              >
+                <TextArea rows={3} placeholder="Enter exercise description" />
+              </Form.Item>
+              
+              <Row gutter={16}>
+                <Col span={8}>
+                  <Form.Item
+                    name="level"
+                    label="Difficulty Level"
+                    rules={[{ required: true, message: 'Please select level' }]}
+                  >
+                    <Select placeholder="Select level">
+                      <Option value="beginner">Beginner</Option>
+                      <Option value="intermediate">Intermediate</Option>
+                      <Option value="advanced">Advanced</Option>
+                    </Select>
+                  </Form.Item>
+                </Col>
+                <Col span={8}>
+                  <Form.Item
+                    name="timeLimit"
+                    label="Time Limit (minutes)"
+                  >
+                    <InputNumber min={1} max={120} defaultValue={30} style={{ width: '100%' }} />
+                  </Form.Item>
+                </Col>
+                <Col span={8}>
+                  <Form.Item
+                    name="playLimit"
+                    label="Play Limit"
+                  >
+                    <InputNumber min={1} max={10} defaultValue={3} style={{ width: '100%' }} />
+                  </Form.Item>
+                </Col>
+              </Row>
+              
+              <Form.Item
+                name="instructions"
+                label="Instructions"
+              >
+                <TextArea rows={3} placeholder="Enter instructions for students" />
+              </Form.Item>
+              
+              <Form.Item
+                label="Audio File (MP3/WAV)"
+                required={!editingExercise}
+              >
+                <Upload
+                  beforeUpload={(file) => {
+                    // Validate file type
+                    const allowedTypes = ['audio/mp3', 'audio/mpeg', 'audio/wav', 'audio/x-wav'];
+                    const isValidType = allowedTypes.includes(file.type) || 
+                                       file.name.toLowerCase().endsWith('.mp3') || 
+                                       file.name.toLowerCase().endsWith('.wav');
+                    
+                    if (!isValidType) {
+                      message.error('Please upload a valid MP3 or WAV audio file');
+                      return Upload.LIST_IGNORE;
+                    }
+                    
+                    // Check file size (50MB limit)
+                    const isLessThan50M = file.size / 1024 / 1024 < 50;
+                    if (!isLessThan50M) {
+                      message.error('Audio file must be smaller than 50MB!');
+                      return Upload.LIST_IGNORE;
+                    }
+                    
+                    setAudioFile(file);
+                    setFileList([file]);
+                    
+                    // Create a preview URL for the uploaded file
+                    const url = URL.createObjectURL(file);
+                    console.log('Audio file selected:', file.name, 'Type:', file.type, 'Size:', (file.size / 1024 / 1024).toFixed(2) + 'MB');
+                    
+                    return false; // Prevent automatic upload
+                  }}
+                  onRemove={() => {
+                    setAudioFile(null);
+                    setFileList([]);
+                  }}
+                  fileList={fileList}
+                  accept=".mp3,.wav,audio/mp3,audio/mpeg,audio/wav"
+                  maxCount={1}
+                  showUploadList={{
+                    showPreviewIcon: true,
+                    showRemoveIcon: true,
+                    showDownloadIcon: false,
+                  }}
+                >
+                  <Button icon={<UploadOutlined />} disabled={fileList.length >= 1}>
+                    {fileList.length >= 1 ? 'Audio File Selected' : 'Select MP3/WAV File'}
+                  </Button>
+                </Upload>
+                {audioFile && (
+                  <div style={{ marginTop: 8 }}>
+                    <Text type="secondary">
+                      Selected: {audioFile.name} ({(audioFile.size / 1024 / 1024).toFixed(2)} MB)
+                    </Text>
+                  </div>
+                )}
+                {editingExercise?.audioUrl && !audioFile && (
+                  <div style={{ marginTop: 8 }}>
+                    <Text type="success">Current audio file: {editingExercise.originalFileName || 'audio.mp3'}</Text>
+                    <br />
+                    <Text type="secondary">Upload a new file to replace the current one</Text>
+                  </div>
+                )}
+              </Form.Item>
+              
+              <Form.Item
+                name="transcript"
+                label="Transcript (Optional)"
+              >
+                <TextArea rows={4} placeholder="Enter audio transcript" />
+              </Form.Item>
+            </TabPane>
+            
+            <TabPane tab={`Questions (${questions.length})`} key="questions">
+              <Button
+                type="dashed"
+                icon={<PlusOutlined />}
+                onClick={() => setQuestionsModalVisible(true)}
+                style={{ width: '100%', marginBottom: 16 }}
+              >
+                Add Question
+              </Button>
+              
+              {questions.length > 0 ? (
+                <List
+                  dataSource={questions}
+                  renderItem={(question, index) => (
+                    <List.Item
+                      actions={[
+                        <Button
+                          icon={<DeleteOutlined />}
+                          size="small"
+                          danger
+                          onClick={() => removeQuestion(question.id)}
+                        />
+                      ]}
+                    >
+                      <List.Item.Meta
+                        avatar={<Avatar>{index + 1}</Avatar>}
+                        title={question.question}
+                        description={
+                          <div>
+                            <Tag color="blue">{question.type}</Tag>
+                            <Tag color="green">Points: {question.points || 1}</Tag>
+                          </div>
+                        }
+                      />
+                    </List.Item>
+                  )}
+                />
+              ) : (
+                <Empty description="No questions added yet" />
+              )}
+            </TabPane>
+          </Tabs>
+          
+          <div style={{ marginTop: 24, textAlign: 'right' }}>
+            <Space>
+              <Button onClick={() => {
+                setExerciseModalVisible(false);
+                exerciseForm.resetFields();
+                setQuestions([]);
+                setAudioFile(null);
+                setFileList([]);
+                setEditingExercise(null);
+              }}>
+                {t('actions.cancel')}
+              </Button>
+              <Button type="primary" htmlType="submit">
+                {editingExercise ? t('actions.updateExercise') : t('actions.createExercise')}
+              </Button>
+            </Space>
+          </div>
+        </Form>
+      </Modal>
 
       {/* Submissions Modal */}
       <Modal
@@ -5706,48 +5545,43 @@ const AdminFacultyDashboard = () => {
 
       {/* Progress Modal */}
       <Modal
-        title={t('adminDashboard.students.studentPerformance')}
+        title="Student Progress Details"
         visible={progressModalVisible}
         onCancel={() => setProgressModalVisible(false)}
         width={800}
         footer={[
           <Button key="close" onClick={() => setProgressModalVisible(false)}>
-            {t('actions.close')}
+            Close
           </Button>
         ]}
       >
         {selectedProgress && (
           <div>
             <Descriptions bordered column={2} style={{ marginBottom: 24 }}>
-              <Descriptions.Item label={t('adminDashboard.students.student')} span={1}>
+              <Descriptions.Item label="Student Name" span={2}>
                 {selectedProgress.firstName} {selectedProgress.lastName}
               </Descriptions.Item>
-              <Descriptions.Item label={t('adminDashboard.applications.email')}>
+              <Descriptions.Item label="Email">
                 {selectedProgress.email}
               </Descriptions.Item>
-              <Descriptions.Item label={t('adminDashboard.users.registrationDate')} span={2}>
-                {selectedProgress.email === 'mesheka@gmail.com' ? 'June 10, 2025' : 
-                 moment(selectedProgress.createdAt).format('MMMM DD, YYYY')}
+              <Descriptions.Item label="Registration Date">
+                {moment(selectedProgress.createdAt).format('MMMM DD, YYYY')}
               </Descriptions.Item>
             </Descriptions>
             
-            <Card title={t('adminDashboard.students.progress')} style={{ marginBottom: 16 }}>
+            <Card title="Course Progress" style={{ marginBottom: 16 }}>
               <Row gutter={[16, 16]}>
                 <Col span={8}>
                   <Statistic
-                    title={t('adminDashboard.students.enrolledCourses')}
-                    value={selectedProgress.email === 'mesheka@gmail.com' ? 3 : 
-                           selectedProgress.email === 'gabby1@gmail.com' ? 1 : 
-                           selectedProgress.email === 'gabby25@gmail.com' ? 3 : 2}
+                    title="Courses Enrolled"
+                    value={Math.floor(Math.random() * 5) + 1}
                     prefix={<BookOutlined />}
                   />
                 </Col>
                 <Col span={8}>
                   <Statistic
-                    title={t('adminDashboard.students.avgProgress')}
-                    value={selectedProgress.email === 'mesheka@gmail.com' ? 71 : 
-                           selectedProgress.email === 'gabby1@gmail.com' ? 15 : 
-                           selectedProgress.email === 'gabby25@gmail.com' ? 88 : 50}
+                    title="Avg. Progress"
+                    value={Math.floor(Math.random() * 100)}
                     suffix="%"
                     prefix={<TrophyOutlined />}
                   />
@@ -5755,9 +5589,7 @@ const AdminFacultyDashboard = () => {
                 <Col span={8}>
                   <Statistic
                     title="Assignments Completed"
-                    value={selectedProgress.email === 'mesheka@gmail.com' ? 9 : 
-                           selectedProgress.email === 'gabby1@gmail.com' ? 2 : 
-                           selectedProgress.email === 'gabby25@gmail.com' ? 12 : 5}
+                    value={Math.floor(Math.random() * 20)}
                     prefix={<CheckSquareOutlined />}
                   />
                 </Col>
@@ -5766,197 +5598,25 @@ const AdminFacultyDashboard = () => {
             
             <Card title="Recent Activity">
               <Timeline>
-                {selectedProgress.email === 'mesheka@gmail.com' ? (
-                  <>
-                    <Timeline.Item color="green">
-                      <Text>Completed Quiz: JavaScript Basics</Text>
-                      <br />
-                      <Text type="secondary">2 days ago</Text>
-                    </Timeline.Item>
-                    <Timeline.Item color="blue">
-                      <Text>Submitted Homework: React Components</Text>
-                      <br />
-                      <Text type="secondary">5 days ago</Text>
-                    </Timeline.Item>
-                    <Timeline.Item color="orange">
-                      <Text>Downloaded Material: CSS Grid Guide</Text>
-                      <br />
-                      <Text type="secondary">1 week ago</Text>
-                    </Timeline.Item>
-                  </>
-                ) : selectedProgress.email === 'gabby1@gmail.com' ? (
-                  <>
-                    <Timeline.Item color="blue">
-                      <Text>Started Course: Web Development Basics</Text>
-                      <br />
-                      <Text type="secondary">Today</Text>
-                    </Timeline.Item>
-                    <Timeline.Item color="orange">
-                      <Text>Downloaded Material: HTML Introduction</Text>
-                      <br />
-                      <Text type="secondary">1 day ago</Text>
-                    </Timeline.Item>
-                  </>
-                ) : selectedProgress.email === 'gabby25@gmail.com' ? (
-                  <>
-                    <Timeline.Item color="green">
-                      <Text>Completed Quiz: Advanced CSS</Text>
-                      <br />
-                      <Text type="secondary">1 day ago</Text>
-                    </Timeline.Item>
-                    <Timeline.Item color="green">
-                      <Text>Submitted Homework: Portfolio Project</Text>
-                      <br />
-                      <Text type="secondary">2 days ago</Text>
-                    </Timeline.Item>
-                    <Timeline.Item color="blue">
-                      <Text>Downloaded Material: JavaScript ES6</Text>
-                      <br />
-                      <Text type="secondary">3 days ago</Text>
-                    </Timeline.Item>
-                  </>
-                ) : (
-                  <Timeline.Item color="blue">
-                    <Text>No recent activity</Text>
-                    <br />
-                    <Text type="secondary">Check back later</Text>
-                  </Timeline.Item>
-                )}
+                <Timeline.Item color="green">
+                  <Text>Completed Quiz: JavaScript Basics</Text>
+                  <br />
+                  <Text type="secondary">2 days ago</Text>
+                </Timeline.Item>
+                <Timeline.Item color="blue">
+                  <Text>Submitted Homework: React Components</Text>
+                  <br />
+                  <Text type="secondary">5 days ago</Text>
+                </Timeline.Item>
+                <Timeline.Item color="orange">
+                  <Text>Downloaded Material: CSS Grid Guide</Text>
+                  <br />
+                  <Text type="secondary">1 week ago</Text>
+                </Timeline.Item>
               </Timeline>
             </Card>
           </div>
         )}
-      </Modal>
-
-
-      {/* Profile Modal */}
-      <Modal
-        title={t('profile.title')}
-        visible={profileModalVisible}
-        onCancel={() => {
-          setProfileModalVisible(false);
-          profileForm.resetFields();
-          // Clean up preview states
-          if (profileImagePreview) {
-            URL.revokeObjectURL(profileImagePreview);
-          }
-          setProfileImagePreview(null);
-          setProfileImageFile(null);
-        }}
-        width={600}
-        footer={null}
-      >
-        <Form
-          form={profileForm}
-          layout="vertical"
-          onFinish={handleProfileUpdate}
-          initialValues={{
-            firstName: currentUser?.firstName || '',
-            lastName: currentUser?.lastName || '',
-            email: currentUser?.email || '',
-            phone: currentUser?.phone || '',
-            bio: currentUser?.bio || '',
-            profileImage: currentUser?.profileImage || ''
-          }}
-        >
-          <div style={{ textAlign: 'center', marginBottom: 24 }}>
-            <Upload
-              name="avatar"
-              listType="picture-circle"
-              className="avatar-uploader"
-              showUploadList={false}
-              beforeUpload={async (file) => {
-                const isImage = file.type.startsWith('image/');
-                if (!isImage) {
-                  message.error('You can only upload image files!');
-                  return false;
-                }
-                const url = await handleAvatarUpload(file);
-                return false; // prevent default upload
-              }}
-              accept="image/*"
-            >
-              <Avatar
-                size={100}
-                src={profileImagePreview || (currentUser?.profileImage ? `${API_BASE_URL}${currentUser.profileImage}` : undefined)}
-                icon={<UserOutlined />}
-                style={{ backgroundColor: '#1890ff' }}
-              />
-              <div style={{ marginTop: 8 }}>
-                <Button icon={<CameraOutlined />} size="small" loading={avatarUploading}>
-                  {t('profile.changePhoto')}
-                </Button>
-              </div>
-            </Upload>
-          </div>
-
-          <Row gutter={[16, 0]}>
-            <Col span={12}>
-              <Form.Item
-                label={t('adminDashboard.users.firstName')}
-                name="firstName"
-                rules={[{ required: true, message: t('adminDashboard.users.validation.firstNameRequired') }]}
-              >
-                <Input placeholder={t('adminDashboard.users.placeholders.firstName')} />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label={t('adminDashboard.users.lastName')}
-                name="lastName"
-                rules={[{ required: true, message: t('adminDashboard.users.validation.lastNameRequired') }]}
-              >
-                <Input placeholder={t('adminDashboard.users.placeholders.lastName')} />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Form.Item
-            label={t('adminDashboard.applications.email')}
-            name="email"
-            rules={[
-              { required: true, message: t('adminDashboard.users.validation.emailRequired') },
-              { type: 'email', message: t('adminDashboard.users.validation.emailValid') }
-            ]}
-          >
-            <Input disabled placeholder={t('adminDashboard.users.placeholders.email')} />
-          </Form.Item>
-
-          <Form.Item
-            label={t('adminDashboard.users.phoneNumber')}
-            name="phone"
-          >
-            <Input placeholder={t('adminDashboard.users.placeholders.phone')} />
-          </Form.Item>
-
-          <Form.Item
-            label={t('profile.bio')}
-            name="bio"
-          >
-            <TextArea 
-              rows={4} 
-              placeholder={t('profile.bioPlaceholder')}
-              maxLength={500}
-              showCount
-            />
-          </Form.Item>
-
-          <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
-            <Space>
-              <Button 
-                onClick={() => {
-                  setProfileModalVisible(false);
-                  profileForm.resetFields();
-                }}
-              >
-                {t('actions.cancel')}
-              </Button>
-              <Button type="primary" htmlType="submit" loading={loading}>
-                {t('profile.updateProfile')}
-              </Button>
-            </Space>
-          </Form.Item>
-        </Form>
       </Modal>
 
       {/* Preview Modal */}
@@ -6033,6 +5693,119 @@ const AdminFacultyDashboard = () => {
         )}
       </Modal>
 
+      {/* Results Modal */}
+      <Modal
+        title="Quiz Results & Analytics"
+        visible={resultsModalVisible}
+        onCancel={() => setResultsModalVisible(false)}
+        width={1000}
+        footer={[
+          <Button key="close" onClick={() => setResultsModalVisible(false)}>
+            Close
+          </Button>
+        ]}
+      >
+        {selectedQuiz && (
+          <div>
+            <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+              <Col span={6}>
+                <Card>
+                  <Statistic
+                    title="Total Submissions"
+                    value={selectedQuiz.submissions?.length || 0}
+                    prefix={<FormOutlined />}
+                  />
+                </Card>
+              </Col>
+              <Col span={6}>
+                <Card>
+                  <Statistic
+                    title="Average Score"
+                    value={78}
+                    suffix="%"
+                    prefix={<TrophyOutlined />}
+                  />
+                </Card>
+              </Col>
+              <Col span={6}>
+                <Card>
+                  <Statistic
+                    title="Pass Rate"
+                    value={85}
+                    suffix="%"
+                    prefix={<CheckCircleOutlined />}
+                  />
+                </Card>
+              </Col>
+              <Col span={6}>
+                <Card>
+                  <Statistic
+                    title="Completion Rate"
+                    value={92}
+                    suffix="%"
+                    prefix={<ClockCircleOutlined />}
+                  />
+                </Card>
+              </Col>
+            </Row>
+            
+            <Row gutter={[16, 16]}>
+              <Col span={12}>
+                <Card title="Score Distribution">
+                  <Bar
+                    data={{
+                      labels: ['0-40%', '41-60%', '61-80%', '81-100%'],
+                      datasets: [{
+                        label: 'Number of Students',
+                        data: [2, 5, 8, 12],
+                        backgroundColor: [
+                          '#f5222d',
+                          '#faad14',
+                          '#1890ff',
+                          '#52c41a'
+                        ]
+                      }]
+                    }}
+                    options={{
+                      responsive: true,
+                      plugins: {
+                        legend: {
+                          display: false
+                        }
+                      }
+                    }}
+                  />
+                </Card>
+              </Col>
+              <Col span={12}>
+                <Card title="Question Analysis">
+                  <List
+                    dataSource={selectedQuiz.questions?.slice(0, 5) || []}
+                    renderItem={(question, index) => (
+                      <List.Item>
+                        <List.Item.Meta
+                          avatar={<Avatar>{index + 1}</Avatar>}
+                          title={`Question ${index + 1}`}
+                          description={
+                            <div>
+                              <Progress
+                                percent={Math.floor(Math.random() * 100)}
+                                size="small"
+                                format={(percent) => `${percent}% correct`}
+                              />
+                            </div>
+                          }
+                        />
+                      </List.Item>
+                    )}
+                  />
+                </Card>
+              </Col>
+            </Row>
+          </div>
+        )}
+      </Modal>
+
       {/* Grading Modal */}
       <Modal
         title="Grade Submission"
@@ -6057,7 +5830,7 @@ const AdminFacultyDashboard = () => {
                   {selectedSubmission.studentName || 'Unknown Student'}
                 </Descriptions.Item>
                 <Descriptions.Item label="Assignment">
-                  {'Unknown'}
+                  {selectedHomework?.title || selectedQuiz?.title || 'Unknown'}
                 </Descriptions.Item>
                 <Descriptions.Item label="Submitted">
                   {moment(selectedSubmission.submittedAt).format('MMMM DD, YYYY HH:mm')}
@@ -6124,7 +5897,7 @@ const AdminFacultyDashboard = () => {
                 {selectedSubmission.studentName || 'Unknown Student'}
               </Descriptions.Item>
               <Descriptions.Item label="Assignment">
-                {'Unknown'}
+                {selectedHomework?.title || selectedQuiz?.title || 'Unknown'}
               </Descriptions.Item>
               <Descriptions.Item label="Score">
                 {selectedSubmission.score || 0}/{selectedSubmission.totalPoints || 0}
@@ -6204,7 +5977,7 @@ const AdminFacultyDashboard = () => {
                     {selectedCallUser?.firstName} {selectedCallUser?.lastName}
                   </Title>
                   <Text type="secondary" style={{ fontSize: '16px' }}>
-                    {callType === 'student' ? `${t('adminDashboard.enrollment.videoCall.student')}` : `${t('adminDashboard.enrollment.videoCall.teacher')}`} - {selectedCallUser?.email}
+                    {callType === 'student' ? `捉窶昨沁・${t('adminDashboard.enrollment.videoCall.student')}` : `捉窶昨沛ｫ ${t('adminDashboard.enrollment.videoCall.teacher')}`} 窶｢ {selectedCallUser?.email}
                   </Text>
                 </div>
               </div>
@@ -6256,7 +6029,7 @@ const AdminFacultyDashboard = () => {
               }}>
                 <div style={{ marginBottom: 16 }}>
                   <Text style={{ color: 'white', fontSize: '18px' }}>
-                    {t('adminDashboard.enrollment.videoCall.inProgress')}
+                    磁 {t('adminDashboard.enrollment.videoCall.inProgress')}
                   </Text>
                 </div>
                 
@@ -6294,7 +6067,7 @@ const AdminFacultyDashboard = () => {
                 marginBottom: '24px'
               }}>
                 <Text type="secondary" style={{ fontSize: '14px' }}>
-                  {t('adminDashboard.enrollment.videoCall.implementation')}
+                  庁 {t('adminDashboard.enrollment.videoCall.implementation')}
                   <br />{t('adminDashboard.enrollment.videoCall.technologies')}
                 </Text>
               </div>

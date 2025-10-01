@@ -1,5 +1,14 @@
 {
   "error": "エラー",
+  "profile": {
+    "title": "プロフィール設定",
+    "changePhoto": "写真を変更",
+    "bio": "自己紹介",
+    "bioPlaceholder": "自己紹介を入力してください...",
+    "updateProfile": "プロフィール更新",
+    "updateSuccess": "プロフィールが正常に更新されました！",
+    "updateError": "プロフィールの更新に失敗しました。もう一度お試しください。"
+  },
   "table": {
     "applicant": "申請者",
     "contact": "連絡先",
@@ -18,7 +27,13 @@
     "markPending": "保留中にマーク",
     "close": "閉じる",
     "cancel": "キャンセル",
-    "yesDelete": "はい、削除"
+    "yesDelete": "はい、削除",
+    "send": "送信",
+    "download": "ダウンロード",
+    "createQuiz": "クイズ作成",
+    "updateQuiz": "クイズ更新",
+    "createExercise": "演習作成",
+    "updateExercise": "演習更新"
   },
   "programs": {
     "webDevelopment": "ウェブ開発",
@@ -1442,7 +1457,26 @@
       "downtime": "分のダウンタイム",
       "totalActiveUsers": "総アクティブユーザー数",
       "growthRate": "成長率",
-      "thisMonth": "今月"
+      "thisMonth": "今月",
+      "totalStudents": "総学生数",
+      "totalTeachers": "総教師数",
+      "totalCourses": "総コース数",
+      "courseMaterials": "コース資料",
+      "activeLearnersEnrolled": "登録中のアクティブ学習者",
+      "qualifiedInstructors": "資格のある講師",
+      "availablePrograms": "利用可能なプログラム",
+      "learningResources": "学習リソース",
+      "totalQuizzes": "総クイズ数",
+      "homeworkAssignments": "宿題課題",
+      "listeningExercises": "リスニング演習",
+      "totalEnrollments": "総登録数",
+      "active": "アクティブ",
+      "audioComprehension": "音声理解",
+      "newThisMonth": "今月新規",
+      "studentPerformanceTrends": "学生成績トレンド",
+      "thisWeek": "今週",
+      "thisYear": "今年",
+      "applicationStatus": "申請状況"
     },
     "status": {
       "optimal": "最適",
@@ -1478,7 +1512,10 @@
       "securityScan": "セキュリティスキャン完了",
       "noThreats": "脅威は検出されませんでした。すべてのシステムが安全です。",
       "databaseBackup": "データベースバックアップ完了",
-      "backupSuccess": "日次バックアップが正常に完了しました。2.4GB アーカイブされました。"
+      "backupSuccess": "日次バックアップが正常に完了しました。2.4GB アーカイブされました。",
+      "recentActivity": "最近のアクティビティ",
+      "viewAll": "すべて表示",
+      "noRecentActivity": "最近のアクティビティはありません"
     },
     "time": {
       "fiveMinutesAgo": "5分前",
@@ -1495,11 +1532,234 @@
       "manageUsers": "ユーザー管理",
       "applications": "申請書",
       "messages": "メッセージ",
-      "settings": "設定"
+      "settings": "設定",
+      "reviewApplications": "申請書の確認",
+      "checkMessages": "メッセージの確認",
+      "manageCourses": "コース管理",
+      "studentProgress": "学生の進捗"
     },
     "alerts": {
       "title": "システムアラート",
       "subtitle": "最近の通知と警告"
+    },
+    "courseManagement": {
+      "title": "コース管理",
+      "subtitle": "コース、カリキュラム、登録の作成と管理",
+      "stats": {
+        "totalCourses": "総コース数",
+        "activeCourses": "アクティブコース",
+        "totalEnrolled": "総受講者数",
+        "avgCompletion": "平均完了率"
+      },
+      "table": {
+        "title": "全コース",
+        "columns": {
+          "courseTitle": "コース名",
+          "category": "カテゴリー",
+          "level": "レベル",
+          "students": "受講者数",
+          "status": "ステータス",
+          "actions": "操作",
+          "code": "コード"
+        },
+        "statusValues": {
+          "active": "アクティブ",
+          "inactive": "非アクティブ"
+        },
+        "levelValues": {
+          "beginner": "初級",
+          "intermediate": "中級",
+          "advanced": "上級"
+        }
+      },
+      "filters": {
+        "searchPlaceholder": "コースを検索...",
+        "filterByCategory": "カテゴリーで絞り込み",
+        "categories": {
+          "language": "言語",
+          "business": "ビジネス",
+          "technology": "技術",
+          "arts": "芸術",
+          "science": "科学",
+          "other": "その他"
+        }
+      },
+      "actions": {
+        "createCourse": "コース作成",
+        "edit": "編集",
+        "view": "詳細表示",
+        "delete": "削除",
+        "deleteConfirm": "このコースを削除しますか？"
+      },
+      "messages": {
+        "deleteSuccess": "コースを正常に削除しました",
+        "deleteError": "コースの削除に失敗しました",
+        "createError": "コースの作成に失敗しました"
+      },
+      "modals": {
+        "create": {
+          "title": "新規コース作成"
+        },
+        "edit": {
+          "title": "コース編集",
+          "button": "コース編集"
+        },
+        "view": {
+          "title": "コース詳細"
+        }
+      },
+      "form": {
+        "fields": {
+          "courseTitle": "コース名",
+          "courseCode": "コースコード",
+          "description": "説明",
+          "category": "カテゴリー",
+          "level": "レベル",
+          "startDate": "開始日",
+          "endDate": "終了日",
+          "duration": "期間（週）",
+          "maxStudents": "最大受講者数",
+          "status": "ステータス"
+        },
+        "placeholders": {
+          "courseTitle": "コース名を入力してください",
+          "courseCode": "例：CS101",
+          "description": "コースの説明を入力してください",
+          "selectCategory": "カテゴリーを選択してください",
+          "selectLevel": "レベルを選択してください"
+        },
+        "validation": {
+          "courseTitleRequired": "コース名を入力してください",
+          "courseCodeRequired": "コースコードを入力してください",
+          "descriptionRequired": "コースの説明を入力してください",
+          "categoryRequired": "カテゴリーを選択してください",
+          "levelRequired": "レベルを選択してください",
+          "startDateRequired": "開始日を選択してください",
+          "endDateRequired": "終了日を選択してください",
+          "durationRequired": "期間を入力してください",
+          "capacityRequired": "定員を入力してください"
+        },
+        "levelOptions": {
+          "beginner": "初級",
+          "intermediate": "中級",
+          "advanced": "上級"
+        },
+        "statusOptions": {
+          "active": "アクティブ",
+          "inactive": "非アクティブ"
+        }
+      },
+      "viewModal": {
+        "labels": {
+          "title": "タイトル",
+          "code": "コード",
+          "category": "カテゴリー",
+          "level": "レベル",
+          "description": "説明",
+          "duration": "期間",
+          "capacity": "定員",
+          "status": "ステータス",
+          "startDate": "開始日",
+          "endDate": "終了日",
+          "studentsEnrolled": "受講者一覧",
+          "created": "作成日"
+        },
+        "values": {
+          "weeks": "週間",
+          "students": "名",
+          "noStudentsEnrolled": "まだ受講者はいません"
+        }
+      }
+    },
+    "materialManagement": {
+      "title": "コース資料",
+      "subtitle": "コース資料、文書、リソースのアップロードと管理",
+      "stats": {
+        "totalMaterials": "総資料数",
+        "videos": "動画",
+        "documents": "文書",
+        "totalSize": "総サイズ"
+      },
+      "table": {
+        "title": "コース資料",
+        "columns": {
+          "material": "資料",
+          "course": "コース",
+          "category": "カテゴリー",
+          "size": "サイズ",
+          "uploaded": "アップロード日",
+          "actions": "操作"
+        },
+        "values": {
+          "unknown": "不明"
+        }
+      },
+      "filters": {
+        "searchPlaceholder": "資料を検索...",
+        "filterByType": "種類で絞り込み",
+        "types": {
+          "video": "動画",
+          "document": "文書",
+          "resource": "リソース"
+        }
+      },
+      "actions": {
+        "uploadMaterial": "資料をアップロード",
+        "download": "ダウンロード",
+        "preview": "プレビュー",
+        "delete": "削除",
+        "deleteConfirm": "この資料を削除しますか？"
+      },
+      "messages": {
+        "deleteSuccess": "資料を正常に削除しました",
+        "deleteError": "資料の削除に失敗しました",
+        "uploadSuccess": "資料を正常にアップロードしました",
+        "uploadError": "資料のアップロードに失敗しました"
+      },
+      "upload": {
+        "title": "コース資料をアップロード",
+        "fields": {
+          "title": "資料タイトル",
+          "description": "説明",
+          "course": "コース",
+          "category": "カテゴリー",
+          "file": "ファイル"
+        },
+        "placeholders": {
+          "title": "資料タイトルを入力してください",
+          "description": "資料の説明を入力してください",
+          "selectCourse": "コースを選択してください",
+          "selectCategory": "カテゴリーを選択してください"
+        },
+        "validation": {
+          "titleRequired": "資料タイトルを入力してください",
+          "descriptionRequired": "説明を入力してください",
+          "courseRequired": "コースを選択してください",
+          "categoryRequired": "カテゴリーを選択してください",
+          "fileRequired": "ファイルをアップロードしてください"
+        },
+        "categories": {
+          "video": "動画",
+          "document": "文書",
+          "resource": "リソース",
+          "assignment": "課題",
+          "reading": "読み物"
+        },
+        "uploadText": "ファイルをクリックまたはドラッグしてアップロード",
+        "uploadHint": "単一ファイルアップロードをサポート。PDF、DOC、MP4などの形式に対応しています。",
+        "accessLevel": "アクセスレベル",
+        "weekNumber": "週番号"
+      },
+      "preview": {
+        "title": "資料プレビュー",
+        "noPreview": "このファイル形式はプレビューできません",
+        "noDescription": "説明なし"
+      },
+      "accessLevels": {
+        "public": "公開",
+        "course_students": "コース受講者のみ",
+        "premium": "プレミアム会員"
+      }
     }
   },
   "userManagement": {
@@ -1919,6 +2179,434 @@
       "sendAnnouncement": "お知らせ送信",
       "generateReport": "レポート生成",
       "systemSettings": "システム設定"
+    },
+    "applications": {
+      "title": "申請・ユーザー管理",
+      "subtitle": "学生の申請とユーザーアカウントを管理",
+      "newApplication": "新規申請",
+      "totalApplications": "総申請数",
+      "pendingApplications": "保留中申請", 
+      "approvedApplications": "承認済み申請",
+      "rejectedApplications": "却下申請",
+      "applicationDetails": "申請詳細",
+      "userManagement": "ユーザー管理",
+      "createUser": "新規ユーザー作成",
+      "editUser": "ユーザー編集",
+      "approve": "承認",
+      "reject": "却下",
+      "pending": "保留中",
+      "approved": "承認済み",
+      "rejected": "却下",
+      "actions": "アクション",
+      "viewDetails": "詳細を見る",
+      "applicantName": "申請者名",
+      "email": "メールアドレス",
+      "phone": "電話番号",
+      "status": "ステータス",
+      "appliedDate": "申請日",
+      "course": "コース",
+      "program": "プログラム",
+      "totalApplicationsCount": "総申請数",
+      "pendingReview": "保留中のレビュー",
+      "contactMessages": "お問い合わせメッセージ",
+      "pendingUsers": "保留中ユーザー",
+      "messages": "メッセージ",
+      "users": "ユーザー",
+      "replyTo": "への返信",
+      "replyingTo": "返信先",
+      "applicationFor": "申請内容",
+      "subject": "件名",
+      "message": "メッセージ",
+      "quickTemplates": "クイックテンプレート",
+      "attachments": "添付ファイル",
+      "optional": "オプション",
+      "sendCopy": "このメールのコピーを送信する",
+      "reApplication": "Re: Forum Academyへのお申込み",
+      "replyToApplicant": "申請者に返信",
+      "studentApplications": "学生申請",
+      "applicationReceived": "申請受理",
+      "requestInformation": "情報要求",
+      "acceptanceLetter": "合格通知",
+      "templateReceived": "{{name}}様、\n\nForum Academyへのお申込みありがとうございます。\nお申込みを受理し、現在審査中です。\n\n3-5営業日以内に申請状況についてご連絡いたします。\n\nご不明な点がございましたら、お気軽にお問い合わせください。\n\n敬具、\nForum Academy入学事務局",
+      "templateRequest": "{{name}}様、\n\nお申込み手続きを進めるため、追加情報が必要です。\n\n以下をご提供ください：\n1. [必要書類・情報]\n2. [必要書類・情報]\n\nこのメールへの返信で必要情報をお送りください。\n\n敬具、\nForum Academy入学事務局",
+      "templateAcceptance": "{{name}}様、\n\nおめでとうございます！\nForum Academyへのお申込みが承認されました。\n\n学習コミュニティへようこそ！\n\n次のステップ：\n1. 7日以内に入学手続きを完了\n2. オリエンテーションへ参加\n3. 学生ポータルにアクセス\n\nあなたの学習の旅をサポートさせていただきます。\n\n敬具、\nForum Academy入学事務局",
+      "searchApplications": "申請を検索...",
+      "filterStatus": "ステータスでフィルター",
+      "allStatuses": "全ステータス",
+      "templatePlaceholder": "申請者様、\n\nForum Academyへのお申込みありがとうございます...\n\n敬具、\nForum Academy事務局",
+      "typeReplyMessage": "返信メッセージをここに入力してください...",
+      "attachFiles": "ファイル添付",
+      "fullName": "氏名",
+      "statusValues": {
+        "pending": "審査中",
+        "approved": "承認済み",
+        "rejected": "拒否"
+      }
+    },
+    "students": {
+      "title": "学生進捗",
+      "subtitle": "全コースでの学生のパフォーマンスと進捗を監視",
+      "totalStudents": "総学生数",
+      "activeStudents": "アクティブ学生",
+      "avgProgress": "平均進捗",
+      "completionRate": "完了率",
+      "studentPerformance": "学生パフォーマンス概要",
+      "student": "学生",
+      "enrolledCourses": "登録コース",
+      "progress": "進捗",
+      "lastActivity": "最終活動",
+      "uploadMaterial": "資料アップロード"
+    },
+    "contact": {
+      "title": "お問い合わせメッセージ",
+      "contactInfo": "連絡先情報",
+      "subject": "件名",
+      "status": "ステータス",
+      "received": "受信日時",
+      "actions": "アクション",
+      "messageDetails": "メッセージ詳細",
+      "from": "送信者",
+      "phone": "電話番号",
+      "message": "メッセージ",
+      "reply": "返信",
+      "notProvided": "未提供",
+      "statusValues": {
+        "pending": "保留中",
+        "resolved": "解決済み",
+        "approved": "承認済み",
+        "ignored": "無視",
+        "unknown": "不明"
+      },
+      "view": "表示",
+      "markResolved": "解決済みにする",
+      "searchMessages": "メッセージを検索...",
+      "templates": {
+        "acknowledgment": "受理確認",
+        "generalResponse": "一般回答",
+        "acknowledgmentMessage": "{{name}}様、\n\nForum Academyにお問い合わせいただき、ありがとうございます。\nメッセージを受理いたしました。24-48時間以内にご返信いたします。\n\n敬具、\nForum Academyサポートチーム",
+        "generalResponseMessage": "{{name}}様、\n\nお問い合わせいただき、ありがとうございます。[詳細な回答をここに記載]\n\nご不明な点がございましたら、お気軽にお問い合わせください。\n\n敬具、\nForum Academyサポートチーム"
+      }
+    },
+    "users": {
+      "title": "ユーザー登録",
+      "userInfo": "ユーザー情報",
+      "role": "役割",
+      "status": "ステータス",
+      "registrationDate": "登録日",
+      "actions": "アクション",
+      "userDetails": "ユーザー詳細",
+      "name": "氏名",
+      "email": "メールアドレス",
+      "registered": "登録日",
+      "bio": "プロフィール",
+      "approveUser": "ユーザー承認",
+      "rejectUser": "ユーザー拒否",
+      "createNewUser": "新規ユーザー作成",
+      "createUser": "ユーザー作成",
+      "firstName": "名",
+      "lastName": "姓",
+      "password": "パスワード",
+      "phoneNumber": "電話番号",
+      "approvalStatus": "承認ステータス",
+      "roleValues": {
+        "student": "学生",
+        "teacher": "教師",
+        "admin": "管理者",
+        "filterByRole": "役割で絞り込み"
+      },
+      "statusValues": {
+        "approved": "承認済み",
+        "rejected": "拒否",
+        "pending": "保留中"
+      },
+      "validation": {
+        "firstNameRequired": "名を入力してください",
+        "lastNameRequired": "姓を入力してください", 
+        "emailRequired": "メールアドレスを入力してください",
+        "emailValid": "有効なメールアドレスを入力してください",
+        "passwordRequired": "パスワードを入力してください",
+        "passwordLength": "パスワードは6文字以上で入力してください",
+        "roleRequired": "役割を選択してください"
+      },
+      "placeholders": {
+        "firstName": "名を入力",
+        "lastName": "姓を入力",
+        "email": "メールアドレスを入力",
+        "password": "パスワードを入力",
+        "role": "ユーザー役割を選択",
+        "phone": "電話番号を入力（任意）"
+      },
+      "view": "表示",
+      "approve": "承認",
+      "reject": "拒否",
+      "searchUsers": "ユーザーを検索..."
+    },
+    "analytics": {
+      "title": "分析・レポート",
+      "subtitle": "包括的な分析・レポートダッシュボード",
+      "courseEnrollmentTrends": "コース登録傾向",
+      "studentPerformanceDistribution": "学生パフォーマンス分布",
+      "monthlyActivityReport": "月次活動レポート",
+      "newEnrollments": "新規登録",
+      "excellent": "優秀 (90-100%)",
+      "good": "良好 (80-89%)",
+      "average": "平均 (70-79%)",
+      "belowAverage": "平均以下 (<70%)",
+      "quizSubmissions": "クイズ提出",
+      "homeworkSubmissions": "宿題提出",
+      "materialDownloads": "教材ダウンロード"
+    },
+    "settings": {
+      "title": "システム設定",
+      "subtitle": "システム設定と環境設定を構成",
+      "generalSettings": "一般設定",
+      "notificationSettings": "通知設定",
+      "systemInformation": "システム情報",
+      "systemName": "システム名",
+      "adminEmail": "管理者メール",
+      "timeZone": "タイムゾーン",
+      "language": "言語",
+      "emailNotifications": "メール通知",
+      "smsNotifications": "SMS通知",
+      "pushNotifications": "プッシュ通知",
+      "weeklyReports": "週次レポート",
+      "version": "バージョン",
+      "lastUpdated": "最終更新",
+      "databaseStatus": "データベース状態",
+      "serverStatus": "サーバー状態",
+      "totalUsers": "総ユーザー数",
+      "totalCourses": "総コース数",
+      "connected": "接続済み",
+      "online": "オンライン",
+      "resetToDefault": "デフォルトにリセット",
+      "saveSettings": "設定を保存",
+      "cancel": "キャンセル",
+      "saveSuccess": "設定が正常に保存されました！",
+      "saveError": "設定の保存に失敗しました",
+      "resetSuccess": "設定をデフォルトにリセットしました",
+      "securitySettings": "セキュリティ設定",
+      "sessionTimeout": "セッションタイムアウト（分）",
+      "maxLoginAttempts": "最大ログイン試行回数",
+      "maintenanceMode": "メンテナンスモード",
+      "autoBackup": "自動バックアップ",
+      "storageUsed": "ストレージ使用量",
+      "lastBackup": "最終バックアップ",
+      "createBackup": "バックアップ作成",
+      "clearCache": "キャッシュクリア"
+    },
+    "courses": {
+      "title": "コース管理",
+      "subtitle": "コース、カリキュラム、教育コンテンツを管理",
+      "createCourse": "新規コース作成",
+      "editCourse": "コース編集",
+      "courseName": "コース名",
+      "courseDescription": "コース説明",
+      "category": "カテゴリ",
+      "difficulty": "難易度",
+      "duration": "期間",
+      "instructor": "講師",
+      "enrolled": "登録済み",
+      "completed": "完了",
+      "materials": "教材",
+      "quizzes": "クイズ"
+    },
+    "quizManagement": {
+      "title": "クイズ管理",
+      "subtitle": "クイズ、評価、テストを作成・管理"
+    },
+    "homeworkManagement": {
+      "title": "宿題管理",
+      "subtitle": "宿題課題と提出物を作成・管理"
+    },
+    "listeningExercises": {
+      "title": "リスニング演習",
+      "subtitle": "リスニング理解演習を作成・管理"
+    },
+    "modals": {
+      "close": "閉じる",
+      "save": "保存",
+      "cancel": "キャンセル",
+      "confirm": "確認",
+      "delete": "削除",
+      "edit": "編集",
+      "create": "作成",
+      "update": "更新",
+      "submit": "送信",
+      "reset": "リセット",
+      "search": "検索",
+      "filter": "フィルター",
+      "export": "エクスポート",
+      "import": "インポート",
+      "download": "ダウンロード",
+      "upload": "アップロード"
+    },
+    "common": {
+      "loading": "読み込み中...",
+      "noData": "データがありません",
+      "error": "エラーが発生しました",
+      "success": "成功",
+      "warning": "警告",
+      "info": "情報",
+      "name": "名前",
+      "description": "説明",
+      "date": "日付",
+      "time": "時間",
+      "type": "タイプ",
+      "size": "サイズ",
+      "format": "形式",
+      "all": "すべて",
+      "none": "なし",
+      "yes": "はい",
+      "no": "いいえ"
+    },
+    "enrollment": {
+      "title": "入学者統計・監視",
+      "subtitle": "学生の入学、活動、成績指標を監視",
+      "metrics": {
+        "totalEnrollments": "総入学者数",
+        "activeStudents": "アクティブ学生",
+        "courseCompletions": "コース修了",
+        "avgProgress": "平均進捗",
+        "engagementRate": "参加率",
+        "successRate": "成功率",
+        "improvement": "改善"
+      },
+      "studentMonitoring": {
+        "title": "学生活動監視",
+        "totalStudentsTag": "総学生数",
+        "filters": {
+          "allStudents": "全学生",
+          "activeOnly": "アクティブのみ",
+          "inactiveOnly": "非アクティブのみ",
+          "pendingApproval": "承認待ち"
+        },
+        "refresh": "更新",
+        "columns": {
+          "studentInfo": "学生情報",
+          "status": "状態",
+          "enrollmentDetails": "入学詳細",
+          "lastActivity": "最後の活動",
+          "performance": "成績",
+          "actions": "操作"
+        },
+        "statusValues": {
+          "active": "アクティブ",
+          "pending": "保留中",
+          "role": "役割"
+        },
+        "enrollmentInfo": {
+          "coursesEnrolled": "コース履修",
+          "overallProgress": "全体の進捗"
+        },
+        "activityInfo": {
+          "today": "今日",
+          "daysAgo": "日前",
+          "recentlyActive": "最近アクティブ",
+          "moderatelyActive": "適度にアクティブ",
+          "inactive": "非アクティブ"
+        },
+        "performanceInfo": {
+          "avgScore": "平均点",
+          "submissions": "提出物"
+        },
+        "actions": {
+          "view": "表示",
+          "message": "メッセージ",
+          "videoCall": "ビデオ通話"
+        },
+        "pagination": {
+          "showTotal": "{{total}}名中{{range}}名の学生"
+        }
+      },
+      "teacherMonitoring": {
+        "title": "教師活動監視",
+        "totalTeachersTag": "総教師数",
+        "filters": {
+          "allTeachers": "全教師",
+          "activeOnly": "アクティブのみ",
+          "inactiveOnly": "非アクティブのみ"
+        },
+        "refresh": "更新",
+        "columns": {
+          "teacherInfo": "教師情報",
+          "status": "状態",
+          "teachingLoad": "担当負荷",
+          "lastActivity": "最後の活動",
+          "performanceMetrics": "パフォーマンス指標",
+          "actions": "操作"
+        },
+        "statusValues": {
+          "active": "アクティブ",
+          "pending": "保留中"
+        },
+        "teachingLoadInfo": {
+          "courses": "コース",
+          "activeStudents": "アクティブ学生"
+        },
+        "activityInfo": {
+          "justNow": "たった今",
+          "hoursAgo": "時間前",
+          "daysAgo": "日前",
+          "online": "オンライン",
+          "recentlyOnline": "最近オンライン",
+          "offline": "オフライン"
+        },
+        "performanceInfo": {
+          "responseTime": "時間 応答時間"
+        },
+        "actions": {
+          "view": "表示",
+          "message": "メッセージ",
+          "videoCall": "ビデオ通話"
+        },
+        "pagination": {
+          "showTotal": "{{total}}名中{{range}}名の教師"
+        }
+      },
+      "activitySummary": {
+        "activeUsersTitle": "アクティブユーザー概要",
+        "currentlyOnline": "現在オンライン",
+        "users": "ユーザー",
+        "studentsTeachers": "学生、教師",
+        "activityThisWeekTitle": "今週の活動",
+        "loginSessions": "ログインセッション",
+        "fromLastWeek": "先週比",
+        "attentionRequiredTitle": "要注意",
+        "inactiveUsers": "非アクティブユーザー",
+        "notActiveFor": "14日以上非アクティブ"
+      },
+      "templates": {
+        "student": {
+          "welcomeMessage": "ウェルカムメッセージ",
+          "progressReminder": "進捗リマインダー",
+          "supportCheck": "サポート確認",
+          "welcomeMessageText": "{{name}}様、\n\nForum Academyへようこそ！学習コミュニティにご参加いただき、誠にありがとうございます。\n\nコースが学生ポータルでご利用いただけます。開始にあたりサポートが必要でしたら、お気軽にお声かけください。\n\n敬具、\nForum Academy学術チーム",
+          "progressReminderText": "{{name}}様、\n\n最近コースでのアクティビティが少ないことに気づきました。学習の継続は成功の鍵となります。\n\n何か課題に直面されていたり、サポートが必要でしたらお知らせください。あなたの成功をサポートいたします！\n\n敬具、\nForum Academy学術チーム",
+          "supportCheckText": "{{name}}様、\n\n学習の調子はいかがでしょうか？追加のサポートが必要でしたり、コースについてご質問がございましたら、お声かけください。\n\nいつでもお気軽にご連絡ください。あなたの学習の旅をサポートいたします。\n\n敬具、\nForum Academy学術チーム"
+        },
+        "teacher": {
+          "welcomeMessage": "ウェルカムメッセージ",
+          "performanceUpdate": "パフォーマンス更新",
+          "supportOffer": "サポート提供",
+          "welcomeMessageText": "{{name}}様、\n\nForum Academy教育チームへようこそ！教育ミッションにご貢献いただき、心より感謝申し上げます。\n\n教師用ダッシュボードをご用意し、最初の授業もスケジュールされています。サポートやリソースが必要でしたらお声かけください。\n\n敬具、\nForum Academy管理部",
+          "performanceUpdateText": "{{name}}様、\n\n学生への素晴らしい指導に感謝申し上げます。質の高い教育への献身を高く評価しております。\n\n最近の教育パフォーマンスについて話し合い、さらなる協力の機会を探りたく存じます。\n\n敬具、\nForum Academy管理部",
+          "supportOfferText": "{{name}}様、\n\nForum Academyでの教育経験をお楽しみいただいておりますでしょうか。お仕事をより良くサポートするために何かできることはございませんか？\n\nリソース、研修、管理サポートなど、あなたの成功をお手伝いいたします。\n\n敬具、\nForum Academy管理部"
+        }
+      },
+      "videoCall": {
+        "title": "ビデオ通話 - {{name}}",
+        "student": "学生",
+        "teacher": "教師",
+        "readyToStart": "ビデオ通話を開始する準備ができました",
+        "aboutToStart": "{{name}}とビデオ通話を開始します。相手が通話を受信できる状態であることを確認してください。",
+        "startCall": "ビデオ通話開始",
+        "cancel": "キャンセル",
+        "inProgress": "ビデオ通話中...",
+        "duration": "通話時間: {{duration}}",
+        "implementation": "実際の実装では、以下を使用してライブビデオフィードを表示します：",
+        "technologies": "• Zoom SDK • WebRTC • Agora Video • Twilio Video",
+        "endCall": "通話終了"
+      }
     }
   },
   "adminSettings": {
@@ -2014,10 +2702,20 @@
   "adminSidebar": {
     "navigation": {
       "overview": "概要",
+      "applications": "申請・ユーザー",
+      "enrollments": "登録監視",
+      "courses": "コース管理",
+      "materials": "コース資料",
+      "quizzes": "クイズエンジン",
+      "homework": "宿題システム",
+      "listening": "リスニング演習",
+      "students": "学生進捗",
+      "analytics": "分析・レポート",
       "users": "ユーザー",
-      "applications": "申請",
       "contacts": "お問い合わせ",
-      "settings": "設定"
+      "settings": "設定",
+      "profile": "プロフィール",
+      "logout": "ログアウト"
     },
     "quickStats": {
       "title": "クイック統計",
@@ -2296,6 +2994,25 @@
     "todayActivity": "今日の管理概要をご覧ください",
     "online": "オンライン",
     "logout": "ログアウト",
+    "logoutConfirm": {
+      "title": "ログアウトの確認",
+      "message": "本当にログアウトしますか？",
+      "yes": "はい",
+      "no": "いいえ"
+    },
+    "notifications": {
+      "title": "通知",
+      "noNotifications": "通知はありません",
+      "newApplication": "新しい申請",
+      "newContact": "新しいお問い合わせ",
+      "applicationMessage": "{{name}}さんが{{course}}に申請しました",
+      "contactMessage": "{{name}}さんからメッセージ: {{subject}}",
+      "approve": "承認",
+      "reject": "拒否",
+      "markAsRead": "既読にする",
+      "navigatedToApplication": "申請ページに移動しました",
+      "navigatedToContact": "お問い合わせページに移動しました"
+    },
     "accessibility": {
       "adminSidebar": "管理ナビゲーションサイドバー",
       "mainContent": "メイン管理コンテンツエリア",

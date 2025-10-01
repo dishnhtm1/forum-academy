@@ -1,5 +1,14 @@
 {
   "error": "Error",
+  "profile": {
+    "title": "Profile Settings",
+    "changePhoto": "Change Photo",
+    "bio": "Bio",
+    "bioPlaceholder": "Tell us about yourself...",
+    "updateProfile": "Update Profile",
+    "updateSuccess": "Profile updated successfully!",
+    "updateError": "Failed to update profile. Please try again."
+  },
   "about": {
     "hero": {
       "badge": "About FIA",
@@ -451,7 +460,13 @@
     "approveSelected": "Approve Selected",
     "reviewSelected": "Review Selected", 
     "rejectSelected": "Reject Selected",
-    "exportFiltered": "Export Filtered"
+    "exportFiltered": "Export Filtered",
+    "send": "Send",
+    "download": "Download",
+    "createQuiz": "Create Quiz",
+    "updateQuiz": "Update Quiz",
+    "createExercise": "Create Exercise",
+    "updateExercise": "Update Exercise"
   },
   "form": {
     "fullName": "Full Name",
@@ -1461,7 +1476,26 @@
       "downtime": "minutes downtime",
       "totalActiveUsers": "Total Active Users",
       "growthRate": "Growth rate",
-      "thisMonth": "this month"
+      "thisMonth": "this month",
+      "totalStudents": "Total Students",
+      "totalTeachers": "Total Teachers",
+      "totalCourses": "Total Courses",
+      "courseMaterials": "Course Materials",
+      "activeLearnersEnrolled": "Active learners enrolled",
+      "qualifiedInstructors": "Qualified instructors",
+      "availablePrograms": "Available programs",
+      "learningResources": "Learning resources",
+      "totalQuizzes": "Total Quizzes",
+      "homeworkAssignments": "Homework Assignments",
+      "listeningExercises": "Listening Exercises",
+      "totalEnrollments": "Total Enrollments",
+      "active": "active",
+      "audioComprehension": "Audio comprehension",
+      "newThisMonth": "new this month",
+      "studentPerformanceTrends": "Student Performance Trends",
+      "thisWeek": "This Week",
+      "thisYear": "This Year",
+      "applicationStatus": "Application Status"
     },
     "status": {
       "optimal": "Optimal",
@@ -1498,6 +1532,9 @@
       "awaitingApproval": "awaiting approval",
       "newContactMessage": "New contact message",
       "securityScan": "Security scan completed",
+      "recentActivity": "Recent Activity",
+      "viewAll": "View All",
+      "noRecentActivity": "No recent activity",
       "noThreats": "No threats detected. All systems secure.",
       "databaseBackup": "Database backup completed",
       "backupSuccess": "Daily backup successful. 2.4GB archived."
@@ -1517,11 +1554,234 @@
       "manageUsers": "Manage Users",
       "applications": "Applications",
       "messages": "Messages",
-      "settings": "Settings"
+      "settings": "Settings",
+      "reviewApplications": "Review Applications",
+      "checkMessages": "Check Messages",
+      "manageCourses": "Manage Courses",
+      "studentProgress": "Student Progress"
     },
     "alerts": {
       "title": "System Alerts",
       "subtitle": "Recent notifications and warnings"
+    },
+    "courseManagement": {
+      "title": "Course Management",
+      "subtitle": "Create and manage courses, curriculum, and enrollments",
+      "stats": {
+        "totalCourses": "Total Courses",
+        "activeCourses": "Active Courses",
+        "totalEnrolled": "Total Enrolled",
+        "avgCompletion": "Avg. Completion"
+      },
+      "table": {
+        "title": "All Courses",
+        "columns": {
+          "courseTitle": "Course Title",
+          "category": "Category",
+          "level": "Level",
+          "students": "Students",
+          "status": "Status",
+          "actions": "Actions",
+          "code": "Code"
+        },
+        "statusValues": {
+          "active": "Active",
+          "inactive": "Inactive"
+        },
+        "levelValues": {
+          "beginner": "BEGINNER",
+          "intermediate": "INTERMEDIATE",
+          "advanced": "ADVANCED"
+        }
+      },
+      "filters": {
+        "searchPlaceholder": "Search courses...",
+        "filterByCategory": "Filter by category",
+        "categories": {
+          "language": "Language",
+          "business": "Business",
+          "technology": "Technology",
+          "arts": "Arts",
+          "science": "Science",
+          "other": "Other"
+        }
+      },
+      "actions": {
+        "createCourse": "Create Course",
+        "edit": "Edit",
+        "view": "View Details",
+        "delete": "Delete",
+        "deleteConfirm": "Are you sure you want to delete this course?"
+      },
+      "messages": {
+        "deleteSuccess": "Course deleted successfully",
+        "deleteError": "Failed to delete course",
+        "createError": "Failed to create course"
+      },
+      "modals": {
+        "create": {
+          "title": "Create New Course"
+        },
+        "edit": {
+          "title": "Edit Course",
+          "button": "Edit Course"
+        },
+        "view": {
+          "title": "Course Details"
+        }
+      },
+      "form": {
+        "fields": {
+          "courseTitle": "Course Title",
+          "courseCode": "Course Code",
+          "description": "Description",
+          "category": "Category",
+          "level": "Level",
+          "startDate": "Start Date",
+          "endDate": "End Date",
+          "duration": "Duration (weeks)",
+          "maxStudents": "Maximum Students",
+          "status": "Status"
+        },
+        "placeholders": {
+          "courseTitle": "Enter course title",
+          "courseCode": "e.g., CS101",
+          "description": "Enter course description",
+          "selectCategory": "Select category",
+          "selectLevel": "Select level"
+        },
+        "validation": {
+          "courseTitleRequired": "Please enter course title",
+          "courseCodeRequired": "Please enter course code",
+          "descriptionRequired": "Please enter course description",
+          "categoryRequired": "Please select category",
+          "levelRequired": "Please select level",
+          "startDateRequired": "Please select start date",
+          "endDateRequired": "Please select end date",
+          "durationRequired": "Please enter duration",
+          "capacityRequired": "Please enter capacity"
+        },
+        "levelOptions": {
+          "beginner": "Beginner",
+          "intermediate": "Intermediate",
+          "advanced": "Advanced"
+        },
+        "statusOptions": {
+          "active": "Active",
+          "inactive": "Inactive"
+        }
+      },
+      "viewModal": {
+        "labels": {
+          "title": "Title",
+          "code": "Code",
+          "category": "Category",
+          "level": "Level",
+          "description": "Description",
+          "duration": "Duration",
+          "capacity": "Capacity",
+          "status": "Status",
+          "startDate": "Start Date",
+          "endDate": "End Date",
+          "studentsEnrolled": "Students Enrolled",
+          "created": "Created"
+        },
+        "values": {
+          "weeks": "weeks",
+          "students": "students",
+          "noStudentsEnrolled": "No students enrolled yet"
+        }
+      }
+    },
+    "materialManagement": {
+      "title": "Course Materials",
+      "subtitle": "Upload and manage course materials, documents, and resources",
+      "stats": {
+        "totalMaterials": "Total Materials",
+        "videos": "Videos",
+        "documents": "Documents",
+        "totalSize": "Total Size"
+      },
+      "table": {
+        "title": "Course Materials",
+        "columns": {
+          "material": "Material",
+          "course": "Course",
+          "category": "Category",
+          "size": "Size",
+          "uploaded": "Uploaded",
+          "actions": "Actions"
+        },
+        "values": {
+          "unknown": "Unknown"
+        }
+      },
+      "filters": {
+        "searchPlaceholder": "Search materials...",
+        "filterByType": "Filter by type",
+        "types": {
+          "video": "Videos",
+          "document": "Documents",
+          "resource": "Resources"
+        }
+      },
+      "actions": {
+        "uploadMaterial": "Upload Material",
+        "download": "Download",
+        "preview": "Preview",
+        "delete": "Delete",
+        "deleteConfirm": "Are you sure you want to delete this material?"
+      },
+      "messages": {
+        "deleteSuccess": "Material deleted successfully",
+        "deleteError": "Failed to delete material",
+        "uploadSuccess": "Material uploaded successfully",
+        "uploadError": "Failed to upload material"
+      },
+      "upload": {
+        "title": "Upload Course Material",
+        "fields": {
+          "title": "Material Title",
+          "description": "Description",
+          "course": "Course",
+          "category": "Category",
+          "file": "File"
+        },
+        "placeholders": {
+          "title": "Enter material title",
+          "description": "Enter material description",
+          "selectCourse": "Select course",
+          "selectCategory": "Select category"
+        },
+        "validation": {
+          "titleRequired": "Please enter material title",
+          "descriptionRequired": "Please enter description",
+          "courseRequired": "Please select course",
+          "categoryRequired": "Please select category",
+          "fileRequired": "Please upload a file"
+        },
+        "categories": {
+          "video": "Video",
+          "document": "Document",
+          "resource": "Resource",
+          "assignment": "Assignment",
+          "reading": "Reading"
+        },
+        "uploadText": "Click or drag file to this area to upload",
+        "uploadHint": "Support for single file upload. PDF, DOC, MP4, and other formats are supported.",
+        "accessLevel": "Access Level",
+        "weekNumber": "Week Number"
+      },
+      "preview": {
+        "title": "Material Preview",
+        "noPreview": "Preview not available for this file type",
+        "noDescription": "No description"
+      },
+      "accessLevels": {
+        "public": "Public",
+        "course_students": "Course Students Only",
+        "premium": "Premium Members"
+      }
     }
   },
   "userManagement": {
@@ -1915,6 +2175,434 @@
       "sendAnnouncement": "Send Announcement",
       "generateReport": "Generate Report",
       "systemSettings": "System Settings"
+    },
+    "applications": {
+      "title": "Applications & Users Management",
+      "subtitle": "Manage student applications and user accounts",
+      "newApplication": "New Application",
+      "totalApplications": "Total Applications",
+      "pendingApplications": "Pending Applications", 
+      "approvedApplications": "Approved Applications",
+      "rejectedApplications": "Rejected Applications",
+      "applicationDetails": "Application Details",
+      "userManagement": "User Management",
+      "createUser": "Create New User",
+      "editUser": "Edit User",
+      "approve": "Approve",
+      "reject": "Reject",
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "actions": "Actions",
+      "viewDetails": "View Details",
+      "applicantName": "Applicant Name",
+      "email": "Email",
+      "phone": "Phone",
+      "status": "Status",
+      "appliedDate": "Applied Date",
+      "course": "Course",
+      "program": "Program",
+      "totalApplicationsCount": "Total Applications",
+      "pendingReview": "Pending Review",
+      "contactMessages": "Contact Messages",
+      "pendingUsers": "Pending Users",
+      "messages": "Messages",
+      "users": "Users",
+      "replyTo": "Reply to",
+      "replyingTo": "Replying to",
+      "applicationFor": "Application for",
+      "subject": "Subject",
+      "message": "Message",
+      "quickTemplates": "Quick Templates",
+      "attachments": "Attachments",
+      "optional": "(Optional)",
+      "sendCopy": "Send me a copy of this email",
+      "reApplication": "Re: Your Application to Forum Academy",
+      "replyToApplicant": "Reply to Applicant",
+      "studentApplications": "Student Applications",
+      "applicationReceived": "Application Received",
+      "requestInformation": "Request Information",
+      "acceptanceLetter": "Acceptance Letter",
+      "templateReceived": "Dear {{name}},\n\nThank you for your application to Forum Academy. We have received your application and are currently reviewing it.\n\nWe will contact you within 3-5 business days with an update on your application status.\n\nIf you have any questions in the meantime, please don't hesitate to reach out.\n\nBest regards,\nForum Academy Admissions Team",
+      "templateRequest": "Dear {{name}},\n\nWe need additional information to process your application. Please provide:\n\n1. [Required Document/Information]\n2. [Required Document/Information]\n\nPlease reply to this email with the requested information.\n\nBest regards,\nForum Academy Admissions Team",
+      "templateAcceptance": "Dear {{name}},\n\nCongratulations! We are pleased to inform you that your application to Forum Academy has been approved.\n\nWelcome to our learning community!\n\nNext Steps:\n1. Complete your enrollment within 7 days\n2. Attend the orientation session\n3. Access your student portal\n\nWe look forward to supporting your educational journey.\n\nBest regards,\nForum Academy Admissions Team",
+      "searchApplications": "Search applications...",
+      "filterStatus": "Filter by Status",
+      "allStatuses": "All Statuses",
+      "templatePlaceholder": "Dear Applicant,\n\nThank you for your application to Forum Academy...\n\nBest regards,\nForum Academy Team",
+      "typeReplyMessage": "Type your reply message here...",
+      "attachFiles": "Attach Files",
+      "fullName": "Full Name",
+      "statusValues": {
+        "pending": "PENDING",
+        "approved": "APPROVED",
+        "rejected": "REJECTED"
+      }
+    },
+    "students": {
+      "title": "Student Progress",
+      "subtitle": "Monitor student performance and progress across all courses",
+      "totalStudents": "Total Students",
+      "activeStudents": "Active Students",
+      "avgProgress": "Avg. Progress",
+      "completionRate": "Completion Rate",
+      "studentPerformance": "Student Performance Overview",
+      "student": "Student",
+      "enrolledCourses": "Enrolled Courses",
+      "progress": "Progress",
+      "lastActivity": "Last Activity",
+      "uploadMaterial": "Upload Material"
+    },
+    "contact": {
+      "title": "Contact Messages",
+      "contactInfo": "Contact Info",
+      "subject": "Subject",
+      "status": "Status",
+      "received": "Received", 
+      "actions": "Actions",
+      "messageDetails": "Message Details",
+      "from": "From",
+      "phone": "Phone",
+      "message": "Message",
+      "reply": "Reply",
+      "notProvided": "Not provided",
+      "statusValues": {
+        "pending": "Pending",
+        "resolved": "Resolved",
+        "approved": "Approved",
+        "ignored": "Ignored",
+        "unknown": "Unknown"
+      },
+      "view": "View",
+      "markResolved": "Mark Resolved",
+      "searchMessages": "Search messages...",
+      "templates": {
+        "acknowledgment": "Acknowledgment",
+        "generalResponse": "General Response",
+        "acknowledgmentMessage": "Dear {{name}},\n\nThank you for contacting Forum Academy. We have received your message and will respond within 24-48 hours.\n\nBest regards,\nForum Academy Support Team",
+        "generalResponseMessage": "Dear {{name}},\n\nThank you for your inquiry. [Your detailed response here]\n\nIf you have any further questions, please don't hesitate to contact us.\n\nBest regards,\nForum Academy Support Team"
+      }
+    },
+    "users": {
+      "title": "User Registrations",
+      "userInfo": "User Info",
+      "role": "Role",
+      "status": "Status",
+      "registrationDate": "Registration Date",
+      "actions": "Actions",
+      "userDetails": "User Details",
+      "name": "Name",
+      "email": "Email",
+      "registered": "Registered",
+      "bio": "Bio",
+      "approveUser": "Approve User",
+      "rejectUser": "Reject User",
+      "createNewUser": "Create New User",
+      "createUser": "Create User",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "password": "Password",
+      "phoneNumber": "Phone Number",
+      "approvalStatus": "Approval Status",
+      "roleValues": {
+        "student": "Student",
+        "teacher": "Teacher",
+        "admin": "Admin",
+        "filterByRole": "Filter by role"
+      },
+      "statusValues": {
+        "approved": "Approved",
+        "rejected": "Rejected", 
+        "pending": "Pending"
+      },
+      "validation": {
+        "firstNameRequired": "Please enter first name",
+        "lastNameRequired": "Please enter last name",
+        "emailRequired": "Please enter email",
+        "emailValid": "Please enter a valid email",
+        "passwordRequired": "Please enter password",
+        "passwordLength": "Password must be at least 6 characters",
+        "roleRequired": "Please select a role"
+      },
+      "placeholders": {
+        "firstName": "Enter first name",
+        "lastName": "Enter last name",
+        "email": "Enter email address",
+        "password": "Enter password",
+        "role": "Select user role",
+        "phone": "Enter phone number (optional)"
+      },
+      "view": "View",
+      "approve": "Approve",
+      "reject": "Reject",
+      "searchUsers": "Search users..."
+    },
+    "analytics": {
+      "title": "Analytics & Reports",
+      "subtitle": "Comprehensive analytics and reporting dashboard",
+      "courseEnrollmentTrends": "Course Enrollment Trends",
+      "studentPerformanceDistribution": "Student Performance Distribution",
+      "monthlyActivityReport": "Monthly Activity Report",
+      "newEnrollments": "New Enrollments",
+      "excellent": "Excellent (90-100%)",
+      "good": "Good (80-89%)",
+      "average": "Average (70-79%)",
+      "belowAverage": "Below Average (<70%)",
+      "quizSubmissions": "Quiz Submissions",
+      "homeworkSubmissions": "Homework Submissions",
+      "materialDownloads": "Material Downloads"
+    },
+    "settings": {
+      "title": "System Settings",
+      "subtitle": "Configure system settings and preferences",
+      "generalSettings": "General Settings",
+      "notificationSettings": "Notification Settings",
+      "systemInformation": "System Information",
+      "systemName": "System Name",
+      "adminEmail": "Admin Email",
+      "timeZone": "Time Zone",
+      "language": "Language",
+      "emailNotifications": "Email Notifications",
+      "smsNotifications": "SMS Notifications",
+      "pushNotifications": "Push Notifications",
+      "weeklyReports": "Weekly Reports",
+      "version": "Version",
+      "lastUpdated": "Last Updated",
+      "databaseStatus": "Database Status",
+      "serverStatus": "Server Status",
+      "totalUsers": "Total Users",
+      "totalCourses": "Total Courses",
+      "connected": "Connected",
+      "online": "Online",
+      "resetToDefault": "Reset to Default",
+      "saveSettings": "Save Settings",
+      "cancel": "Cancel",
+      "saveSuccess": "Settings saved successfully!",
+      "saveError": "Failed to save settings",
+      "resetSuccess": "Settings reset to default",
+      "securitySettings": "Security Settings",
+      "sessionTimeout": "Session Timeout (minutes)",
+      "maxLoginAttempts": "Maximum Login Attempts",
+      "maintenanceMode": "Maintenance Mode",
+      "autoBackup": "Automatic Backup",
+      "storageUsed": "Storage Used",
+      "lastBackup": "Last Backup",
+      "createBackup": "Create Backup",
+      "clearCache": "Clear Cache"
+    },
+    "courses": {
+      "title": "Course Management",
+      "subtitle": "Manage courses, curriculum, and educational content",
+      "createCourse": "Create New Course",
+      "editCourse": "Edit Course",
+      "courseName": "Course Name",
+      "courseDescription": "Course Description",
+      "category": "Category",
+      "difficulty": "Difficulty",
+      "duration": "Duration",
+      "instructor": "Instructor",
+      "enrolled": "Enrolled",
+      "completed": "Completed",
+      "materials": "Materials",
+      "quizzes": "Quizzes"
+    },
+    "quizManagement": {
+      "title": "Quiz Management",
+      "subtitle": "Create and manage quizzes, assessments, and evaluations"
+    },
+    "homeworkManagement": {
+      "title": "Homework Management",
+      "subtitle": "Create and manage homework assignments and submissions"
+    },
+    "listeningExercises": {
+      "title": "Listening Exercises",
+      "subtitle": "Create and manage listening comprehension exercises"
+    },
+    "modals": {
+      "close": "Close",
+      "save": "Save",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "delete": "Delete",
+      "edit": "Edit",
+      "create": "Create",
+      "update": "Update",
+      "submit": "Submit",
+      "reset": "Reset",
+      "search": "Search",
+      "filter": "Filter",
+      "export": "Export",
+      "import": "Import",
+      "download": "Download",
+      "upload": "Upload"
+    },
+    "common": {
+      "loading": "Loading...",
+      "noData": "No data available",
+      "error": "Error occurred",
+      "success": "Success",
+      "warning": "Warning",
+      "info": "Information",
+      "name": "Name",
+      "description": "Description",
+      "date": "Date",
+      "time": "Time",
+      "type": "Type",
+      "size": "Size",
+      "format": "Format",
+      "all": "All",
+      "none": "None",
+      "yes": "Yes",
+      "no": "No"
+    },
+    "enrollment": {
+      "title": "Enrollment Analytics & Monitoring",
+      "subtitle": "Monitor student enrollment, activity, and performance metrics",
+      "metrics": {
+        "totalEnrollments": "Total Enrollments",
+        "activeStudents": "Active Students",
+        "courseCompletions": "Course Completions",
+        "avgProgress": "Avg. Progress",
+        "engagementRate": "engagement rate",
+        "successRate": "success rate",
+        "improvement": "improvement"
+      },
+      "studentMonitoring": {
+        "title": "Student Activity Monitoring",
+        "totalStudentsTag": "Total Students",
+        "filters": {
+          "allStudents": "All Students",
+          "activeOnly": "Active Only",
+          "inactiveOnly": "Inactive Only",
+          "pendingApproval": "Pending Approval"
+        },
+        "refresh": "Refresh",
+        "columns": {
+          "studentInfo": "Student Info",
+          "status": "Status",
+          "enrollmentDetails": "Enrollment Details",
+          "lastActivity": "Last Activity",
+          "performance": "Performance",
+          "actions": "Actions"
+        },
+        "statusValues": {
+          "active": "Active",
+          "pending": "Pending",
+          "role": "Role"
+        },
+        "enrollmentInfo": {
+          "coursesEnrolled": "courses enrolled",
+          "overallProgress": "Overall Progress"
+        },
+        "activityInfo": {
+          "today": "Today",
+          "daysAgo": "days ago",
+          "recentlyActive": "Recently Active",
+          "moderatelyActive": "Moderately Active",
+          "inactive": "Inactive"
+        },
+        "performanceInfo": {
+          "avgScore": "avg score",
+          "submissions": "submissions"
+        },
+        "actions": {
+          "view": "View",
+          "message": "Message",
+          "videoCall": "Video Call"
+        },
+        "pagination": {
+          "showTotal": "{{range}} of {{total}} students"
+        }
+      },
+      "teacherMonitoring": {
+        "title": "Teacher Activity Monitoring",
+        "totalTeachersTag": "Total Teachers",
+        "filters": {
+          "allTeachers": "All Teachers",
+          "activeOnly": "Active Only",
+          "inactiveOnly": "Inactive Only"
+        },
+        "refresh": "Refresh",
+        "columns": {
+          "teacherInfo": "Teacher Info",
+          "status": "Status",
+          "teachingLoad": "Teaching Load",
+          "lastActivity": "Last Activity",
+          "performanceMetrics": "Performance Metrics",
+          "actions": "Actions"
+        },
+        "statusValues": {
+          "active": "Active",
+          "pending": "Pending"
+        },
+        "teachingLoadInfo": {
+          "courses": "courses",
+          "activeStudents": "active students"
+        },
+        "activityInfo": {
+          "justNow": "Just now",
+          "hoursAgo": "h ago",
+          "daysAgo": "d ago",
+          "online": "Online",
+          "recentlyOnline": "Recently Online",
+          "offline": "Offline"
+        },
+        "performanceInfo": {
+          "responseTime": "h response time"
+        },
+        "actions": {
+          "view": "View",
+          "message": "Message",
+          "videoCall": "Video Call"
+        },
+        "pagination": {
+          "showTotal": "{{range}} of {{total}} teachers"
+        }
+      },
+      "activitySummary": {
+        "activeUsersTitle": "Active Users Summary",
+        "currentlyOnline": "Currently Online",
+        "users": "users",
+        "studentsTeachers": "students, teachers",
+        "activityThisWeekTitle": "Activity This Week",
+        "loginSessions": "Login Sessions",
+        "fromLastWeek": "from last week",
+        "attentionRequiredTitle": "Attention Required",
+        "inactiveUsers": "Inactive Users",
+        "notActiveFor": "Not active for 14+ days"
+      },
+      "templates": {
+        "student": {
+          "welcomeMessage": "Welcome Message",
+          "progressReminder": "Progress Reminder", 
+          "supportCheck": "Support Check",
+          "welcomeMessageText": "Dear {{name}},\n\nWelcome to Forum Academy! We're excited to have you join our learning community.\n\nYour courses are now available in your student portal. If you need any assistance getting started, please don't hesitate to reach out.\n\nBest regards,\nForum Academy Academic Team",
+          "progressReminderText": "Dear {{name}},\n\nWe noticed you haven't been active in your courses recently. Staying consistent with your studies is key to success.\n\nIf you're facing any challenges or need support, please let us know. We're here to help you succeed!\n\nBest regards,\nForum Academy Academic Team",
+          "supportCheckText": "Dear {{name}},\n\nHow are your studies going? We wanted to check in and see if you need any additional support or have questions about your courses.\n\nFeel free to reach out anytime - we're here to support your learning journey.\n\nBest regards,\nForum Academy Academic Team"
+        },
+        "teacher": {
+          "welcomeMessage": "Welcome Message",
+          "performanceUpdate": "Performance Update",
+          "supportOffer": "Support Offer", 
+          "welcomeMessageText": "Dear {{name}},\n\nWelcome to the Forum Academy teaching team! We're thrilled to have you contribute to our educational mission.\n\nYour teaching dashboard is ready, and your first classes are scheduled. If you need any assistance or resources, please reach out.\n\nBest regards,\nForum Academy Administration",
+          "performanceUpdateText": "Dear {{name}},\n\nThank you for your excellent work with our students. Your dedication to quality education is greatly appreciated.\n\nWe'd like to discuss your recent teaching performance and explore opportunities for further collaboration.\n\nBest regards,\nForum Academy Administration",
+          "supportOfferText": "Dear {{name}},\n\nWe hope you're enjoying your teaching experience at Forum Academy. Is there anything we can do to better support you in your role?\n\nWhether it's resources, training, or administrative support, we're here to help you succeed.\n\nBest regards,\nForum Academy Administration"
+        }
+      },
+      "videoCall": {
+        "title": "Video Call - {{name}}",
+        "student": "Student",
+        "teacher": "Teacher",
+        "readyToStart": "Ready to start video call",
+        "aboutToStart": "You're about to start a video call with {{name}}. Make sure they are available to receive the call.",
+        "startCall": "Start Video Call",
+        "cancel": "Cancel",
+        "inProgress": "Video call in progress...",
+        "duration": "Duration: {{duration}}",
+        "implementation": "In a real implementation, this would show the live video feed using:",
+        "technologies": "• Zoom SDK • WebRTC • Agora Video • Twilio Video",
+        "endCall": "End Call"
+      }
     }
   },
   "adminSettings": {
@@ -2009,11 +2697,21 @@
   },
   "adminSidebar": {
     "navigation": {
-      "overview": "Overview",
+      "overview": "Dashboard Overview",
+      "applications": "Applications & Users",
+      "enrollments": "Enrollment Monitoring",
+      "courses": "Course Management",
+      "materials": "Course Materials",
+      "quizzes": "Quiz Engine",
+      "homework": "Homework System",
+      "listening": "Listening Exercises",
+      "students": "Student Progress",
+      "analytics": "Analytics & Reports",
       "users": "Users",
-      "applications": "Applications",
       "contacts": "Contacts",
-      "settings": "Settings"
+      "settings": "Settings",
+      "profile": "Profile",
+      "logout": "Logout"
     },
     "quickStats": {
       "title": "Quick Stats",
@@ -2088,7 +2786,8 @@
       "todayActivity": "Here's what's happening with your {{role}} activities today",
       "lightMode": "Light Mode",
       "darkMode": "Dark Mode",
-      "online": "Online"
+      "online": "Online",
+      "academy": "Academy"
     }
   },
   "roleUtilities": {
@@ -2211,6 +2910,25 @@
     "todayActivity": "Here's your administrative overview for today",
     "online": "Online",
     "logout": "Logout",
+    "logoutConfirm": {
+      "title": "Confirm Logout",
+      "message": "Are you sure you want to logout?",
+      "yes": "Yes",
+      "no": "No"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "noNotifications": "No notifications",
+      "newApplication": "New Application",
+      "newContact": "New Contact Message",
+      "applicationMessage": "{{name}} applied for {{course}}",
+      "contactMessage": "{{name}} sent a message: {{subject}}",
+      "approve": "Approve",
+      "reject": "Reject",
+      "markAsRead": "Mark as read",
+      "navigatedToApplication": "Navigated to Applications",
+      "navigatedToContact": "Navigated to Contact Messages"
+    },
     "accessibility": {
       "adminSidebar": "Administrative navigation sidebar",
       "mainContent": "Main administrative content area",
