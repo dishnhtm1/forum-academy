@@ -25,18 +25,11 @@ import {
   ReadOutlined, CheckSquareOutlined, LineChartOutlined
 } from '@ant-design/icons';
 
-// Import components
-import CourseManagement from './dashboard/CourseManagement';
-import MaterialManagement from './dashboard/MaterialManagement';
-import QuizManagement from './dashboard/QuizManagement';
-import HomeworkManagement from './dashboard/HomeworkManagement';
-import ListeningExercises from './dashboard/ListeningExercises';
-import StudentProgress from './dashboard/StudentProgress';
-import Analytics from './dashboard/Analytics';
+// Import TeacherGrading component if it exists
 import TeacherGrading from './TeacherGrading';
 
 // Import API client
-import { authAPI, statsAPI } from '../utils/apiClient';
+import { authAPI, statsAPI, courseAPI, materialAPI, quizAPI, homeworkAPI } from '../utils/apiClient';
 
 const { Header, Sider, Content } = Layout;
 const { Title, Text } = Typography;
@@ -336,38 +329,41 @@ const TeacherDashboard = () => {
     <TeacherGrading currentUser={currentUser} />
   );
 
+  // Placeholder components for sections that were previously imported
+  const renderPlaceholder = (title, description) => (
+    <Card>
+      <Title level={3}>{title}</Title>
+      <Text type="secondary">{description}</Text>
+      <Empty 
+        style={{ marginTop: 40 }}
+        description={`${title} functionality is being developed`}
+      />
+    </Card>
+  );
+
   const renderContent = () => {
-    return (
-      <>
-        <div style={{ display: activeTab === 'overview' ? 'block' : 'none' }}>
-          {renderOverview()}
-        </div>
-        <div style={{ display: activeTab === 'courses' ? 'block' : 'none' }}>
-          <CourseManagement currentUser={currentUser} />
-        </div>
-        <div style={{ display: activeTab === 'materials' ? 'block' : 'none' }}>
-          <MaterialManagement currentUser={currentUser} />
-        </div>
-        <div style={{ display: activeTab === 'quizzes' ? 'block' : 'none' }}>
-          <QuizManagement currentUser={currentUser} />
-        </div>
-        <div style={{ display: activeTab === 'homework' ? 'block' : 'none' }}>
-          <HomeworkManagement currentUser={currentUser} />
-        </div>
-        <div style={{ display: activeTab === 'listening' ? 'block' : 'none' }}>
-          <ListeningExercises currentUser={currentUser} />
-        </div>
-        <div style={{ display: activeTab === 'students' ? 'block' : 'none' }}>
-          <StudentProgress currentUser={currentUser} />
-        </div>
-        <div style={{ display: activeTab === 'grading' ? 'block' : 'none' }}>
-          {renderGradingCenter()}
-        </div>
-        <div style={{ display: activeTab === 'analytics' ? 'block' : 'none' }}>
-          <Analytics currentUser={currentUser} />
-        </div>
-      </>
-    );
+    switch(activeTab) {
+      case 'overview':
+        return renderOverview();
+      case 'courses':
+        return renderPlaceholder('My Classes', 'Manage your courses and class schedules');
+      case 'materials':
+        return renderPlaceholder('Teaching Materials', 'Upload and manage course materials');
+      case 'quizzes':
+        return renderPlaceholder('Quiz Management', 'Create and manage quizzes for your students');
+      case 'homework':
+        return renderPlaceholder('Assignment Center', 'Create and track homework assignments');
+      case 'listening':
+        return renderPlaceholder('Listening Exercises', 'Manage audio-based learning exercises');
+      case 'students':
+        return renderPlaceholder('Student Management', 'View and manage your students');
+      case 'grading':
+        return renderGradingCenter();
+      case 'analytics':
+        return renderPlaceholder('Class Analytics', 'View detailed analytics and reports');
+      default:
+        return renderOverview();
+    }
   };
 
   if (loading) {

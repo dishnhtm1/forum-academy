@@ -235,6 +235,16 @@ try {
     console.error('❌ Failed to load analytics routes:', error.message);
 }
 
+// Load email routes (for sending emails from admin dashboard)
+console.log('🔧 Loading email routes...');
+try {
+    const emailRoutes = require('./routes/emailRoutes');
+    app.use('/api', emailRoutes);  // Mount directly on /api so it becomes /api/send-email
+    console.log('✅ Email routes loaded');
+} catch (error) {
+    console.error('❌ Failed to load email routes:', error.message);
+}
+
 console.log('🔧 All routes loaded successfully');
 
 // Error handler middleware (must be before 404 handler)
