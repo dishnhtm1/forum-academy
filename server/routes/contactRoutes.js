@@ -380,5 +380,73 @@ router.post('/reply', authenticate, authorizeRoles('admin'), async (req, res) =>
 // Add new route using controller
 router.post('/:id/reply', authenticate, authorizeRoles('admin'), replyToContact);
 
+// Approve contact route
+router.put('/:id/approve', authenticate, authorizeRoles('admin'), async (req, res) => {
+    try {
+        const contactId = req.params.id;
+        console.log(`✅ Approving contact: ${contactId}`);
+        
+        const contact = await Contact.findByIdAndUpdate(
+            contactId,
+            { status: 'approved', updatedAt: new Date() },
+            { new: true }
+        );
+        
+        if (!contact) {
+            return res.status(404).json({
+                success: false,
+                message: 'Contact not found'
+            });
+        }
+        
+        res.json({
+            success: true,
+            message: 'Contact approved successfully',
+            contact
+        });
+    } catch (error) {
+        console.error('❌ Error approving contact:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error approving contact',
+            error: error.message
+        });
+    }
+});
+
+// Reject contact route
+router.put('/:id/reject', authenticate, authorizeRoles('admin'), async (req, res) => {
+    try {
+        const contactId = req.params.id;
+        console.log(`❌ Rejecting contact: ${contactId}`);
+        
+        const contact = await Contact.findByIdAndUpdate(
+            contactId,
+            { status: 'rejected', updatedAt: new Date() },
+            { new: true }
+        );
+        
+        if (!contact) {
+            return res.status(404).json({
+                success: false,
+                message: 'Contact not found'
+            });
+        }
+        
+        res.json({
+            success: true,
+            message: 'Contact rejected successfully',
+            contact
+        });
+    } catch (error) {
+        console.error('❌ Error rejecting contact:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error rejecting contact',
+            error: error.message
+        });
+    }
+});
+
 console.log('✅ contactRoutes.js loaded successfully');
 module.exports = router;
