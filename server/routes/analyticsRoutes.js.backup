@@ -1,8 +1,7 @@
-﻿// routes/analyticsRoutes.js
-const express = require('express');
-const router = express.Router();
+// routes/analyticsRoutes.js
+const router = require('express').Router()});
 
-// Example: Return fake dashboard stats so frontend stops 404
+module.exports = router;turn fake dashboard stats so frontend stops 404
 router.get('/dashboard', (req, res) => {
   const period = req.query.period || 'month';
   res.json({
@@ -73,4 +72,20 @@ router.get('/enrollment-logs', (req, res) => {
   ]);
 });
 
-module.exports = router;
+module.exports = router;csRoutes.js
+const router = require('express').Router();
+
+// Example: Return fake dashboard stats so frontend stops 404
+router.get('/dashboard', (req, res) => {
+  const period = req.query.period || 'month';
+  res.json({
+    period,
+    users: 120,
+    courses: 8,
+    quizzesTaken: 45,
+    submissions: 30,
+    timestamp: new Date().toISOString()
+  });
+});
+
+module.exports = router;
