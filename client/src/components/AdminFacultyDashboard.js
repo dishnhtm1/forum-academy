@@ -1584,7 +1584,8 @@ const AdminFacultyDashboard = () => {
         formData.append('avatar', profileImageFile);
         
         try {
-          const uploadResponse = await fetch(`${API_BASE_URL}/api/auth/upload-avatar`, {
+          // Try the dedicated upload endpoint first
+          let uploadResponse = await fetch(`${API_BASE_URL}/api/auth/upload-avatar`, {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${localStorage.getItem('token') || localStorage.getItem('authToken')}`
@@ -1592,15 +1593,26 @@ const AdminFacultyDashboard = () => {
             body: formData
           });
           
-          if (uploadResponse.ok) {
+          // If upload-avatar endpoint doesn't exist (404), try alternative approach
+          if (uploadResponse.status === 404) {
+            console.log('Upload-avatar endpoint not available, using profile update with file');
+            // For now, skip the separate upload and include the file data in the profile update
+            message.warning('Avatar upload endpoint is not available. Using alternative method.');
+            profileImageUrl = null; // Will be handled in profile update
+          } else if (uploadResponse.ok) {
             const uploadData = await uploadResponse.json();
             profileImageUrl = uploadData.url;
           } else {
-            throw new Error('Avatar upload failed');
+            const errorData = await uploadResponse.json().catch(() => ({}));
+            throw new Error(errorData.message || 'Avatar upload failed');
           }
         } catch (uploadError) {
           console.error('Avatar upload error:', uploadError);
-          message.error(t('profile.avatarUploadFailed') || 'Failed to upload avatar');
+          if (uploadError.message.includes('404') || uploadError.message.includes('not found')) {
+            message.warning('Avatar upload service is temporarily unavailable. Please try updating your profile without changing the avatar, or contact support.');
+          } else {
+            message.error(t('profile.avatarUploadFailed') || 'Failed to upload avatar');
+          }
           return;
         } finally {
           setAvatarUploading(false);

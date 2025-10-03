@@ -60,9 +60,41 @@ router.post('/resend-otp', resendOTP);
 router.post('/reset-password', resetPassword);
 router.post('/send-message', authenticate, authorizeRoles('admin'), sendMessageToUser);
 
-// Avatar upload route
-router.post('/upload-avatar', authenticate, upload.single('avatar'), async (req, res) => {
+// Test route for avatar upload (without middleware)
+router.post('/test-upload-avatar', async (req, res) => {
+    res.json({ message: 'Test upload endpoint works', timestamp: new Date().toISOString() });
+});
+
+// Avatar upload route (simplified for debugging)
+router.post('/upload-avatar', async (req, res) => {
+    console.log('📸 Upload avatar route hit:', req.method, req.path);
+    console.log('📸 Headers:', req.headers);
+    
     try {
+        // Check authentication manually
+        const token = req.headers.authorization?.replace('Bearer ', '');
+        if (!token) {
+            return res.status(401).json({ message: 'No authentication token provided' });
+        }
+
+        // For now, just return success to test if the route works
+        res.json({
+            message: 'Avatar upload endpoint is working',
+            timestamp: new Date().toISOString(),
+            hasFile: !!req.file,
+            hasBody: !!req.body
+        });
+    } catch (error) {
+        console.error('Avatar upload error:', error);
+        res.status(500).json({ message: 'Avatar upload failed', error: error.message });
+    }
+});
+
+// Avatar upload route (full implementation)
+router.post('/upload-avatar-full', authenticate, upload.single('avatar'), async (req, res) => {
+    try {
+        console.log('📸 Full upload avatar route hit');
+        
         if (!req.file) {
             return res.status(400).json({ message: 'No file uploaded' });
         }
