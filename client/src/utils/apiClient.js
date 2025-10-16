@@ -171,7 +171,36 @@ export const userAPI = {
 
   // Get users by role
   getByRole: async (role) => {
-    const response = await fetch(`${API_BASE_URL}/api/users/role/${role}`, {
+    const response = await fetch(`${API_BASE_URL}/api/users?role=${role}`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
+};
+
+// Messaging API
+export const messageAPI = {
+  // Send message to student
+  sendToStudent: async (messageData) => {
+    const response = await fetch(`${API_BASE_URL}/api/contact/messages/send`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(messageData)
+    });
+    return handleResponse(response);
+  },
+
+  // Get conversation with student
+  getConversation: async (studentId) => {
+    const response = await fetch(`${API_BASE_URL}/api/contact/messages/conversation/${studentId}`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  },
+
+  // Get all messages for teacher
+  getAll: async () => {
+    const response = await fetch(`${API_BASE_URL}/api/messages`, {
       headers: getAuthHeaders()
     });
     return handleResponse(response);
@@ -373,6 +402,14 @@ export const statsAPI = {
         pendingSubmissions: 0
       };
     }
+  },
+
+  // Get teacher analytics
+  getTeacherAnalytics: async () => {
+    const response = await fetch(`${API_BASE_URL}/api/analytics/teacher`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
   }
 };
 
@@ -458,13 +495,163 @@ export const homeworkSubmissionAPI = {
   }
 };
 
+// Listening Exercises API
+export const listeningAPI = {
+  // Get all listening exercises
+  getAll: async () => {
+    const response = await fetch(`${API_BASE_URL}/api/listening-exercises`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  },
+
+  // Get listening exercise by ID
+  getById: async (id) => {
+    const response = await fetch(`${API_BASE_URL}/api/listening-exercises/${id}`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  },
+
+  // Create new listening exercise
+  create: async (formData) => {
+    const headers = getAuthHeaders();
+    delete headers['Content-Type']; // Let browser set content type for FormData
+
+    const response = await fetch(`${API_BASE_URL}/api/listening-exercises`, {
+      method: 'POST',
+      headers: {
+        'Authorization': headers.Authorization
+      },
+      body: formData
+    });
+    return handleResponse(response);
+  },
+
+  // Update listening exercise
+  update: async (id, exerciseData) => {
+    const response = await fetch(`${API_BASE_URL}/api/listening-exercises/${id}`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(exerciseData)
+    });
+    return handleResponse(response);
+  },
+
+  // Delete listening exercise
+  delete: async (id) => {
+    const response = await fetch(`${API_BASE_URL}/api/listening-exercises/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  },
+
+  // Get audio file URL
+  getAudioUrl: async (id) => {
+    return `${API_BASE_URL}/api/listening-exercises/audio/${id}`;
+  },
+
+  // Get listening exercises for a specific course
+  getByCourse: async (courseId) => {
+    const response = await fetch(`${API_BASE_URL}/api/listening-exercises/course/${courseId}`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
+};
+
+// Progress API
+export const progressAPI = {
+  // Get all progress records
+  getAll: async () => {
+    const response = await fetch(`${API_BASE_URL}/api/progress`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  },
+
+  // Create progress record
+  create: async (progressData) => {
+    const response = await fetch(`${API_BASE_URL}/api/progress`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(progressData)
+    });
+    return handleResponse(response);
+  },
+
+  // Update progress record
+  update: async (id, progressData) => {
+    const response = await fetch(`${API_BASE_URL}/api/progress/${id}`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(progressData)
+    });
+    return handleResponse(response);
+  },
+
+  // Delete progress record
+  delete: async (id) => {
+    const response = await fetch(`${API_BASE_URL}/api/progress/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
+};
+
+// Announcement API
+export const announcementAPI = {
+  // Get all announcements
+  getAll: async () => {
+    const response = await fetch(`${API_BASE_URL}/api/announcements`, {
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  },
+
+  // Create announcement
+  create: async (announcementData) => {
+    const response = await fetch(`${API_BASE_URL}/api/announcements`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(announcementData)
+    });
+    return handleResponse(response);
+  },
+
+  // Update announcement
+  update: async (id, announcementData) => {
+    const response = await fetch(`${API_BASE_URL}/api/announcements/${id}`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(announcementData)
+    });
+    return handleResponse(response);
+  },
+
+  // Delete announcement
+  delete: async (id) => {
+    const response = await fetch(`${API_BASE_URL}/api/announcements/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders()
+    });
+    return handleResponse(response);
+  }
+};
+
 export default {
   courseAPI,
   materialAPI,
   userAPI,
+  messageAPI,
   authAPI,
   statsAPI,
   quizAPI,
   homeworkAPI,
-  homeworkSubmissionAPI
+  homeworkSubmissionAPI,
+  listeningAPI,
+  progressAPI,
+  announcementAPI
 };

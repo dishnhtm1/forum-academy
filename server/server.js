@@ -54,7 +54,7 @@ app.get('/api/health', (req, res) => {
         routes: [
             'auth', 'users', 'course-materials', 'applications', 
             'contact', 'admin', 'quizzes', 'courses', 'homework', 
-            'homework-submissions', 'listening-exercises', 'announcements', 'progress', 'analytics'
+            'homework-submissions', 'listening-exercises', 'announcements', 'progress', 'analytics', 'notifications'
         ]
     });
 });
@@ -236,6 +236,16 @@ try {
     console.log('✅ Analytics routes loaded');
 } catch (error) {
     console.error('❌ Failed to load analytics routes:', error.message);
+}
+
+// Load notification routes (for real-time notifications)
+console.log('🔧 Loading notification routes...');
+try {
+    const notificationRoutes = require('./routes/notificationRoutes');
+    app.use('/api/notifications', notificationRoutes);
+    console.log('✅ Notification routes loaded');
+} catch (error) {
+    console.error('❌ Failed to load notification routes:', error.message);
 }
 
 // Load email routes (for sending emails from admin dashboard)

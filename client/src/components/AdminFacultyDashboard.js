@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import i18n from '../i18n';
@@ -328,6 +328,7 @@ const AdminFacultyDashboard = () => {
   const [gradingForm] = Form.useForm();
   const [profileForm] = Form.useForm();
   const [settingsForm] = Form.useForm();
+  const [announcementForm] = Form.useForm();
   
   // Refs for audio players
   const audioRef = useRef(null);
@@ -450,6 +451,14 @@ const AdminFacultyDashboard = () => {
     checkAuth();
   }, [history]);
 
+  // Recalculate dashboard stats when key data changes
+  useEffect(() => {
+    if (students.length > 0 || courses.length > 0 || materials.length > 0) {
+      console.log('?? Admin data changed, refreshing dashboard stats...');
+      fetchDashboardStats();
+    }
+  }, [students.length, courses.length, teachers.length, materials.length, applications.length]);
+
   // Fetch initial data
   const fetchInitialData = async () => {
     try {
@@ -462,6 +471,7 @@ const AdminFacultyDashboard = () => {
         fetchContactMessages(),
         fetchUsers(),
         fetchMaterials(),
+        fetchAnnouncements(),
         fetchEnrollments(),
         fetchEnrollmentLogs(),
         fetchNotifications()
@@ -532,7 +542,7 @@ const AdminFacultyDashboard = () => {
   // Fetch real enrollment analytics data
   const fetchEnrollmentAnalytics = async () => {
     try {
-      console.log('Fetching enrollment analytics...');
+      console.log('📊 Fetching enrollment analytics...');
       const authHeaders = getAuthHeaders();
 
       // Fetch enrollment analytics data
@@ -549,7 +559,7 @@ const AdminFacultyDashboard = () => {
 
       if (response.ok) {
         const analyticsData = await response.json();
-        console.log('Analytics data received:', analyticsData);
+        console.log('✅ Analytics data received:', analyticsData);
         
         // Process and set the analytics data
         setEnrollmentAnalytics({
@@ -587,7 +597,7 @@ const AdminFacultyDashboard = () => {
   // Calculate analytics from existing data when API is not available
   const calculateAnalyticsFromExistingData = async () => {
     try {
-      console.log('Calculating analytics from existing data...');
+      console.log('🔢 Calculating analytics from existing data...');
       
       // Calculate stats from existing data
       const totalEnrollments = enrollments.length || dashboardStats.totalEnrollments || 0;
@@ -1046,6 +1056,32 @@ const AdminFacultyDashboard = () => {
     }
   };
 
+  const fetchAnnouncements = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/announcements`, {
+        headers: getAuthHeaders()
+      });
+
+      if (response.status === 401) {
+        message.error('Authentication failed. Please login again.');
+        localStorage.clear();
+        history.push('/');
+        return;
+      }
+
+      if (response.ok) {
+        const data = await response.json();
+        setAnnouncements(data.announcements || []);
+      } else {
+        console.error('Failed to fetch announcements');
+        setAnnouncements([]);
+      }
+    } catch (error) {
+      console.error('Error fetching announcements:', error);
+      setAnnouncements([]);
+    }
+  };
+
 
 
 
@@ -1277,6 +1313,64 @@ const AdminFacultyDashboard = () => {
     }
   };
 
+  // Handle announcement creation/update
+  const handleCreateAnnouncement = async (values) => {
+    try {
+      const announcementData = {
+        title: values.title,
+        content: values.content,
+        targetAudience: values.targetAudience || 'all',
+        priority: values.priority || 'medium',
+        type: values.type || 'general',
+        isSticky: values.isSticky || false,
+        publishDate: values.publishDate ? values.publishDate.toISOString() : new Date().toISOString(),
+        expiryDate: values.expiryDate ? values.expiryDate.toISOString() : null,
+        tags: values.tags || []
+      };
+
+      const url = selectedAnnouncement 
+        ? `${API_BASE_URL}/api/announcements/${selectedAnnouncement._id}`
+        : `${API_BASE_URL}/api/announcements`;
+      
+      const method = selectedAnnouncement ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method,
+        headers: getAuthHeaders(),
+        body: JSON.stringify(announcementData)
+      });
+
+      if (response.status === 401) {
+        message.error('Authentication failed. Please login again.');
+        localStorage.clear();
+        history.push('/');
+        return;
+      }
+
+      if (response.ok) {
+        const result = await response.json();
+        message.success(`?? Announcement ${selectedAnnouncement ? 'updated' : 'created'} successfully! Notifications sent to ${announcementData.targetAudience} users.`);
+        setAnnouncementModalVisible(false);
+        setSelectedAnnouncement(null);
+        fetchAnnouncements();
+        
+        // Show success notification with details
+        notification.success({
+          message: 'Announcement Published!',
+          description: `"${values.title}" has been published and notifications sent to ${announcementData.targetAudience} users.`,
+          icon: <SoundOutlined style={{ color: '#1890ff' }} />,
+          duration: 4
+        });
+      } else {
+        const errorData = await response.json();
+        message.error(errorData.message || 'Failed to save announcement');
+      }
+    } catch (error) {
+      console.error('Error saving announcement:', error);
+      message.error('Failed to save announcement');
+    }
+  };
+
 
 
   const handleLogout = () => {
@@ -1346,93 +1440,105 @@ const AdminFacultyDashboard = () => {
   // Notification Functions
   const fetchNotifications = async () => {
     try {
-      console.log('🔔 Fetching notifications...');
-      
-      const [applicationsRes, contactsRes] = await Promise.all([
-        fetch(`${API_BASE_URL}/api/applications`, {
-          headers: getAuthHeaders()
-        }),
-        fetch(`${API_BASE_URL}/api/contact`, {
-          headers: getAuthHeaders()
-        })
-      ]);
+      const response = await fetch(`${API_BASE_URL}/api/notifications?limit=20`, {
+        headers: getAuthHeaders()
+      });
 
-      console.log('📝 Applications response status:', applicationsRes.status);
-      console.log('📧 Contacts response status:', contactsRes.status);
+      if (response.status === 401) {
+        message.error('Authentication failed. Please login again.');
+        localStorage.clear();
+        history.push('/');
+        return;
+      }
 
-      const applications = applicationsRes.ok ? await applicationsRes.json() : [];
-      const contacts = contactsRes.ok ? await contactsRes.json() : [];
-
-      console.log('📝 Applications data:', applications);
-      console.log('📧 Contacts data:', contacts);
-
-      // Handle different response formats
-      const applicationsArray = Array.isArray(applications) ? applications : 
-                               (applications.applications || applications.data || []);
-      const contactsArray = Array.isArray(contacts) ? contacts : 
-                           (contacts.contacts || contacts.data || []);
-
-      console.log('📝 Applications array:', applicationsArray);
-      console.log('📧 Contacts array:', contactsArray);
-
-      // Create notifications for pending applications
-      const appNotifications = applicationsArray
-        .filter(app => app.status === 'pending')
-        .map(app => ({
-          id: `app_${app._id}`,
-          type: 'application',
-          title: t('adminPortal.notifications.newApplication') || 'New Application',
-          message: t('adminPortal.notifications.applicationMessage', {
-            name: `${app.firstName || app.fullName || 'Unknown'} ${app.lastName || ''}`.trim(),
-            course: app.course || app.program || 'a course'
-          }) || `${app.firstName || app.fullName || 'Unknown'} ${app.lastName || ''} applied for ${app.course || app.program || 'a course'}`,
-          timestamp: new Date(app.createdAt),
-          data: app,
-          read: false
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Transform backend notifications to match frontend format
+        const transformedNotifications = data.notifications.map(notification => ({
+          id: notification._id,
+          type: notification.type,
+          title: notification.title,
+          message: notification.message,
+          timestamp: notification.createdAt,
+          read: notification.read,
+          sender: notification.sender,
+          priority: notification.priority,
+          icon: getNotificationIcon(notification.type),
+          color: getNotificationColor(notification.type),
+          actionUrl: notification.actionUrl
         }));
 
-      // Create notifications for pending contacts
-      const contactNotifications = contactsArray
-        .filter(contact => contact.status === 'pending')
-        .map(contact => ({
-          id: `contact_${contact._id}`,
-          type: 'contact',
-          title: t('adminPortal.notifications.newContact') || 'New Contact Message',
-          message: t('adminPortal.notifications.contactMessage', {
-            name: contact.name,
-            subject: contact.subject
-          }) || `${contact.name} sent a message: ${contact.subject}`,
-          timestamp: new Date(contact.createdAt),
-          data: contact,
-          read: false
-        }));
-
-      console.log('📝 App notifications:', appNotifications);
-      console.log('📧 Contact notifications:', contactNotifications);
-
-      const allNotifications = [...appNotifications, ...contactNotifications]
-        .sort((a, b) => b.timestamp - a.timestamp);
-
-      console.log('🔔 All notifications:', allNotifications);
-
-      setNotifications(allNotifications);
-      setUnreadCount(allNotifications.filter(n => !n.read).length);
-      
-      console.log('🔔 Notifications updated, count:', allNotifications.length);
+        setNotifications(transformedNotifications);
+        setUnreadCount(data.pagination.unreadCount);
+      } else {
+        console.error('Failed to fetch notifications:', response.statusText);
+        setNotifications([]);
+        setUnreadCount(0);
+      }
     } catch (error) {
-      console.error('❌ Error fetching notifications:', error);
+      console.error('Error fetching notifications:', error);
+      setNotifications([]);
+      setUnreadCount(0);
     }
   };
 
-  const markNotificationAsRead = (notificationId) => {
-    setNotifications(prev => 
-      prev.map(notification => 
-        notification.id === notificationId 
-          ? { ...notification, read: true }
-          : notification
-      )
-    );
-    setUnreadCount(prev => Math.max(0, prev - 1));
+  // Helper functions for notification icons and colors
+  const getNotificationIcon = (type) => {
+    const iconMap = {
+      student_message: 'message',
+      assignment_submission: 'file-text',
+      admin_announcement: 'bell',
+      quiz_submission: 'question-circle',
+      grade_request: 'question-circle',
+      enrollment: 'user-add',
+      progress_update: 'bar-chart',
+      grade_update: 'trophy',
+      system_alert: 'warning',
+      application_update: 'solution'
+    };
+    return iconMap[type] || 'bell';
+  };
+
+  const getNotificationColor = (type) => {
+    const colorMap = {
+      student_message: '#1890ff',
+      assignment_submission: '#52c41a',
+      admin_announcement: '#faad14',
+      quiz_submission: '#722ed1',
+      grade_request: '#fa8c16',
+      enrollment: '#13c2c2',
+      progress_update: '#2f54eb',
+      grade_update: '#f5222d',
+      system_alert: '#fa541c',
+      application_update: '#1890ff'
+    };
+    return colorMap[type] || '#1890ff';
+  };
+
+  const markNotificationAsRead = async (notificationId) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/notifications/${notificationId}/read`, {
+        method: 'PATCH',
+        headers: getAuthHeaders()
+      });
+
+      if (response.ok) {
+        // Update local state
+        setNotifications(prev => 
+          prev.map(notification => 
+            notification.id === notificationId 
+              ? { ...notification, read: true }
+              : notification
+          )
+        );
+        setUnreadCount(prev => Math.max(0, prev - 1));
+      } else {
+        console.error('Failed to mark notification as read');
+      }
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+    }
   };
 
   const handleNotificationClick = (notification) => {
@@ -1863,14 +1969,14 @@ const AdminFacultyDashboard = () => {
 
   // Function to refresh notifications with current language
   const refreshNotificationsWithLanguage = () => {
-    console.log('🌐 Refreshing notifications for language:', translationInstance.language);
+    console.log('?? Refreshing notifications for language:', translationInstance.language);
     fetchNotifications();
   };
 
   // Refresh notifications when language changes
   useEffect(() => {
     if (currentUser && notifications.length > 0) {
-      console.log('🌐 Language changed to:', translationInstance.language);
+      console.log('?? Language changed to:', translationInstance.language);
       refreshNotificationsWithLanguage();
     }
   }, [translationInstance.language]);
@@ -1906,6 +2012,11 @@ const AdminFacultyDashboard = () => {
       key: 'students',
       icon: <TeamOutlined />,
       label: t('adminSidebar.navigation.students')
+    },
+    {
+      key: 'announcements',
+      icon: <SoundOutlined />,
+      label: 'Announcements'
     },
     {
       key: 'analytics',
@@ -2529,7 +2640,7 @@ const AdminFacultyDashboard = () => {
 
     return (
       <div>
-        <Title level={2}>{t('applicationManagement.title')}</Title>
+        <Title level={2}>📋 {t('applicationManagement.title')}</Title>
         <Text type="secondary">{t('applicationManagement.subtitle')}</Text>
 
         {/* Statistics Cards */}
@@ -2582,7 +2693,7 @@ const AdminFacultyDashboard = () => {
           items={[
             {
               key: 'applications',
-              label: `${t('adminDashboard.applications.title')}`,
+              label: `📋 ${t('adminDashboard.applications.title')}`,
               children: (
                 <Card 
                   title={t('adminDashboard.applications.studentApplications')} 
@@ -2624,7 +2735,7 @@ const AdminFacultyDashboard = () => {
             },
             {
               key: 'contacts',
-              label: `${t('adminDashboard.applications.messages')}`,
+              label: `💬 ${t('adminDashboard.applications.messages')}`,
               children: (
                 <Card 
                   title={t('adminDashboard.contact.title')}
@@ -2658,7 +2769,7 @@ const AdminFacultyDashboard = () => {
             },
             {
               key: 'users',
-              label: `${t('adminDashboard.applications.users')}`,
+              label: `👥 ${t('adminDashboard.applications.users')}`,
               children: (
                 <Card 
                   title={t('adminDashboard.users.title')}
@@ -2839,7 +2950,7 @@ const AdminFacultyDashboard = () => {
 
     return (
       <div>
-        <Title level={2}>{t('admin.courseManagement.title')}</Title>
+        <Title level={2}>📚 {t('admin.courseManagement.title')}</Title>
         <Text type="secondary">{t('admin.courseManagement.subtitle')}</Text>
 
         <Row gutter={[16, 16]} style={{ marginTop: 24, marginBottom: 24 }}>
@@ -3045,7 +3156,7 @@ const AdminFacultyDashboard = () => {
 
     return (
       <div>
-        <Title level={2}>{t('admin.materialManagement.title')}</Title>
+        <Title level={2}>📄 {t('admin.materialManagement.title')}</Title>
         <Text type="secondary">{t('admin.materialManagement.subtitle')}</Text>
 
         <Row gutter={[16, 16]} style={{ marginTop: 24, marginBottom: 24 }}>
@@ -3150,7 +3261,7 @@ const AdminFacultyDashboard = () => {
 
   const renderStudentProgress = () => (
     <div>
-      <Title level={2}>{t('adminDashboard.students.title')}</Title>
+      <Title level={2}>🎓 {t('adminDashboard.students.title')}</Title>
       <Text type="secondary">{t('adminDashboard.students.subtitle')}</Text>
 
       <Row gutter={[16, 16]} style={{ marginTop: 24, marginBottom: 24 }}>
@@ -3289,10 +3400,212 @@ const AdminFacultyDashboard = () => {
     </div>
   );
 
+  // Render Announcements Management
+  const renderAnnouncementsManagement = () => (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+        <div>
+          <Title level={2}>?? Announcements Management</Title>
+          <Text type="secondary">Create and manage announcements that will be sent as notifications to students and teachers</Text>
+        </div>
+        <Button 
+          type="primary" 
+          icon={<PlusOutlined />}
+          onClick={() => {
+            setViewModalVisible(false); // Ensure view modal is closed
+            setSelectedAnnouncement(null);
+            announcementForm.resetFields();
+            setAnnouncementModalVisible(true);
+          }}
+        >
+          Create Announcement
+        </Button>
+      </div>
+
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        <Col xs={24} sm={12} md={6}>
+          <Card>
+            <Statistic
+              title="Total Announcements"
+              value={announcements.length}
+              prefix={<SoundOutlined />}
+              valueStyle={{ color: '#1890ff' }}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} md={6}>
+          <Card>
+            <Statistic
+              title="Active Announcements"
+              value={announcements.filter(a => !a.expiryDate || new Date(a.expiryDate) > new Date()).length}
+              prefix={<CheckCircleOutlined />}
+              valueStyle={{ color: '#52c41a' }}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} md={6}>
+          <Card>
+            <Statistic
+              title="High Priority"
+              value={announcements.filter(a => a.priority === 'high').length}
+              prefix={<ExclamationCircleOutlined />}
+              valueStyle={{ color: '#faad14' }}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} md={6}>
+          <Card>
+            <Statistic
+              title="This Month"
+              value={announcements.filter(a => new Date(a.createdAt).getMonth() === new Date().getMonth()).length}
+              prefix={<CalendarOutlined />}
+              valueStyle={{ color: '#722ed1' }}
+            />
+          </Card>
+        </Col>
+      </Row>
+
+      <Card title="All Announcements">
+        <Table
+          columns={[
+            {
+              title: 'Title',
+              dataIndex: 'title',
+              key: 'title',
+              render: (text, record) => (
+                <div>
+                  <Text strong>{text}</Text>
+                  {record.isSticky && <Tag color="orange" style={{ marginLeft: 8 }}>Pinned</Tag>}
+                  <br />
+                  <Text type="secondary" style={{ fontSize: '12px' }}>
+                    Created {moment(record.createdAt).fromNow()}
+                  </Text>
+                </div>
+              )
+            },
+            {
+              title: 'Target Audience',
+              dataIndex: 'targetAudience',
+              key: 'targetAudience',
+              render: (audience) => {
+                const colors = {
+                  'all': 'blue',
+                  'students': 'green',
+                  'teachers': 'orange',
+                  'admins': 'red'
+                };
+                return <Tag color={colors[audience] || 'default'}>{audience.toUpperCase()}</Tag>;
+              }
+            },
+            {
+              title: 'Priority',
+              dataIndex: 'priority',
+              key: 'priority',
+              render: (priority) => {
+                const colors = {
+                  'low': 'default',
+                  'medium': 'processing',
+                  'high': 'warning'
+                };
+                return <Tag color={colors[priority]}>{priority.toUpperCase()}</Tag>;
+              }
+            },
+            {
+              title: 'Type',
+              dataIndex: 'type',
+              key: 'type',
+              render: (type) => <Tag>{type}</Tag>
+            },
+            {
+              title: 'Status',
+              key: 'status',
+              render: (_, record) => {
+                const now = new Date();
+                const publishDate = new Date(record.publishDate);
+                const expiryDate = record.expiryDate ? new Date(record.expiryDate) : null;
+                
+                if (publishDate > now) {
+                  return <Tag color="orange">Scheduled</Tag>;
+                } else if (expiryDate && expiryDate < now) {
+                  return <Tag color="red">Expired</Tag>;
+                } else {
+                  return <Tag color="green">Active</Tag>;
+                }
+              }
+            },
+            {
+              title: 'Actions',
+              key: 'actions',
+              render: (_, record) => (
+                <Space>
+                  <Button
+                    icon={<EyeOutlined />}
+                    size="small"
+                    onClick={() => {
+                      setAnnouncementModalVisible(false); // Ensure create modal is closed
+                      setSelectedAnnouncement(record);
+                      setViewModalVisible(true);
+                    }}
+                  />
+                  <Button
+                    icon={<EditOutlined />}
+                    size="small"
+                    onClick={() => {
+                      setViewModalVisible(false); // Ensure view modal is closed
+                      setSelectedAnnouncement(record);
+                      announcementForm.setFieldsValue({
+                        ...record,
+                        publishDate: record.publishDate ? moment(record.publishDate) : null,
+                        expiryDate: record.expiryDate ? moment(record.expiryDate) : null
+                      });
+                      setAnnouncementModalVisible(true);
+                    }}
+                  />
+                  <Button
+                    icon={<DeleteOutlined />}
+                    size="small"
+                    danger
+                    onClick={() => {
+                      confirm({
+                        title: 'Delete Announcement',
+                        content: 'Are you sure you want to delete this announcement?',
+                        onOk: async () => {
+                          try {
+                            const response = await fetch(`${API_BASE_URL}/api/announcements/${record._id}`, {
+                              method: 'DELETE',
+                              headers: getAuthHeaders()
+                            });
+                            if (response.ok) {
+                              message.success('Announcement deleted successfully');
+                              fetchAnnouncements();
+                            }
+                          } catch (error) {
+                            message.error('Failed to delete announcement');
+                          }
+                        }
+                      });
+                    }}
+                  />
+                </Space>
+              )
+            }
+          ]}
+          dataSource={announcements}
+          rowKey="_id"
+          pagination={{
+            pageSize: 10,
+            showSizeChanger: true,
+            showQuickJumper: true
+          }}
+        />
+      </Card>
+    </div>
+  );
+
   // Render Analytics & Reports
   const renderAnalytics = () => (
     <div>
-      <Title level={2}>{t('adminDashboard.analytics.title')}</Title>
+      <Title level={2}>📊 {t('adminDashboard.analytics.title')}</Title>
       <Text type="secondary">{t('adminDashboard.analytics.subtitle')}</Text>
 
       <Row gutter={[24, 24]} style={{ marginTop: 24 }}>
@@ -3624,13 +3937,13 @@ const AdminFacultyDashboard = () => {
   );
 
   const renderEnrollmentsManagement = () => {
-    console.log('Rendering enrollment analytics with real data:', { enrollmentStats, enrollmentAnalytics });
+    console.log('📊 Rendering enrollment analytics with real data:', { enrollmentStats, enrollmentAnalytics });
 
     return (
       <div style={{ background: '#f5f5f5', padding: '24px', borderRadius: '8px' }}>
         <div style={{ marginBottom: '24px' }}>
           <Title level={2} style={{ color: '#1890ff', margin: 0 }}>
-            {t('adminDashboard.enrollment.title')}
+            📈 {t('adminDashboard.enrollment.title')}
           </Title>
           <Text type="secondary" style={{ fontSize: '16px' }}>
             {t('adminDashboard.enrollment.subtitle')}
@@ -4269,6 +4582,8 @@ const AdminFacultyDashboard = () => {
         return renderMaterialManagement();
       case 'students':
         return renderStudentProgress();
+      case 'announcements':
+        return renderAnnouncementsManagement();
       case 'analytics':
         return renderAnalytics();
       case 'settings':
@@ -4603,7 +4918,7 @@ const AdminFacultyDashboard = () => {
           borderTop: '1px solid #f0f0f0'
         }}>
           <Text type="secondary">
-            {t('footer.aboutAcademy')} {t('adminDashboard.breadcrumb.dashboard')} © {new Date().getFullYear()} | 
+            {t('footer.aboutAcademy')} {t('adminDashboard.breadcrumb.dashboard')} c {new Date().getFullYear()} | 
             <span style={{ marginLeft: 8 }}>
               Made with <HeartOutlined style={{ color: '#ff4d4f' }} /> by Forum Academy Team
             </span>
@@ -5066,7 +5381,7 @@ const AdminFacultyDashboard = () => {
           layout="vertical"
           onFinish={async (values) => {
             try {
-              console.log('Attempting to send reply...', {
+              console.log('📧 Attempting to send reply...', {
                 replyType,
                 target: replyTarget?.email,
                 subject: values.subject
@@ -5081,7 +5396,7 @@ const AdminFacultyDashboard = () => {
                 relatedId: replyTarget?._id
               };
 
-              console.log('Email data prepared:', emailData);
+              console.log('✅ Email data prepared:', emailData);
 
               // Send email via API
               const response = await fetch(`${API_BASE_URL}/api/send-email`, {
@@ -5090,7 +5405,7 @@ const AdminFacultyDashboard = () => {
                 body: JSON.stringify(emailData)
               });
 
-              console.log('API Response Status:', response.status);
+              console.log('✅ API Response Status:', response.status);
 
               if (response.ok) {
                 const responseData = await response.json();
@@ -6216,7 +6531,7 @@ const AdminFacultyDashboard = () => {
                     {selectedCallUser?.firstName} {selectedCallUser?.lastName}
                   </Title>
                   <Text type="secondary" style={{ fontSize: '16px' }}>
-                    {callType === 'student' ? `${t('adminDashboard.enrollment.videoCall.student')}` : `${t('adminDashboard.enrollment.videoCall.teacher')}`} - {selectedCallUser?.email}
+                    {callType === 'student' ? `�${t('adminDashboard.enrollment.videoCall.student')}` : `�${t('adminDashboard.enrollment.videoCall.teacher')}`} - {selectedCallUser?.email}
                   </Text>
                 </div>
               </div>
@@ -6268,7 +6583,7 @@ const AdminFacultyDashboard = () => {
               }}>
                 <div style={{ marginBottom: 16 }}>
                   <Text style={{ color: 'white', fontSize: '18px' }}>
-                    {t('adminDashboard.enrollment.videoCall.inProgress')}
+                    �{t('adminDashboard.enrollment.videoCall.inProgress')}
                   </Text>
                 </div>
                 
@@ -6306,7 +6621,7 @@ const AdminFacultyDashboard = () => {
                 marginBottom: '24px'
               }}>
                 <Text type="secondary" style={{ fontSize: '14px' }}>
-                  {t('adminDashboard.enrollment.videoCall.implementation')}
+                  �{t('adminDashboard.enrollment.videoCall.implementation')}
                   <br />{t('adminDashboard.enrollment.videoCall.technologies')}
                 </Text>
               </div>
@@ -6331,6 +6646,232 @@ const AdminFacultyDashboard = () => {
             </div>
           )}
         </div>
+      </Modal>
+
+      {/* Announcement Modal */}
+      <Modal
+        title={selectedAnnouncement ? 'Edit Announcement' : 'Create New Announcement'}
+        visible={announcementModalVisible}
+        onCancel={() => {
+          setAnnouncementModalVisible(false);
+          setViewModalVisible(false); // Ensure view modal is also closed
+          setSelectedAnnouncement(null);
+          announcementForm.resetFields();
+        }}
+        width={800}
+        footer={null}
+        zIndex={1000}
+      >
+        <Form
+          form={announcementForm}
+          layout="vertical"
+          onFinish={handleCreateAnnouncement}
+        >
+          <Form.Item
+            label="Title"
+            name="title"
+            rules={[{ required: true, message: 'Please enter announcement title' }]}
+          >
+            <Input placeholder="Enter announcement title" />
+          </Form.Item>
+
+          <Form.Item
+            label="Content"
+            name="content"
+            rules={[{ required: true, message: 'Please enter announcement content' }]}
+          >
+            <TextArea 
+              rows={4} 
+              placeholder="Enter announcement content that will be visible to users"
+            />
+          </Form.Item>
+
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                label="Target Audience"
+                name="targetAudience"
+                initialValue="all"
+              >
+                <Select>
+                  <Option value="all">👥 All Users</Option>
+                  <Option value="students">🎓 Students Only</Option>
+                  <Option value="teachers">👨‍🏫 Teachers Only</Option>
+                  <Option value="admins">👑 Admins Only</Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                label="Priority"
+                name="priority"
+                initialValue="medium"
+              >
+                <Select>
+                  <Option value="low">?? Low Priority</Option>
+                  <Option value="medium">?? Medium Priority</Option>
+                  <Option value="high">?? High Priority</Option>
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                label="Type"
+                name="type"
+                initialValue="general"
+              >
+                <Select>
+                  <Option value="general">?? General</Option>
+                  <Option value="academic">?? Academic</Option>
+                  <Option value="event">?? Event</Option>
+                  <Option value="maintenance">?? Maintenance</Option>
+                  <Option value="urgent">?? Urgent</Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                label="Pin Announcement"
+                name="isSticky"
+                valuePropName="checked"
+              >
+                <Switch checkedChildren="?? Pinned" unCheckedChildren="?? Normal" />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                label="Publish Date"
+                name="publishDate"
+              >
+                <DatePicker 
+                  showTime 
+                  style={{ width: '100%' }}
+                  placeholder="Select publish date (optional)"
+                />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                label="Expiry Date"
+                name="expiryDate"
+              >
+                <DatePicker 
+                  showTime 
+                  style={{ width: '100%' }}
+                  placeholder="Select expiry date (optional)"
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Form.Item
+            label="Tags (optional)"
+            name="tags"
+          >
+            <Select
+              mode="tags"
+              placeholder="Add tags for better organization"
+              tokenSeparators={[',']}
+            />
+          </Form.Item>
+
+          <div style={{ 
+            textAlign: 'right', 
+            marginTop: 24,
+            padding: '16px 0',
+            borderTop: '1px solid #f0f0f0'
+          }}>
+            <Space>
+              <Button 
+                onClick={() => {
+                  setAnnouncementModalVisible(false);
+                  setSelectedAnnouncement(null);
+                  announcementForm.resetFields();
+                }}
+              >
+                Cancel
+              </Button>
+              <Button type="primary" htmlType="submit" icon={<SoundOutlined />}>
+                {selectedAnnouncement ? 'Update & Notify' : 'Create & Send Notifications'}
+              </Button>
+            </Space>
+          </div>
+
+          <div style={{ 
+            marginTop: 16, 
+            padding: '12px', 
+            backgroundColor: '#f6f8fc', 
+            borderRadius: '6px',
+            border: '1px solid #e1e8ed'
+          }}>
+            <Text type="secondary" style={{ fontSize: '12px' }}>
+              ?? <strong>Note:</strong> This announcement will automatically create notifications for all selected users. 
+              Notifications will appear in their notification panel and can trigger email alerts based on user preferences.
+            </Text>
+          </div>
+        </Form>
+      </Modal>
+
+      {/* Announcement View Modal */}
+      <Modal
+        title="📢 Announcement Details"
+        visible={viewModalVisible}
+        onCancel={() => {
+          setViewModalVisible(false);
+          setAnnouncementModalVisible(false); // Ensure create modal is also closed
+        }}
+        width={700}
+        footer={[
+          <Button key="close" onClick={() => {
+            setViewModalVisible(false);
+            setAnnouncementModalVisible(false); // Ensure create modal is also closed
+          }}>
+            Close
+          </Button>
+        ]}
+        zIndex={1001}
+      >
+        {selectedAnnouncement && (
+          <div>
+            <Title level={4}>{selectedAnnouncement.title}</Title>
+            <div style={{ marginBottom: 16 }}>
+              <Space wrap>
+                <Tag color="blue">{selectedAnnouncement.targetAudience}</Tag>
+                <Tag color={selectedAnnouncement.priority === 'high' ? 'red' : selectedAnnouncement.priority === 'medium' ? 'orange' : 'default'}>
+                  {selectedAnnouncement.priority} priority
+                </Tag>
+                <Tag>{selectedAnnouncement.type}</Tag>
+                {selectedAnnouncement.isSticky && <Tag color="orange">?? Pinned</Tag>}
+              </Space>
+            </div>
+            <Paragraph style={{ fontSize: '16px', lineHeight: '1.6' }}>
+              {selectedAnnouncement.content}
+            </Paragraph>
+            <div style={{ marginTop: 24, padding: '16px', backgroundColor: '#fafafa', borderRadius: '8px' }}>
+              <Text type="secondary">
+                <strong>Published:</strong> {moment(selectedAnnouncement.publishDate || selectedAnnouncement.createdAt).format('MMMM DD, YYYY [at] HH:mm')}
+              </Text>
+              <br />
+              {selectedAnnouncement.expiryDate && (
+                <>
+                  <Text type="secondary">
+                    <strong>Expires:</strong> {moment(selectedAnnouncement.expiryDate).format('MMMM DD, YYYY [at] HH:mm')}
+                  </Text>
+                  <br />
+                </>
+              )}
+              <Text type="secondary">
+                <strong>Author:</strong> {selectedAnnouncement.author?.firstName} {selectedAnnouncement.author?.lastName}
+              </Text>
+            </div>
+          </div>
+        )}
       </Modal>
     </Layout>
   );
