@@ -68,6 +68,14 @@
 				"showReuseMessage": true,
 				"clear": false
 			}
+		},
+		{
+			"label": "Check React Client",
+			"type": "shell",
+			"command": "npm start",
+			"args": [],
+			"isBackground": true,
+			"group": "build"
 		}
 	]
 }

@@ -492,7 +492,15 @@
     "daysAgo": "{{days}} days ago",
     "needsReview": "Needs Review",
     "items": "items",
-    "cannotBeUndone": "This action cannot be undone."
+    "cannotBeUndone": "This action cannot be undone.",
+    "status": "Status",
+    "actions": "Actions",
+    "cancel": "Cancel",
+    "create": "Create",
+    "update": "Update",
+    "close": "Close",
+    "minutes": "minutes",
+    "seconds": "seconds"
   },
   "courses": {
     "hero": {
@@ -2956,5 +2964,108 @@
     "applicationRejectionError": "Failed to reject application",
     "userCreatedSuccess": "User created successfully!",
     "userCreationError": "Error creating user"
+  },
+  "quiz": {
+    "title": "Title",
+    "description": "Description",
+    "course": "Course",
+    "questions": "Questions",
+    "timeLimit": "Time Limit",
+    "attempts": "Attempts",
+    "management": "Quiz Management",
+    "create": "Create Quiz",
+    "view": "View Quiz",
+    "titleRequired": "Please enter quiz title",
+    "titlePlaceholder": "Enter quiz title",
+    "descriptionPlaceholder": "Enter quiz description",
+    "courseRequired": "Please select a course",
+    "selectCourse": "Select course",
+    "timeLimitPlaceholder": "Time limit in minutes",
+    "attemptsPlaceholder": "Maximum attempts",
+    "fetchError": "Failed to fetch quizzes",
+    "stats": {
+      "total": "Total Quizzes",
+      "active": "Active Quizzes",
+      "draft": "Draft Quizzes",
+      "completed": "Completed Quizzes"
+    },
+    "status": {
+      "draft": "Draft",
+      "active": "Active",
+      "archived": "Archived"
+    },
+    "noDescription": "No description",
+    "noCourse": "No course assigned",
+    "noTimeLimit": "No time limit",
+    "unlimited": "Unlimited"
+  },
+  "homework": {
+    "title": "Title",
+    "description": "Description",
+    "course": "Course",
+    "dueDate": "Due Date",
+    "submissions": "Submissions",
+    "management": "Homework Management",
+    "create": "Create Homework",
+    "titleRequired": "Please enter homework title",
+    "titlePlaceholder": "Enter homework title",
+    "descriptionRequired": "Please enter homework description",
+    "descriptionPlaceholder": "Enter homework description",
+    "courseRequired": "Please select a course",
+    "selectCourse": "Select course",
+    "dueDateRequired": "Please select due date",
+    "dueDatePlaceholder": "Select due date and time",
+    "maxPoints": "Maximum Points",
+    "maxPointsPlaceholder": "Maximum points for this homework",
+    "fetchError": "Failed to fetch homework",
+    "stats": {
+      "total": "Total Homework",
+      "active": "Active Homework",
+      "pending": "Pending Submissions",
+      "graded": "Graded Submissions"
+    },
+    "status": {
+      "draft": "Draft",
+      "active": "Active",
+      "archived": "Archived"
+    }
+  },
+  "listening": {
+    "title": "Title",
+    "description": "Description",
+    "course": "Course",
+    "duration": "Duration",
+    "questions": "Questions",
+    "audio": "Audio",
+    "management": "Listening Exercises",
+    "create": "Create Listening Exercise",
+    "titleRequired": "Please enter listening exercise title",
+    "titlePlaceholder": "Enter listening exercise title",
+    "descriptionPlaceholder": "Enter listening exercise description",
+    "courseRequired": "Please select a course",
+    "selectCourse": "Select course",
+    "audioFile": "Audio File",
+    "audioFileRequired": "Please upload an audio file",
+    "uploadAudio": "Upload Audio",
+    "durationPlaceholder": "Duration in seconds",
+    "fetchError": "Failed to fetch listening exercises",
+    "audioError": "Error playing audio",
+    "saveError": "Error saving listening exercise",
+    "deleteError": "Error deleting listening exercise",
+    "createSuccess": "Listening exercise created successfully",
+    "updateSuccess": "Listening exercise updated successfully",
+    "deleteSuccess": "Listening exercise deleted successfully",
+    "audioNotSupported": "Your browser does not support the audio element",
+    "stats": {
+      "total": "Total Exercises",
+      "active": "Active Exercises",
+      "totalQuestions": "Total Questions",
+      "avgDuration": "Average Duration"
+    },
+    "status": {
+      "draft": "Draft",
+      "active": "Active",
+      "archived": "Archived"
+    }
   }
 }
