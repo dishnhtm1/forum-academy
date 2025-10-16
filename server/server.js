@@ -17,16 +17,30 @@ connectDB();
 
 // Enhanced CORS configuration for both development and production
 app.use(cors({
-    origin: [
-        'http://localhost:3000', 
-        'http://localhost:3001',
-        'https://wonderful-meadow-0e35b381e.6.azurestaticapps.net',
-        'https://icy-moss-00f282010.1.azurestaticapps.net',
-        process.env.CLIENT_URL
-    ].filter(Boolean),
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        
+        const allowedOrigins = [
+            'http://localhost:3000', 
+            'http://localhost:3001',
+            'http://localhost:5173', // Vite default port
+            'https://wonderful-meadow-0e35b381e.6.azurestaticapps.net',
+            'https://icy-moss-00f282010.1.azurestaticapps.net',
+            process.env.CLIENT_URL
+        ].filter(Boolean);
+        
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            console.log('CORS blocked origin:', origin);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    optionsSuccessStatus: 200 // Some legacy browsers choke on 204
 }));
 
 // Handle preflight requests explicitly
@@ -256,6 +270,16 @@ try {
     console.log('✅ Email routes loaded');
 } catch (error) {
     console.error('❌ Failed to load email routes:', error.message);
+}
+
+// Load Zoom routes (for live class management)
+console.log('🔧 Loading Zoom routes...');
+try {
+    const zoomRoutes = require('./routes/zoomRoutes');
+    app.use('/api/zoom', zoomRoutes);
+    console.log('✅ Zoom routes loaded');
+} catch (error) {
+    console.error('❌ Failed to load Zoom routes:', error.message);
 }
 
 console.log('🔧 All routes loaded successfully');

@@ -1,173 +1,94 @@
-// Test script to create sample users and test announcement notifications
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+const dotenv = require('dotenv');
 const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '.env') });
 
+// Load environment variables
+dotenv.config({ path: path.join(__dirname, '.env') });
+
+// Import models
 const User = require('./models/User');
+const Notification = require('./models/Notification');
 const NotificationService = require('./services/notificationService');
 
-async function connectDB() {
+// MongoDB connection
+const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/forum_academy', {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
-  } catch (error) {
-    console.error('❌ MongoDB connection error:', error);
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log('✅ MongoDB connected');
+  } catch (err) {
+    console.error('❌ MongoDB connection error:', err.message);
     process.exit(1);
   }
-}
+};
 
-async function createTestUsers() {
+// Test function to create an announcement notification
+async function createTestAnnouncement() {
   try {
     await connectDB();
     
-    // Check if test users already exist
-    const existingAdmin = await User.findOne({ email: 'admin@test.com' });
-    const existingTeacher = await User.findOne({ email: 'teacher@test.com' });
-    const existingStudent = await User.findOne({ email: 'student@test.com' });
+    // Find an admin or teacher user
+    const teacher = await User.findOne({ role: 'teacher' }).limit(1);
+    const admin = await User.findOne({ role: 'admin' }).limit(1);
     
-    if (existingAdmin && existingTeacher && existingStudent) {
-      console.log('✅ Test users already exist');
-      return { admin: existingAdmin, teacher: existingTeacher, student: existingStudent };
+    const sender = teacher || admin;
+    
+    if (!sender) {
+      console.log('❌ No teacher or admin found in database');
+      return;
     }
     
-    console.log('👤 Creating test users...');
+    console.log(`✅ Found sender: ${sender.email} (${sender.role})`);
     
-    const hashedPassword = await bcrypt.hash('password123', 10);
+    // Find all students
+    const students = await User.find({ role: 'student' }).select('_id email name');
     
-    const testUsers = [];
-    
-    // Create admin if doesn't exist
-    if (!existingAdmin) {
-      const admin = new User({
-        firstName: 'Admin',
-        lastName: 'User',
-        email: 'admin@test.com',
-        password: hashedPassword,
-        role: 'admin',
-        isApproved: true,
-        isActive: true
-      });
-      await admin.save();
-      testUsers.push(admin);
-      console.log('✅ Created admin user: admin@test.com / password123');
-    } else {
-      testUsers.push(existingAdmin);
+    if (students.length === 0) {
+      console.log('❌ No students found in database');
+      return;
     }
     
-    // Create teacher if doesn't exist
-    if (!existingTeacher) {
-      const teacher = new User({
-        firstName: 'John',
-        lastName: 'Teacher',
-        email: 'teacher@test.com',
-        password: hashedPassword,
-        role: 'teacher',
-        isApproved: true,
-        isActive: true,
-        subject: 'English'
-      });
-      await teacher.save();
-      testUsers.push(teacher);
-      console.log('✅ Created teacher user: teacher@test.com / password123');
-    } else {
-      testUsers.push(existingTeacher);
-    }
+    console.log(`✅ Found ${students.length} students`);
     
-    // Create student if doesn't exist
-    if (!existingStudent) {
-      const student = new User({
-        firstName: 'Jane',
-        lastName: 'Student',
-        email: 'student@test.com',
-        password: hashedPassword,
-        role: 'student',
-        isApproved: true,
-        isActive: true,
-        studentId: 'ST001',
-        gradeLevel: 'Intermediate'
-      });
-      await student.save();
-      testUsers.push(student);
-      console.log('✅ Created student user: student@test.com / password123');
-    } else {
-      testUsers.push(existingStudent);
-    }
-    
-    return {
-      admin: testUsers[0],
-      teacher: testUsers[1],
-      student: testUsers[2]
+    // Create a test announcement notification
+    const announcementData = {
+      recipients: students.map(s => s._id),
+      sender: sender._id,
+      type: 'admin_announcement',
+      title: 'Important: Class Schedule Update',
+      message: 'Dear students, tomorrow\'s JavaScript class will start at 10:00 AM instead of 9:00 AM. Please make note of this change.',
+      priority: 'high',
+      actionUrl: '/announcements'
     };
     
-  } catch (error) {
-    console.error('❌ Error creating test users:', error);
-    throw error;
-  }
-}
-
-async function testAnnouncementNotifications() {
-  try {
-    const users = await createTestUsers();
+    console.log('📢 Creating announcement notification...');
     
-    console.log('\n📢 Testing announcement notification system...');
+    // Create notifications for all students
+    await NotificationService.createBulkNotifications(announcementData);
     
-    // Simulate creating an announcement (this would normally be done through the API)
-    await NotificationService.notifyAllUsersAnnouncement(
-      new mongoose.Types.ObjectId(), // Fake announcement ID
-      users.admin._id,
-      'Welcome to the New Forum Academy Platform!'
-    );
+    console.log('✅ Test announcement created successfully!');
+    console.log('📊 Notification details:');
+    console.log(`   - Sender: ${sender.email} (${sender.role})`);
+    console.log(`   - Recipients: ${students.length} students`);
+    console.log(`   - Type: admin_announcement`);
+    console.log(`   - Title: ${announcementData.title}`);
+    console.log(`   - Message: ${announcementData.message}`);
     
-    console.log('✅ Created system-wide announcement notification');
-    
-    // Create a teacher-specific announcement
-    await NotificationService.createBulkNotifications({
-      recipients: [users.teacher._id],
-      sender: users.admin._id,
+    // Verify notifications were created
+    const createdNotifications = await Notification.find({
       type: 'admin_announcement',
-      title: 'Staff Meeting Reminder',
-      message: 'Don\'t forget about the staff meeting tomorrow at 2 PM',
-      priority: 'high',
-      actionUrl: '/admin/announcements'
-    });
+      sender: sender._id
+    }).limit(5);
     
-    console.log('✅ Created teacher-specific announcement notification');
-    
-    // Create a student-specific announcement
-    await NotificationService.createBulkNotifications({
-      recipients: [users.student._id],
-      sender: users.admin._id,
-      type: 'admin_announcement',
-      title: 'New Course Materials Available',
-      message: 'New study materials have been uploaded for your English course',
-      priority: 'medium',
-      actionUrl: '/student/materials'
-    });
-    
-    console.log('✅ Created student-specific announcement notification');
-    
-    console.log('\n🎉 Test completed successfully!');
-    console.log('💡 You can now login with these test accounts and see the notifications:');
-    console.log('   Admin: admin@test.com / password123');
-    console.log('   Teacher: teacher@test.com / password123'); 
-    console.log('   Student: student@test.com / password123');
-    console.log('\n🔔 Check the notification panel in each dashboard to see the announcements!');
+    console.log(`\n✅ Verified ${createdNotifications.length} notifications created`);
     
   } catch (error) {
-    console.error('❌ Error testing announcement notifications:', error);
+    console.error('❌ Error creating test announcement:', error);
   } finally {
-    await mongoose.connection.close();
-    console.log('🔌 Database connection closed');
+    await mongoose.disconnect();
+    console.log('🔌 Disconnected from MongoDB');
+    process.exit(0);
   }
 }
 
 // Run the test
-if (require.main === module) {
-  testAnnouncementNotifications();
-}
-
-module.exports = { createTestUsers, testAnnouncementNotifications };
+createTestAnnouncement();

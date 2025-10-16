@@ -6,6 +6,41 @@ const User = require('../models/User');
 
 console.log('🔧 Loading notificationRoutes.js...');
 
+// Test route for notifications without authentication (for development)
+router.get('/test', async (req, res) => {
+  try {
+    // Return mock notifications for testing
+    const mockNotifications = [
+      {
+        _id: '1',
+        title: 'Welcome to Forum Academy',
+        message: 'Your account has been created successfully!',
+        type: 'info',
+        read: false,
+        createdAt: new Date(),
+        recipient: 'test-user'
+      },
+      {
+        _id: '2',
+        title: 'New Assignment Posted',
+        message: 'A new homework assignment has been posted for your course.',
+        type: 'assignment',
+        read: false,
+        createdAt: new Date(Date.now() - 3600000), // 1 hour ago
+        recipient: 'test-user'
+      }
+    ];
+
+    res.json({
+      notifications: mockNotifications,
+      total: mockNotifications.length,
+      unreadCount: mockNotifications.filter(n => !n.read).length
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Get notifications for the authenticated user
 router.get('/', authenticate, async (req, res) => {
   try {
