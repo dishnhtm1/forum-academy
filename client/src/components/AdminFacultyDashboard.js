@@ -191,7 +191,11 @@ const AdminFacultyDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [activeKey, setActiveKey] = useState('overview');
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [isTablet, setIsTablet] = useState(window.innerWidth > 768 && window.innerWidth <= 1024);
   const [theme, setTheme] = useState('dark');
+  const [mobileDrawerVisible, setMobileDrawerVisible] = useState(false);
+  const [notificationDrawerVisible, setNotificationDrawerVisible] = useState(false);
+  const [currentLanguage, setCurrentLanguage] = useState(i18n.language);
   
   // Dashboard data states
   const [dashboardStats, setDashboardStats] = useState({
@@ -283,6 +287,7 @@ const AdminFacultyDashboard = () => {
   const [progressModalVisible, setProgressModalVisible] = useState(false);
   const [announcementModalVisible, setAnnouncementModalVisible] = useState(false);
   const [viewModalVisible, setViewModalVisible] = useState(false);
+  const [announcementViewModalVisible, setAnnouncementViewModalVisible] = useState(false);
   const [profileModalVisible, setProfileModalVisible] = useState(false);
   
   // Selected items
@@ -359,15 +364,38 @@ const AdminFacultyDashboard = () => {
     }
   };
 
+  // Language change handler
+  useEffect(() => {
+    const handleLanguageChange = (lng) => {
+      console.log("🌐 Language changed to:", lng);
+      setCurrentLanguage(lng);
+    };
+
+    i18n.on("languageChanged", handleLanguageChange);
+
+    return () => {
+      i18n.off("languageChanged", handleLanguageChange);
+    };
+  }, []);
+
   // Responsive handler
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-      if (window.innerWidth < 768) {
+      const width = window.innerWidth;
+      const mobile = width <= 768;
+      const tablet = width > 768 && width <= 1024;
+
+      setIsMobile(mobile);
+      setIsTablet(tablet);
+
+      if (mobile) {
         setCollapsed(true);
+      } else if (tablet) {
+        setCollapsed(false);
       }
     };
     
+    handleResize(); // Call once on mount
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -2016,7 +2044,7 @@ const AdminFacultyDashboard = () => {
     {
       key: 'announcements',
       icon: <SoundOutlined />,
-      label: 'Announcements'
+      label: t('adminSidebar.navigation.announcements')
     },
     {
       key: 'analytics',
@@ -2036,57 +2064,57 @@ const AdminFacultyDashboard = () => {
       {/* Main Stats Cards - First Row */}
       <Row gutter={[24, 24]}>
         <Col xs={24} sm={12} lg={6}>
-          <Card className="stat-card gradient-blue" hoverable>
+          <Card className="modern-stat-card" hoverable>
             <Statistic
-              title={<span style={{ color: '#fff' }}>{t('admin.metrics.totalStudents')}</span>}
+              title={t('admin.metrics.totalStudents')}
               value={dashboardStats.totalStudents}
-              prefix={<TeamOutlined style={{ color: '#fff' }} />}
-              valueStyle={{ color: '#fff', fontSize: '32px' }}
+              prefix={<TeamOutlined className="stat-icon-blue" style={{ fontSize: '24px' }} />}
+              valueStyle={{ color: '#1890ff', fontSize: '32px', fontWeight: 700 }}
             />
-            <div style={{ marginTop: 10, color: '#fff', opacity: 0.9 }}>
-              <small>{t('admin.metrics.activeLearnersEnrolled')}</small>
+            <div style={{ marginTop: 8, color: '#8c8c8c', fontSize: '12px' }}>
+              {t('admin.metrics.activeLearnersEnrolled')}
             </div>
           </Card>
         </Col>
         
         <Col xs={24} sm={12} lg={6}>
-          <Card className="stat-card gradient-green" hoverable>
+          <Card className="modern-stat-card" hoverable>
             <Statistic
-              title={<span style={{ color: '#fff' }}>{t('admin.metrics.totalTeachers')}</span>}
+              title={t('admin.metrics.totalTeachers')}
               value={dashboardStats.totalTeachers}
-              prefix={<UserOutlined style={{ color: '#fff' }} />}
-              valueStyle={{ color: '#fff', fontSize: '32px' }}
+              prefix={<UserOutlined className="stat-icon-green" style={{ fontSize: '24px' }} />}
+              valueStyle={{ color: '#52c41a', fontSize: '32px', fontWeight: 700 }}
             />
-            <div style={{ marginTop: 10, color: '#fff', opacity: 0.9 }}>
-              <small>{t('admin.metrics.qualifiedInstructors')}</small>
+            <div style={{ marginTop: 8, color: '#8c8c8c', fontSize: '12px' }}>
+              {t('admin.metrics.qualifiedInstructors')}
             </div>
           </Card>
         </Col>
         
         <Col xs={24} sm={12} lg={6}>
-          <Card className="stat-card gradient-orange" hoverable>
+          <Card className="modern-stat-card" hoverable>
             <Statistic
-              title={<span style={{ color: '#fff' }}>{t('admin.metrics.totalCourses')}</span>}
+              title={t('admin.metrics.totalCourses')}
               value={dashboardStats.totalCourses}
-              prefix={<BookOutlined style={{ color: '#fff' }} />}
-              valueStyle={{ color: '#fff', fontSize: '32px' }}
+              prefix={<BookOutlined className="stat-icon-orange" style={{ fontSize: '24px' }} />}
+              valueStyle={{ color: '#faad14', fontSize: '32px', fontWeight: 700 }}
             />
-            <div style={{ marginTop: 10, color: '#fff', opacity: 0.9 }}>
-              <small>{t('admin.metrics.availablePrograms')}</small>
+            <div style={{ marginTop: 8, color: '#8c8c8c', fontSize: '12px' }}>
+              {t('admin.metrics.availablePrograms')}
             </div>
           </Card>
         </Col>
         
         <Col xs={24} sm={12} lg={6}>
-          <Card className="stat-card gradient-purple" hoverable>
+          <Card className="modern-stat-card" hoverable>
             <Statistic
-              title={<span style={{ color: '#fff' }}>{t('admin.metrics.courseMaterials')}</span>}
+              title={t('admin.metrics.courseMaterials')}
               value={dashboardStats.totalMaterials}
-              prefix={<FolderOutlined style={{ color: '#fff' }} />}
-              valueStyle={{ color: '#fff', fontSize: '32px' }}
+              prefix={<FolderOutlined className="stat-icon-purple" style={{ fontSize: '24px' }} />}
+              valueStyle={{ color: '#722ed1', fontSize: '32px', fontWeight: 700 }}
             />
-            <div style={{ marginTop: 10, color: '#fff', opacity: 0.9 }}>
-              <small>{t('admin.metrics.learningResources')}</small>
+            <div style={{ marginTop: 8, color: '#8c8c8c', fontSize: '12px' }}>
+              {t('admin.metrics.learningResources')}
             </div>
           </Card>
         </Col>
@@ -3405,20 +3433,21 @@ const AdminFacultyDashboard = () => {
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <div>
-          <Title level={2}>?? Announcements Management</Title>
-          <Text type="secondary">Create and manage announcements that will be sent as notifications to students and teachers</Text>
+          <Title level={2}>📢 {t('announcements.title')}</Title>
+          <Text type="secondary">{t('announcements.subtitle')}</Text>
         </div>
         <Button 
           type="primary" 
           icon={<PlusOutlined />}
           onClick={() => {
-            setViewModalVisible(false); // Ensure view modal is closed
+            setAnnouncementViewModalVisible(false); // Ensure announcement view modal is closed
+            setViewModalVisible(false); // Ensure submission view modal is closed
             setSelectedAnnouncement(null);
             announcementForm.resetFields();
             setAnnouncementModalVisible(true);
           }}
         >
-          Create Announcement
+          {t('announcements.createButton')}
         </Button>
       </div>
 
@@ -3426,9 +3455,9 @@ const AdminFacultyDashboard = () => {
         <Col xs={24} sm={12} md={6}>
           <Card>
             <Statistic
-              title="Total Announcements"
+              title={t('announcements.stats.totalAnnouncements')}
               value={announcements.length}
-              prefix={<SoundOutlined />}
+              prefix={<SoundOutlined className="stat-icon-blue" style={{ fontSize: '20px' }} />}
               valueStyle={{ color: '#1890ff' }}
             />
           </Card>
@@ -3436,9 +3465,9 @@ const AdminFacultyDashboard = () => {
         <Col xs={24} sm={12} md={6}>
           <Card>
             <Statistic
-              title="Active Announcements"
+              title={t('announcements.stats.activeAnnouncements')}
               value={announcements.filter(a => !a.expiryDate || new Date(a.expiryDate) > new Date()).length}
-              prefix={<CheckCircleOutlined />}
+              prefix={<CheckCircleOutlined className="stat-icon-green" style={{ fontSize: '20px' }} />}
               valueStyle={{ color: '#52c41a' }}
             />
           </Card>
@@ -3446,9 +3475,9 @@ const AdminFacultyDashboard = () => {
         <Col xs={24} sm={12} md={6}>
           <Card>
             <Statistic
-              title="High Priority"
+              title={t('announcements.stats.highPriority')}
               value={announcements.filter(a => a.priority === 'high').length}
-              prefix={<ExclamationCircleOutlined />}
+              prefix={<ExclamationCircleOutlined className="stat-icon-orange" style={{ fontSize: '20px' }} />}
               valueStyle={{ color: '#faad14' }}
             />
           </Card>
@@ -3456,35 +3485,35 @@ const AdminFacultyDashboard = () => {
         <Col xs={24} sm={12} md={6}>
           <Card>
             <Statistic
-              title="This Month"
+              title={t('announcements.stats.thisMonth')}
               value={announcements.filter(a => new Date(a.createdAt).getMonth() === new Date().getMonth()).length}
-              prefix={<CalendarOutlined />}
+              prefix={<CalendarOutlined className="stat-icon-purple" style={{ fontSize: '20px' }} />}
               valueStyle={{ color: '#722ed1' }}
             />
           </Card>
         </Col>
       </Row>
 
-      <Card title="All Announcements">
+      <Card title={t('announcements.table.title')}>
         <Table
           columns={[
             {
-              title: 'Title',
+              title: t('announcements.table.columns.title'),
               dataIndex: 'title',
               key: 'title',
               render: (text, record) => (
                 <div>
                   <Text strong>{text}</Text>
-                  {record.isSticky && <Tag color="orange" style={{ marginLeft: 8 }}>Pinned</Tag>}
+                  {record.isSticky && <Tag color="orange" style={{ marginLeft: 8 }}>📌 Pinned</Tag>}
                   <br />
                   <Text type="secondary" style={{ fontSize: '12px' }}>
-                    Created {moment(record.createdAt).fromNow()}
+                    {t('announcements.table.createdAgo', { time: moment(record.createdAt).fromNow() })}
                   </Text>
                 </div>
               )
             },
             {
-              title: 'Target Audience',
+              title: t('announcements.table.columns.targetAudience'),
               dataIndex: 'targetAudience',
               key: 'targetAudience',
               render: (audience) => {
@@ -3494,11 +3523,11 @@ const AdminFacultyDashboard = () => {
                   'teachers': 'orange',
                   'admins': 'red'
                 };
-                return <Tag color={colors[audience] || 'default'}>{audience.toUpperCase()}</Tag>;
+                return <Tag color={colors[audience] || 'default'}>{t(`announcements.targetAudience.${audience}`)}</Tag>;
               }
             },
             {
-              title: 'Priority',
+              title: t('announcements.table.columns.priority'),
               dataIndex: 'priority',
               key: 'priority',
               render: (priority) => {
@@ -3507,17 +3536,17 @@ const AdminFacultyDashboard = () => {
                   'medium': 'processing',
                   'high': 'warning'
                 };
-                return <Tag color={colors[priority]}>{priority.toUpperCase()}</Tag>;
+                return <Tag color={colors[priority]}>{t(`announcements.priority.${priority}`)}</Tag>;
               }
             },
             {
-              title: 'Type',
+              title: t('announcements.table.columns.type'),
               dataIndex: 'type',
               key: 'type',
-              render: (type) => <Tag>{type}</Tag>
+              render: (type) => <Tag>{t(`announcements.type.${type}`)}</Tag>
             },
             {
-              title: 'Status',
+              title: t('announcements.table.columns.status'),
               key: 'status',
               render: (_, record) => {
                 const now = new Date();
@@ -3525,33 +3554,36 @@ const AdminFacultyDashboard = () => {
                 const expiryDate = record.expiryDate ? new Date(record.expiryDate) : null;
                 
                 if (publishDate > now) {
-                  return <Tag color="orange">Scheduled</Tag>;
+                  return <Tag color="orange">{t('announcements.status.scheduled')}</Tag>;
                 } else if (expiryDate && expiryDate < now) {
-                  return <Tag color="red">Expired</Tag>;
+                  return <Tag color="red">{t('announcements.status.expired')}</Tag>;
                 } else {
-                  return <Tag color="green">Active</Tag>;
+                  return <Tag color="green">{t('announcements.status.active')}</Tag>;
                 }
               }
             },
             {
-              title: 'Actions',
+              title: t('announcements.table.columns.actions'),
               key: 'actions',
               render: (_, record) => (
                 <Space>
                   <Button
                     icon={<EyeOutlined />}
                     size="small"
+                    className="modern-btn"
                     onClick={() => {
                       setAnnouncementModalVisible(false); // Ensure create modal is closed
+                      setViewModalVisible(false); // Ensure submission modal is closed
                       setSelectedAnnouncement(record);
-                      setViewModalVisible(true);
+                      setAnnouncementViewModalVisible(true);
                     }}
                   />
                   <Button
                     icon={<EditOutlined />}
                     size="small"
                     onClick={() => {
-                      setViewModalVisible(false); // Ensure view modal is closed
+                      setAnnouncementViewModalVisible(false); // Ensure announcement view modal is closed
+                      setViewModalVisible(false); // Ensure submission view modal is closed
                       setSelectedAnnouncement(record);
                       announcementForm.setFieldsValue({
                         ...record,
@@ -4594,8 +4626,290 @@ const AdminFacultyDashboard = () => {
   };
 
   return (
+    <>
+      {/* Modern CSS Styles */}
+      <style>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes slideInRight {
+          from {
+            transform: translateX(100%);
+          }
+          to {
+            transform: translateX(0);
+          }
+        }
+
+        @keyframes shimmer {
+          0% {
+            background-position: -1000px 0;
+          }
+          100% {
+            background-position: 1000px 0;
+          }
+        }
+
+        /* Simple Clean Cards - No Gradients */
+        .modern-stat-card {
+          animation: fadeInUp 0.6s ease-out;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          border-radius: 16px;
+          overflow: hidden;
+          background: #fff;
+          border: 2px solid #f0f0f0;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .modern-stat-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+          border-color: #1890ff;
+        }
+
+        .modern-stat-card .ant-statistic-title {
+          font-size: 14px;
+          font-weight: 600;
+          color: #8c8c8c;
+          margin-bottom: 8px;
+        }
+
+        .modern-stat-card .ant-statistic-content {
+          font-size: 32px;
+          font-weight: 700;
+        }
+
+        /* Unique Table Styles */
+        .ant-table {
+          border-radius: 12px;
+          overflow: hidden;
+        }
+
+        .ant-table-thead > tr > th {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+          color: #fff !important;
+          font-weight: 600;
+          font-size: 14px;
+          padding: 16px;
+          border: none !important;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .ant-table-thead > tr > th::before {
+          display: none !important;
+        }
+
+        .ant-table-tbody > tr {
+          transition: all 0.3s ease;
+        }
+
+        .ant-table-tbody > tr:hover {
+          background: #f0f7ff !important;
+          transform: scale(1.01);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .ant-table-tbody > tr > td {
+          padding: 16px;
+          border-bottom: 1px solid #f0f0f0;
+        }
+
+        .ant-table-tbody > tr:nth-child(even) {
+          background: #fafafa;
+        }
+
+        /* Modern Sidebar - Clean Design */
+        .modern-sidebar {
+          background: #001529 !important;
+          box-shadow: 2px 0 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .modern-sidebar .ant-menu-item {
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          border-radius: 8px;
+          margin: 6px 12px;
+          height: 48px;
+          display: flex;
+          align-items: center;
+          font-weight: 500;
+        }
+
+        .modern-sidebar .ant-menu-item:hover {
+          background: #1890ff !important;
+          transform: translateX(4px);
+        }
+
+        .modern-sidebar .ant-menu-item-selected {
+          background: #1890ff !important;
+          box-shadow: 0 4px 12px rgba(24, 144, 255, 0.4);
+        }
+
+        .modern-sidebar .ant-menu-item .anticon {
+          font-size: 18px;
+        }
+
+        /* Logo Section */
+        .logo-container {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          padding: 24px 20px;
+          background: rgba(0, 0, 0, 0.2);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo-icon-box {
+          width: 48px;
+          height: 48px;
+          background: #1890ff;
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+        }
+
+        /* Notification Styles */
+        .notification-item {
+          transition: all 0.2s ease;
+          border-radius: 12px;
+          padding: 16px;
+          margin: 8px 16px;
+          background: #fff;
+          border: 1px solid #f0f0f0;
+        }
+
+        .notification-item:hover {
+          background: #f5f9ff;
+          transform: translateX(4px);
+          border-color: #1890ff;
+          box-shadow: 0 4px 12px rgba(24, 144, 255, 0.1);
+        }
+
+        .notification-item.unread {
+          background: #e6f7ff;
+          border-left: 4px solid #1890ff;
+        }
+
+        /* Modern Buttons */
+        .modern-btn {
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          border-radius: 8px;
+          font-weight: 500;
+          height: 36px;
+          padding: 0 16px;
+        }
+
+        .modern-btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .modern-btn-primary {
+          background: #1890ff;
+          border: none;
+        }
+
+        .modern-btn-primary:hover {
+          background: #40a9ff;
+        }
+
+        /* Card Styles - Simple & Clean */
+        .ant-card {
+          border-radius: 12px;
+          border: 1px solid #f0f0f0;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+          transition: all 0.3s ease;
+        }
+
+        .ant-card:hover {
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+          border-color: #d9d9d9;
+        }
+
+        .ant-card-head {
+          background: #fafafa;
+          border-bottom: 2px solid #f0f0f0;
+          font-weight: 600;
+          font-size: 16px;
+        }
+
+        /* Tag Styles */
+        .ant-tag {
+          border-radius: 6px;
+          padding: 4px 12px;
+          font-weight: 500;
+          font-size: 12px;
+          border: none;
+        }
+
+        /* Badge Styles */
+        .ant-badge-count {
+          box-shadow: 0 2px 8px rgba(245, 34, 45, 0.3);
+          font-weight: 600;
+        }
+
+        /* Mobile Drawer */
+        .mobile-drawer .ant-drawer-body {
+          padding: 0;
+        }
+
+        /* Responsive Tables */
+        @media (max-width: 768px) {
+          .ant-table {
+            font-size: 12px;
+          }
+          
+          .ant-table-thead > tr > th {
+            padding: 12px 8px;
+            font-size: 12px;
+          }
+          
+          .ant-table-tbody > tr > td {
+            padding: 12px 8px;
+          }
+
+          .modern-stat-card {
+            margin-bottom: 16px;
+          }
+        }
+
+        /* Stat Card Icon Colors */
+        .stat-icon-blue { color: #1890ff; }
+        .stat-icon-green { color: #52c41a; }
+        .stat-icon-orange { color: #faad14; }
+        .stat-icon-purple { color: #722ed1; }
+        .stat-icon-red { color: #f5222d; }
+        .stat-icon-cyan { color: #13c2c2; }
+
+        /* Modern Input Styles */
+        .ant-input, .ant-input-number, .ant-select-selector {
+          border-radius: 8px;
+        }
+
+        .ant-btn {
+          border-radius: 8px;
+          font-weight: 500;
+        }
+
+        /* Progress Bar Styles */
+        .ant-progress-bg {
+          border-radius: 10px;
+        }
+      `}</style>
+
     <Layout style={{ minHeight: '100vh' }}>
-      {/* Modern Sidebar */}
+      {/* Desktop/Tablet Sidebar */}
+      {!isMobile && (
       <Sider 
         trigger={null} 
         collapsible 
@@ -4607,38 +4921,31 @@ const AdminFacultyDashboard = () => {
         width={260}
         className="modern-sidebar"
         style={{
-          background: 'linear-gradient(180deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
+          background: '#001529',
           position: 'fixed',
           height: '100vh',
           left: 0,
           top: 0,
           bottom: 0,
           zIndex: 1000,
-          boxShadow: '4px 0 30px rgba(102, 126, 234, 0.4)'
+          boxShadow: '2px 0 12px rgba(0, 0, 0, 0.1)'
         }}
       >
         {/* Logo Section */}
-        <div className="sidebar-logo-section">
-          <div className="logo-container">
-            <div className="logo-icon-box">
-              <RocketOutlined style={{ fontSize: 35, color: '#fff' }} />
-            </div>
-            {!collapsed && (
-              <div>
-                <Title level={3} style={{ color: '#fff', margin: 0 }}>
-                  {t('header.academy')}
-                </Title>
-                <Badge 
-                  count={t('adminDashboard.breadcrumb.adminPortal')} 
-                  style={{ 
-                    backgroundColor: '#52c41a',
-                    color: '#fff',
-                    marginTop: 8
-                  }} 
-                />
-              </div>
-            )}
+        <div className="logo-container">
+          <div className="logo-icon-box">
+            <RocketOutlined style={{ fontSize: 24, color: '#fff' }} />
           </div>
+          {!collapsed && (
+            <div>
+              <Title level={4} style={{ color: '#fff', margin: 0, fontSize: '18px' }}>
+                {t('header.academy')}
+              </Title>
+              <Text style={{ color: 'rgba(255, 255, 255, 0.65)', fontSize: '12px' }}>
+                {t('adminDashboard.breadcrumb.adminPortal')}
+              </Text>
+            </div>
+          )}
         </div>
         
         {/* Navigation Menu */}
@@ -4661,12 +4968,13 @@ const AdminFacultyDashboard = () => {
           }))}
         />
       </Sider>
+      )}
 
       {/* Main Layout */}
-      <Layout style={{ marginLeft: collapsed ? 80 : 260, transition: 'all 0.3s' }}>
+      <Layout style={{ marginLeft: isMobile ? 0 : (collapsed ? 80 : 260), transition: 'all 0.3s' }}>
         {/* Header */}
         <Header style={{ 
-          padding: '0 24px', 
+          padding: isMobile ? '0 16px' : '0 24px', 
           background: '#fff',
           display: 'flex',
           alignItems: 'center',
@@ -4679,12 +4987,12 @@ const AdminFacultyDashboard = () => {
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <Button
               type="text"
-              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-              onClick={() => setCollapsed(!collapsed)}
+              icon={isMobile ? <MenuUnfoldOutlined /> : (collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />)}
+              onClick={() => isMobile ? setMobileDrawerVisible(true) : setCollapsed(!collapsed)}
               style={{
                 fontSize: '16px',
-                width: 64,
-                height: 64,
+                width: isMobile ? 48 : 64,
+                height: isMobile ? 48 : 64,
               }}
             />
             <Breadcrumb style={{ marginLeft: 16 }}>
@@ -4723,7 +5031,17 @@ const AdminFacultyDashboard = () => {
               <Text type="secondary" style={{ fontSize: 12 }}>日本語</Text>
             </div>
             
-            {/* Notifications */}
+            {/* Notifications Badge */}
+            <Badge count={unreadCount} overflowCount={99}>
+              <Button
+                type="text"
+                icon={<BellOutlined />}
+                onClick={() => setNotificationDrawerVisible(true)}
+                style={{ fontSize: 18 }}
+              />
+            </Badge>
+            
+            {/* Old Notifications Dropdown - Keeping for backward compatibility */}
             <Dropdown
               open={notificationVisible}
               onOpenChange={setNotificationVisible}
@@ -6650,17 +6968,18 @@ const AdminFacultyDashboard = () => {
 
       {/* Announcement Modal */}
       <Modal
-        title={selectedAnnouncement ? 'Edit Announcement' : 'Create New Announcement'}
-        visible={announcementModalVisible}
+        title={selectedAnnouncement ? t('announcements.modal.editTitle') : t('announcements.modal.createTitle')}
+        visible={announcementModalVisible && !viewModalVisible && !announcementViewModalVisible}
         onCancel={() => {
           setAnnouncementModalVisible(false);
-          setViewModalVisible(false); // Ensure view modal is also closed
+          setAnnouncementViewModalVisible(false); // Ensure announcement view modal is closed
           setSelectedAnnouncement(null);
           announcementForm.resetFields();
         }}
         width={800}
         footer={null}
         zIndex={1000}
+        maskClosable={false}
       >
         <Form
           form={announcementForm}
@@ -6668,49 +6987,49 @@ const AdminFacultyDashboard = () => {
           onFinish={handleCreateAnnouncement}
         >
           <Form.Item
-            label="Title"
+            label={t('announcements.modal.form.title')}
             name="title"
-            rules={[{ required: true, message: 'Please enter announcement title' }]}
+            rules={[{ required: true, message: t('announcements.modal.form.validation.title') }]}
           >
-            <Input placeholder="Enter announcement title" />
+            <Input placeholder={t('announcements.modal.form.titlePlaceholder')} />
           </Form.Item>
 
           <Form.Item
-            label="Content"
+            label={t('announcements.modal.form.content')}
             name="content"
-            rules={[{ required: true, message: 'Please enter announcement content' }]}
+            rules={[{ required: true, message: t('announcements.modal.form.validation.content') }]}
           >
             <TextArea 
               rows={4} 
-              placeholder="Enter announcement content that will be visible to users"
+              placeholder={t('announcements.modal.form.contentPlaceholder')}
             />
           </Form.Item>
 
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                label="Target Audience"
+                label={t('announcements.modal.form.targetAudience')}
                 name="targetAudience"
                 initialValue="all"
               >
                 <Select>
-                  <Option value="all">👥 All Users</Option>
-                  <Option value="students">🎓 Students Only</Option>
-                  <Option value="teachers">👨‍🏫 Teachers Only</Option>
-                  <Option value="admins">👑 Admins Only</Option>
+                  <Option value="all">👥 {t('announcements.modal.form.audienceOptions.all')}</Option>
+                  <Option value="students">🎓 {t('announcements.modal.form.audienceOptions.students')}</Option>
+                  <Option value="teachers">👨‍🏫 {t('announcements.modal.form.audienceOptions.teachers')}</Option>
+                  <Option value="admins">👑 {t('announcements.modal.form.audienceOptions.admins')}</Option>
                 </Select>
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
-                label="Priority"
+                label={t('announcements.modal.form.priority')}
                 name="priority"
                 initialValue="medium"
               >
                 <Select>
-                  <Option value="low">?? Low Priority</Option>
-                  <Option value="medium">?? Medium Priority</Option>
-                  <Option value="high">?? High Priority</Option>
+                  <Option value="low">🟢 {t('announcements.modal.form.priorityOptions.low')}</Option>
+                  <Option value="medium">🟡 {t('announcements.modal.form.priorityOptions.medium')}</Option>
+                  <Option value="high">🔴 {t('announcements.modal.form.priorityOptions.high')}</Option>
                 </Select>
               </Form.Item>
             </Col>
@@ -6719,26 +7038,26 @@ const AdminFacultyDashboard = () => {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                label="Type"
+                label={t('announcements.modal.form.type')}
                 name="type"
                 initialValue="general"
               >
                 <Select>
-                  <Option value="general">?? General</Option>
-                  <Option value="academic">?? Academic</Option>
-                  <Option value="event">?? Event</Option>
-                  <Option value="maintenance">?? Maintenance</Option>
-                  <Option value="urgent">?? Urgent</Option>
+                  <Option value="general">📢 {t('announcements.modal.form.typeOptions.general')}</Option>
+                  <Option value="academic">🎓 {t('announcements.modal.form.typeOptions.academic')}</Option>
+                  <Option value="event">🎉 {t('announcements.modal.form.typeOptions.event')}</Option>
+                  <Option value="maintenance">🔧 {t('announcements.modal.form.typeOptions.maintenance')}</Option>
+                  <Option value="urgent">🚨 {t('announcements.modal.form.typeOptions.urgent')}</Option>
                 </Select>
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
-                label="Pin Announcement"
+                label={t('announcements.modal.form.pinAnnouncement')}
                 name="isSticky"
                 valuePropName="checked"
               >
-                <Switch checkedChildren="?? Pinned" unCheckedChildren="?? Normal" />
+                <Switch checkedChildren="📌 Pinned" unCheckedChildren="📌 Normal" />
               </Form.Item>
             </Col>
           </Row>
@@ -6746,37 +7065,37 @@ const AdminFacultyDashboard = () => {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                label="Publish Date"
+                label={t('announcements.modal.form.publishDate')}
                 name="publishDate"
               >
                 <DatePicker 
                   showTime 
                   style={{ width: '100%' }}
-                  placeholder="Select publish date (optional)"
+                  placeholder={t('announcements.modal.form.publishDatePlaceholder')}
                 />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
-                label="Expiry Date"
+                label={t('announcements.modal.form.expiryDate')}
                 name="expiryDate"
               >
                 <DatePicker 
                   showTime 
                   style={{ width: '100%' }}
-                  placeholder="Select expiry date (optional)"
+                  placeholder={t('announcements.modal.form.expiryDatePlaceholder')}
                 />
               </Form.Item>
             </Col>
           </Row>
 
           <Form.Item
-            label="Tags (optional)"
+            label={t('announcements.modal.form.tags')}
             name="tags"
           >
             <Select
               mode="tags"
-              placeholder="Add tags for better organization"
+              placeholder={t('announcements.modal.form.tagsPlaceholder')}
               tokenSeparators={[',']}
             />
           </Form.Item>
@@ -6789,16 +7108,17 @@ const AdminFacultyDashboard = () => {
           }}>
             <Space>
               <Button 
+                className="modern-btn"
                 onClick={() => {
                   setAnnouncementModalVisible(false);
                   setSelectedAnnouncement(null);
                   announcementForm.resetFields();
                 }}
               >
-                Cancel
+                {t('announcements.modal.buttons.cancel')}
               </Button>
-              <Button type="primary" htmlType="submit" icon={<SoundOutlined />}>
-                {selectedAnnouncement ? 'Update & Notify' : 'Create & Send Notifications'}
+              <Button type="primary" htmlType="submit" icon={<SoundOutlined />} className="modern-btn modern-btn-primary">
+                {selectedAnnouncement ? t('announcements.modal.buttons.update') : t('announcements.modal.buttons.create')}
               </Button>
             </Space>
           </div>
@@ -6811,8 +7131,7 @@ const AdminFacultyDashboard = () => {
             border: '1px solid #e1e8ed'
           }}>
             <Text type="secondary" style={{ fontSize: '12px' }}>
-              ?? <strong>Note:</strong> This announcement will automatically create notifications for all selected users. 
-              Notifications will appear in their notification panel and can trigger email alerts based on user preferences.
+              📢 <strong>{t('announcements.modal.form.note.title')}:</strong> {t('announcements.modal.form.note.content')}
             </Text>
           </div>
         </Form>
@@ -6820,22 +7139,23 @@ const AdminFacultyDashboard = () => {
 
       {/* Announcement View Modal */}
       <Modal
-        title="📢 Announcement Details"
-        visible={viewModalVisible}
+        title={`📢 ${t('announcements.modal.viewTitle')}`}
+        visible={announcementViewModalVisible && !announcementModalVisible}
         onCancel={() => {
-          setViewModalVisible(false);
-          setAnnouncementModalVisible(false); // Ensure create modal is also closed
+          setAnnouncementViewModalVisible(false);
+          setSelectedAnnouncement(null);
         }}
         width={700}
         footer={[
           <Button key="close" onClick={() => {
-            setViewModalVisible(false);
-            setAnnouncementModalVisible(false); // Ensure create modal is also closed
+            setAnnouncementViewModalVisible(false);
+            setSelectedAnnouncement(null);
           }}>
-            Close
+            {t('announcements.modal.buttons.close')}
           </Button>
         ]}
         zIndex={1001}
+        maskClosable={true}
       >
         {selectedAnnouncement && (
           <div>
@@ -6873,7 +7193,209 @@ const AdminFacultyDashboard = () => {
           </div>
         )}
       </Modal>
+
+      {/* Mobile Drawer */}
+      <Drawer
+        title={
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <div style={{
+              width: 36,
+              height: 36,
+              background: "#1890ff",
+              borderRadius: "10px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 2px 8px rgba(24, 144, 255, 0.3)",
+            }}>
+              <RocketOutlined style={{ fontSize: 18, color: "#fff" }} />
+            </div>
+            <span style={{ fontWeight: 700, fontSize: "16px" }}>Admin Portal</span>
+          </div>
+        }
+        placement="left"
+        closable={true}
+        onClose={() => setMobileDrawerVisible(false)}
+        open={mobileDrawerVisible && isMobile}
+        width={isMobile ? Math.min(280, window.innerWidth * 0.8) : 280}
+        styles={{
+          body: {
+            padding: 0,
+            background: "#001529",
+          },
+          header: {
+            background: "#001529",
+            color: "#fff",
+            borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+            padding: "20px",
+          },
+        }}
+        className="mobile-drawer"
+      >
+        <Menu
+          mode="inline"
+          selectedKeys={[activeKey]}
+          items={menuItems.map((item) => ({
+            ...item,
+            style: {
+              margin: "8px 16px",
+              borderRadius: "8px",
+              height: "48px",
+              display: "flex",
+              alignItems: "center",
+              fontSize: "14px",
+              fontWeight: 500,
+            },
+          }))}
+          onClick={(e) => {
+            setActiveKey(e.key);
+            setMobileDrawerVisible(false);
+          }}
+          style={{
+            border: "none",
+            background: "transparent",
+            padding: "16px 0",
+            height: "100%",
+            overflowY: "auto",
+          }}
+          theme="dark"
+        />
+      </Drawer>
+
+      {/* Notification Drawer */}
+      <Drawer
+        title={
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
+            <Space>
+              <BellOutlined style={{ fontSize: "20px", color: "#fff" }} />
+              <span style={{ color: "#fff", fontWeight: 600 }}>
+                {t('adminPortal.notifications.title') || 'Notifications'}
+              </span>
+              {unreadCount > 0 && (
+                <Badge count={unreadCount} style={{ backgroundColor: "#52c41a" }} />
+              )}
+            </Space>
+            {unreadCount > 0 && (
+              <Button
+                type="link"
+                size="small"
+                onClick={() => {
+                  setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+                  setUnreadCount(0);
+                  message.success(t('adminPortal.notifications.allMarkedRead') || 'All notifications marked as read');
+                }}
+                style={{ color: "#fff", fontWeight: 500 }}
+              >
+                {t('adminPortal.notifications.markAllRead') || 'Mark all as read'}
+              </Button>
+            )}
+          </div>
+        }
+        placement="right"
+        width={isMobile ? "100%" : 440}
+        open={notificationDrawerVisible}
+        onClose={() => setNotificationDrawerVisible(false)}
+        styles={{ 
+          body: { 
+            padding: 0,
+            background: "#fafafa"
+          },
+          header: {
+            background: "#1890ff",
+            color: "#fff",
+            borderBottom: "none",
+            padding: "20px 24px",
+          }
+        }}
+        extra={
+          <Button
+            type="text"
+            icon={<ReloadOutlined />}
+            onClick={fetchNotifications}
+            title="Refresh notifications"
+            style={{ color: "#fff" }}
+          />
+        }
+      >
+        {notifications.length === 0 ? (
+          <Empty
+            description={t('adminPortal.notifications.noNotifications') || 'No notifications'}
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            style={{ padding: "40px" }}
+          />
+        ) : (
+          <List
+            dataSource={notifications}
+            renderItem={(notification) => (
+              <div
+                className={`notification-item ${!notification.read ? 'unread' : ''}`}
+                onClick={() => handleNotificationClick(notification)}
+                style={{
+                  cursor: "pointer",
+                  padding: "16px",
+                  borderBottom: "1px solid #f0f0f0",
+                  background: notification.read ? "#fff" : "#e6f7ff",
+                }}
+              >
+                <div style={{ display: "flex", gap: "12px" }}>
+                  <div
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "10px",
+                      background: `linear-gradient(135deg, ${notification.color || '#1890ff'} 0%, ${notification.color || '#1890ff'}dd 100%)`,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    {notification.icon === 'bell' ? <BellOutlined style={{ color: "#fff", fontSize: "18px" }} /> :
+                     notification.icon === 'message' ? <MessageOutlined style={{ color: "#fff", fontSize: "18px" }} /> :
+                     notification.icon === 'user-add' ? <UserAddOutlined style={{ color: "#fff", fontSize: "18px" }} /> :
+                     notification.icon === 'file-text' ? <FileTextOutlined style={{ color: "#fff", fontSize: "18px" }} /> :
+                     <BellOutlined style={{ color: "#fff", fontSize: "18px" }} />}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: "4px" }}>
+                      <Text strong style={{ fontSize: "14px", color: "#262626" }}>
+                        {notification.title}
+                      </Text>
+                      {!notification.read && (
+                        <div
+                          style={{
+                            width: "8px",
+                            height: "8px",
+                            borderRadius: "50%",
+                            background: "#1890ff",
+                            flexShrink: 0,
+                            marginLeft: "8px",
+                          }}
+                        />
+                      )}
+                    </div>
+                    <Text
+                      style={{
+                        fontSize: "13px",
+                        color: "#595959",
+                        display: "block",
+                        marginBottom: "6px",
+                      }}
+                    >
+                      {notification.message}
+                    </Text>
+                    <Text type="secondary" style={{ fontSize: "12px" }}>
+                      {moment(notification.timestamp).fromNow()}
+                    </Text>
+                  </div>
+                </div>
+              </div>
+            )}
+          />
+        )}
+      </Drawer>
     </Layout>
+    </>
   );
 };
 
