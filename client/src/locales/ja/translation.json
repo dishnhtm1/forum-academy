@@ -36,6 +36,56 @@
     "updateSuccess": "プロフィールが正常に更新されました！",
     "updateError": "プロフィールの更新に失敗しました。もう一度お試しください。"
   },
+  "zoom": {
+    "meeting": {
+      "title": "ライブミーティング",
+      "loading": "Zoomミーティングを読み込み中...",
+      "pleaseWait": "ミーティングルームを初期化しています",
+      "connected": "接続済み",
+      "connecting": "接続中...",
+      "joiningMeeting": "ミーティングに参加中...",
+      "pleaseWaitConnect": "接続しています。お待ちください",
+      "liveActive": "ライブミーティング実施中",
+      "youAreHost": "あなたはホストです",
+      "connectedParticipant": "参加者として接続済み",
+      "recording": "録画",
+      "live": "ライブ",
+      "participants": "参加者",
+      "participant": "参加者",
+      "duration": "時間",
+      "controls": {
+        "mute": "ミュート",
+        "unmute": "ミュート解除",
+        "startVideo": "ビデオ開始",
+        "stopVideo": "ビデオ停止",
+        "leaveMeeting": "ミーティング退出",
+        "endMeeting": "ミーティング終了"
+      },
+      "status": {
+        "scheduled": "予定",
+        "live": "ライブ",
+        "ended": "終了"
+      },
+      "success": {
+        "started": "ミーティングが正常に開始されました！",
+        "joined": "ミーティングに正常に参加しました！",
+        "ended": "ミーティングが終了しました"
+      },
+      "error": {
+        "loadSDK": "Zoom SDKの読み込みに失敗しました",
+        "initialize": "Zoom SDKの初期化に失敗しました",
+        "join": "ミーティングへの参加に失敗しました",
+        "signature": "SDKシグネチャの取得に失敗しました",
+        "generic": "エラーが発生しました",
+        "retry": "再試行"
+      },
+      "info": {
+        "meetingId": "ミーティングID",
+        "password": "パスワード",
+        "status": "ステータス"
+      }
+    }
+  },
   "table": {
     "applicant": "申請者",
     "contact": "連絡先",
@@ -3310,6 +3360,7 @@
       "assignmentCenter": "課題センター",
       "listeningExercises": "リスニング練習",
       "studentManagement": "学生管理",
+      "liveClasses": "ライブクラス",
       "gradingCenter": "採点センター",
       "analytics": "分析",
       "settings": "設定"
@@ -4039,6 +4090,39 @@
       "messageOpened": "メッセージを開きました",
       "announcementOpened": "お知らせを開きました",
       "notificationOpened": "通知を開きました"
+    },
+    "liveClasses": {
+      "title": "ライブクラス",
+      "subtitle": "Zoomライブクラスと学生アクセスを管理",
+      "createClass": "ライブクラスを作成",
+      "columns": {
+        "classTitle": "クラスタイトル",
+        "meetingId": "ミーティングID",
+        "startTime": "開始時間",
+        "duration": "所要時間",
+        "status": "ステータス",
+        "allowedStudents": "参加可能学生",
+        "actions": "アクション"
+      },
+      "status": {
+        "scheduled": "予定",
+        "active": "ライブ中",
+        "live": "ライブ中",
+        "ended": "終了"
+      },
+      "actions": {
+        "start": "開始",
+        "end": "終了",
+        "viewReport": "レポートを表示",
+        "edit": "編集",
+        "delete": "削除"
+      },
+      "pagination": {
+        "classes": "クラス"
+      },
+      "confirmDelete": "このZoomクラスを削除してもよろしいですか？",
+      "minutes": "分",
+      "students": "学生"
     },
     "notifications": {
       "title": "通知",

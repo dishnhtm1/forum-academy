@@ -4470,7 +4470,7 @@ const TeacherDashboard = () => {
     {
       key: "zoom",
       icon: <VideoCameraOutlined />,
-      label: "Live Classes",
+      label: t("teacherDashboard.sidebar.liveClasses"),
     },
     {
       key: "grading",
@@ -6466,9 +6466,51 @@ const TeacherDashboard = () => {
 
   // Zoom Classes Component
   const renderZoomClasses = () => {
+    // Get current language from i18n instance - try multiple methods
+    const currentLang = i18nInstance.language || i18n.language || localStorage.getItem('i18nextLng') || 'en';
+    
+    // Debug logging
+    console.log('🔍 Current language in renderZoomClasses:', currentLang);
+    console.log('🔍 i18nInstance.language:', i18nInstance.language);
+    
+    // Define translations directly to avoid i18n key resolution issues
+    const translations = {
+      title: currentLang === 'ja' ? 'ライブクラス' : 'Live Classes',
+      subtitle: currentLang === 'ja' ? 'Zoomライブクラスと学生アクセスを管理' : 'Manage your Zoom live classes and student access',
+      createClass: currentLang === 'ja' ? 'ライブクラスを作成' : 'Create Live Class',
+      minutes: currentLang === 'ja' ? '分' : 'minutes',
+      students: currentLang === 'ja' ? '学生' : 'students',
+      columns: {
+        classTitle: currentLang === 'ja' ? 'クラスタイトル' : 'Class Title',
+        meetingId: currentLang === 'ja' ? 'ミーティングID' : 'Meeting ID',
+        startTime: currentLang === 'ja' ? '開始時間' : 'Start Time',
+        duration: currentLang === 'ja' ? '所要時間' : 'Duration',
+        status: currentLang === 'ja' ? 'ステータス' : 'Status',
+        allowedStudents: currentLang === 'ja' ? '参加可能学生' : 'Allowed Students',
+        actions: currentLang === 'ja' ? 'アクション' : 'Actions'
+      },
+      status: {
+        scheduled: currentLang === 'ja' ? '予定' : 'Scheduled',
+        active: currentLang === 'ja' ? 'ライブ中' : 'Live',
+        live: currentLang === 'ja' ? 'ライブ中' : 'Live',
+        ended: currentLang === 'ja' ? '終了' : 'Ended'
+      },
+      pagination: {
+        classes: currentLang === 'ja' ? 'クラス' : 'classes'
+      },
+      actions: {
+        start: currentLang === 'ja' ? '開始' : 'Start',
+        end: currentLang === 'ja' ? '終了' : 'End',
+        viewReport: currentLang === 'ja' ? 'レポートを表示' : 'View Report',
+        edit: currentLang === 'ja' ? '編集' : 'Edit',
+        delete: currentLang === 'ja' ? '削除' : 'Delete'
+      },
+      confirmDelete: currentLang === 'ja' ? 'このZoomクラスを削除してもよろしいですか？' : 'Are you sure you want to delete this Zoom class?'
+    };
+
     const columns = [
       {
-        title: "Class Title",
+        title: translations.columns.classTitle,
         dataIndex: "title",
         key: "title",
         render: (text, record) => (
@@ -6481,7 +6523,7 @@ const TeacherDashboard = () => {
         ),
       },
       {
-        title: "Meeting ID",
+        title: translations.columns.meetingId,
         dataIndex: "meetingId",
         key: "meetingId",
         render: (text) => (
@@ -6491,41 +6533,42 @@ const TeacherDashboard = () => {
         ),
       },
       {
-        title: "Start Time",
+        title: translations.columns.startTime,
         dataIndex: "startTime",
         key: "startTime",
         render: (text) => moment(text).format("MMM DD, YYYY HH:mm"),
       },
       {
-        title: "Duration",
+        title: translations.columns.duration,
         dataIndex: "duration",
         key: "duration",
-        render: (text) => `${text} minutes`,
+        render: (text) => `${text} ${translations.minutes}`,
       },
       {
-        title: "Status",
+        title: translations.columns.status,
         dataIndex: "status",
         key: "status",
         render: (status) => {
           const statusConfig = {
-            scheduled: { color: "blue", text: "Scheduled" },
-            active: { color: "green", text: "Live" },
-            ended: { color: "gray", text: "Ended" },
+            scheduled: { color: "blue", text: translations.status.scheduled },
+            active: { color: "green", text: translations.status.active },
+            live: { color: "green", text: translations.status.live },
+            ended: { color: "gray", text: translations.status.ended },
           };
           const config = statusConfig[status] || { color: "default", text: status };
           return <Tag color={config.color}>{config.text}</Tag>;
         },
       },
       {
-        title: "Allowed Students",
+        title: translations.columns.allowedStudents,
         dataIndex: "allowedStudents",
         key: "allowedStudents",
         render: (students) => (
-          <Tag color="purple">{students ? students.length : 0} students</Tag>
+          <Tag color="purple">{students ? students.length : 0} {translations.students}</Tag>
         ),
       },
       {
-        title: "Actions",
+        title: translations.columns.actions,
         key: "actions",
         render: (_, record) => (
           <Space>
@@ -6540,7 +6583,7 @@ const TeacherDashboard = () => {
                   border: "none",
                 }}
               >
-                Start
+                {translations.actions.start}
               </Button>
             )}
             {record.status === "active" && (
@@ -6551,7 +6594,7 @@ const TeacherDashboard = () => {
                 icon={<CloseCircleOutlined />}
                 onClick={() => handleEndZoomClass(record)}
               >
-                End
+                {translations.actions.end}
               </Button>
             )}
             {record.status === "ended" && (
@@ -6565,7 +6608,7 @@ const TeacherDashboard = () => {
                   color: "#fff"
                 }}
               >
-                View Report
+                {translations.actions.viewReport}
               </Button>
             )}
             <Button
@@ -6573,16 +6616,16 @@ const TeacherDashboard = () => {
               icon={<EditOutlined />}
               onClick={() => handleEditZoomClass(record)}
             >
-              Edit
+              {translations.actions.edit}
             </Button>
             <Popconfirm
-              title="Are you sure you want to delete this Zoom class?"
+              title={translations.confirmDelete}
               onConfirm={() => handleDeleteZoomClass(record._id)}
               okText="Yes"
               cancelText="No"
             >
               <Button size="small" danger icon={<DeleteOutlined />}>
-                Delete
+                {translations.actions.delete}
               </Button>
             </Popconfirm>
           </Space>
@@ -6622,10 +6665,10 @@ const TeacherDashboard = () => {
             </div>
             <div>
               <Title level={2} style={{ margin: 0, color: "#1f2937" }}>
-                Live Classes
+                {translations.title}
               </Title>
               <Text style={{ color: "#6b7280" }}>
-                Manage your Zoom live classes and student access
+                {translations.subtitle}
               </Text>
             </div>
           </div>
@@ -6643,7 +6686,7 @@ const TeacherDashboard = () => {
               fontWeight: 500,
             }}
           >
-            Create Live Class
+            {translations.createClass}
           </Button>
         </div>
 
@@ -6657,7 +6700,7 @@ const TeacherDashboard = () => {
               showSizeChanger: true,
               showQuickJumper: true,
               showTotal: (total, range) =>
-                `${range[0]}-${range[1]} of ${total} classes`,
+                `${range[0]}-${range[1]} of ${total} ${translations.pagination.classes}`,
             }}
             scroll={{ x: 800 }}
           />
