@@ -284,7 +284,9 @@ router.post('/meetings/:id/start', async (req, res) => {
   try {
     const { id } = req.params;
     
-    const meeting = await ZoomMeeting.findById(id);
+    const meeting = await ZoomMeeting.findById(id)
+      .populate('instructor', 'firstName lastName email')
+      .populate('course', 'name title');
     
     if (!meeting) {
       return res.status(404).json({
@@ -297,6 +299,54 @@ router.post('/meetings/:id/start', async (req, res) => {
     meeting.status = 'live';
     meeting.startedAt = new Date();
     await meeting.save();
+    
+    // Create notifications for all students
+    try {
+      const User = require('../models/User');
+      const Notification = require('../models/Notification');
+      
+      // Get all students (and teachers/admins who might want to join)
+      const students = await User.find({ 
+        role: { $in: ['student', 'teacher', 'admin'] },
+        _id: { $ne: meeting.instructor._id } // Exclude the instructor
+      });
+      
+      const instructorName = meeting.instructor 
+        ? `${meeting.instructor.firstName} ${meeting.instructor.lastName}`
+        : 'Teacher';
+      
+      const courseName = meeting.course?.name || meeting.course?.title || 'Live Class';
+      
+      // Create notification for each student
+      const notifications = students.map(student => ({
+        recipient: student._id,
+        sender: meeting.instructor._id,
+        type: 'live_class_started',
+        title: '🎥 Live Class Started!',
+        message: `${instructorName} has started a live class: "${meeting.title}" for ${courseName}. Join now!`,
+        priority: 'high',
+        relatedEntity: {
+          entityType: 'ZoomMeeting',
+          entityId: meeting._id
+        },
+        metadata: {
+          meetingId: meeting.meetingId,
+          meetingTitle: meeting.title,
+          instructorName: instructorName,
+          courseName: courseName,
+          startedAt: meeting.startedAt,
+          joinUrl: meeting.joinUrl
+        }
+      }));
+      
+      // Bulk create notifications
+      await Notification.insertMany(notifications);
+      
+      console.log(`✅ Created ${notifications.length} notifications for live class start`);
+    } catch (notifError) {
+      console.error('❌ Error creating notifications:', notifError);
+      // Don't fail the request if notification creation fails
+    }
     
     res.json({
       success: true,
@@ -422,26 +472,72 @@ router.get('/sdk-signature/:id', async (req, res) => {
     const { id } = req.params;
     const { role = 0 } = req.query;
     
-    // For testing, return a mock signature
-    // In production, this would generate a real JWT signature
-    const mockSignature = {
-      signature: 'mock_signature_' + id + '_' + role + '_' + Date.now(),
-      meetingId: id,
-      role: parseInt(role),
-      timestamp: Date.now(),
-      expiresIn: 3600
-    };
+    // Find the meeting to get the meeting number
+    const meeting = await ZoomMeeting.findOne({
+      $or: [
+        { _id: mongoose.Types.ObjectId.isValid(id) ? id : null },
+        { meetingId: id }
+      ]
+    });
+    
+    if (!meeting) {
+      return res.status(404).json({
+        success: false,
+        message: 'Meeting not found'
+      });
+    }
+
+    // Extract the actual Zoom meeting number from the meetingId
+    // Format: "3360628977-748" -> extract "3360628977"
+    const meetingNumber = meeting.meetingId.split('-')[0];
+    
+    // Check if Zoom credentials are configured
+    if (!process.env.ZOOM_API_KEY || !process.env.ZOOM_API_SECRET) {
+      console.warn('⚠️ Zoom API credentials not configured. Using demo mode.');
+      
+      // Return demo mode signature
+      return res.json({
+        success: true,
+        signature: 'demo_mode_' + meetingNumber + '_' + Date.now(),
+        meetingNumber: meetingNumber,
+        apiKey: 'demo_api_key',
+        role: parseInt(role),
+        timestamp: Date.now(),
+        demoMode: true,
+        message: 'Demo mode: Configure ZOOM_API_KEY and ZOOM_API_SECRET in .env for full Zoom integration'
+      });
+    }
+    
+    // Generate real SDK signature using the Zoom service
+    const signatureData = zoomService.generateSDKSignature(
+      meetingNumber, 
+      parseInt(role)
+    );
     
     res.json({
       success: true,
-      signature: mockSignature.signature,
-      meetingId: id,
+      signature: signatureData.signature,
+      meetingNumber: meetingNumber,
+      apiKey: signatureData.apiKey,
       role: parseInt(role),
+      timestamp: signatureData.timestamp,
+      demoMode: false,
       message: 'SDK signature generated successfully'
     });
   } catch (error) {
     console.error('Error generating SDK signature:', error);
-    res.status(500).json({ error: error.message });
+    
+    // Fallback to demo mode on error
+    res.json({ 
+      success: true,
+      signature: 'demo_fallback_' + Date.now(),
+      meetingNumber: id,
+      apiKey: 'demo_api_key',
+      role: parseInt(req.query.role || 0),
+      timestamp: Date.now(),
+      demoMode: true,
+      message: 'Demo mode: ' + error.message
+    });
   }
 });
 

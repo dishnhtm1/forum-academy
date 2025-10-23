@@ -4,16 +4,65 @@ const crypto = require('crypto');
 
 class ZoomService {
   constructor() {
-    this.apiKey = process.env.ZOOM_API_KEY;
-    this.apiSecret = process.env.ZOOM_API_SECRET;
+    this.accountId = process.env.ZOOM_ACCOUNT_ID;
+    this.clientId = process.env.ZOOM_CLIENT_ID;
+    this.clientSecret = process.env.ZOOM_CLIENT_SECRET;
+    // Keep backward compatibility
+    this.apiKey = process.env.ZOOM_API_KEY || this.clientId;
+    this.apiSecret = process.env.ZOOM_API_SECRET || this.clientSecret;
     this.baseURL = 'https://api.zoom.us/v2';
+    this.accessToken = null;
+    this.tokenExpiry = null;
     
     if (!this.apiKey || !this.apiSecret) {
-      console.warn('⚠️  Zoom API credentials not found. Please set ZOOM_API_KEY and ZOOM_API_SECRET environment variables.');
+      console.warn('⚠️  Zoom API credentials not found. Please set ZOOM_API_KEY and ZOOM_API_SECRET (or ZOOM_CLIENT_ID and ZOOM_CLIENT_SECRET) environment variables.');
+    } else {
+      console.log('✅ Zoom credentials configured');
     }
   }
 
-  // Generate JWT token for Zoom API authentication
+  // Get OAuth Access Token for Server-to-Server OAuth
+  async getAccessToken() {
+    try {
+      // Return cached token if still valid
+      if (this.accessToken && this.tokenExpiry && Date.now() < this.tokenExpiry) {
+        return this.accessToken;
+      }
+
+      console.log('🔑 Fetching new Zoom access token...');
+      
+      // Use Server-to-Server OAuth if accountId is available
+      if (this.accountId) {
+        const credentials = Buffer.from(`${this.clientId}:${this.clientSecret}`).toString('base64');
+        
+        const response = await axios.post(
+          `https://zoom.us/oauth/token?grant_type=account_credentials&account_id=${this.accountId}`,
+          {},
+          {
+            headers: {
+              'Authorization': `Basic ${credentials}`,
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
+          }
+        );
+
+        this.accessToken = response.data.access_token;
+        // Set expiry to 5 minutes before actual expiry for safety
+        this.tokenExpiry = Date.now() + (response.data.expires_in - 300) * 1000;
+        
+        console.log('✅ Zoom access token obtained');
+        return this.accessToken;
+      } else {
+        // Fallback to JWT for legacy apps
+        return this.generateJWT();
+      }
+    } catch (error) {
+      console.error('❌ Error getting Zoom access token:', error.response?.data || error.message);
+      throw error;
+    }
+  }
+
+  // Generate JWT token for Zoom API authentication (legacy method)
   generateJWT() {
     const payload = {
       iss: this.apiKey,
@@ -26,7 +75,7 @@ class ZoomService {
   // Create a Zoom meeting
   async createMeeting(meetingData) {
     try {
-      const token = this.generateJWT();
+      const token = await this.getAccessToken();
       
       const meetingConfig = {
         topic: meetingData.title,
@@ -90,7 +139,7 @@ class ZoomService {
   // Update a Zoom meeting
   async updateMeeting(meetingId, updateData) {
     try {
-      const token = this.generateJWT();
+      const token = await this.getAccessToken();
       
       const response = await axios.patch(
         `${this.baseURL}/meetings/${meetingId}`,
@@ -119,7 +168,7 @@ class ZoomService {
   // Delete a Zoom meeting
   async deleteMeeting(meetingId) {
     try {
-      const token = this.generateJWT();
+      const token = await this.getAccessToken();
       
       await axios.delete(
         `${this.baseURL}/meetings/${meetingId}`,
@@ -145,7 +194,7 @@ class ZoomService {
   // Get meeting details
   async getMeeting(meetingId) {
     try {
-      const token = this.generateJWT();
+      const token = await this.getAccessToken();
       
       const response = await axios.get(
         `${this.baseURL}/meetings/${meetingId}`,
@@ -172,7 +221,7 @@ class ZoomService {
   // Get meeting participants (requires meeting to be ended)
   async getMeetingParticipants(meetingId) {
     try {
-      const token = this.generateJWT();
+      const token = await this.getAccessToken();
       
       const response = await axios.get(
         `${this.baseURL}/meetings/${meetingId}/participants`,
@@ -199,7 +248,7 @@ class ZoomService {
   // Get meeting recordings
   async getMeetingRecordings(meetingId) {
     try {
-      const token = this.generateJWT();
+      const token = await this.getAccessToken();
       
       const response = await axios.get(
         `${this.baseURL}/meetings/${meetingId}/recordings`,

@@ -9,6 +9,56 @@
     "updateSuccess": "Profile updated successfully!",
     "updateError": "Failed to update profile. Please try again."
   },
+  "zoom": {
+    "meeting": {
+      "title": "Live Meeting",
+      "loading": "Loading Zoom meeting...",
+      "pleaseWait": "Please wait while we initialize the meeting room",
+      "connected": "Connected",
+      "connecting": "Connecting...",
+      "joiningMeeting": "Joining meeting...",
+      "pleaseWaitConnect": "Please wait while we connect you",
+      "liveActive": "Live Meeting Active",
+      "youAreHost": "You are the host",
+      "connectedParticipant": "Connected as participant",
+      "recording": "REC",
+      "live": "LIVE",
+      "participants": "participants",
+      "participant": "participant",
+      "duration": "Duration",
+      "controls": {
+        "mute": "Mute",
+        "unmute": "Unmute",
+        "startVideo": "Start Video",
+        "stopVideo": "Stop Video",
+        "leaveMeeting": "Leave Meeting",
+        "endMeeting": "End Meeting"
+      },
+      "status": {
+        "scheduled": "Scheduled",
+        "live": "Live",
+        "ended": "Ended"
+      },
+      "success": {
+        "started": "Meeting started successfully!",
+        "joined": "Joined meeting successfully!",
+        "ended": "Meeting ended successfully"
+      },
+      "error": {
+        "loadSDK": "Failed to load Zoom SDK",
+        "initialize": "Failed to initialize Zoom SDK",
+        "join": "Failed to join meeting",
+        "signature": "Failed to get SDK signature",
+        "generic": "An error occurred",
+        "retry": "Retry"
+      },
+      "info": {
+        "meetingId": "Meeting ID",
+        "password": "Password",
+        "status": "Status"
+      }
+    }
+  },
   "about": {
     "hero": {
       "badge": "About FIA",
@@ -3199,6 +3249,7 @@
       "assignmentCenter": "Assignment Center",
       "listeningExercises": "Listening Exercises",
       "studentManagement": "Student Management",
+      "liveClasses": "Live Classes",
       "gradingCenter": "Grading Center",
       "analytics": "Analytics",
       "settings": "Settings"

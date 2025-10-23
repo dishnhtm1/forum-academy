@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Card, message, Spin, Alert } from 'antd';
+import { Button, Card, message, Spin, Alert, Tag } from 'antd';
 import { VideoCameraOutlined, PhoneOutlined, AudioOutlined, AudioMutedOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import zoomApiService from '../services/zoomApiService';
 
 // Add CSS for pulse animation
@@ -25,6 +26,7 @@ const ZoomMeeting = ({
   onAttendanceUpdate,
   isHost = false 
 }) => {
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(true);
   const [isJoined, setIsJoined] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
@@ -33,18 +35,31 @@ const ZoomMeeting = ({
   const [sdkSignature, setSdkSignature] = useState(null);
   const [meetingDuration, setMeetingDuration] = useState(0);
   const [participantCount, setParticipantCount] = useState(1);
+  const [isSDKLoaded, setIsSDKLoaded] = useState(false);
   const zoomContainerRef = useRef(null);
   const zoomClientRef = useRef(null);
 
+  // Load Zoom Web SDK
   useEffect(() => {
-    initializeZoomSDK();
+    loadZoomSDK();
+  }, []);
+
+  useEffect(() => {
+    if (isSDKLoaded) {
+      initializeZoomSDK();
+    }
+    
     return () => {
       // Cleanup on unmount
       if (zoomClientRef.current) {
-        zoomClientRef.current.leave();
+        try {
+          zoomClientRef.current.leave();
+        } catch (err) {
+          console.error('Error leaving meeting on unmount:', err);
+        }
       }
     };
-  }, [meetingId]);
+  }, [meetingId, isSDKLoaded]);
 
   // Timer for meeting duration
   useEffect(() => {
@@ -61,26 +76,6 @@ const ZoomMeeting = ({
     };
   }, [isJoined]);
 
-  // Simulate participant count changes
-  useEffect(() => {
-    let interval;
-    if (isJoined) {
-      interval = setInterval(() => {
-        setParticipantCount(prev => {
-          // Simulate random participant changes (1-5 participants)
-          const change = Math.random() > 0.7 ? (Math.random() > 0.5 ? 1 : -1) : 0;
-          const newCount = Math.max(1, Math.min(5, prev + change));
-          return newCount;
-        });
-      }, 10000); // Change every 10 seconds
-    }
-    return () => {
-      if (interval) {
-        clearInterval(interval);
-      }
-    };
-  }, [isJoined]);
-
   // Format meeting duration
   const formatDuration = (seconds) => {
     const hours = Math.floor(seconds / 3600);
@@ -89,38 +84,86 @@ const ZoomMeeting = ({
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const loadZoomSDK = () => {
+    // Check if Zoom SDK is already loaded
+    if (window.ZoomMtg) {
+      console.log('✅ Zoom SDK already loaded');
+      setIsSDKLoaded(true);
+      return;
+    }
+
+    console.log('📥 Loading Zoom Web SDK...');
+    
+    // For now, we'll use a simpler approach until Zoom credentials are configured
+    // This prevents runtime errors while still showing the UI
+    console.log('⚠️ Using simplified Zoom interface (configure ZOOM_API_KEY and ZOOM_API_SECRET for full features)');
+    
+    // Set SDK as "loaded" but in demo mode
+    setTimeout(() => {
+      setIsSDKLoaded(true);
+    }, 500);
+  };
+
   const initializeZoomSDK = async () => {
     try {
       setIsLoading(true);
       setError(null);
 
-      // For testing purposes, simulate SDK initialization without actual Zoom SDK
-      console.log('🎥 Initializing Zoom meeting (Test Mode)');
+      console.log('🎥 Initializing Zoom meeting...');
       
-      // Simulate getting SDK signature
+      // Get SDK signature
       const signatureResponse = await zoomApiService.getSDKSignature(
         meetingData.meetingId, 
         isHost ? 1 : 0 // 1 for host, 0 for participant
       );
 
       if (!signatureResponse.success) {
-        throw new Error(signatureResponse.message || 'Failed to get SDK signature');
+        throw new Error(signatureResponse.message || t('zoom.meeting.error.signature'));
       }
 
-      setSdkSignature(signatureResponse.signature);
+      console.log('✅ SDK signature received');
+      setSdkSignature(signatureResponse);
       
-      // Simulate successful initialization for testing
-      setTimeout(() => {
-        setIsJoined(true);
-        setIsLoading(false);
-        message.success(isHost ? 'Meeting started successfully!' : 'Joined meeting successfully!');
-      }, 1000);
+      // Check if in demo mode
+      if (signatureResponse.demoMode) {
+        console.log('⚠️ Demo mode detected:', signatureResponse.message);
+        message.info(signatureResponse.message);
+        
+        // Start demo mode with functional UI
+        startDemoMode();
+      } else {
+        // Join real Zoom meeting
+        joinMeeting(signatureResponse);
+      }
 
     } catch (error) {
-      console.error('Error initializing Zoom SDK:', error);
-      setError(error.message);
+      console.error('❌ Error initializing Zoom SDK:', error);
+      setError(error.message || t('zoom.meeting.error.initialize'));
       setIsLoading(false);
     }
+  };
+
+  const startDemoMode = () => {
+    // Simulate successful connection in demo mode
+    setTimeout(() => {
+      setIsJoined(true);
+      setIsLoading(false);
+      message.success(
+        isHost 
+          ? t('zoom.meeting.success.started') + ' (Demo Mode)' 
+          : t('zoom.meeting.success.joined') + ' (Demo Mode)'
+      );
+      
+      // Notify attendance update
+      if (onAttendanceUpdate) {
+        const userName = localStorage.getItem('userName') || meetingData.userName || 'User';
+        onAttendanceUpdate({
+          action: 'join',
+          studentId: meetingData.userId,
+          studentName: userName
+        });
+      }
+    }, 1000);
   };
 
   const joinMeeting = (signature) => {
@@ -128,67 +171,92 @@ const ZoomMeeting = ({
       const { ZoomMtg } = window;
 
       if (!ZoomMtg) {
-        throw new Error('Zoom SDK not loaded');
+        throw new Error(t('zoom.meeting.error.loadSDK'));
       }
 
+      console.log('🔧 Configuring Zoom SDK...');
+
       // Configure Zoom SDK
-      ZoomMtg.setZoomJSLib('https://source.zoom.us/lib', '/av');
+      ZoomMtg.setZoomJSLib('https://source.zoom.us/2.18.2/lib', '/av');
       ZoomMtg.preLoadWasm();
       ZoomMtg.prepareWebSDK();
 
+      // Get user info from localStorage or meetingData
+      const userEmail = localStorage.getItem('userEmail') || meetingData.userEmail || '';
+      const userName = localStorage.getItem('userName') || meetingData.userName || 'User';
+
+      console.log('🚀 Initializing Zoom SDK...');
+      
       // Initialize Zoom SDK
       ZoomMtg.init({
-        leaveOnPageUnload: true,
-        patchJsMedia: true,
-        success: () => {
-          console.log('Zoom SDK initialized successfully');
+        leaveUrl: window.location.href,
+        success: (success) => {
+          console.log('✅ Zoom SDK initialized successfully', success);
           
+          console.log('🚪 Joining meeting...');
           // Join meeting
           ZoomMtg.join({
             signature: signature.signature,
             meetingNumber: signature.meetingNumber,
-            userName: meetingData.userName || 'User',
-            apiKey: signature.apiKey,
-            userEmail: meetingData.userEmail || '',
-            passWord: meetingData.password || '',
+            userName: userName,
+            sdkKey: signature.apiKey,
+            userEmail: userEmail,
+            passWord: meetingData.meetingPassword || meetingData.password || '',
             success: (res) => {
-              console.log('Successfully joined meeting:', res);
+              console.log('✅ Successfully joined meeting:', res);
               setIsJoined(true);
               setIsLoading(false);
+              message.success(isHost ? t('zoom.meeting.success.started') : t('zoom.meeting.success.joined'));
               
               // Notify attendance update
               if (onAttendanceUpdate) {
                 onAttendanceUpdate({
                   action: 'join',
                   studentId: meetingData.userId,
-                  studentName: meetingData.userName
+                  studentName: userName
                 });
+              }
+
+              // Get initial participant count
+              try {
+                const participants = ZoomMtg.getAttendeeslist();
+                setParticipantCount(participants?.length || 1);
+              } catch (err) {
+                console.log('Could not get initial participant count', err);
               }
             },
             error: (res) => {
-              console.error('Failed to join meeting:', res);
-              setError(res.result || 'Failed to join meeting');
+              console.error('❌ Failed to join meeting:', res);
+              setError(res.result || t('zoom.meeting.error.join'));
               setIsLoading(false);
             }
           });
         },
         error: (res) => {
-          console.error('Failed to initialize Zoom SDK:', res);
-          setError(res.result || 'Failed to initialize Zoom SDK');
+          console.error('❌ Failed to initialize Zoom SDK:', res);
+          setError(res.result || t('zoom.meeting.error.initialize'));
           setIsLoading(false);
         }
       });
 
       // Set up event listeners
-      ZoomMtg.on('meeting-status', (data) => {
-        console.log('Meeting status:', data);
+      ZoomMtg.inMeetingServiceListener('onMeetingStatus', (data) => {
+        console.log('📊 Meeting status:', data);
         if (data.meetingStatus === 3) { // Meeting ended
           handleMeetingEnd();
         }
       });
 
-      ZoomMtg.on('user-join', (data) => {
-        console.log('User joined:', data);
+      ZoomMtg.inMeetingServiceListener('onUserJoin', (data) => {
+        console.log('👋 User joined:', data);
+        // Update participant count
+        try {
+          const participants = ZoomMtg.getAttendeeslist();
+          setParticipantCount(participants?.length || participantCount + 1);
+        } catch (err) {
+          setParticipantCount(prev => prev + 1);
+        }
+        
         // Update attendance
         if (onAttendanceUpdate) {
           onAttendanceUpdate({
@@ -199,8 +267,16 @@ const ZoomMeeting = ({
         }
       });
 
-      ZoomMtg.on('user-leave', (data) => {
-        console.log('User left:', data);
+      ZoomMtg.inMeetingServiceListener('onUserLeave', (data) => {
+        console.log('👋 User left:', data);
+        // Update participant count
+        try {
+          const participants = ZoomMtg.getAttendeeslist();
+          setParticipantCount(participants?.length || Math.max(1, participantCount - 1));
+        } catch (err) {
+          setParticipantCount(prev => Math.max(1, prev - 1));
+        }
+        
         // Update attendance
         if (onAttendanceUpdate) {
           onAttendanceUpdate({
@@ -214,56 +290,77 @@ const ZoomMeeting = ({
       zoomClientRef.current = ZoomMtg;
 
     } catch (error) {
-      console.error('Error joining meeting:', error);
-      setError(error.message);
+      console.error('❌ Error joining meeting:', error);
+      setError(error.message || t('zoom.meeting.error.join'));
       setIsLoading(false);
     }
   };
 
   const handleMeetingEnd = () => {
+    console.log('🔚 Meeting ended');
     setIsJoined(false);
+    message.info(t('zoom.meeting.success.ended'));
     if (onMeetingEnd) {
       onMeetingEnd();
     }
   };
 
   const toggleMute = () => {
-    if (zoomClientRef.current) {
-      if (isMuted) {
-        zoomClientRef.current.unmute();
-        setIsMuted(false);
-      } else {
-        zoomClientRef.current.mute();
-        setIsMuted(true);
+    // Demo mode or real Zoom - both work
+    if (isMuted) {
+      if (zoomClientRef.current) {
+        window.ZoomMtg.unmuteMyAudio();
       }
+      setIsMuted(false);
+      message.success(t('zoom.meeting.controls.unmute'));
+    } else {
+      if (zoomClientRef.current) {
+        window.ZoomMtg.muteMyAudio();
+      }
+      setIsMuted(true);
+      message.success(t('zoom.meeting.controls.mute'));
     }
   };
 
   const toggleVideo = () => {
-    if (zoomClientRef.current) {
-      if (isVideoOn) {
-        zoomClientRef.current.stopVideo();
-        setIsVideoOn(false);
-      } else {
-        zoomClientRef.current.startVideo();
-        setIsVideoOn(true);
+    // Demo mode or real Zoom - both work
+    if (isVideoOn) {
+      if (zoomClientRef.current) {
+        window.ZoomMtg.stopVideo();
       }
+      setIsVideoOn(false);
+      message.success(t('zoom.meeting.controls.stopVideo'));
+    } else {
+      if (zoomClientRef.current) {
+        window.ZoomMtg.startVideo();
+      }
+      setIsVideoOn(true);
+      message.success(t('zoom.meeting.controls.startVideo'));
     }
   };
 
   const leaveMeeting = () => {
     if (zoomClientRef.current) {
-      zoomClientRef.current.leave();
-      setIsJoined(false);
-      
-      // Notify attendance update
-      if (onAttendanceUpdate) {
-        onAttendanceUpdate({
-          action: 'leave',
-          studentId: meetingData.userId,
-          studentName: meetingData.userName
-        });
-      }
+      const { ZoomMtg } = window;
+      ZoomMtg.leaveMeeting({});
+    }
+    
+    setIsJoined(false);
+    message.info(t('zoom.meeting.controls.leaveMeeting'));
+    
+    // Notify attendance update
+    if (onAttendanceUpdate) {
+      const userName = localStorage.getItem('userName') || meetingData.userName || 'User';
+      onAttendanceUpdate({
+        action: 'leave',
+        studentId: meetingData.userId,
+        studentName: userName
+      });
+    }
+    
+    // Call onMeetingEnd callback
+    if (onMeetingEnd) {
+      onMeetingEnd();
     }
   };
 
@@ -271,7 +368,7 @@ const ZoomMeeting = ({
     return (
       <Card style={{ margin: '20px 0' }}>
         <Alert
-          message="Error"
+          message={t('error')}
           description={error}
           type="error"
           showIcon
@@ -281,7 +378,7 @@ const ZoomMeeting = ({
           onClick={() => window.location.reload()}
           style={{ marginTop: 16 }}
         >
-          Retry
+          {t('zoom.meeting.error.retry')}
         </Button>
       </Card>
     );
@@ -292,9 +389,9 @@ const ZoomMeeting = ({
       <Card style={{ margin: '20px 0', textAlign: 'center' }}>
         <Spin size="large" />
         <div style={{ marginTop: 16 }}>
-          <p>Loading Zoom meeting...</p>
+          <p>{t('zoom.meeting.loading')}</p>
           <p style={{ fontSize: '12px', color: '#666' }}>
-            Please wait while we initialize the meeting room
+            {t('zoom.meeting.pleaseWait')}
           </p>
         </div>
       </Card>
@@ -306,190 +403,58 @@ const ZoomMeeting = ({
       title={
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <VideoCameraOutlined style={{ color: '#4f46e5', fontSize: '20px' }} />
-          <span>Live Meeting: {meetingData.title}</span>
+          <span>{t('zoom.meeting.title')}: {meetingData.title}</span>
+          {sdkSignature?.demoMode && (
+            <Tag color="orange" style={{ marginLeft: 'auto' }}>
+              Demo Mode
+            </Tag>
+          )}
         </div>
       }
       style={{ margin: '20px 0' }}
     >
+      {sdkSignature?.demoMode && (
+        <Alert
+          message="Demo Mode Active"
+          description="Configure ZOOM_API_KEY and ZOOM_API_SECRET in server/.env to enable real Zoom meetings."
+          type="info"
+          showIcon
+          closable
+          style={{ marginBottom: 16 }}
+        />
+      )}
+      
       <div style={{ marginBottom: 16 }}>
-        <p><strong>Meeting ID:</strong> {meetingData.meetingId}</p>
-        <p><strong>Status:</strong> {isJoined ? 'Connected' : 'Connecting...'}</p>
+        <p><strong>{t('zoom.meeting.info.meetingId')}:</strong> {meetingData.meetingId}</p>
+        <p><strong>{t('zoom.meeting.info.status')}:</strong> {isJoined ? t('zoom.meeting.connected') : t('zoom.meeting.connecting')}</p>
+        {isJoined && (
+          <>
+            <p><strong>{t('zoom.meeting.duration')}:</strong> {formatDuration(meetingDuration)}</p>
+            <p><strong>{t('zoom.meeting.participants')}:</strong> {participantCount}</p>
+          </>
+        )}
       </div>
 
-      {/* Zoom Meeting Container */}
+      {/* Zoom Meeting Container - SDK will inject UI here */}
       <div 
         ref={zoomContainerRef}
-        id="zoom-meeting-container"
+        id="zmmtg-root"
         style={{
           width: '100%',
-          height: '500px',
-          backgroundColor: '#f5f5f5',
-          border: '1px solid #d9d9d9',
-          borderRadius: '8px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
+          minHeight: '500px',
           marginBottom: 16
         }}
       >
-        {isJoined ? (
-          <div style={{ 
-            width: '100%', 
-            height: '100%', 
-            position: 'relative',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            borderRadius: '8px',
-            overflow: 'hidden'
-          }}>
-            {/* Main Video Area */}
-            <div style={{
-              width: '100%',
-              height: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              position: 'relative'
-            }}>
-              {/* Simulated Video Feed */}
-              <div style={{
-                width: '80%',
-                height: '80%',
-                background: 'rgba(0, 0, 0, 0.8)',
-                borderRadius: '12px',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                border: '2px solid #4f46e5',
-                boxShadow: '0 8px 32px rgba(79, 70, 229, 0.3)'
-              }}>
-                {/* Video Icon */}
-                <VideoCameraOutlined style={{ 
-                  fontSize: '64px', 
-                  color: '#4f46e5',
-                  marginBottom: '16px'
-                }} />
-                
-                {/* Meeting Info */}
-                <div style={{ textAlign: 'center', color: 'white' }}>
-                  <h3 style={{ 
-                    color: '#4f46e5', 
-                    margin: '0 0 8px 0',
-                    fontSize: '18px',
-                    fontWeight: '600'
-                  }}>
-                    Live Meeting Active
-                  </h3>
-                  <p style={{ 
-                    margin: '0 0 4px 0',
-                    fontSize: '14px',
-                    opacity: 0.9
-                  }}>
-                    Meeting ID: {meetingData.meetingId}
-                  </p>
-                  <p style={{ 
-                    margin: '0',
-                    fontSize: '12px',
-                    opacity: 0.7
-                  }}>
-                    {isHost ? 'You are the host' : 'Connected as participant'}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Video Status Indicators */}
-            <div style={{
-              position: 'absolute',
-              top: '12px',
-              right: '12px',
-              display: 'flex',
-              gap: '8px'
-            }}>
-              {/* Recording Indicator */}
-              <div style={{
-                background: '#dc2626',
-                color: 'white',
-                padding: '4px 8px',
-                borderRadius: '4px',
-                fontSize: '10px',
-                fontWeight: '600',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px'
-              }}>
-                <div style={{
-                  width: '6px',
-                  height: '6px',
-                  background: 'white',
-                  borderRadius: '50%',
-                  animation: 'pulse 1.5s infinite'
-                }}></div>
-                REC
-              </div>
-
-              {/* Live Indicator */}
-              <div style={{
-                background: '#16a34a',
-                color: 'white',
-                padding: '4px 8px',
-                borderRadius: '4px',
-                fontSize: '10px',
-                fontWeight: '600',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px'
-              }}>
-                <div style={{
-                  width: '6px',
-                  height: '6px',
-                  background: 'white',
-                  borderRadius: '50%',
-                  animation: 'pulse 1.5s infinite'
-                }}></div>
-                LIVE
-              </div>
-            </div>
-
-            {/* Participant Count */}
-            <div style={{
-              position: 'absolute',
-              bottom: '12px',
-              left: '12px',
-              background: 'rgba(0, 0, 0, 0.7)',
-              color: 'white',
-              padding: '6px 12px',
-              borderRadius: '20px',
-              fontSize: '12px',
-              fontWeight: '500'
-            }}>
-              👥 {participantCount} participant{participantCount !== 1 ? 's' : ''}
-            </div>
-
-            {/* Meeting Duration */}
-            <div style={{
-              position: 'absolute',
-              bottom: '12px',
-              right: '12px',
-              background: 'rgba(0, 0, 0, 0.7)',
-              color: 'white',
-              padding: '6px 12px',
-              borderRadius: '20px',
-              fontSize: '12px',
-              fontWeight: '500'
-            }}>
-              ⏱️ {formatDuration(meetingDuration)}
-            </div>
-          </div>
-        ) : (
+        {!isJoined && (
           <div style={{ 
             textAlign: 'center',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            height: '100%',
-            background: 'linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%)'
+            height: '500px',
+            background: 'linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%)',
+            borderRadius: '8px'
           }}>
             <Spin size="large" style={{ marginBottom: '16px' }} />
             <p style={{ 
@@ -498,15 +463,96 @@ const ZoomMeeting = ({
               color: '#374151',
               fontWeight: '500'
             }}>
-              Joining meeting...
+              {t('zoom.meeting.joiningMeeting')}
             </p>
             <p style={{ 
               margin: '8px 0 0 0',
               fontSize: '12px',
               color: '#6b7280'
             }}>
-              Please wait while we connect you
+              {t('zoom.meeting.pleaseWaitConnect')}
             </p>
+          </div>
+        )}
+        
+        {/* Demo Mode Interface */}
+        {isJoined && sdkSignature?.demoMode && (
+          <div style={{ 
+            textAlign: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '500px',
+            background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+            borderRadius: '8px',
+            position: 'relative',
+            overflow: 'hidden'
+          }}>
+            {/* Animated background effect */}
+            <div style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '300px',
+              height: '300px',
+              background: 'radial-gradient(circle, rgba(79, 70, 229, 0.2) 0%, transparent 70%)',
+              animation: 'pulse 3s ease-in-out infinite'
+            }}></div>
+            
+            <VideoCameraOutlined style={{ 
+              fontSize: '80px', 
+              color: '#4f46e5',
+              marginBottom: '24px',
+              zIndex: 1
+            }} />
+            <p style={{ 
+              margin: '0',
+              fontSize: '24px',
+              color: '#f1f5f9',
+              fontWeight: '600',
+              zIndex: 1
+            }}>
+              {t('zoom.meeting.connected')}
+            </p>
+            <p style={{ 
+              margin: '8px 0 0 0',
+              fontSize: '14px',
+              color: '#94a3b8',
+              zIndex: 1
+            }}>
+              {isHost ? 'ホストとして接続中' : '参加者として接続中'}
+            </p>
+            
+            {/* Status indicators */}
+            <div style={{
+              display: 'flex',
+              gap: '16px',
+              marginTop: '32px',
+              zIndex: 1
+            }}>
+              <div style={{
+                padding: '8px 16px',
+                background: 'rgba(255, 255, 255, 0.1)',
+                borderRadius: '20px',
+                color: '#f1f5f9',
+                fontSize: '12px',
+                backdropFilter: 'blur(10px)'
+              }}>
+                {isVideoOn ? '📹 ビデオ ON' : '📹 ビデオ OFF'}
+              </div>
+              <div style={{
+                padding: '8px 16px',
+                background: 'rgba(255, 255, 255, 0.1)',
+                borderRadius: '20px',
+                color: '#f1f5f9',
+                fontSize: '12px',
+                backdropFilter: 'blur(10px)'
+              }}>
+                {isMuted ? '🔇 ミュート' : '🔊 音声 ON'}
+              </div>
+            </div>
           </div>
         )}
       </div>
@@ -527,7 +573,7 @@ const ZoomMeeting = ({
             onClick={toggleMute}
             size="large"
           >
-            {isMuted ? 'Unmute' : 'Mute'}
+            {isMuted ? t('zoom.meeting.controls.unmute') : t('zoom.meeting.controls.mute')}
           </Button>
           
           <Button
@@ -536,7 +582,7 @@ const ZoomMeeting = ({
             onClick={toggleVideo}
             size="large"
           >
-            {isVideoOn ? 'Stop Video' : 'Start Video'}
+            {isVideoOn ? t('zoom.meeting.controls.stopVideo') : t('zoom.meeting.controls.startVideo')}
           </Button>
           
           <Button
@@ -546,7 +592,7 @@ const ZoomMeeting = ({
             onClick={leaveMeeting}
             size="large"
           >
-            Leave Meeting
+            {isHost ? t('zoom.meeting.controls.endMeeting') : t('zoom.meeting.controls.leaveMeeting')}
           </Button>
         </div>
       )}

@@ -522,6 +522,9 @@ const StudentDashboard = () => {
   const fetchNotifications = async () => {
     setNotificationLoading(true);
     try {
+      // Get authentication token
+      const token = localStorage.getItem("authToken") || localStorage.getItem("token");
+      
       // First try to fetch real notifications from the authenticated endpoint
       let response;
       if (token) {
@@ -565,6 +568,9 @@ const StudentDashboard = () => {
               homework_due: transformedNotifications.filter((n) => n.type === "homework_due").length,
               announcement: transformedNotifications.filter((n) => n.type === "announcement").length,
               admin_announcement: transformedNotifications.filter((n) => n.type === "admin_announcement").length,
+              live_class_started: transformedNotifications.filter((n) => n.type === "live_class_started").length,
+              live_class_ended: transformedNotifications.filter((n) => n.type === "live_class_ended").length,
+              zoom_class: transformedNotifications.filter((n) => n.type === "zoom_class").length,
             },
           };
 
@@ -615,6 +621,9 @@ const StudentDashboard = () => {
             homework_due: transformedNotifications.filter((n) => n.type === "homework_due").length,
             announcement: transformedNotifications.filter((n) => n.type === "announcement").length,
             admin_announcement: transformedNotifications.filter((n) => n.type === "admin_announcement").length,
+            live_class_started: transformedNotifications.filter((n) => n.type === "live_class_started").length,
+            live_class_ended: transformedNotifications.filter((n) => n.type === "live_class_ended").length,
+            zoom_class: transformedNotifications.filter((n) => n.type === "zoom_class").length,
           },
         };
 
@@ -642,6 +651,9 @@ const StudentDashboard = () => {
       homework_due: "clock-circle",
       announcement: "bell",
       admin_announcement: "bell",
+      live_class_started: "video-camera",
+      live_class_ended: "video-camera",
+      zoom_class: "video-camera",
     };
     return iconMap[type] || "bell";
   };
@@ -655,12 +667,18 @@ const StudentDashboard = () => {
       homework_due: "#f5222d",
       announcement: "#13c2c2",
       admin_announcement: "#13c2c2",
+      live_class_started: "#dc2626",
+      live_class_ended: "#6b7280",
+      zoom_class: "#dc2626",
     };
     return colorMap[type] || "#1890ff";
   };
 
   const markNotificationAsRead = async (notificationId) => {
     try {
+      // Get authentication token
+      const token = localStorage.getItem("authToken") || localStorage.getItem("token");
+      
       // Try to update on backend first
       if (token) {
         const response = await fetch(
@@ -697,6 +715,9 @@ const StudentDashboard = () => {
 
   const markAllNotificationsAsRead = async () => {
     try {
+      // Get authentication token
+      const token = localStorage.getItem("authToken") || localStorage.getItem("token");
+      
       // Try to update on backend first
       if (token) {
         const response = await fetch(
@@ -761,6 +782,20 @@ const StudentDashboard = () => {
         message.info("📢 " + t("studentDashboard.messages.announcementOpened"));
         break;
 
+      case "live_class_started":
+      case "zoom_class":
+        setActiveTab("zoom");
+        setNotificationDrawerVisible(false); // Close drawer
+        message.success("🎥 Live class is active! Join now.");
+        // Refresh Zoom classes to show the new one
+        fetchZoomClasses();
+        break;
+
+      case "live_class_ended":
+        setActiveTab("zoom");
+        message.info("🎥 This live class has ended.");
+        break;
+
       default:
         message.info("🔔 " + t("studentDashboard.messages.notificationOpened"));
     }
@@ -800,51 +835,62 @@ const StudentDashboard = () => {
       setZoomLoading(true);
       console.log("📹 Fetching available Zoom classes for student...");
       
-      // Simulate current student ID (in real app, this would come from auth context)
-      const currentStudentId = "student1"; // This would be currentUser._id in real app
+      // Get authentication token
+      const token = localStorage.getItem("authToken") || localStorage.getItem("token");
       
-      // Fetch live classes specifically for this student
-      const response = await fetch(`/api/zoom/meetings/student/${currentStudentId}`, {
+      if (!token) {
+        console.error("❌ No authentication token found");
+        setZoomClasses([]);
+        return;
+      }
+      
+      // Fetch all active Zoom meetings
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/zoom/meetings`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
       });
 
       if (response.ok) {
         const data = await response.json();
         
-        if (data.success) {
-          // Format the meetings for the UI
-          const formattedClasses = data.meetings.map(meeting => ({
-            id: meeting._id,
-            title: meeting.title,
-            courseName: meeting.courseName,
-            meetingId: meeting.meetingId,
-            password: meeting.meetingPassword,
-            startTime: new Date(meeting.startTime),
-            duration: meeting.duration,
-            status: meeting.status === 'live' ? 'active' : meeting.status,
-            teacherName: meeting.instructorName,
-            joinUrl: meeting.joinUrl,
-            description: meeting.description,
-            isEnrolled: meeting.isEnrolled,
-            settings: meeting.settings
-          }));
+        if (data.success && data.meetings) {
+          // Filter for active/live meetings only
+          const activeClasses = data.meetings
+            .filter(meeting => meeting.status === 'active' || meeting.status === 'live')
+            .map(meeting => ({
+              id: meeting._id,
+              title: meeting.title,
+              courseName: meeting.course?.name || meeting.course?.title || 'Live Class',
+              meetingId: meeting.meetingId,
+              password: meeting.meetingPassword || '',
+              startTime: new Date(meeting.startTime),
+              duration: meeting.duration,
+              status: 'active',
+              teacherName: meeting.instructor?.firstName && meeting.instructor?.lastName 
+                ? `${meeting.instructor.firstName} ${meeting.instructor.lastName}`
+                : 'Teacher',
+              joinUrl: meeting.joinUrl || `https://zoom.us/j/${meeting.meetingId}`,
+              description: meeting.description || '',
+              isAllowed: true, // Students can join active classes
+              settings: meeting.settings || {}
+            }));
           
-          // Log access control results for debugging
-          console.log("🔐 Access Control Results:");
-          console.log(`📹 Total meetings available for student ${currentStudentId}: ${formattedClasses.length}`);
-          formattedClasses.forEach(zoomClass => {
-            console.log(`📹 ${zoomClass.title}: ✅ ENROLLED`);
+          console.log(`📹 Found ${activeClasses.length} active live classes`);
+          activeClasses.forEach(zoomClass => {
+            console.log(`📹 ${zoomClass.title} - Status: ${zoomClass.status}`);
           });
 
-          setZoomClasses(formattedClasses);
+          setZoomClasses(activeClasses);
         } else {
-          throw new Error(data.message || 'Failed to fetch meetings');
+          console.log('📹 No active meetings found');
+          setZoomClasses([]);
         }
       } else {
-        throw new Error('Failed to fetch live classes');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to fetch live classes');
       }
     } catch (error) {
       console.error("❌ Error fetching Zoom classes:", error);
@@ -1611,7 +1657,6 @@ const StudentDashboard = () => {
             backdropFilter: "blur(10px)",
             boxShadow: "0 8px 32px rgba(0, 0, 0, 0.08)",
             display: "flex",
-            justifyContent: "space-between",
             alignItems: "center",
           }}
         >
@@ -1639,35 +1684,6 @@ const StudentDashboard = () => {
               </Text>
             </div>
           </div>
-          <Badge count={zoomNotifications.filter(n => !n.isRead).length} overflowCount={99}>
-            <Button
-              type="primary"
-              icon={<BellOutlined />}
-              onClick={() => {
-                // Show notifications
-                const unreadNotifications = zoomNotifications.filter(n => !n.isRead);
-                if (unreadNotifications.length > 0) {
-                  notification.info({
-                    message: t("studentDashboard.liveClasses.notifications"),
-                    description: `You have ${unreadNotifications.length} new live class notifications`,
-                    duration: 4,
-                  });
-                } else {
-                  message.info(t("studentDashboard.liveClasses.noNotifications"));
-                }
-              }}
-              style={{
-                background: "linear-gradient(135deg, #dc2626 0%, #ea580c 100%)",
-                border: "none",
-                borderRadius: "10px",
-                height: "40px",
-                padding: "0 24px",
-                fontWeight: 500,
-              }}
-            >
-              Notifications
-            </Button>
-          </Badge>
         </div>
 
         {zoomLoading ? (
@@ -1682,16 +1698,9 @@ const StudentDashboard = () => {
             <VideoCameraOutlined
               style={{ fontSize: "64px", color: "#d9d9d9", marginBottom: "16px" }}
             />
-            <Title level={3} style={{ color: "#666" }}>
-              {t("studentDashboard.liveClasses.noClasses")}
+            <Title level={3} style={{ color: "#999" }}>
+              No Active Live Classes
             </Title>
-            <Text style={{ color: "#999" }}>
-              You are not enrolled in any courses with live classes yet.
-            </Text>
-            <br />
-            <Text style={{ color: "#999" }}>
-              Contact your instructor to get access to live sessions.
-            </Text>
           </div>
         ) : (
           <div>
@@ -2962,6 +2971,23 @@ const StudentDashboard = () => {
               />
             </Badge>
 
+            {/* Live Class Notification Badge */}
+            <Badge count={zoomClasses.length} overflowCount={99} color="#dc2626">
+              <Button
+                type="text"
+                icon={<VideoCameraOutlined />}
+                onClick={() => {
+                  setActiveTab("zoom");
+                  message.info("🎥 " + zoomClasses.length + " live class(es) available");
+                }}
+                style={{
+                  color: zoomClasses.length > 0 ? "#dc2626" : undefined,
+                  fontSize: "16px",
+                }}
+                title="Active Live Classes"
+              />
+            </Badge>
+
             {/* Language Toggle Button */}
             <Button
               type="text"
@@ -3260,6 +3286,8 @@ const StudentDashboard = () => {
                           <TrophyOutlined />
                         ) : notification.icon === "clock-circle" ? (
                           <ClockCircleOutlined />
+                        ) : notification.icon === "video-camera" ? (
+                          <VideoCameraOutlined />
                         ) : (
                           <BellOutlined />
                         )
