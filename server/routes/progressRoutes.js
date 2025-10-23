@@ -96,7 +96,10 @@ router.get('/:id', authenticate, async (req, res) => {
 // POST create new progress record (teachers and admin only)
 router.post('/', authenticate, authorizeRoles('teacher', 'admin'), async (req, res) => {
     try {
-        console.log('📝 Creating new progress record...');
+        console.log('� POST /api/progress - Creating new progress record');
+        console.log('📦 Request body:', JSON.stringify(req.body, null, 2));
+        console.log('👤 User:', req.user.id, 'Role:', req.user.role);
+        console.log('�📝 Creating new progress record...');
         const {
             student,
             subject,
