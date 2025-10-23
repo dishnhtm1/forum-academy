@@ -68,7 +68,8 @@ app.get('/api/health', (req, res) => {
         routes: [
             'auth', 'users', 'course-materials', 'applications', 
             'contact', 'admin', 'quizzes', 'courses', 'homework', 
-            'homework-submissions', 'listening-exercises', 'announcements', 'progress', 'analytics', 'notifications'
+            'homework-submissions', 'listening-exercises', 'announcements', 
+            'progress', 'analytics', 'notifications', 'zoom'
         ]
     });
 });
@@ -310,7 +311,9 @@ app.use((req, res) => {
             '/api/course-materials/*',
             '/api/progress/*',
             '/api/announcements/*',
-            '/api/analytics/*'
+            '/api/analytics/*',
+            '/api/notifications/*',
+            '/api/zoom/*'
         ]
     });
 });
@@ -340,6 +343,9 @@ app.listen(PORT, () => {
     console.log('   - Database Test: /api/test-db');
     console.log('   - Authentication: /api/auth/*');
     console.log('   - Homework System: /api/homework/* & /api/homework-submissions/*');
+    console.log('   - Progress Tracking: /api/progress/*');
+    console.log('   - Notifications: /api/notifications/*');
+    console.log('   - Zoom Meetings: /api/zoom/*');
 });
 
 module.exports = app;

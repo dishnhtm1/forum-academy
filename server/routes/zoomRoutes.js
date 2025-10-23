@@ -7,6 +7,8 @@ const ZoomMeeting = require('../models/ZoomMeeting');
 const AttendanceRecord = require('../models/AttendanceRecord');
 const zoomService = require('../services/zoomService');
 
+console.log('🔧 Loading zoomRoutes.js...');
+
 // Get all Zoom meetings (with database persistence)
 router.get('/meetings', async (req, res) => {
   try {
@@ -143,6 +145,9 @@ router.get('/meetings/:id', async (req, res) => {
 // Create a new Zoom meeting (with database persistence)
 router.post('/meetings', async (req, res) => {
   try {
+    console.log('📞 POST /api/zoom/meetings - Creating new Zoom meeting');
+    console.log('📦 Request body:', JSON.stringify(req.body, null, 2));
+    
     const { 
       title, 
       description, 
@@ -202,6 +207,8 @@ router.post('/meetings', async (req, res) => {
 
     await meeting.save();
 
+    console.log('✅ Zoom meeting created successfully:', meeting._id);
+
     // Populate the response
     await meeting.populate('courseId', 'title students');
     await meeting.populate('instructor', 'firstName lastName');
@@ -213,8 +220,12 @@ router.post('/meetings', async (req, res) => {
       message: 'Meeting created successfully with automatic enrollment'
     });
   } catch (error) {
-    console.error('Error creating meeting:', error);
-    res.status(500).json({ error: error.message });
+    console.error('❌ Error creating Zoom meeting:', error);
+    res.status(500).json({ 
+      success: false,
+      error: error.message,
+      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 });
 
