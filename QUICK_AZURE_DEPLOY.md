@@ -1,9 +1,11 @@
 # ⚡ QUICK FIX: Deploy Backend to Azure (5 Minutes)
 
 ## The Problem
+
 Your Zoom routes return **404 Not Found** because Azure is running **OLD CODE**.
 
 Current Azure routes (MISSING zoom and notifications):
+
 ```
 /api/health, /api/auth/*, /api/users/*, etc.
 ❌ NO /api/zoom/*
@@ -15,20 +17,25 @@ Current Azure routes (MISSING zoom and notifications):
 ### Step-by-Step (With Exact Clicks)
 
 #### 1. Open Azure Portal
+
 Go to: **https://portal.azure.com**
 
 #### 2. Find Your Backend App
+
 - In search bar (top), type: `forum-backend-cnfrb6eubggucqda`
 - Click on the App Service that appears
 
 #### 3. Go to Deployment Center
+
 - In the LEFT sidebar, scroll down
 - Click: **"Deployment Center"**
 
 #### 4. Check Current Setup
+
 You'll see one of these scenarios:
 
 **Scenario A: GitHub Connected**
+
 - Source: GitHub
 - Repository: dishnhtm1/forum-academy
 - Branch: master
@@ -37,6 +44,7 @@ You'll see one of these scenarios:
 - ➡️ Done! Skip to verification.
 
 **Scenario B: No Source Connected**
+
 - You'll see "External Git" or "Not configured"
 - ➡️ **Click "Settings" tab**
 - ➡️ **Source**: Select "GitHub"
@@ -48,6 +56,7 @@ You'll see one of these scenarios:
 - ➡️ It will auto-deploy (5-10 minutes)
 
 #### 5. Monitor Deployment
+
 - Stay on Deployment Center page
 - Click **"Logs" tab**
 - Watch for:
@@ -60,11 +69,13 @@ You'll see one of these scenarios:
 #### 6. Verify It Worked
 
 Open this URL in browser:
+
 ```
 https://forum-backend-cnfrb6eubggucqda.canadacentral-01.azurewebsites.net/api/health
 ```
 
 You should see:
+
 ```json
 {
   "status": "ok",
@@ -91,9 +102,11 @@ If you prefer automation:
 ## Troubleshooting
 
 ### "Sync button is disabled"
+
 ➡️ Deployment Center → Settings → Disconnect → Reconnect GitHub
 
 ### "Still getting 404 after sync"
+
 1. Check deployment logs for errors
 2. Go to **Configuration** → **Application settings**
 3. Verify these exist:
@@ -104,6 +117,7 @@ If you prefer automation:
    - `ZOOM_CLIENT_SECRET`
 
 ### "Deployment failed"
+
 1. Go to **Log stream** (left sidebar)
 2. Look for error messages
 3. Common issues:
@@ -131,6 +145,7 @@ After deployment:
 ## Need Help?
 
 If still stuck, check:
+
 1. **Log Stream** in Azure Portal (real-time logs)
 2. **Application Insights** (if enabled)
 3. Server logs show route loading messages

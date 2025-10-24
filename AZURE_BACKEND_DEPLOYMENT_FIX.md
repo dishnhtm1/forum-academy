@@ -1,11 +1,14 @@
 # Azure Backend Deployment Fix Guide
 
 ## Problem
+
 The Azure backend (`forum-backend-cnfrb6eubggucqda.canadacentral-01.azurewebsites.net`) is **NOT** showing the latest routes:
+
 - ❌ Missing: `/api/zoom/*`
 - ❌ Missing: `/api/notifications/*`
 
 Current available routes on Azure:
+
 ```json
 {
   "availableRoutes": [
@@ -29,6 +32,7 @@ Current available routes on Azure:
 ```
 
 ## Root Cause
+
 Azure Web App is **NOT automatically deploying** when you push to GitHub. The backend is running **old code**.
 
 ## Solution Options
@@ -46,12 +50,14 @@ Azure Web App is **NOT automatically deploying** when you push to GitHub. The ba
 ### Option 2: Configure Continuous Deployment from GitHub
 
 #### Step 1: Get Publish Profile
+
 1. Go to Azure Portal → `forum-backend-cnfrb6eubggucqda`
 2. Click **"Get publish profile"** (top toolbar)
 3. Download the `.PublishSettings` file
 4. Open it and copy the entire XML content
 
 #### Step 2: Add GitHub Secret
+
 1. Go to GitHub: https://github.com/dishnhtm1/forum-academy
 2. Settings → Secrets and variables → Actions
 3. Click **"New repository secret"**
@@ -60,6 +66,7 @@ Azure Web App is **NOT automatically deploying** when you push to GitHub. The ba
 6. Click **"Add secret"**
 
 #### Step 3: Trigger Deployment
+
 The workflow `.github/workflows/azure-backend-deploy.yml` is already created.
 Once the secret is added, it will auto-deploy on every push to `server/` folder.
 
@@ -82,27 +89,27 @@ This will create a GitHub Actions workflow automatically.
 After deployment, run these commands:
 
 ### 1. Check Health Endpoint
+
 ```powershell
 curl https://forum-backend-cnfrb6eubggucqda.canadacentral-01.azurewebsites.net/api/health
 ```
 
 Should show:
+
 ```json
 {
-  "routes": [
-    "...",
-    "/api/zoom/*",
-    "/api/notifications/*"
-  ]
+  "routes": ["...", "/api/zoom/*", "/api/notifications/*"]
 }
 ```
 
 ### 2. Test Zoom Route
+
 ```powershell
 curl https://forum-backend-cnfrb6eubggucqda.canadacentral-01.azurewebsites.net/api/zoom/meetings
 ```
 
 Should return authentication error (not 404):
+
 ```json
 {
   "message": "Access denied. Admin or teacher role required."
@@ -110,6 +117,7 @@ Should return authentication error (not 404):
 ```
 
 ### 3. Test Notifications Route
+
 ```powershell
 curl https://forum-backend-cnfrb6eubggucqda.canadacentral-01.azurewebsites.net/api/notifications/test
 ```

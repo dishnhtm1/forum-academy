@@ -1,72 +1,232 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useHistory } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import i18n from '../i18n';
-import '../styles/AdminSidebar.css';
-import '../styles/DashboardStats.css';
+import React, { useState, useEffect, useRef } from "react";
+import { useHistory } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import i18n from "../i18n";
+import "../styles/AdminSidebar.css";
+import "../styles/DashboardStats.css";
 
 // Ant Design imports
 import {
-  Layout, Menu, Card, Table, Button, Form, Input, Upload, Modal, Select,
-  Tabs, Progress, notification, Tag, Space, Divider, Row, Col, Statistic,
-  DatePicker, Switch, InputNumber, Spin, Alert, Typography, Rate,
-  Drawer, Breadcrumb, Empty, List, Timeline, Tooltip, Avatar, Badge,
-  Popconfirm, message, Descriptions, Steps, Collapse, Dropdown, Slider,
-  Checkbox, Radio
-} from 'antd';
+  Layout,
+  Menu,
+  Card,
+  Table,
+  Button,
+  Form,
+  Input,
+  Upload,
+  Modal,
+  Select,
+  Tabs,
+  Progress,
+  notification,
+  Tag,
+  Space,
+  Divider,
+  Row,
+  Col,
+  Statistic,
+  DatePicker,
+  Switch,
+  InputNumber,
+  Spin,
+  Alert,
+  Typography,
+  Rate,
+  Drawer,
+  Breadcrumb,
+  Empty,
+  List,
+  Timeline,
+  Tooltip,
+  Avatar,
+  Badge,
+  Popconfirm,
+  message,
+  Descriptions,
+  Steps,
+  Collapse,
+  Dropdown,
+  Slider,
+  Checkbox,
+  Radio,
+} from "antd";
 
 import {
-  PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined,
-  DownloadOutlined, FileOutlined, VideoCameraOutlined, AudioOutlined,
-  QuestionCircleOutlined, CheckCircleOutlined, CloseCircleOutlined,
-  EyeOutlined, SearchOutlined, FilterOutlined, BookOutlined,
-  FileTextOutlined, PlayCircleOutlined, HomeOutlined, UserOutlined,
-  BarChartOutlined, CalendarOutlined, BellOutlined, SettingOutlined,
-  MenuFoldOutlined, MenuUnfoldOutlined, StarOutlined, ClockCircleOutlined,
-  TrophyOutlined, MessageOutlined, TeamOutlined, DashboardOutlined,
-  SolutionOutlined, FundOutlined, PieChartOutlined, LineChartOutlined,
-  AreaChartOutlined, RadarChartOutlined, HeatMapOutlined, DotChartOutlined,
-  GlobalOutlined, MailOutlined, PhoneOutlined, EnvironmentOutlined,
-  SafetyOutlined, LockOutlined, KeyOutlined, CloudOutlined, DatabaseOutlined,
-  ApiOutlined, CodeOutlined, BugOutlined, ToolOutlined, ExperimentOutlined,
-  RocketOutlined, ThunderboltOutlined, FireOutlined, GiftOutlined,
-  HeartOutlined, SmileOutlined, FrownOutlined, MehOutlined,
-  LikeOutlined, DislikeOutlined, CommentOutlined, ShareAltOutlined,
-  SaveOutlined, PrinterOutlined, ScanOutlined, WifiOutlined,
-  SoundOutlined, NotificationOutlined, WarningOutlined, InfoCircleOutlined,
-  ExclamationCircleOutlined, StopOutlined, PauseCircleOutlined,
-  ForwardOutlined, BackwardOutlined, FastForwardOutlined, FastBackwardOutlined,
-  StepForwardOutlined, StepBackwardOutlined, CaretRightOutlined,
-  CaretLeftOutlined, CaretUpOutlined, CaretDownOutlined,
-  FullscreenOutlined, FullscreenExitOutlined, ExpandOutlined,
-  CompressOutlined, PlusCircleOutlined, MinusCircleOutlined,
-  CheckSquareOutlined, BorderOutlined, FormOutlined, HighlightOutlined,
-  SnippetsOutlined, DiffOutlined, CopyOutlined, ScissorOutlined,
-  DeleteRowOutlined, MergeCellsOutlined, SplitCellsOutlined,
-  AppstoreOutlined, BarsOutlined, BuildOutlined, BlockOutlined,
-  GatewayOutlined, ClusterOutlined, DeploymentUnitOutlined,
-  VerifiedOutlined, SafetyCertificateOutlined, SecurityScanOutlined,
-  IdcardOutlined, ContactsOutlined, FolderOutlined, FolderOpenOutlined,
-  FolderAddOutlined, HddOutlined, CloudServerOutlined, CloudSyncOutlined,
-  CloudDownloadOutlined, CloudUploadOutlined, InboxOutlined, LaptopOutlined,
-  MobileOutlined, TabletOutlined, DesktopOutlined, WalletOutlined,
-  BankOutlined, CreditCardOutlined, DollarOutlined, EuroOutlined,
-  PoundOutlined, TransactionOutlined, MoneyCollectOutlined,
-  FieldTimeOutlined, HistoryOutlined, SyncOutlined,
-  RedoOutlined, UndoOutlined, LoginOutlined, LogoutOutlined,
-  UserDeleteOutlined, ManOutlined, WomanOutlined,
-  ShoppingCartOutlined, ShoppingOutlined, ShopOutlined,
-  TagsOutlined, BarcodeOutlined, QrcodeOutlined,
-  CameraOutlined, PictureOutlined, CompassOutlined,
-  AimOutlined, SendOutlined, FallOutlined, StockOutlined, 
-  FundProjectionScreenOutlined, PercentageOutlined,
-  UsergroupAddOutlined, CheckOutlined, CloseOutlined, UserAddOutlined,
-  RiseOutlined, ArrowUpOutlined, ExportOutlined, ReloadOutlined,
-  AlertOutlined
-} from '@ant-design/icons';
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  UploadOutlined,
+  DownloadOutlined,
+  FileOutlined,
+  VideoCameraOutlined,
+  AudioOutlined,
+  QuestionCircleOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  EyeOutlined,
+  SearchOutlined,
+  FilterOutlined,
+  BookOutlined,
+  FileTextOutlined,
+  PlayCircleOutlined,
+  HomeOutlined,
+  UserOutlined,
+  BarChartOutlined,
+  CalendarOutlined,
+  BellOutlined,
+  SettingOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  StarOutlined,
+  ClockCircleOutlined,
+  TrophyOutlined,
+  MessageOutlined,
+  TeamOutlined,
+  DashboardOutlined,
+  SolutionOutlined,
+  FundOutlined,
+  PieChartOutlined,
+  LineChartOutlined,
+  AreaChartOutlined,
+  RadarChartOutlined,
+  HeatMapOutlined,
+  DotChartOutlined,
+  GlobalOutlined,
+  MailOutlined,
+  PhoneOutlined,
+  EnvironmentOutlined,
+  SafetyOutlined,
+  LockOutlined,
+  KeyOutlined,
+  CloudOutlined,
+  DatabaseOutlined,
+  ApiOutlined,
+  CodeOutlined,
+  BugOutlined,
+  ToolOutlined,
+  ExperimentOutlined,
+  RocketOutlined,
+  ThunderboltOutlined,
+  FireOutlined,
+  GiftOutlined,
+  HeartOutlined,
+  SmileOutlined,
+  FrownOutlined,
+  MehOutlined,
+  LikeOutlined,
+  DislikeOutlined,
+  CommentOutlined,
+  ShareAltOutlined,
+  SaveOutlined,
+  PrinterOutlined,
+  ScanOutlined,
+  WifiOutlined,
+  SoundOutlined,
+  NotificationOutlined,
+  WarningOutlined,
+  InfoCircleOutlined,
+  ExclamationCircleOutlined,
+  StopOutlined,
+  PauseCircleOutlined,
+  ForwardOutlined,
+  BackwardOutlined,
+  FastForwardOutlined,
+  FastBackwardOutlined,
+  StepForwardOutlined,
+  StepBackwardOutlined,
+  CaretRightOutlined,
+  CaretLeftOutlined,
+  CaretUpOutlined,
+  CaretDownOutlined,
+  FullscreenOutlined,
+  FullscreenExitOutlined,
+  ExpandOutlined,
+  CompressOutlined,
+  PlusCircleOutlined,
+  MinusCircleOutlined,
+  CheckSquareOutlined,
+  BorderOutlined,
+  FormOutlined,
+  HighlightOutlined,
+  SnippetsOutlined,
+  DiffOutlined,
+  CopyOutlined,
+  ScissorOutlined,
+  DeleteRowOutlined,
+  MergeCellsOutlined,
+  SplitCellsOutlined,
+  AppstoreOutlined,
+  BarsOutlined,
+  BuildOutlined,
+  BlockOutlined,
+  GatewayOutlined,
+  ClusterOutlined,
+  DeploymentUnitOutlined,
+  VerifiedOutlined,
+  SafetyCertificateOutlined,
+  SecurityScanOutlined,
+  IdcardOutlined,
+  ContactsOutlined,
+  FolderOutlined,
+  FolderOpenOutlined,
+  FolderAddOutlined,
+  HddOutlined,
+  CloudServerOutlined,
+  CloudSyncOutlined,
+  CloudDownloadOutlined,
+  CloudUploadOutlined,
+  InboxOutlined,
+  LaptopOutlined,
+  MobileOutlined,
+  TabletOutlined,
+  DesktopOutlined,
+  WalletOutlined,
+  BankOutlined,
+  CreditCardOutlined,
+  DollarOutlined,
+  EuroOutlined,
+  PoundOutlined,
+  TransactionOutlined,
+  MoneyCollectOutlined,
+  FieldTimeOutlined,
+  HistoryOutlined,
+  SyncOutlined,
+  RedoOutlined,
+  UndoOutlined,
+  LoginOutlined,
+  LogoutOutlined,
+  UserDeleteOutlined,
+  ManOutlined,
+  WomanOutlined,
+  ShoppingCartOutlined,
+  ShoppingOutlined,
+  ShopOutlined,
+  TagsOutlined,
+  BarcodeOutlined,
+  QrcodeOutlined,
+  CameraOutlined,
+  PictureOutlined,
+  CompassOutlined,
+  AimOutlined,
+  SendOutlined,
+  FallOutlined,
+  StockOutlined,
+  FundProjectionScreenOutlined,
+  PercentageOutlined,
+  UsergroupAddOutlined,
+  CheckOutlined,
+  CloseOutlined,
+  UserAddOutlined,
+  RiseOutlined,
+  ArrowUpOutlined,
+  ExportOutlined,
+  ReloadOutlined,
+  AlertOutlined,
+} from "@ant-design/icons";
 
-import moment from 'moment';
-import { Line, Bar, Doughnut, Radar, Pie } from 'react-chartjs-2';
+import moment from "moment";
+import { Line, Bar, Doughnut, Radar, Pie } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -79,8 +239,8 @@ import {
   Title as ChartTitle,
   Tooltip as ChartTooltip,
   Legend,
-  Filler
-} from 'chart.js';
+  Filler,
+} from "chart.js";
 
 // Register Chart.js components
 ChartJS.register(
@@ -98,7 +258,13 @@ ChartJS.register(
 );
 
 // Import API clients
-import { authAPI, statsAPI, courseAPI, materialAPI, userAPI } from '../utils/apiClient';
+import {
+  authAPI,
+  statsAPI,
+  courseAPI,
+  materialAPI,
+  userAPI,
+} from "../utils/apiClient";
 
 const { Header, Sider, Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -114,20 +280,21 @@ const { SubMenu } = Menu;
 const { confirm } = Modal;
 
 // API Configuration
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
 // Helper function to get auth headers
 const getAuthHeaders = () => {
-  const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+  const token =
+    localStorage.getItem("token") || localStorage.getItem("authToken");
   if (!token) {
-    console.warn('No authentication token found');
+    console.warn("No authentication token found");
     return {
-      'Content-Type': 'application/json'
+      "Content-Type": "application/json",
     };
   }
   return {
-    'Authorization': `Bearer ${token}`,
-    'Content-Type': 'application/json'
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
   };
 };
 
@@ -137,66 +304,73 @@ import API from "../requests";
 const AdminFacultyDashboard = () => {
   const { t, i18n: translationInstance } = useTranslation();
   const history = useHistory();
-  
+
   // Helper function to fetch authenticated audio
   const fetchAuthenticatedAudio = async (audioUrl) => {
     try {
       // Check authentication
-      const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+      const token =
+        localStorage.getItem("token") || localStorage.getItem("authToken");
       if (!token) {
-        throw new Error('No authentication token found');
+        throw new Error("No authentication token found");
       }
-      
-      console.log('Fetching authenticated audio from URL:', audioUrl);
-      console.log('Using token:', token ? `${token.substring(0, 20)}...` : 'No token');
-      
+
+      console.log("Fetching authenticated audio from URL:", audioUrl);
+      console.log(
+        "Using token:",
+        token ? `${token.substring(0, 20)}...` : "No token"
+      );
+
       // Use fetch instead of Axios to avoid CORS preflight issues
       const response = await fetch(audioUrl, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
           // Removed other headers to avoid CORS preflight
         },
-        mode: 'cors',
-        credentials: 'omit' // Don't send credentials to avoid additional CORS complexity
+        mode: "cors",
+        credentials: "omit", // Don't send credentials to avoid additional CORS complexity
       });
-      
+
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-      
+
       const audioBlob = await response.blob();
-      
-      console.log('Authenticated audio fetch successful:', {
+
+      console.log("Authenticated audio fetch successful:", {
         status: response.status,
-        contentType: response.headers.get('content-type'),
+        contentType: response.headers.get("content-type"),
         blobSize: audioBlob.size,
-        blobType: audioBlob.type
+        blobType: audioBlob.type,
       });
-      
+
       return URL.createObjectURL(audioBlob);
     } catch (error) {
-      console.error('Authenticated audio fetch failed:', {
+      console.error("Authenticated audio fetch failed:", {
         message: error.message,
         name: error.name,
-        stack: error.stack
+        stack: error.stack,
       });
       throw error;
     }
   };
-  
+
   // States
   const [collapsed, setCollapsed] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeKey, setActiveKey] = useState('overview');
+  const [activeKey, setActiveKey] = useState("overview");
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const [isTablet, setIsTablet] = useState(window.innerWidth > 768 && window.innerWidth <= 1024);
-  const [theme, setTheme] = useState('dark');
+  const [isTablet, setIsTablet] = useState(
+    window.innerWidth > 768 && window.innerWidth <= 1024
+  );
+  const [theme, setTheme] = useState("dark");
   const [mobileDrawerVisible, setMobileDrawerVisible] = useState(false);
-  const [notificationDrawerVisible, setNotificationDrawerVisible] = useState(false);
+  const [notificationDrawerVisible, setNotificationDrawerVisible] =
+    useState(false);
   const [currentLanguage, setCurrentLanguage] = useState(i18n.language);
-  
+
   // Dashboard data states
   const [dashboardStats, setDashboardStats] = useState({
     totalCourses: 0,
@@ -221,7 +395,7 @@ const AdminFacultyDashboard = () => {
     totalEnrollments: 0,
     newEnrollmentsThisMonth: 0,
     activeEnrollments: 0,
-    pendingEnrollments: 0
+    pendingEnrollments: 0,
   });
 
   // Component-specific states
@@ -240,20 +414,24 @@ const AdminFacultyDashboard = () => {
   const [submissions, setSubmissions] = useState([]);
   const [enrollments, setEnrollments] = useState([]);
   const [enrollmentLogs, setEnrollmentLogs] = useState([]);
-  const [enrollmentFilter, setEnrollmentFilter] = useState({ status: '', course: '', dateRange: null });
-  
+  const [enrollmentFilter, setEnrollmentFilter] = useState({
+    status: "",
+    course: "",
+    dateRange: null,
+  });
+
   // Notification system states
   const [notifications, setNotifications] = useState([]);
   const [notificationVisible, setNotificationVisible] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
-  
+
   // Real enrollment analytics data states
   const [enrollmentAnalytics, setEnrollmentAnalytics] = useState({
     trendsData: { labels: [], datasets: [] },
     coursePopularity: { labels: [], datasets: [] },
     courseEngagement: [],
     recentActivities: [],
-    attentionItems: []
+    attentionItems: [],
   });
   const [enrollmentStats, setEnrollmentStats] = useState({
     totalEnrollments: 0,
@@ -263,11 +441,9 @@ const AdminFacultyDashboard = () => {
     monthlyGrowth: 0,
     engagementRate: 0,
     successRate: 0,
-    progressImprovement: 0
+    progressImprovement: 0,
   });
 
-
-  
   // Modal states
   const [applicationModalVisible, setApplicationModalVisible] = useState(false);
   const [messageModalVisible, setMessageModalVisible] = useState(false);
@@ -285,11 +461,13 @@ const AdminFacultyDashboard = () => {
   const [resultsModalVisible, setResultsModalVisible] = useState(false);
   const [previewModalVisible, setPreviewModalVisible] = useState(false);
   const [progressModalVisible, setProgressModalVisible] = useState(false);
-  const [announcementModalVisible, setAnnouncementModalVisible] = useState(false);
+  const [announcementModalVisible, setAnnouncementModalVisible] =
+    useState(false);
   const [viewModalVisible, setViewModalVisible] = useState(false);
-  const [announcementViewModalVisible, setAnnouncementViewModalVisible] = useState(false);
+  const [announcementViewModalVisible, setAnnouncementViewModalVisible] =
+    useState(false);
   const [profileModalVisible, setProfileModalVisible] = useState(false);
-  
+
   // Selected items
   const [selectedApplication, setSelectedApplication] = useState(null);
   const [selectedMessage, setSelectedMessage] = useState(null);
@@ -300,13 +478,13 @@ const AdminFacultyDashboard = () => {
   const [selectedSubmission, setSelectedSubmission] = useState(null);
   const [selectedProgress, setSelectedProgress] = useState(null);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
-  
+
   // Video call states
   const [selectedCallUser, setSelectedCallUser] = useState(null);
-  const [callType, setCallType] = useState(''); // 'student' or 'teacher'
+  const [callType, setCallType] = useState(""); // 'student' or 'teacher'
   const [isCallActive, setIsCallActive] = useState(false);
   const [callDuration, setCallDuration] = useState(0);
-  
+
   // Form states
   const [editingCourse, setEditingCourse] = useState(null);
   // Editing quiz, homework, exercise states moved to TeacherDashboard
@@ -316,14 +494,14 @@ const AdminFacultyDashboard = () => {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [playingExerciseId, setPlayingExerciseId] = useState(null);
-  const [replyType, setReplyType] = useState('');
+  const [replyType, setReplyType] = useState("");
   const [replyTarget, setReplyTarget] = useState(null);
-  const [filterStatus, setFilterStatus] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [roleFilter, setRoleFilter] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [selectedFileType, setSelectedFileType] = useState('');
-  
+  const [filterStatus, setFilterStatus] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [roleFilter, setRoleFilter] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedFileType, setSelectedFileType] = useState("");
+
   // Forms
   const [courseForm] = Form.useForm();
   const [materialForm] = Form.useForm();
@@ -334,7 +512,7 @@ const AdminFacultyDashboard = () => {
   const [profileForm] = Form.useForm();
   const [settingsForm] = Form.useForm();
   const [announcementForm] = Form.useForm();
-  
+
   // Refs for audio players
   const audioRef = useRef(null);
   const tableAudioRef = useRef(null);
@@ -343,24 +521,24 @@ const AdminFacultyDashboard = () => {
   const downloadFile = async (filePath, fileName) => {
     try {
       const response = await fetch(`${API_BASE_URL}/${filePath}`, {
-        headers: getAuthHeaders()
+        headers: getAuthHeaders(),
       });
       if (!response.ok) {
-        throw new Error('Failed to download file');
+        throw new Error("Failed to download file");
       }
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = url;
-      a.download = fileName || 'download';
+      a.download = fileName || "download";
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-      message.success('File downloaded successfully');
+      message.success("File downloaded successfully");
     } catch (error) {
-      console.error('Download error:', error);
-      message.error('Failed to download file');
+      console.error("Download error:", error);
+      message.error("Failed to download file");
     }
   };
 
@@ -394,10 +572,10 @@ const AdminFacultyDashboard = () => {
         setCollapsed(false);
       }
     };
-    
+
     handleResize(); // Call once on mount
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   // Cleanup audio when component unmounts
@@ -432,7 +610,7 @@ const AdminFacultyDashboard = () => {
 
   // Language initialization
   useEffect(() => {
-    const storedLanguage = localStorage.getItem('language');
+    const storedLanguage = localStorage.getItem("language");
     if (storedLanguage && storedLanguage !== i18n.language) {
       i18n.changeLanguage(storedLanguage);
     }
@@ -441,37 +619,38 @@ const AdminFacultyDashboard = () => {
   // Authentication check
   useEffect(() => {
     const checkAuth = () => {
-      const token = localStorage.getItem('authToken') || localStorage.getItem('token');
-      const userRole = localStorage.getItem('userRole');
-      const userEmail = localStorage.getItem('userEmail');
-      const userName = localStorage.getItem('userName');
-      const userId = localStorage.getItem('userId');
-      
+      const token =
+        localStorage.getItem("authToken") || localStorage.getItem("token");
+      const userRole = localStorage.getItem("userRole");
+      const userEmail = localStorage.getItem("userEmail");
+      const userName = localStorage.getItem("userName");
+      const userId = localStorage.getItem("userId");
+
       if (!token || !userRole) {
-        history.push('/login');
+        history.push("/login");
         return;
       }
 
-      if (!['superadmin', 'admin', 'faculty', 'teacher'].includes(userRole)) {
-        message.error('Access denied. Admin/Faculty role required.');
-        history.push('/');
+      if (!["superadmin", "admin", "faculty", "teacher"].includes(userRole)) {
+        message.error("Access denied. Admin/Faculty role required.");
+        history.push("/");
         return;
       }
-      
+
       const userData = {
         id: userId,
         email: userEmail,
         role: userRole,
         name: userName,
-        firstName: userName?.split(' ')[0] || 'Admin',
-        lastName: userName?.split(' ')[1] || 'User'
+        firstName: userName?.split(" ")[0] || "Admin",
+        lastName: userName?.split(" ")[1] || "User",
       };
-      
+
       setCurrentUser(userData);
-      
+
       // Load complete user profile data
       loadCurrentUserProfile();
-      
+
       fetchInitialData();
       setLoading(false);
     };
@@ -482,10 +661,16 @@ const AdminFacultyDashboard = () => {
   // Recalculate dashboard stats when key data changes
   useEffect(() => {
     if (students.length > 0 || courses.length > 0 || materials.length > 0) {
-      console.log('?? Admin data changed, refreshing dashboard stats...');
+      console.log("?? Admin data changed, refreshing dashboard stats...");
       fetchDashboardStats();
     }
-  }, [students.length, courses.length, teachers.length, materials.length, applications.length]);
+  }, [
+    students.length,
+    courses.length,
+    teachers.length,
+    materials.length,
+    applications.length,
+  ]);
 
   // Fetch initial data
   const fetchInitialData = async () => {
@@ -502,41 +687,41 @@ const AdminFacultyDashboard = () => {
         fetchAnnouncements(),
         fetchEnrollments(),
         fetchEnrollmentLogs(),
-        fetchNotifications()
+        fetchNotifications(),
       ]);
-      
+
       // Fetch dashboard stats after basic data is loaded
       await fetchDashboardStats();
-      
+
       // Fetch enrollment analytics after all basic data is loaded
       await fetchEnrollmentAnalytics();
     } catch (error) {
-      console.error('Error fetching initial data:', error);
+      console.error("Error fetching initial data:", error);
     }
   };
 
   const fetchEnrollments = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/enrollments`, {
-        headers: getAuthHeaders()
+        headers: getAuthHeaders(),
       });
-      
+
       if (response.status === 401) {
-        message.error('Authentication failed. Please login again.');
+        message.error("Authentication failed. Please login again.");
         localStorage.clear();
-        history.push('/');
+        history.push("/");
         return;
       }
-      
+
       if (response.ok) {
         const data = await response.json();
         setEnrollments(data.enrollments || data || []);
       } else {
-        console.error('Failed to fetch enrollments:', response.statusText);
+        // Silently set empty array if endpoint doesn't exist
         setEnrollments([]);
       }
     } catch (error) {
-      console.error('Error fetching enrollments:', error);
+      // Silently handle errors
       setEnrollments([]);
     }
   };
@@ -544,25 +729,25 @@ const AdminFacultyDashboard = () => {
   const fetchEnrollmentLogs = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/enrollment-logs`, {
-        headers: getAuthHeaders()
+        headers: getAuthHeaders(),
       });
-      
+
       if (response.status === 401) {
-        message.error('Authentication failed. Please login again.');
+        message.error("Authentication failed. Please login again.");
         localStorage.clear();
-        history.push('/');
+        history.push("/");
         return;
       }
-      
+
       if (response.ok) {
         const data = await response.json();
         setEnrollmentLogs(data.logs || data || []);
       } else {
-        console.error('Failed to fetch enrollment logs:', response.statusText);
+        // Silently set empty array if endpoint doesn't exist
         setEnrollmentLogs([]);
       }
     } catch (error) {
-      console.error('Error fetching enrollment logs:', error);
+      // Silently handle errors
       setEnrollmentLogs([]);
     }
   };
@@ -570,32 +755,38 @@ const AdminFacultyDashboard = () => {
   // Fetch real enrollment analytics data
   const fetchEnrollmentAnalytics = async () => {
     try {
-      console.log('📊 Fetching enrollment analytics...');
+      console.log("📊 Fetching enrollment analytics...");
       const authHeaders = getAuthHeaders();
 
       // Fetch enrollment analytics data
-      const response = await fetch(`${API_BASE_URL}/api/analytics/enrollments`, {
-        headers: authHeaders
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/analytics/enrollments`,
+        {
+          headers: authHeaders,
+        }
+      );
 
       if (response.status === 401) {
-        message.error('Authentication failed. Please login again.');
+        message.error("Authentication failed. Please login again.");
         localStorage.clear();
-        history.push('/');
+        history.push("/");
         return;
       }
 
       if (response.ok) {
         const analyticsData = await response.json();
-        console.log('✅ Analytics data received:', analyticsData);
-        
+        console.log("✅ Analytics data received:", analyticsData);
+
         // Process and set the analytics data
         setEnrollmentAnalytics({
           trendsData: analyticsData.trendsData || { labels: [], datasets: [] },
-          coursePopularity: analyticsData.coursePopularity || { labels: [], datasets: [] },
+          coursePopularity: analyticsData.coursePopularity || {
+            labels: [],
+            datasets: [],
+          },
           courseEngagement: analyticsData.courseEngagement || [],
           recentActivities: analyticsData.recentActivities || [],
-          attentionItems: analyticsData.attentionItems || []
+          attentionItems: analyticsData.attentionItems || [],
         });
 
         // Set enrollment stats
@@ -607,16 +798,18 @@ const AdminFacultyDashboard = () => {
           monthlyGrowth: analyticsData.stats?.monthlyGrowth || 0,
           engagementRate: analyticsData.stats?.engagementRate || 0,
           successRate: analyticsData.stats?.successRate || 0,
-          progressImprovement: analyticsData.stats?.progressImprovement || 0
+          progressImprovement: analyticsData.stats?.progressImprovement || 0,
         });
-
       } else {
-        console.error('Failed to fetch enrollment analytics:', response.statusText);
+        console.error(
+          "Failed to fetch enrollment analytics:",
+          response.statusText
+        );
         // Fall back to calculating from existing data
         await calculateAnalyticsFromExistingData();
       }
     } catch (error) {
-      console.error('Error fetching enrollment analytics:', error);
+      console.error("Error fetching enrollment analytics:", error);
       // Fall back to calculating from existing data
       await calculateAnalyticsFromExistingData();
     }
@@ -625,28 +818,44 @@ const AdminFacultyDashboard = () => {
   // Calculate analytics from existing data when API is not available
   const calculateAnalyticsFromExistingData = async () => {
     try {
-      console.log('🔢 Calculating analytics from existing data...');
-      
+      console.log("🔢 Calculating analytics from existing data...");
+
       // Calculate stats from existing data
-      const totalEnrollments = enrollments.length || dashboardStats.totalEnrollments || 0;
-      const activeStudents = enrollments.filter(e => e.status === 'active').length || 
-                            students.filter(s => s.isApproved === true).length || 0;
-      
+      const totalEnrollments =
+        enrollments.length || dashboardStats.totalEnrollments || 0;
+      const activeStudents =
+        enrollments.filter((e) => e.status === "active").length ||
+        students.filter((s) => s.isApproved === true).length ||
+        0;
+
       // Calculate course completions
-      const completedEnrollments = enrollments.filter(e => e.status === 'completed').length;
-      const courseCompletions = completedEnrollments || Math.floor(totalEnrollments * 0.65); // 65% estimated completion rate
-      
+      const completedEnrollments = enrollments.filter(
+        (e) => e.status === "completed"
+      ).length;
+      const courseCompletions =
+        completedEnrollments || Math.floor(totalEnrollments * 0.65); // 65% estimated completion rate
+
       // Calculate average progress (simulate from progress records or estimate)
-      const averageProgress = progressRecords.length > 0 ? 
-        Math.round(progressRecords.reduce((sum, record) => sum + (record.progress || 0), 0) / progressRecords.length) :
-        Math.floor(Math.random() * 20) + 70; // 70-90% estimated range
-      
+      const averageProgress =
+        progressRecords.length > 0
+          ? Math.round(
+              progressRecords.reduce(
+                (sum, record) => sum + (record.progress || 0),
+                0
+              ) / progressRecords.length
+            )
+          : Math.floor(Math.random() * 20) + 70; // 70-90% estimated range
+
       // Calculate growth and engagement rates
       const monthlyGrowth = Math.floor(Math.random() * 25) + 10; // 10-35% growth
-      const engagementRate = Math.floor((activeStudents / Math.max(totalEnrollments, 1)) * 100);
-      const successRate = Math.floor((courseCompletions / Math.max(totalEnrollments, 1)) * 100);
+      const engagementRate = Math.floor(
+        (activeStudents / Math.max(totalEnrollments, 1)) * 100
+      );
+      const successRate = Math.floor(
+        (courseCompletions / Math.max(totalEnrollments, 1)) * 100
+      );
       const progressImprovement = Math.floor(Math.random() * 20) + 5; // 5-25% improvement
-      
+
       setEnrollmentStats({
         totalEnrollments,
         activeStudents,
@@ -655,7 +864,7 @@ const AdminFacultyDashboard = () => {
         monthlyGrowth,
         engagementRate,
         successRate,
-        progressImprovement
+        progressImprovement,
       });
 
       // Generate trends data from courses and enrollments
@@ -670,89 +879,110 @@ const AdminFacultyDashboard = () => {
         coursePopularity,
         courseEngagement,
         recentActivities,
-        attentionItems
+        attentionItems,
       });
 
-      console.log('Analytics calculated from existing data');
+      console.log("Analytics calculated from existing data");
     } catch (error) {
-      console.error('Error calculating analytics from existing data:', error);
+      console.error("Error calculating analytics from existing data:", error);
     }
   };
 
   // Generate trends data from existing courses and enrollment data
   const generateTrendsFromData = () => {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'];
-    
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+    ];
+
     return {
       labels: months,
       datasets: [
         {
-          label: 'New Enrollments',
+          label: "New Enrollments",
           data: months.map(() => Math.floor(Math.random() * 30) + 20), // 20-50 per month
-          borderColor: '#1890ff',
-          backgroundColor: 'rgba(24, 144, 255, 0.1)',
+          borderColor: "#1890ff",
+          backgroundColor: "rgba(24, 144, 255, 0.1)",
           fill: true,
-          tension: 0.4
+          tension: 0.4,
         },
         {
-          label: 'Completed Courses', 
+          label: "Completed Courses",
           data: months.map(() => Math.floor(Math.random() * 25) + 15), // 15-40 per month
-          borderColor: '#52c41a',
-          backgroundColor: 'rgba(82, 196, 26, 0.1)',
+          borderColor: "#52c41a",
+          backgroundColor: "rgba(82, 196, 26, 0.1)",
           fill: true,
-          tension: 0.4
+          tension: 0.4,
         },
         {
-          label: 'Dropped Out',
+          label: "Dropped Out",
           data: months.map(() => Math.floor(Math.random() * 8) + 2), // 2-10 per month
-          borderColor: '#f5222d',
-          backgroundColor: 'rgba(245, 34, 45, 0.1)',
+          borderColor: "#f5222d",
+          backgroundColor: "rgba(245, 34, 45, 0.1)",
           fill: true,
-          tension: 0.4
-        }
-      ]
+          tension: 0.4,
+        },
+      ],
     };
   };
 
   // Generate course popularity from real course data
   const generateCoursePopularityFromData = () => {
     const topCourses = courses.slice(0, 5);
-    const courseNames = topCourses.length > 0 ? 
-      topCourses.map(course => course.title || course.name) :
-      ['English Conversation', 'Business English', 'TOEIC Prep', 'Grammar Focus', 'Writing Skills'];
-    
-    const courseCounts = courseNames.map(() => Math.floor(Math.random() * 40) + 10);
-    
+    const courseNames =
+      topCourses.length > 0
+        ? topCourses.map((course) => course.title || course.name)
+        : [
+            "English Conversation",
+            "Business English",
+            "TOEIC Prep",
+            "Grammar Focus",
+            "Writing Skills",
+          ];
+
+    const courseCounts = courseNames.map(
+      () => Math.floor(Math.random() * 40) + 10
+    );
+
     return {
       labels: courseNames,
-      datasets: [{
-        data: courseCounts,
-        backgroundColor: [
-          '#1890ff',
-          '#52c41a', 
-          '#faad14',
-          '#722ed1',
-          '#f5222d'
-        ],
-        borderWidth: 2,
-        borderColor: '#fff'
-      }]
+      datasets: [
+        {
+          data: courseCounts,
+          backgroundColor: [
+            "#1890ff",
+            "#52c41a",
+            "#faad14",
+            "#722ed1",
+            "#f5222d",
+          ],
+          borderWidth: 2,
+          borderColor: "#fff",
+        },
+      ],
     };
   };
 
   // Generate course engagement data from real courses
   const generateCourseEngagementFromData = () => {
-    return courses.slice(0, 5).map(course => {
+    return courses.slice(0, 5).map((course) => {
       const enrolled = Math.floor(Math.random() * 80) + 20;
       const active = Math.floor(enrolled * (0.7 + Math.random() * 0.25)); // 70-95% of enrolled
       const completion = Math.floor(active * (0.6 + Math.random() * 0.3)); // 60-90% of active
-      
+
       return {
-        course: course.title || course.name || 'Unknown Course',
+        course: course.title || course.name || "Unknown Course",
         enrolled,
         active,
         completion,
-        rating: (4.0 + Math.random() * 1.0).toFixed(1) // 4.0-5.0 rating
+        rating: (4.0 + Math.random() * 1.0).toFixed(1), // 4.0-5.0 rating
       };
     });
   };
@@ -760,173 +990,308 @@ const AdminFacultyDashboard = () => {
   // Generate recent activities from real data
   const generateRecentActivitiesFromData = () => {
     const activities = [];
-    const studentNames = students.slice(0, 10).map(s => `${s.firstName} ${s.lastName}`);
-    const courseNames = courses.slice(0, 5).map(c => c.title || c.name);
-    
+    const studentNames = students
+      .slice(0, 10)
+      .map((s) => `${s.firstName} ${s.lastName}`);
+    const courseNames = courses.slice(0, 5).map((c) => c.title || c.name);
+
     if (studentNames.length === 0) {
       // Fallback names
-      studentNames.push('John Smith', 'Sarah Johnson', 'Mike Chen', 'Lisa Wang');
+      studentNames.push(
+        "John Smith",
+        "Sarah Johnson",
+        "Mike Chen",
+        "Lisa Wang"
+      );
     }
-    
+
     if (courseNames.length === 0) {
       // Fallback course names
-      courseNames.push('English Conversation', 'Business English', 'Grammar Focus');
+      courseNames.push(
+        "English Conversation",
+        "Business English",
+        "Grammar Focus"
+      );
     }
-    
+
     const actionTypes = [
-      { action: 'Enrolled', status: 'active' },
-      { action: 'Completed Module', status: 'progress' },
-      { action: 'Certificate Earned', status: 'completed' },
-      { action: 'Started Assignment', status: 'progress' }
+      { action: "Enrolled", status: "active" },
+      { action: "Completed Module", status: "progress" },
+      { action: "Certificate Earned", status: "completed" },
+      { action: "Started Assignment", status: "progress" },
     ];
-    
+
     for (let i = 0; i < 6; i++) {
-      const randomStudent = studentNames[Math.floor(Math.random() * studentNames.length)];
-      const randomCourse = courseNames[Math.floor(Math.random() * courseNames.length)];
-      const randomAction = actionTypes[Math.floor(Math.random() * actionTypes.length)];
-      
+      const randomStudent =
+        studentNames[Math.floor(Math.random() * studentNames.length)];
+      const randomCourse =
+        courseNames[Math.floor(Math.random() * courseNames.length)];
+      const randomAction =
+        actionTypes[Math.floor(Math.random() * actionTypes.length)];
+
       activities.push({
         id: i + 1,
         student: randomStudent,
         action: randomAction.action,
         course: randomCourse,
-        timestamp: moment().subtract(Math.floor(Math.random() * 48), 'hours'), // Last 48 hours
-        status: randomAction.status
+        timestamp: moment().subtract(Math.floor(Math.random() * 48), "hours"), // Last 48 hours
+        status: randomAction.status,
       });
     }
-    
+
     return activities;
   };
 
   // Generate attention items from real data analysis
   const generateAttentionItemsFromData = () => {
     const items = [];
-    
+
     // Analyze real data for attention items
-    const inactiveStudents = students.filter(s => s.isApproved === true).length;
-    const pendingApplications = applications.filter(a => a.status === 'pending').length;
-    const unreadMessages = contactMessages.filter(m => m.status === 'pending').length;
-    
+    const inactiveStudents = students.filter(
+      (s) => s.isApproved === true
+    ).length;
+    const pendingApplications = applications.filter(
+      (a) => a.status === "pending"
+    ).length;
+    const unreadMessages = contactMessages.filter(
+      (m) => m.status === "pending"
+    ).length;
+
     if (inactiveStudents > 10) {
       items.push({
-        title: `${Math.floor(inactiveStudents * 0.6)} students have not logged in for 7+ days`,
-        description: 'Consider sending engagement reminders',
-        status: 'warning',
-        action: 'Send Reminder'
+        title: `${Math.floor(
+          inactiveStudents * 0.6
+        )} students have not logged in for 7+ days`,
+        description: "Consider sending engagement reminders",
+        status: "warning",
+        action: "Send Reminder",
       });
     }
-    
+
     if (pendingApplications > 0) {
       items.push({
         title: `${pendingApplications} new enrollment requests awaiting approval`,
-        description: 'Applications submitted recently',
-        status: 'success',
-        action: 'Review Applications'
+        description: "Applications submitted recently",
+        status: "success",
+        action: "Review Applications",
       });
     }
-    
+
     if (unreadMessages > 0) {
       items.push({
         title: `${unreadMessages} unread contact messages`,
-        description: 'Student inquiries waiting for response',
-        status: 'info',
-        action: 'Review Messages'
+        description: "Student inquiries waiting for response",
+        status: "info",
+        action: "Review Messages",
       });
     }
-    
+
     // Add some additional simulated items based on data
     items.push(
       {
-        title: `${Math.floor(Math.random() * 10) + 5} students showing declining progress`,
-        description: 'May need additional support or tutoring',
-        status: 'error',
-        action: 'Schedule Check-in'
+        title: `${
+          Math.floor(Math.random() * 10) + 5
+        } students showing declining progress`,
+        description: "May need additional support or tutoring",
+        status: "error",
+        action: "Schedule Check-in",
       },
       {
-        title: `${Math.floor(Math.random() * 15) + 10} course completion certificates pending`,
-        description: 'Ready for manual review and approval',
-        status: 'info',
-        action: 'Review & Approve'
+        title: `${
+          Math.floor(Math.random() * 15) + 10
+        } course completion certificates pending`,
+        description: "Ready for manual review and approval",
+        status: "info",
+        action: "Review & Approve",
       }
     );
-    
+
     return items;
   };
 
   const fetchDashboardStats = async () => {
     try {
       const authHeaders = getAuthHeaders();
-      
-      // Fetch various stats
-      const [coursesRes, studentsRes, teachersRes, applicationsRes, messagesRes, materialsRes, enrollmentsRes, quizzesRes, homeworkRes, listeningRes] = await Promise.all([
-        fetch(`${API_BASE_URL}/api/courses`, { headers: authHeaders }),
-        fetch(`${API_BASE_URL}/api/users?role=student`, { headers: authHeaders }),
-        fetch(`${API_BASE_URL}/api/users?role=teacher`, { headers: authHeaders }),
-        fetch(`${API_BASE_URL}/api/applications`, { headers: authHeaders }),
-        fetch(`${API_BASE_URL}/api/contact`, { headers: authHeaders }),
-        fetch(`${API_BASE_URL}/api/course-materials`, { headers: authHeaders }),
-        fetch(`${API_BASE_URL}/api/enrollments/stats`, { headers: authHeaders }),
-        fetch(`${API_BASE_URL}/api/quizzes`, { headers: authHeaders }).catch(() => ({ ok: false })),
-        fetch(`${API_BASE_URL}/api/homework`, { headers: authHeaders }).catch(() => ({ ok: false })),
-        fetch(`${API_BASE_URL}/api/listening-exercises`, { headers: authHeaders }).catch(() => ({ ok: false }))
+
+      console.log("📊 Fetching dashboard stats from API...");
+
+      // Fetch various stats (suppress errors for 404s as they're expected)
+      const [
+        coursesRes,
+        studentsRes,
+        teachersRes,
+        applicationsRes,
+        messagesRes,
+        materialsRes,
+        enrollmentsRes,
+        quizzesRes,
+        homeworkRes,
+        listeningRes,
+      ] = await Promise.all([
+        fetch(`${API_BASE_URL}/api/courses`, { headers: authHeaders }).catch(
+          () => ({ ok: false })
+        ),
+        fetch(`${API_BASE_URL}/api/users?role=student`, {
+          headers: authHeaders,
+        }).catch(() => ({ ok: false })),
+        fetch(`${API_BASE_URL}/api/users?role=teacher`, {
+          headers: authHeaders,
+        }).catch(() => ({ ok: false })),
+        fetch(`${API_BASE_URL}/api/applications`, {
+          headers: authHeaders,
+        }).catch(() => ({ ok: false })),
+        fetch(`${API_BASE_URL}/api/contact`, { headers: authHeaders }).catch(
+          () => ({ ok: false })
+        ),
+        fetch(`${API_BASE_URL}/api/course-materials`, {
+          headers: authHeaders,
+        }).catch(() => ({ ok: false })),
+        fetch(`${API_BASE_URL}/api/enrollments/stats`, {
+          headers: authHeaders,
+        }).catch(() => ({ ok: false })),
+        fetch(`${API_BASE_URL}/api/quizzes`, { headers: authHeaders }).catch(
+          () => ({ ok: false })
+        ),
+        fetch(`${API_BASE_URL}/api/homework`, { headers: authHeaders }).catch(
+          () => ({ ok: false })
+        ),
+        fetch(`${API_BASE_URL}/api/listening-exercises`, {
+          headers: authHeaders,
+        }).catch(() => ({ ok: false })),
       ]);
 
       // Check for authentication errors
-      if (coursesRes.status === 401 || studentsRes.status === 401 || teachersRes.status === 401 ||
-          applicationsRes.status === 401 || messagesRes.status === 401 || enrollmentsRes.status === 401) {
-        message.error('Authentication failed. Please login again.');
+      if (
+        coursesRes.status === 401 ||
+        studentsRes.status === 401 ||
+        teachersRes.status === 401 ||
+        applicationsRes.status === 401 ||
+        messagesRes.status === 401 ||
+        enrollmentsRes.status === 401
+      ) {
+        message.error("Authentication failed. Please login again.");
         localStorage.clear();
-        history.push('/');
+        history.push("/");
         return;
       }
 
-      const coursesData = await coursesRes.json();
-      const studentsData = await studentsRes.json();
-      const teachersData = await teachersRes.json();
-      const applicationsData = await applicationsRes.json();
-      const messagesData = await messagesRes.json();
-      const materialsData = materialsRes.ok ? await materialsRes.json() : { materials: [] };
-      const enrollmentsData = enrollmentsRes.ok ? await enrollmentsRes.json() : { total: 0, active: 0, pending: 0, newThisMonth: 0 };
-      const quizzesData = quizzesRes.ok ? await quizzesRes.json() : { quizzes: [] };
-      const homeworkData = homeworkRes.ok ? await homeworkRes.json() : { homework: [] };
-      const listeningData = listeningRes.ok ? await listeningRes.json() : { exercises: [] };
+      // Parse responses with proper error handling
+      const coursesData = coursesRes.ok
+        ? await coursesRes.json()
+        : { courses: [] };
+      const studentsData = studentsRes.ok
+        ? await studentsRes.json()
+        : { users: [] };
+      const teachersData = teachersRes.ok
+        ? await teachersRes.json()
+        : { users: [] };
+      const applicationsData = applicationsRes.ok
+        ? await applicationsRes.json()
+        : { applications: [] };
+      const messagesData = messagesRes.ok
+        ? await messagesRes.json()
+        : { contacts: [] };
+      const materialsData = materialsRes.ok
+        ? await materialsRes.json()
+        : { materials: [] };
+      const enrollmentsData = enrollmentsRes.ok
+        ? await enrollmentsRes.json()
+        : { total: 0, active: 0, pending: 0, newThisMonth: 0 };
+      const quizzesData = quizzesRes.ok
+        ? await quizzesRes.json()
+        : { quizzes: [] };
+      const homeworkData = homeworkRes.ok
+        ? await homeworkRes.json()
+        : { homework: [] };
+      const listeningData = listeningRes.ok
+        ? await listeningRes.json()
+        : { exercises: [] };
+
+      // Helper function to safely get array from data
+      const getArrayFromData = (data, key) => {
+        if (!data) return [];
+        if (Array.isArray(data)) return data;
+        if (data[key] && Array.isArray(data[key])) return data[key];
+        return [];
+      };
+
+      // Extract arrays safely
+      const coursesArray = getArrayFromData(coursesData, "courses");
+      const studentsArray = getArrayFromData(studentsData, "users");
+      const teachersArray = getArrayFromData(teachersData, "users");
+      const applicationsArray = getArrayFromData(
+        applicationsData,
+        "applications"
+      );
+      const messagesArray = getArrayFromData(messagesData, "contacts");
+      const materialsArray = getArrayFromData(materialsData, "materials");
+      const quizzesArray = getArrayFromData(quizzesData, "quizzes");
+      const homeworkArray = getArrayFromData(homeworkData, "homework");
+      const listeningArray = getArrayFromData(listeningData, "exercises");
+
+      // Log fetched data for debugging
+      console.log("📈 Dashboard data fetched:", {
+        courses: coursesArray.length,
+        students: studentsArray.length,
+        teachers: teachersArray.length,
+        applications: applicationsArray.length,
+        materials: materialsArray.length,
+        enrollments: enrollmentsData.total || 0,
+        quizzes: quizzesArray.length,
+        homework: homeworkArray.length,
+        listening: listeningArray.length,
+      });
 
       // Calculate stats
       const stats = {
-        totalCourses: coursesData.courses?.length || coursesData.length || 0,
-        totalStudents: studentsData.users?.length || studentsData.length || 0,
-        totalTeachers: teachersData.users?.length || teachersData.length || 0,
-        totalApplications: applicationsData.applications?.length || applicationsData.length || 0,
-        pendingApplications: (applicationsData.applications || applicationsData || []).filter(a => a.status === 'pending').length,
-        approvedApplications: (applicationsData.applications || applicationsData || []).filter(a => a.status === 'approved').length,
-        rejectedApplications: (applicationsData.applications || applicationsData || []).filter(a => a.status === 'rejected').length,
-        totalMessages: messagesData.contacts?.length || messagesData.length || 0,
-        unreadMessages: (messagesData.contacts || messagesData || []).filter(m => m.status === 'pending').length,
-        totalMaterials: materialsData.materials?.length || materialsData.length || 0,
-        totalHomework: homeworkData.homework?.length || homeworkData.length || 0,
-        totalQuizzes: quizzesData.quizzes?.length || quizzesData.length || 0,
-        totalListeningExercises: listeningData.exercises?.length || listeningData.length || 0,
+        totalCourses: coursesArray.length,
+        totalStudents: studentsArray.length,
+        totalTeachers: teachersArray.length,
+        totalApplications: applicationsArray.length,
+        pendingApplications: applicationsArray.filter(
+          (a) => a.status === "pending"
+        ).length,
+        approvedApplications: applicationsArray.filter(
+          (a) => a.status === "approved"
+        ).length,
+        rejectedApplications: applicationsArray.filter(
+          (a) => a.status === "rejected"
+        ).length,
+        totalMessages: messagesArray.length,
+        unreadMessages: messagesArray.filter((m) => m.status === "pending")
+          .length,
+        totalMaterials: materialsArray.length,
+        totalHomework: homeworkArray.length,
+        totalQuizzes: quizzesArray.length,
+        totalListeningExercises: listeningArray.length,
         totalEnrollments: enrollmentsData.total || 0,
         newEnrollmentsThisMonth: enrollmentsData.newThisMonth || 0,
         activeEnrollments: enrollmentsData.active || 0,
         pendingEnrollments: enrollmentsData.pending || 0,
         completionRate: 75,
         pendingSubmissions: 8,
-        activeQuizzes: (quizzesData.quizzes || quizzesData || []).filter(q => {
+        activeQuizzes: quizzesArray.filter((q) => {
           const now = moment();
-          return q.availableFrom && q.availableTo &&
-            now.isAfter(moment(q.availableFrom)) && 
-            now.isBefore(moment(q.availableTo));
-        }).length
+          return (
+            q.availableFrom &&
+            q.availableTo &&
+            now.isAfter(moment(q.availableFrom)) &&
+            now.isBefore(moment(q.availableTo))
+          );
+        }).length,
       };
 
+      console.log("✅ Dashboard stats calculated:", stats);
       setDashboardStats(stats);
     } catch (error) {
-      console.error('Error fetching dashboard stats:', error);
-      if (error.message.includes('401') || error.message.includes('Unauthorized')) {
-        message.error('Session expired. Please login again.');
+      console.error("❌ Error fetching dashboard stats:", error);
+      if (
+        error.message.includes("401") ||
+        error.message.includes("Unauthorized")
+      ) {
+        message.error("Session expired. Please login again.");
         localStorage.clear();
-        history.push('/');
+        history.push("/");
       }
     }
   };
@@ -934,25 +1299,25 @@ const AdminFacultyDashboard = () => {
   const fetchCourses = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/courses`, {
-        headers: getAuthHeaders()
+        headers: getAuthHeaders(),
       });
-      
+
       if (response.status === 401) {
-        message.error('Authentication failed. Please login again.');
+        message.error("Authentication failed. Please login again.");
         localStorage.clear();
-        history.push('/');
+        history.push("/");
         return;
       }
-      
+
       if (response.ok) {
         const data = await response.json();
         setCourses(data.courses || data || []);
       } else {
-        console.error('Failed to fetch courses:', response.statusText);
+        console.error("Failed to fetch courses:", response.statusText);
         setCourses([]);
       }
     } catch (error) {
-      console.error('Error fetching courses:', error);
+      console.error("Error fetching courses:", error);
       setCourses([]);
     }
   };
@@ -960,22 +1325,22 @@ const AdminFacultyDashboard = () => {
   const fetchStudents = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/users?role=student`, {
-        headers: getAuthHeaders()
+        headers: getAuthHeaders(),
       });
-      
+
       if (response.status === 401) {
-        message.error('Authentication failed. Please login again.');
+        message.error("Authentication failed. Please login again.");
         localStorage.clear();
-        history.push('/');
+        history.push("/");
         return;
       }
-      
+
       if (response.ok) {
         const data = await response.json();
         setStudents(data.users || data || []);
       }
     } catch (error) {
-      console.error('Error fetching students:', error);
+      console.error("Error fetching students:", error);
       setStudents([]);
     }
   };
@@ -983,22 +1348,22 @@ const AdminFacultyDashboard = () => {
   const fetchApplications = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/applications`, {
-        headers: getAuthHeaders()
+        headers: getAuthHeaders(),
       });
-      
+
       if (response.status === 401) {
-        message.error('Authentication failed. Please login again.');
+        message.error("Authentication failed. Please login again.");
         localStorage.clear();
-        history.push('/');
+        history.push("/");
         return;
       }
-      
+
       if (response.ok) {
         const data = await response.json();
         setApplications(data.applications || data || []);
       }
     } catch (error) {
-      console.error('Error fetching applications:', error);
+      console.error("Error fetching applications:", error);
       setApplications([]);
     }
   };
@@ -1006,22 +1371,22 @@ const AdminFacultyDashboard = () => {
   const fetchContactMessages = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/contact`, {
-        headers: getAuthHeaders()
+        headers: getAuthHeaders(),
       });
-      
+
       if (response.status === 401) {
-        message.error('Authentication failed. Please login again.');
+        message.error("Authentication failed. Please login again.");
         localStorage.clear();
-        history.push('/');
+        history.push("/");
         return;
       }
-      
+
       if (response.ok) {
         const data = await response.json();
         setContactMessages(data.contacts || data || []);
       }
     } catch (error) {
-      console.error('Error fetching contact messages:', error);
+      console.error("Error fetching contact messages:", error);
       setContactMessages([]);
     }
   };
@@ -1029,22 +1394,22 @@ const AdminFacultyDashboard = () => {
   const fetchUsers = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/users`, {
-        headers: getAuthHeaders()
+        headers: getAuthHeaders(),
       });
-      
+
       if (response.status === 401) {
-        message.error('Authentication failed. Please login again.');
+        message.error("Authentication failed. Please login again.");
         localStorage.clear();
-        history.push('/');
+        history.push("/");
         return;
       }
-      
+
       if (response.ok) {
         const data = await response.json();
         setUsers(data.users || data || []);
       }
     } catch (error) {
-      console.error('Error fetching users:', error);
+      console.error("Error fetching users:", error);
       setUsers([]);
     }
   };
@@ -1052,34 +1417,32 @@ const AdminFacultyDashboard = () => {
   const fetchTeachers = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/users?role=teacher`, {
-        headers: getAuthHeaders()
+        headers: getAuthHeaders(),
       });
-      
+
       if (response.status === 401) {
-        message.error('Authentication failed. Please login again.');
+        message.error("Authentication failed. Please login again.");
         localStorage.clear();
-        history.push('/');
+        history.push("/");
         return;
       }
-      
+
       if (response.ok) {
         const data = await response.json();
         setTeachers(data.users || data || []);
       }
     } catch (error) {
-      console.error('Error fetching teachers:', error);
+      console.error("Error fetching teachers:", error);
       setTeachers([]);
     }
   };
-
-
 
   const fetchMaterials = async () => {
     try {
       const data = await materialAPI.getAll();
       setMaterials(data || []);
     } catch (error) {
-      console.error('Error fetching materials:', error);
+      console.error("Error fetching materials:", error);
       setMaterials([]);
     }
   };
@@ -1087,13 +1450,13 @@ const AdminFacultyDashboard = () => {
   const fetchAnnouncements = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/announcements`, {
-        headers: getAuthHeaders()
+        headers: getAuthHeaders(),
       });
 
       if (response.status === 401) {
-        message.error('Authentication failed. Please login again.');
+        message.error("Authentication failed. Please login again.");
         localStorage.clear();
-        history.push('/');
+        history.push("/");
         return;
       }
 
@@ -1101,32 +1464,31 @@ const AdminFacultyDashboard = () => {
         const data = await response.json();
         setAnnouncements(data.announcements || []);
       } else {
-        console.error('Failed to fetch announcements');
+        // Silently set empty array if endpoint doesn't exist (404)
         setAnnouncements([]);
       }
     } catch (error) {
-      console.error('Error fetching announcements:', error);
+      // Silently handle errors - endpoint might not be implemented yet
       setAnnouncements([]);
     }
   };
 
-
-
-
-
   // Update application status
   const updateApplicationStatus = async (applicationId, status) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/applications/${applicationId}/status`, {
-        method: 'PUT',
-        headers: getAuthHeaders(),
-        body: JSON.stringify({ status })
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/applications/${applicationId}/status`,
+        {
+          method: "PUT",
+          headers: getAuthHeaders(),
+          body: JSON.stringify({ status }),
+        }
+      );
 
       if (response.status === 401) {
-        message.error('Authentication failed. Please login again.');
+        message.error("Authentication failed. Please login again.");
         localStorage.clear();
-        history.push('/');
+        history.push("/");
         return;
       }
 
@@ -1136,27 +1498,32 @@ const AdminFacultyDashboard = () => {
         setApplicationModalVisible(false);
       } else {
         const errorData = await response.json();
-        message.error(errorData.message || 'Failed to update application status');
+        message.error(
+          errorData.message || "Failed to update application status"
+        );
       }
     } catch (error) {
-      console.error('Error updating application status:', error);
-      message.error('Error updating application status');
+      console.error("Error updating application status:", error);
+      message.error("Error updating application status");
     }
   };
 
   // Update contact message status
   const updateContactStatus = async (messageId, newStatus) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/contact/${messageId}/status`, {
-        method: 'PUT',
-        headers: getAuthHeaders(),
-        body: JSON.stringify({ status: newStatus })
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/contact/${messageId}/status`,
+        {
+          method: "PUT",
+          headers: getAuthHeaders(),
+          body: JSON.stringify({ status: newStatus }),
+        }
+      );
 
       if (response.status === 401) {
-        message.error('Authentication failed. Please login again.');
+        message.error("Authentication failed. Please login again.");
         localStorage.clear();
-        history.push('/');
+        history.push("/");
         return;
       }
 
@@ -1165,44 +1532,47 @@ const AdminFacultyDashboard = () => {
         message.success(`Message marked as ${newStatus}`);
       } else {
         const errorData = await response.json();
-        message.error(errorData.message || 'Failed to update contact status');
+        message.error(errorData.message || "Failed to update contact status");
       }
     } catch (error) {
-      console.error('Error updating contact status:', error);
-      message.error('Error updating contact status');
+      console.error("Error updating contact status:", error);
+      message.error("Error updating contact status");
     }
   };
 
   // Update user status
-  const updateUserStatus = async (userId, isApproved, rejectionReason = '') => {
+  const updateUserStatus = async (userId, isApproved, rejectionReason = "") => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/users/${userId}/approval`, {
-        method: 'PUT',
-        headers: getAuthHeaders(),
-        body: JSON.stringify({ 
-          approved: isApproved,
-          rejectionReason 
-        })
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/users/${userId}/approval`,
+        {
+          method: "PUT",
+          headers: getAuthHeaders(),
+          body: JSON.stringify({
+            approved: isApproved,
+            rejectionReason,
+          }),
+        }
+      );
 
       if (response.status === 401) {
-        message.error('Authentication failed. Please login again.');
+        message.error("Authentication failed. Please login again.");
         localStorage.clear();
-        history.push('/');
+        history.push("/");
         return;
       }
 
       if (response.ok) {
-        const action = isApproved ? 'approved' : 'rejected';
+        const action = isApproved ? "approved" : "rejected";
         message.success(`User ${action} successfully`);
         fetchUsers();
       } else {
         const errorData = await response.json();
-        message.error(errorData.message || 'Failed to update user status');
+        message.error(errorData.message || "Failed to update user status");
       }
     } catch (error) {
-      console.error('Error updating user status:', error);
-      message.error('Error updating user status');
+      console.error("Error updating user status:", error);
+      message.error("Error updating user status");
     }
   };
 
@@ -1210,15 +1580,15 @@ const AdminFacultyDashboard = () => {
   const createUser = async (userData) => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/users`, {
-        method: 'POST',
+        method: "POST",
         headers: getAuthHeaders(),
-        body: JSON.stringify(userData)
+        body: JSON.stringify(userData),
       });
 
       if (response.status === 401) {
-        message.error('Authentication failed. Please login again.');
+        message.error("Authentication failed. Please login again.");
         localStorage.clear();
-        history.push('/');
+        history.push("/");
         return;
       }
 
@@ -1229,11 +1599,11 @@ const AdminFacultyDashboard = () => {
         fetchUsers();
       } else {
         const errorData = await response.json();
-        message.error(errorData.message || 'Failed to create user');
+        message.error(errorData.message || "Failed to create user");
       }
     } catch (error) {
-      console.error('Error creating user:', error);
-      message.error('Error creating user');
+      console.error("Error creating user:", error);
+      message.error("Error creating user");
     }
   };
 
@@ -1247,53 +1617,59 @@ const AdminFacultyDashboard = () => {
         category: values.category,
         level: values.level,
         duration: values.duration || 12, // Default 12 weeks
-        startDate: values.startDate?.format('YYYY-MM-DD'),
-        endDate: values.endDate?.format('YYYY-MM-DD'),
+        startDate: values.startDate?.format("YYYY-MM-DD"),
+        endDate: values.endDate?.format("YYYY-MM-DD"),
         maxStudents: values.capacity || values.maxStudents || 30,
-        isActive: values.status === 'active' // Map status to isActive boolean
+        isActive: values.status === "active", // Map status to isActive boolean
       };
 
-      console.log('Creating/updating course with data:', courseData);
+      console.log("Creating/updating course with data:", courseData);
 
       if (editingCourse) {
-        const response = await fetch(`${API_BASE_URL}/api/courses/${editingCourse._id}`, {
-          method: 'PUT',
-          headers: getAuthHeaders(),
-          body: JSON.stringify(courseData)
-        });
+        const response = await fetch(
+          `${API_BASE_URL}/api/courses/${editingCourse._id}`,
+          {
+            method: "PUT",
+            headers: getAuthHeaders(),
+            body: JSON.stringify(courseData),
+          }
+        );
 
         if (response.status === 401) {
-          message.error('Authentication failed. Please login again.');
+          message.error("Authentication failed. Please login again.");
           localStorage.clear();
-          history.push('/');
+          history.push("/");
           return;
         }
 
         if (response.ok) {
-          message.success('Course updated successfully');
+          message.success("Course updated successfully");
         } else {
           const errorData = await response.json();
-          throw new Error(errorData.message || 'Failed to update course');
+          throw new Error(errorData.message || "Failed to update course");
         }
       } else {
         const response = await fetch(`${API_BASE_URL}/api/courses`, {
-          method: 'POST',
+          method: "POST",
           headers: getAuthHeaders(),
-          body: JSON.stringify(courseData)
+          body: JSON.stringify(courseData),
         });
 
         if (response.status === 401) {
-          message.error('Authentication failed. Please login again.');
+          message.error("Authentication failed. Please login again.");
           localStorage.clear();
-          history.push('/');
+          history.push("/");
           return;
         }
 
         if (response.ok) {
-          message.success('Course created successfully');
+          message.success("Course created successfully");
         } else {
           const errorData = await response.json();
-          throw new Error(errorData.message || t('admin.courseManagement.messages.createError'));
+          throw new Error(
+            errorData.message ||
+              t("admin.courseManagement.messages.createError")
+          );
         }
       }
 
@@ -1303,41 +1679,41 @@ const AdminFacultyDashboard = () => {
       fetchCourses();
       fetchDashboardStats(); // Refresh stats
     } catch (error) {
-      console.error('Error saving course:', error);
-      message.error(error.message || 'Error saving course');
+      console.error("Error saving course:", error);
+      message.error(error.message || "Error saving course");
     }
   };
-
-
 
   // Handle material upload
   const handleUploadMaterial = async (values) => {
     if (fileList.length === 0) {
-      message.error('Please select a file to upload');
+      message.error("Please select a file to upload");
       return;
     }
 
     const formData = new FormData();
-    formData.append('file', fileList[0]);
-    formData.append('title', values.title);
-    formData.append('description', values.description || '');
-    formData.append('course', values.course);
-    formData.append('category', values.category);
-    formData.append('week', values.week || 1);
-    formData.append('lesson', values.lesson || 1);
-    formData.append('tags', JSON.stringify(values.tags || []));
-    formData.append('accessLevel', values.accessLevel || 'course_students');
+    formData.append("file", fileList[0]);
+    formData.append("title", values.title);
+    formData.append("description", values.description || "");
+    formData.append("course", values.course);
+    formData.append("category", values.category);
+    formData.append("week", values.week || 1);
+    formData.append("lesson", values.lesson || 1);
+    formData.append("tags", JSON.stringify(values.tags || []));
+    formData.append("accessLevel", values.accessLevel || "course_students");
 
     try {
       await materialAPI.create(formData);
-      message.success(t('admin.materialManagement.messages.uploadSuccess'));
+      message.success(t("admin.materialManagement.messages.uploadSuccess"));
       setMaterialModalVisible(false);
       materialForm.resetFields();
       setFileList([]);
       fetchMaterials();
     } catch (error) {
-      console.error('Upload error:', error);
-      message.error(error.message || t('admin.materialManagement.messages.uploadError'));
+      console.error("Upload error:", error);
+      message.error(
+        error.message || t("admin.materialManagement.messages.uploadError")
+      );
     }
   };
 
@@ -1347,71 +1723,79 @@ const AdminFacultyDashboard = () => {
       const announcementData = {
         title: values.title,
         content: values.content,
-        targetAudience: values.targetAudience || 'all',
-        priority: values.priority || 'medium',
-        type: values.type || 'general',
+        targetAudience: values.targetAudience || "all",
+        priority: values.priority || "medium",
+        type: values.type || "general",
         isSticky: values.isSticky || false,
-        publishDate: values.publishDate ? values.publishDate.toISOString() : new Date().toISOString(),
+        publishDate: values.publishDate
+          ? values.publishDate.toISOString()
+          : new Date().toISOString(),
         expiryDate: values.expiryDate ? values.expiryDate.toISOString() : null,
-        tags: values.tags || []
+        tags: values.tags || [],
       };
 
-      const url = selectedAnnouncement 
+      const url = selectedAnnouncement
         ? `${API_BASE_URL}/api/announcements/${selectedAnnouncement._id}`
         : `${API_BASE_URL}/api/announcements`;
-      
-      const method = selectedAnnouncement ? 'PUT' : 'POST';
+
+      const method = selectedAnnouncement ? "PUT" : "POST";
 
       const response = await fetch(url, {
         method,
         headers: getAuthHeaders(),
-        body: JSON.stringify(announcementData)
+        body: JSON.stringify(announcementData),
       });
 
       if (response.status === 401) {
-        message.error('Authentication failed. Please login again.');
+        message.error("Authentication failed. Please login again.");
         localStorage.clear();
-        history.push('/');
+        history.push("/");
         return;
       }
 
       if (response.ok) {
         const result = await response.json();
-        message.success(`?? Announcement ${selectedAnnouncement ? 'updated' : 'created'} successfully! Notifications sent to ${announcementData.targetAudience} users.`);
+        message.success(
+          `?? Announcement ${
+            selectedAnnouncement ? "updated" : "created"
+          } successfully! Notifications sent to ${
+            announcementData.targetAudience
+          } users.`
+        );
         setAnnouncementModalVisible(false);
         setSelectedAnnouncement(null);
         fetchAnnouncements();
-        
+
         // Show success notification with details
         notification.success({
-          message: 'Announcement Published!',
+          message: "Announcement Published!",
           description: `"${values.title}" has been published and notifications sent to ${announcementData.targetAudience} users.`,
-          icon: <SoundOutlined style={{ color: '#1890ff' }} />,
-          duration: 4
+          icon: <SoundOutlined style={{ color: "#1890ff" }} />,
+          duration: 4,
         });
       } else {
         const errorData = await response.json();
-        message.error(errorData.message || 'Failed to save announcement');
+        message.error(errorData.message || "Failed to save announcement");
       }
     } catch (error) {
-      console.error('Error saving announcement:', error);
-      message.error('Failed to save announcement');
+      console.error("Error saving announcement:", error);
+      message.error("Failed to save announcement");
     }
   };
 
-
-
   const handleLogout = () => {
     confirm({
-      title: t('adminPortal.logoutConfirm.title') || 'Confirm Logout',
-      content: t('adminPortal.logoutConfirm.message') || 'Are you sure you want to logout?',
-      okText: t('adminPortal.logoutConfirm.yes') || 'Yes',
-      cancelText: t('adminPortal.logoutConfirm.no') || 'No',
+      title: t("adminPortal.logoutConfirm.title") || "Confirm Logout",
+      content:
+        t("adminPortal.logoutConfirm.message") ||
+        "Are you sure you want to logout?",
+      okText: t("adminPortal.logoutConfirm.yes") || "Yes",
+      cancelText: t("adminPortal.logoutConfirm.no") || "No",
       onOk() {
         localStorage.clear();
-        message.success('Logged out successfully');
-        history.push('/');
-      }
+        message.success("Logged out successfully");
+        history.push("/");
+      },
     });
   };
 
@@ -1420,28 +1804,30 @@ const AdminFacultyDashboard = () => {
     setSelectedCallUser(user);
     setCallType(userType);
     setVideoCallModalVisible(true);
-    message.success(`Initiating video call with ${user.firstName} ${user.lastName}`);
+    message.success(
+      `Initiating video call with ${user.firstName} ${user.lastName}`
+    );
   };
 
   const startVideoCall = () => {
     setIsCallActive(true);
     setCallDuration(0);
-    
+
     // Simulate Zoom-like call initialization
     const callInterval = setInterval(() => {
-      setCallDuration(prev => prev + 1);
+      setCallDuration((prev) => prev + 1);
     }, 1000);
 
     // Store interval for cleanup
     window.callInterval = callInterval;
-    
+
     // Simulate connecting to video service (in real implementation, integrate with Zoom SDK, WebRTC, etc.)
-    message.success('Video call started! Connecting...');
-    
+    message.success("Video call started! Connecting...");
+
     // In a real implementation, this would integrate with:
     // - Zoom SDK
     // - WebRTC
-    // - Agora Video SDK  
+    // - Agora Video SDK
     // - Twilio Video
     // etc.
   };
@@ -1449,63 +1835,70 @@ const AdminFacultyDashboard = () => {
   const endVideoCall = () => {
     setIsCallActive(false);
     setCallDuration(0);
-    
+
     if (window.callInterval) {
       clearInterval(window.callInterval);
       window.callInterval = null;
     }
-    
-    message.info('Video call ended');
+
+    message.info("Video call ended");
     setVideoCallModalVisible(false);
   };
 
   const formatCallDuration = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return `${mins.toString().padStart(2, "0")}:${secs
+      .toString()
+      .padStart(2, "0")}`;
   };
 
   // Notification Functions
   const fetchNotifications = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/notifications?limit=20`, {
-        headers: getAuthHeaders()
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/notifications?limit=20`,
+        {
+          headers: getAuthHeaders(),
+        }
+      );
 
       if (response.status === 401) {
-        message.error('Authentication failed. Please login again.');
+        message.error("Authentication failed. Please login again.");
         localStorage.clear();
-        history.push('/');
+        history.push("/");
         return;
       }
 
       if (response.ok) {
         const data = await response.json();
-        
+
         // Transform backend notifications to match frontend format
-        const transformedNotifications = data.notifications.map(notification => ({
-          id: notification._id,
-          type: notification.type,
-          title: notification.title,
-          message: notification.message,
-          timestamp: notification.createdAt,
-          read: notification.read,
-          sender: notification.sender,
-          priority: notification.priority,
-          icon: getNotificationIcon(notification.type),
-          color: getNotificationColor(notification.type),
-          actionUrl: notification.actionUrl
-        }));
+        const transformedNotifications = data.notifications.map(
+          (notification) => ({
+            id: notification._id,
+            type: notification.type,
+            title: notification.title,
+            message: notification.message,
+            timestamp: notification.createdAt,
+            read: notification.read,
+            sender: notification.sender,
+            priority: notification.priority,
+            icon: getNotificationIcon(notification.type),
+            color: getNotificationColor(notification.type),
+            actionUrl: notification.actionUrl,
+          })
+        );
 
         setNotifications(transformedNotifications);
         setUnreadCount(data.pagination.unreadCount);
       } else {
-        console.error('Failed to fetch notifications:', response.statusText);
+        console.error("Failed to fetch notifications:", response.statusText);
         setNotifications([]);
         setUnreadCount(0);
       }
     } catch (error) {
-      console.error('Error fetching notifications:', error);
+      console.error("Error fetching notifications:", error);
       setNotifications([]);
       setUnreadCount(0);
     }
@@ -1514,122 +1907,138 @@ const AdminFacultyDashboard = () => {
   // Helper functions for notification icons and colors
   const getNotificationIcon = (type) => {
     const iconMap = {
-      student_message: 'message',
-      assignment_submission: 'file-text',
-      admin_announcement: 'bell',
-      quiz_submission: 'question-circle',
-      grade_request: 'question-circle',
-      enrollment: 'user-add',
-      progress_update: 'bar-chart',
-      grade_update: 'trophy',
-      system_alert: 'warning',
-      application_update: 'solution'
+      student_message: "message",
+      assignment_submission: "file-text",
+      admin_announcement: "bell",
+      quiz_submission: "question-circle",
+      grade_request: "question-circle",
+      enrollment: "user-add",
+      progress_update: "bar-chart",
+      grade_update: "trophy",
+      system_alert: "warning",
+      application_update: "solution",
     };
-    return iconMap[type] || 'bell';
+    return iconMap[type] || "bell";
   };
 
   const getNotificationColor = (type) => {
     const colorMap = {
-      student_message: '#1890ff',
-      assignment_submission: '#52c41a',
-      admin_announcement: '#faad14',
-      quiz_submission: '#722ed1',
-      grade_request: '#fa8c16',
-      enrollment: '#13c2c2',
-      progress_update: '#2f54eb',
-      grade_update: '#f5222d',
-      system_alert: '#fa541c',
-      application_update: '#1890ff'
+      student_message: "#1890ff",
+      assignment_submission: "#52c41a",
+      admin_announcement: "#faad14",
+      quiz_submission: "#722ed1",
+      grade_request: "#fa8c16",
+      enrollment: "#13c2c2",
+      progress_update: "#2f54eb",
+      grade_update: "#f5222d",
+      system_alert: "#fa541c",
+      application_update: "#1890ff",
     };
-    return colorMap[type] || '#1890ff';
+    return colorMap[type] || "#1890ff";
   };
 
   const markNotificationAsRead = async (notificationId) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/notifications/${notificationId}/read`, {
-        method: 'PATCH',
-        headers: getAuthHeaders()
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/notifications/${notificationId}/read`,
+        {
+          method: "PATCH",
+          headers: getAuthHeaders(),
+        }
+      );
 
       if (response.ok) {
         // Update local state
-        setNotifications(prev => 
-          prev.map(notification => 
-            notification.id === notificationId 
+        setNotifications((prev) =>
+          prev.map((notification) =>
+            notification.id === notificationId
               ? { ...notification, read: true }
               : notification
           )
         );
-        setUnreadCount(prev => Math.max(0, prev - 1));
+        setUnreadCount((prev) => Math.max(0, prev - 1));
       } else {
-        console.error('Failed to mark notification as read');
+        console.error("Failed to mark notification as read");
       }
     } catch (error) {
-      console.error('Error marking notification as read:', error);
+      console.error("Error marking notification as read:", error);
     }
   };
 
   const handleNotificationClick = (notification) => {
     markNotificationAsRead(notification.id);
-    
+
     // Navigate to the Applications page (which contains both applications and contacts)
-    setActiveKey('applications');
-    
+    setActiveKey("applications");
+
     // Set a small delay to ensure the page loads before trying to switch tabs
     setTimeout(() => {
-      if (notification.type === 'application') {
+      if (notification.type === "application") {
         // Switch to applications tab
-        const applicationsTab = document.querySelector('[data-node-key="applications"]');
+        const applicationsTab = document.querySelector(
+          '[data-node-key="applications"]'
+        );
         if (applicationsTab) {
           applicationsTab.click();
         }
-      } else if (notification.type === 'contact') {
+      } else if (notification.type === "contact") {
         // Switch to contacts tab
-        const contactsTab = document.querySelector('[data-node-key="contacts"]');
+        const contactsTab = document.querySelector(
+          '[data-node-key="contacts"]'
+        );
         if (contactsTab) {
           contactsTab.click();
         }
       }
     }, 100);
-    
+
     setNotificationVisible(false);
-    
+
     // Show success message
     message.success(
-      notification.type === 'application' 
-        ? t('adminPortal.notifications.navigatedToApplication') || 'Navigated to Applications'
-        : t('adminPortal.notifications.navigatedToContact') || 'Navigated to Contact Messages'
+      notification.type === "application"
+        ? t("adminPortal.notifications.navigatedToApplication") ||
+            "Navigated to Applications"
+        : t("adminPortal.notifications.navigatedToContact") ||
+            "Navigated to Contact Messages"
     );
   };
 
   const approveItem = async (type, itemId) => {
     try {
-      const endpoint = type === 'application' ? 'applications' : 'contact';
-      const response = await fetch(`${API_BASE_URL}/api/${endpoint}/${itemId}/approve`, {
-        method: 'PUT',
-        headers: getAuthHeaders()
-      });
+      const endpoint = type === "application" ? "applications" : "contact";
+      const response = await fetch(
+        `${API_BASE_URL}/api/${endpoint}/${itemId}/approve`,
+        {
+          method: "PUT",
+          headers: getAuthHeaders(),
+        }
+      );
 
       if (response.ok) {
-        message.success(`${type === 'application' ? 'Application' : 'Contact'} approved successfully!`);
-        
-        // Remove notification for approved item
-        setNotifications(prev => 
-          prev.filter(n => n.id !== `${type}_${itemId}`)
+        message.success(
+          `${
+            type === "application" ? "Application" : "Contact"
+          } approved successfully!`
         );
-        setUnreadCount(prev => Math.max(0, prev - 1));
-        
+
+        // Remove notification for approved item
+        setNotifications((prev) =>
+          prev.filter((n) => n.id !== `${type}_${itemId}`)
+        );
+        setUnreadCount((prev) => Math.max(0, prev - 1));
+
         // Refresh data
-        if (type === 'application') {
+        if (type === "application") {
           fetchApplications();
         } else {
           fetchContactMessages();
         }
-        
+
         // Refresh notifications
         fetchNotifications();
       } else {
-        throw new Error('Failed to approve');
+        throw new Error("Failed to approve");
       }
     } catch (error) {
       console.error(`Error approving ${type}:`, error);
@@ -1639,32 +2048,39 @@ const AdminFacultyDashboard = () => {
 
   const rejectItem = async (type, itemId) => {
     try {
-      const endpoint = type === 'application' ? 'applications' : 'contact';
-      const response = await fetch(`${API_BASE_URL}/api/${endpoint}/${itemId}/reject`, {
-        method: 'PUT',
-        headers: getAuthHeaders()
-      });
+      const endpoint = type === "application" ? "applications" : "contact";
+      const response = await fetch(
+        `${API_BASE_URL}/api/${endpoint}/${itemId}/reject`,
+        {
+          method: "PUT",
+          headers: getAuthHeaders(),
+        }
+      );
 
       if (response.ok) {
-        message.success(`${type === 'application' ? 'Application' : 'Contact'} rejected successfully!`);
-        
-        // Remove notification for rejected item
-        setNotifications(prev => 
-          prev.filter(n => n.id !== `${type}_${itemId}`)
+        message.success(
+          `${
+            type === "application" ? "Application" : "Contact"
+          } rejected successfully!`
         );
-        setUnreadCount(prev => Math.max(0, prev - 1));
-        
+
+        // Remove notification for rejected item
+        setNotifications((prev) =>
+          prev.filter((n) => n.id !== `${type}_${itemId}`)
+        );
+        setUnreadCount((prev) => Math.max(0, prev - 1));
+
         // Refresh data
-        if (type === 'application') {
+        if (type === "application") {
           fetchApplications();
         } else {
           fetchContactMessages();
         }
-        
+
         // Refresh notifications
         fetchNotifications();
       } else {
-        throw new Error('Failed to reject');
+        throw new Error("Failed to reject");
       }
     } catch (error) {
       console.error(`Error rejecting ${type}:`, error);
@@ -1675,13 +2091,13 @@ const AdminFacultyDashboard = () => {
   // State for profile image preview
   const [profileImagePreview, setProfileImagePreview] = useState(null);
   const [profileImageFile, setProfileImageFile] = useState(null);
-  
+
   // System settings state
   const [systemSettings, setSystemSettings] = useState({
-    systemName: 'Forum Academy',
-    adminEmail: 'admin@forumacademy.com',
-    timeZone: 'UTC',
-    language: 'en',
+    systemName: "Forum Academy",
+    adminEmail: "admin@forumacademy.com",
+    timeZone: "UTC",
+    language: "en",
     emailNotifications: true,
     smsNotifications: false,
     pushNotifications: true,
@@ -1689,7 +2105,7 @@ const AdminFacultyDashboard = () => {
     maintenanceMode: false,
     autoBackup: true,
     sessionTimeout: 30, // minutes
-    maxLoginAttempts: 5
+    maxLoginAttempts: 5,
   });
   const [settingsLoading, setSettingsLoading] = useState(false);
 
@@ -1699,9 +2115,12 @@ const AdminFacultyDashboard = () => {
     const previewUrl = URL.createObjectURL(file);
     setProfileImagePreview(previewUrl);
     setProfileImageFile(file);
-    
+
     // Don't upload automatically, just show preview
-    message.info(t('profile.imagePreviewReady') || 'Image preview ready. Click "Update Profile" to save.');
+    message.info(
+      t("profile.imagePreviewReady") ||
+        'Image preview ready. Click "Update Profile" to save.'
+    );
     return false; // Prevent automatic upload
   };
 
@@ -1710,73 +2129,92 @@ const AdminFacultyDashboard = () => {
     try {
       setLoading(true);
       let profileImageUrl = currentUser?.profileImage;
-      
+
       // First upload the image if there's a new one
       if (profileImageFile) {
         setAvatarUploading(true);
         const formData = new FormData();
-        formData.append('avatar', profileImageFile);
-        
+        formData.append("avatar", profileImageFile);
+
         try {
           // Try the dedicated upload endpoint first
-          let uploadResponse = await fetch(`${API_BASE_URL}/api/auth/upload-avatar`, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${localStorage.getItem('token') || localStorage.getItem('authToken')}`
-            },
-            body: formData
-          });
-          
+          let uploadResponse = await fetch(
+            `${API_BASE_URL}/api/auth/upload-avatar`,
+            {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${
+                  localStorage.getItem("token") ||
+                  localStorage.getItem("authToken")
+                }`,
+              },
+              body: formData,
+            }
+          );
+
           // If upload-avatar endpoint doesn't exist (404), try alternative approach
           if (uploadResponse.status === 404) {
-            console.log('Upload-avatar endpoint not available, using profile update with file');
+            console.log(
+              "Upload-avatar endpoint not available, using profile update with file"
+            );
             // For now, skip the separate upload and include the file data in the profile update
-            message.warning('Avatar upload endpoint is not available. Using alternative method.');
+            message.warning(
+              "Avatar upload endpoint is not available. Using alternative method."
+            );
             profileImageUrl = null; // Will be handled in profile update
           } else if (uploadResponse.ok) {
             const uploadData = await uploadResponse.json();
             profileImageUrl = uploadData.url;
           } else {
             const errorData = await uploadResponse.json().catch(() => ({}));
-            throw new Error(errorData.message || 'Avatar upload failed');
+            throw new Error(errorData.message || "Avatar upload failed");
           }
         } catch (uploadError) {
-          console.error('Avatar upload error:', uploadError);
-          if (uploadError.message.includes('404') || uploadError.message.includes('not found')) {
-            message.warning('Avatar upload service is temporarily unavailable. Please try updating your profile without changing the avatar, or contact support.');
+          console.error("Avatar upload error:", uploadError);
+          if (
+            uploadError.message.includes("404") ||
+            uploadError.message.includes("not found")
+          ) {
+            message.warning(
+              "Avatar upload service is temporarily unavailable. Please try updating your profile without changing the avatar, or contact support."
+            );
           } else {
-            message.error(t('profile.avatarUploadFailed') || 'Failed to upload avatar');
+            message.error(
+              t("profile.avatarUploadFailed") || "Failed to upload avatar"
+            );
           }
           return;
         } finally {
           setAvatarUploading(false);
         }
       }
-      
+
       // Then update the profile with all data including new avatar URL
       const payload = { ...values };
       if (profileImageUrl) payload.profileImage = profileImageUrl;
-      
+
       const response = await fetch(`${API_BASE_URL}/api/auth/profile`, {
-        method: 'PUT',
+        method: "PUT",
         headers: getAuthHeaders(),
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
-      
+
       if (response.ok) {
         const updatedUser = await response.json();
-        
+
         // Make sure the profileImage is included in the updated user
         if (profileImageUrl && !updatedUser.profileImage) {
           updatedUser.profileImage = profileImageUrl;
         }
-        
+
         setCurrentUser(updatedUser);
-        
+
         // Update localStorage with the new user data for persistence
-        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-        
-        message.success(t('profile.updateSuccess') || 'Profile updated successfully!');
+        localStorage.setItem("currentUser", JSON.stringify(updatedUser));
+
+        message.success(
+          t("profile.updateSuccess") || "Profile updated successfully!"
+        );
         setProfileModalVisible(false);
         profileForm.resetFields();
         // Clean up preview states
@@ -1786,11 +2224,11 @@ const AdminFacultyDashboard = () => {
           URL.revokeObjectURL(profileImagePreview);
         }
       } else {
-        throw new Error('Failed to update profile');
+        throw new Error("Failed to update profile");
       }
     } catch (error) {
-      console.error('Profile update error:', error);
-      message.error(t('profile.updateError') || 'Failed to update profile');
+      console.error("Profile update error:", error);
+      message.error(t("profile.updateError") || "Failed to update profile");
     } finally {
       setLoading(false);
     }
@@ -1799,19 +2237,19 @@ const AdminFacultyDashboard = () => {
   // Load system settings
   const loadSystemSettings = async () => {
     try {
-      const savedSettings = localStorage.getItem('systemSettings');
+      const savedSettings = localStorage.getItem("systemSettings");
       if (savedSettings) {
         const settings = JSON.parse(savedSettings);
         setSystemSettings(settings);
         settingsForm.setFieldsValue(settings);
-        
+
         // Apply language setting
         if (settings.language && translationInstance) {
           translationInstance.changeLanguage(settings.language);
         }
       }
     } catch (error) {
-      console.error('Error loading system settings:', error);
+      console.error("Error loading system settings:", error);
     }
   };
 
@@ -1820,31 +2258,31 @@ const AdminFacultyDashboard = () => {
     setSettingsLoading(true);
     try {
       const newSettings = { ...systemSettings, ...values };
-      
+
       // Save to localStorage
-      localStorage.setItem('systemSettings', JSON.stringify(newSettings));
+      localStorage.setItem("systemSettings", JSON.stringify(newSettings));
       setSystemSettings(newSettings);
-      
+
       // Apply language change immediately
       if (values.language && translationInstance) {
         translationInstance.changeLanguage(values.language);
       }
-      
+
       // Save to backend (optional)
       try {
         await fetch(`${API_BASE_URL}/api/admin/settings`, {
-          method: 'PUT',
+          method: "PUT",
           headers: getAuthHeaders(),
-          body: JSON.stringify(newSettings)
+          body: JSON.stringify(newSettings),
         });
       } catch (backendError) {
-        console.log('Backend settings save failed, using local storage only');
+        console.log("Backend settings save failed, using local storage only");
       }
-      
-      message.success(t('adminDashboard.settings.saveSuccess'));
+
+      message.success(t("adminDashboard.settings.saveSuccess"));
     } catch (error) {
-      console.error('Error saving settings:', error);
-      message.error(t('adminDashboard.settings.saveError'));
+      console.error("Error saving settings:", error);
+      message.error(t("adminDashboard.settings.saveError"));
     } finally {
       setSettingsLoading(false);
     }
@@ -1853,10 +2291,10 @@ const AdminFacultyDashboard = () => {
   // Reset settings to default
   const handleResetSettings = () => {
     const defaultSettings = {
-      systemName: 'Forum Academy',
-      adminEmail: 'admin@forumacademy.com',
-      timeZone: 'UTC',
-      language: 'en',
+      systemName: "Forum Academy",
+      adminEmail: "admin@forumacademy.com",
+      timeZone: "UTC",
+      language: "en",
       emailNotifications: true,
       smsNotifications: false,
       pushNotifications: true,
@@ -1864,48 +2302,49 @@ const AdminFacultyDashboard = () => {
       maintenanceMode: false,
       autoBackup: true,
       sessionTimeout: 30,
-      maxLoginAttempts: 5
+      maxLoginAttempts: 5,
     };
-    
+
     setSystemSettings(defaultSettings);
     settingsForm.setFieldsValue(defaultSettings);
-    localStorage.setItem('systemSettings', JSON.stringify(defaultSettings));
-    translationInstance.changeLanguage('en');
-    message.success(t('adminDashboard.settings.resetSuccess'));
+    localStorage.setItem("systemSettings", JSON.stringify(defaultSettings));
+    translationInstance.changeLanguage("en");
+    message.success(t("adminDashboard.settings.resetSuccess"));
   };
 
   // Load current user profile data
   const loadCurrentUserProfile = async () => {
     try {
       // First try to get from localStorage
-      const storedUser = localStorage.getItem('currentUser');
+      const storedUser = localStorage.getItem("currentUser");
       if (storedUser) {
         const userData = JSON.parse(storedUser);
         setCurrentUser(userData);
       }
-      
+
       // Then fetch fresh data from server
       const response = await fetch(`${API_BASE_URL}/api/auth/profile`, {
-        method: 'GET',
-        headers: getAuthHeaders()
+        method: "GET",
+        headers: getAuthHeaders(),
       });
-      
+
       if (response.ok) {
         const userData = await response.json();
         setCurrentUser(userData);
-        localStorage.setItem('currentUser', JSON.stringify(userData));
-        
+        localStorage.setItem("currentUser", JSON.stringify(userData));
+
         // Set profile form initial values
         profileForm.setFieldsValue({
-          firstName: userData.firstName || '',
-          lastName: userData.lastName || '',
-          email: userData.email || '',
-          phone: userData.phone || '',
-          bio: userData.bio || ''
+          firstName: userData.firstName || "",
+          lastName: userData.lastName || "",
+          email: userData.email || "",
+          phone: userData.phone || "",
+          bio: userData.bio || "",
         });
       }
+      // Silently ignore errors if profile endpoint doesn't exist
     } catch (error) {
-      console.error('Error loading user profile:', error);
+      // Silently handle errors - use localStorage data if available
     }
   };
 
@@ -1936,51 +2375,62 @@ const AdminFacultyDashboard = () => {
   const addTestNotifications = () => {
     const testNotifications = [
       {
-        id: 'test_app_1',
-        type: 'application',
-        title: 'New Application',
-        message: 'John Smith applied for Japanese Language Course',
+        id: "test_app_1",
+        type: "application",
+        title: "New Application",
+        message: "John Smith applied for Japanese Language Course",
         timestamp: new Date(),
-        data: { _id: 'test1', firstName: 'John', lastName: 'Smith', course: 'Japanese Language' },
-        read: false
+        data: {
+          _id: "test1",
+          firstName: "John",
+          lastName: "Smith",
+          course: "Japanese Language",
+        },
+        read: false,
       },
       {
-        id: 'test_contact_1',
-        type: 'contact',
-        title: 'New Contact Message',
-        message: 'Sarah Johnson sent a message: Inquiry about enrollment',
+        id: "test_contact_1",
+        type: "contact",
+        title: "New Contact Message",
+        message: "Sarah Johnson sent a message: Inquiry about enrollment",
         timestamp: new Date(Date.now() - 300000), // 5 minutes ago
-        data: { _id: 'test2', name: 'Sarah Johnson', subject: 'Inquiry about enrollment' },
-        read: false
-      }
+        data: {
+          _id: "test2",
+          name: "Sarah Johnson",
+          subject: "Inquiry about enrollment",
+        },
+        read: false,
+      },
     ];
-    
-    setNotifications(prev => [...testNotifications, ...prev]);
-    setUnreadCount(prev => prev + testNotifications.length);
-    message.success('Test notifications added!');
+
+    setNotifications((prev) => [...testNotifications, ...prev]);
+    setUnreadCount((prev) => prev + testNotifications.length);
+    message.success("Test notifications added!");
   };
 
   // Function to create a real test contact message
   const createTestContact = async () => {
     try {
       const testContactData = {
-        name: 'Test User',
-        email: 'test@example.com',
-        phone: '123-456-7890',
-        subject: 'Test Contact Message',
-        message: 'This is a test contact message to check notifications.'
+        name: "Test User",
+        email: "test@example.com",
+        phone: "123-456-7890",
+        subject: "Test Contact Message",
+        message: "This is a test contact message to check notifications.",
       };
 
       const response = await fetch(`${API_BASE_URL}/api/contact`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(testContactData)
+        body: JSON.stringify(testContactData),
       });
 
       if (response.ok) {
-        message.success('Test contact created! Check notifications in 5 seconds.');
+        message.success(
+          "Test contact created! Check notifications in 5 seconds."
+        );
         // Refresh notifications after a short delay
         setTimeout(() => {
           fetchNotifications();
@@ -1990,21 +2440,24 @@ const AdminFacultyDashboard = () => {
         message.error(`Failed to create test contact: ${errorData.message}`);
       }
     } catch (error) {
-      console.error('Error creating test contact:', error);
-      message.error('Error creating test contact');
+      console.error("Error creating test contact:", error);
+      message.error("Error creating test contact");
     }
   };
 
   // Function to refresh notifications with current language
   const refreshNotificationsWithLanguage = () => {
-    console.log('?? Refreshing notifications for language:', translationInstance.language);
+    console.log(
+      "?? Refreshing notifications for language:",
+      translationInstance.language
+    );
     fetchNotifications();
   };
 
   // Refresh notifications when language changes
   useEffect(() => {
     if (currentUser && notifications.length > 0) {
-      console.log('?? Language changed to:', translationInstance.language);
+      console.log("?? Language changed to:", translationInstance.language);
       refreshNotificationsWithLanguage();
     }
   }, [translationInstance.language]);
@@ -2012,50 +2465,50 @@ const AdminFacultyDashboard = () => {
   // Menu items with icons
   const menuItems = [
     {
-      key: 'overview',
+      key: "overview",
       icon: <DashboardOutlined />,
-      label: t('adminSidebar.navigation.overview')
+      label: t("adminSidebar.navigation.overview"),
     },
     {
-      key: 'applications',
+      key: "applications",
       icon: <SolutionOutlined />,
-      label: t('adminSidebar.navigation.applications')
+      label: t("adminSidebar.navigation.applications"),
     },
     {
-      key: 'enrollments',
+      key: "enrollments",
       icon: <UsergroupAddOutlined />,
-      label: t('adminSidebar.navigation.enrollments')
+      label: t("adminSidebar.navigation.enrollments"),
     },
     {
-      key: 'courses',
+      key: "courses",
       icon: <BookOutlined />,
-      label: t('adminSidebar.navigation.courses')
+      label: t("adminSidebar.navigation.courses"),
     },
     {
-      key: 'materials',
+      key: "materials",
       icon: <FolderOutlined />,
-      label: t('adminSidebar.navigation.materials')
+      label: t("adminSidebar.navigation.materials"),
     },
     {
-      key: 'students',
+      key: "students",
       icon: <TeamOutlined />,
-      label: t('adminSidebar.navigation.students')
+      label: t("adminSidebar.navigation.students"),
     },
     {
-      key: 'announcements',
+      key: "announcements",
       icon: <SoundOutlined />,
-      label: t('adminSidebar.navigation.announcements')
+      label: t("adminSidebar.navigation.announcements"),
     },
     {
-      key: 'analytics',
+      key: "analytics",
       icon: <BarChartOutlined />,
-      label: t('adminSidebar.navigation.analytics')
+      label: t("adminSidebar.navigation.analytics"),
     },
     {
-      key: 'settings',
+      key: "settings",
       icon: <SettingOutlined />,
-      label: t('adminSidebar.navigation.settings')
-    }
+      label: t("adminSidebar.navigation.settings"),
+    },
   ];
 
   // Render Dashboard Overview
@@ -2066,55 +2519,91 @@ const AdminFacultyDashboard = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card className="modern-stat-card" hoverable>
             <Statistic
-              title={t('admin.metrics.totalStudents')}
+              title={t("admin.metrics.totalStudents")}
               value={dashboardStats.totalStudents}
-              prefix={<TeamOutlined className="stat-icon-blue" style={{ fontSize: '24px' }} />}
-              valueStyle={{ color: '#1890ff', fontSize: '32px', fontWeight: 700 }}
+              prefix={
+                <TeamOutlined
+                  className="stat-icon-blue"
+                  style={{ fontSize: "24px" }}
+                />
+              }
+              valueStyle={{
+                color: "#1890ff",
+                fontSize: "32px",
+                fontWeight: 700,
+              }}
             />
-            <div style={{ marginTop: 8, color: '#8c8c8c', fontSize: '12px' }}>
-              {t('admin.metrics.activeLearnersEnrolled')}
+            <div style={{ marginTop: 8, color: "#8c8c8c", fontSize: "12px" }}>
+              {t("admin.metrics.activeLearnersEnrolled")}
             </div>
           </Card>
         </Col>
-        
+
         <Col xs={24} sm={12} lg={6}>
           <Card className="modern-stat-card" hoverable>
             <Statistic
-              title={t('admin.metrics.totalTeachers')}
+              title={t("admin.metrics.totalTeachers")}
               value={dashboardStats.totalTeachers}
-              prefix={<UserOutlined className="stat-icon-green" style={{ fontSize: '24px' }} />}
-              valueStyle={{ color: '#52c41a', fontSize: '32px', fontWeight: 700 }}
+              prefix={
+                <UserOutlined
+                  className="stat-icon-green"
+                  style={{ fontSize: "24px" }}
+                />
+              }
+              valueStyle={{
+                color: "#52c41a",
+                fontSize: "32px",
+                fontWeight: 700,
+              }}
             />
-            <div style={{ marginTop: 8, color: '#8c8c8c', fontSize: '12px' }}>
-              {t('admin.metrics.qualifiedInstructors')}
+            <div style={{ marginTop: 8, color: "#8c8c8c", fontSize: "12px" }}>
+              {t("admin.metrics.qualifiedInstructors")}
             </div>
           </Card>
         </Col>
-        
+
         <Col xs={24} sm={12} lg={6}>
           <Card className="modern-stat-card" hoverable>
             <Statistic
-              title={t('admin.metrics.totalCourses')}
+              title={t("admin.metrics.totalCourses")}
               value={dashboardStats.totalCourses}
-              prefix={<BookOutlined className="stat-icon-orange" style={{ fontSize: '24px' }} />}
-              valueStyle={{ color: '#faad14', fontSize: '32px', fontWeight: 700 }}
+              prefix={
+                <BookOutlined
+                  className="stat-icon-orange"
+                  style={{ fontSize: "24px" }}
+                />
+              }
+              valueStyle={{
+                color: "#faad14",
+                fontSize: "32px",
+                fontWeight: 700,
+              }}
             />
-            <div style={{ marginTop: 8, color: '#8c8c8c', fontSize: '12px' }}>
-              {t('admin.metrics.availablePrograms')}
+            <div style={{ marginTop: 8, color: "#8c8c8c", fontSize: "12px" }}>
+              {t("admin.metrics.availablePrograms")}
             </div>
           </Card>
         </Col>
-        
+
         <Col xs={24} sm={12} lg={6}>
           <Card className="modern-stat-card" hoverable>
             <Statistic
-              title={t('admin.metrics.courseMaterials')}
+              title={t("admin.metrics.courseMaterials")}
               value={dashboardStats.totalMaterials}
-              prefix={<FolderOutlined className="stat-icon-purple" style={{ fontSize: '24px' }} />}
-              valueStyle={{ color: '#722ed1', fontSize: '32px', fontWeight: 700 }}
+              prefix={
+                <FolderOutlined
+                  className="stat-icon-purple"
+                  style={{ fontSize: "24px" }}
+                />
+              }
+              valueStyle={{
+                color: "#722ed1",
+                fontSize: "32px",
+                fontWeight: 700,
+              }}
             />
-            <div style={{ marginTop: 8, color: '#8c8c8c', fontSize: '12px' }}>
-              {t('admin.metrics.learningResources')}
+            <div style={{ marginTop: 8, color: "#8c8c8c", fontSize: "12px" }}>
+              {t("admin.metrics.learningResources")}
             </div>
           </Card>
         </Col>
@@ -2125,62 +2614,70 @@ const AdminFacultyDashboard = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card hoverable>
             <Statistic
-              title={t('admin.metrics.totalQuizzes')}
+              title={t("admin.metrics.totalQuizzes")}
               value={dashboardStats.totalQuizzes}
               prefix={<FormOutlined />}
-              valueStyle={{ color: '#1890ff' }}
+              valueStyle={{ color: "#1890ff" }}
             />
             <div style={{ marginTop: 8 }}>
               <Text type="secondary">
-                <small>{dashboardStats.activeQuizzes} {t('admin.metrics.active')}</small>
+                <small>
+                  {dashboardStats.activeQuizzes} {t("admin.metrics.active")}
+                </small>
               </Text>
             </div>
           </Card>
         </Col>
-        
+
         <Col xs={24} sm={12} lg={6}>
           <Card hoverable>
             <Statistic
-              title={t('admin.metrics.homeworkAssignments')}
+              title={t("admin.metrics.homeworkAssignments")}
               value={dashboardStats.totalHomework}
               prefix={<FileTextOutlined />}
-              valueStyle={{ color: '#52c41a' }}
+              valueStyle={{ color: "#52c41a" }}
             />
             <div style={{ marginTop: 8 }}>
               <Text type="secondary">
-                <small>{dashboardStats.pendingSubmissions} {t('admin.metrics.pendingReview')}</small>
+                <small>
+                  {dashboardStats.pendingSubmissions}{" "}
+                  {t("admin.metrics.pendingReview")}
+                </small>
               </Text>
             </div>
           </Card>
         </Col>
-        
+
         <Col xs={24} sm={12} lg={6}>
           <Card hoverable>
             <Statistic
-              title={t('admin.metrics.listeningExercises')}
+              title={t("admin.metrics.listeningExercises")}
               value={dashboardStats.totalListeningExercises}
               prefix={<AudioOutlined />}
-              valueStyle={{ color: '#faad14' }}
+              valueStyle={{ color: "#faad14" }}
             />
             <div style={{ marginTop: 8 }}>
               <Text type="secondary">
-                <small>{t('admin.metrics.audioComprehension')}</small>
+                <small>{t("admin.metrics.audioComprehension")}</small>
               </Text>
             </div>
           </Card>
         </Col>
-        
+
         <Col xs={24} sm={12} lg={6}>
           <Card hoverable>
             <Statistic
-              title={t('admin.metrics.totalEnrollments')}
+              title={t("admin.metrics.totalEnrollments")}
               value={dashboardStats.totalEnrollments}
               prefix={<UsergroupAddOutlined />}
-              valueStyle={{ color: '#722ed1' }}
+              valueStyle={{ color: "#722ed1" }}
             />
             <div style={{ marginTop: 8 }}>
               <Text type="secondary">
-                <small>{dashboardStats.newEnrollmentsThisMonth} {t('admin.metrics.newThisMonth')}</small>
+                <small>
+                  {dashboardStats.newEnrollmentsThisMonth}{" "}
+                  {t("admin.metrics.newThisMonth")}
+                </small>
               </Text>
             </div>
           </Card>
@@ -2190,79 +2687,77 @@ const AdminFacultyDashboard = () => {
       {/* Charts Row */}
       <Row gutter={[24, 24]} style={{ marginTop: 24 }}>
         <Col xs={24} lg={16}>
-          <Card 
-            title={t('admin.metrics.studentPerformanceTrends')} 
+          <Card
+            title={t("admin.metrics.studentPerformanceTrends")}
             extra={
               <Select defaultValue="week" style={{ width: 120 }}>
-                <Option value="week">{t('admin.metrics.thisWeek')}</Option>
-                <Option value="month">{t('admin.metrics.thisMonth')}</Option>
-                <Option value="year">{t('admin.metrics.thisYear')}</Option>
+                <Option value="week">{t("admin.metrics.thisWeek")}</Option>
+                <Option value="month">{t("admin.metrics.thisMonth")}</Option>
+                <Option value="year">{t("admin.metrics.thisYear")}</Option>
               </Select>
             }
           >
             <Line
               data={{
-                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
                 datasets: [
                   {
-                    label: 'Average Score',
+                    label: "Average Score",
                     data: [75, 78, 80, 82, 79, 85, 88],
-                    borderColor: '#1890ff',
-                    backgroundColor: 'rgba(24, 144, 255, 0.1)',
-                    tension: 0.4
+                    borderColor: "#1890ff",
+                    backgroundColor: "rgba(24, 144, 255, 0.1)",
+                    tension: 0.4,
                   },
                   {
-                    label: 'Completion Rate',
+                    label: "Completion Rate",
                     data: [65, 70, 72, 75, 73, 78, 82],
-                    borderColor: '#52c41a',
-                    backgroundColor: 'rgba(82, 196, 26, 0.1)',
-                    tension: 0.4
-                  }
-                ]
+                    borderColor: "#52c41a",
+                    backgroundColor: "rgba(82, 196, 26, 0.1)",
+                    tension: 0.4,
+                  },
+                ],
               }}
               options={{
                 responsive: true,
                 plugins: {
                   legend: {
-                    position: 'top'
-                  }
+                    position: "top",
+                  },
                 },
                 scales: {
                   y: {
                     beginAtZero: true,
-                    max: 100
-                  }
-                }
+                    max: 100,
+                  },
+                },
               }}
             />
           </Card>
         </Col>
-        
+
         <Col xs={24} lg={8}>
-          <Card title={t('admin.metrics.applicationStatus')}>
+          <Card title={t("admin.metrics.applicationStatus")}>
             <Doughnut
               data={{
-                labels: ['Pending', 'Approved', 'Rejected'],
-                datasets: [{
-                  data: [
-                    dashboardStats.pendingApplications,
-                    dashboardStats.approvedApplications,
-                    dashboardStats.rejectedApplications
-                  ],
-                  backgroundColor: [
-                    '#faad14',
-                    '#52c41a',
-                    '#f5222d'
-                  ]
-                }]
+                labels: ["Pending", "Approved", "Rejected"],
+                datasets: [
+                  {
+                    data: [
+                      dashboardStats.pendingApplications,
+                      dashboardStats.approvedApplications,
+                      dashboardStats.rejectedApplications,
+                    ],
+                    backgroundColor: ["#faad14", "#52c41a", "#f5222d"],
+                  },
+                ],
               }}
               options={{
                 responsive: true,
                 plugins: {
                   legend: {
-                    position: 'bottom'
-                  }
-                }
+                    position: "bottom",
+                  },
+                },
               }}
             />
           </Card>
@@ -2272,108 +2767,119 @@ const AdminFacultyDashboard = () => {
       {/* Activity and Quick Actions */}
       <Row gutter={[24, 24]} style={{ marginTop: 24 }}>
         <Col xs={24} lg={12}>
-            <Card
-              title={t('admin.activity.recentActivity')}
-              extra={<Button type="link">{t('admin.activity.viewAll')}</Button>}
-              bodyStyle={{ padding: '12px 24px' }}
-            >
-              { (applications.length > 0 || contactMessages.length > 0) ? (
-                <Timeline>
-                  {applications.slice(0, 3).map((app, index) => (
-                    <Timeline.Item
-                      key={app._id || index}
-                      color={app.status === 'pending' ? 'orange' : app.status === 'approved' ? 'green' : 'red'}
-                      dot={<UserAddOutlined />}
-                    >
-                      <Text strong>New application from {app.fullName}</Text>
-                      <br />
-                      <Text type="secondary">{app.course || app.program || 'General Application'}</Text>
-                      <br />
-                      <Text type="secondary" style={{ fontSize: 12 }}>
-                        {moment(app.createdAt).fromNow()}
-                      </Text>
-                    </Timeline.Item>
-                  ))}
-                  {contactMessages.slice(0, 2).map((msg, index) => (
-                    <Timeline.Item
-                      key={msg._id || index}
-                      color="blue"
-                      dot={<MessageOutlined />}
-                    >
-                      <Text strong>Message from {msg.name}</Text>
-                      <br />
-                      <Text type="secondary">{msg.subject}</Text>
-                      <br />
-                      <Text type="secondary" style={{ fontSize: 12 }}>
-                        {moment(msg.createdAt).fromNow()}
-                      </Text>
-                    </Timeline.Item>
-                  ))}
-                </Timeline>
-              ) : (
-                <Empty description={t('admin.activity.noRecentActivity')} image={Empty.PRESENTED_IMAGE_SIMPLE} />
-              ) }
-            </Card>
+          <Card
+            title={t("admin.activity.recentActivity")}
+            extra={<Button type="link">{t("admin.activity.viewAll")}</Button>}
+            bodyStyle={{ padding: "12px 24px" }}
+          >
+            {applications.length > 0 || contactMessages.length > 0 ? (
+              <Timeline>
+                {applications.slice(0, 3).map((app, index) => (
+                  <Timeline.Item
+                    key={app._id || index}
+                    color={
+                      app.status === "pending"
+                        ? "orange"
+                        : app.status === "approved"
+                        ? "green"
+                        : "red"
+                    }
+                    dot={<UserAddOutlined />}
+                  >
+                    <Text strong>New application from {app.fullName}</Text>
+                    <br />
+                    <Text type="secondary">
+                      {app.course || app.program || "General Application"}
+                    </Text>
+                    <br />
+                    <Text type="secondary" style={{ fontSize: 12 }}>
+                      {moment(app.createdAt).fromNow()}
+                    </Text>
+                  </Timeline.Item>
+                ))}
+                {contactMessages.slice(0, 2).map((msg, index) => (
+                  <Timeline.Item
+                    key={msg._id || index}
+                    color="blue"
+                    dot={<MessageOutlined />}
+                  >
+                    <Text strong>Message from {msg.name}</Text>
+                    <br />
+                    <Text type="secondary">{msg.subject}</Text>
+                    <br />
+                    <Text type="secondary" style={{ fontSize: 12 }}>
+                      {moment(msg.createdAt).fromNow()}
+                    </Text>
+                  </Timeline.Item>
+                ))}
+              </Timeline>
+            ) : (
+              <Empty
+                description={t("admin.activity.noRecentActivity")}
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+              />
+            )}
+          </Card>
         </Col>
-        
+
         <Col xs={24} lg={12}>
-          <Card title={t('admin.quickActions.title')}>
+          <Card title={t("admin.quickActions.title")}>
             <Row gutter={[16, 16]}>
               <Col span={12}>
-                <Button 
-                  type="primary" 
-                  icon={<SolutionOutlined />} 
-                  block 
+                <Button
+                  type="primary"
+                  icon={<SolutionOutlined />}
+                  block
                   size="large"
-                  onClick={() => setActiveKey('applications')}
+                  onClick={() => setActiveKey("applications")}
                   style={{ height: 60 }}
                 >
-                  {t('admin.quickActions.reviewApplications')}
+                  {t("admin.quickActions.reviewApplications")}
                   {dashboardStats.pendingApplications > 0 && (
-                    <Badge 
-                      count={dashboardStats.pendingApplications} 
+                    <Badge
+                      count={dashboardStats.pendingApplications}
                       style={{ marginLeft: 8 }}
                     />
                   )}
                 </Button>
               </Col>
               <Col span={12}>
-                <Button 
-                  icon={<MessageOutlined />} 
-                  block 
+                <Button
+                  icon={<MessageOutlined />}
+                  block
                   size="large"
-                  onClick={() => setActiveKey('applications')}
+                  onClick={() => setActiveKey("applications")}
                   style={{ height: 60 }}
                 >
-                  {t('admin.quickActions.checkMessages')}
+                  {t("admin.quickActions.checkMessages")}
                   {dashboardStats.unreadMessages > 0 && (
-                    <Badge 
-                      count={dashboardStats.unreadMessages} 
+                    <Badge
+                      count={dashboardStats.unreadMessages}
                       style={{ marginLeft: 8 }}
                     />
                   )}
                 </Button>
               </Col>
               <Col span={12}>
-                <Button 
-                  icon={<BookOutlined />} 
-                  block 
+                <Button
+                  icon={<BookOutlined />}
+                  block
                   size="large"
-                  onClick={() => setActiveKey('courses')}
+                  onClick={() => setActiveKey("courses")}
                   style={{ height: 60 }}
                 >
-                  {t('admin.quickActions.manageCourses')}
+                  {t("admin.quickActions.manageCourses")}
                 </Button>
               </Col>
               <Col span={12}>
-                <Button 
-                  icon={<TeamOutlined />} 
-                  block 
+                <Button
+                  icon={<TeamOutlined />}
+                  block
                   size="large"
-                  onClick={() => setActiveKey('students')}
+                  onClick={() => setActiveKey("students")}
                   style={{ height: 60 }}
                 >
-                  {t('admin.quickActions.studentProgress')}
+                  {t("admin.quickActions.studentProgress")}
                 </Button>
               </Col>
             </Row>
@@ -2387,49 +2893,51 @@ const AdminFacultyDashboard = () => {
   const renderApplicationsManagement = () => {
     const applicationColumns = [
       {
-        title: t('table.applicant'),
-        dataIndex: 'fullName',
-        key: 'fullName',
+        title: t("table.applicant"),
+        dataIndex: "fullName",
+        key: "fullName",
         render: (name, record) => (
           <div>
             <Text strong>{name}</Text>
             <br />
-            <Text type="secondary" style={{ fontSize: '12px' }}>
+            <Text type="secondary" style={{ fontSize: "12px" }}>
               {record.email}
             </Text>
           </div>
-        )
+        ),
       },
       {
-        title: t('table.program'),
-        dataIndex: 'course',
-        key: 'course',
+        title: t("table.program"),
+        dataIndex: "course",
+        key: "course",
         render: (course, record) => (
-          <Tag color="blue">{course || record.program || t('common.notProvided')}</Tag>
-        )
+          <Tag color="blue">
+            {course || record.program || t("common.notProvided")}
+          </Tag>
+        ),
       },
       {
-        title: t('table.status'),
-        dataIndex: 'status',
-        key: 'status',
+        title: t("table.status"),
+        dataIndex: "status",
+        key: "status",
         render: (status) => {
           const colors = {
-            pending: 'orange',
-            approved: 'green',
-            rejected: 'red'
+            pending: "orange",
+            approved: "green",
+            rejected: "red",
           };
           return <Tag color={colors[status]}>{status?.toUpperCase()}</Tag>;
-        }
+        },
       },
       {
-        title: t('table.applied'),
-        dataIndex: 'createdAt',
-        key: 'createdAt',
-        render: (date) => moment(date).format('MMM DD, YYYY')
+        title: t("table.applied"),
+        dataIndex: "createdAt",
+        key: "createdAt",
+        render: (date) => moment(date).format("MMM DD, YYYY"),
       },
       {
-        title: t('table.actions'),
-        key: 'actions',
+        title: t("table.actions"),
+        key: "actions",
         width: 300,
         render: (_, record) => (
           <Space>
@@ -2441,91 +2949,112 @@ const AdminFacultyDashboard = () => {
                 setApplicationModalVisible(true);
               }}
             >
-              {t('actions.viewDetails')}
+              {t("actions.viewDetails")}
             </Button>
             <Button
               icon={<MessageOutlined />}
               size="small"
               onClick={() => {
-                setReplyType('application');
+                setReplyType("application");
                 setReplyTarget(record);
                 setReplyModalVisible(true);
               }}
             >
-              {t('actions.sendMessage')}
+              {t("actions.sendMessage")}
             </Button>
-            {record.status === 'pending' && (
+            {record.status === "pending" && (
               <>
                 <Button
                   icon={<CheckOutlined />}
                   size="small"
                   type="primary"
-                  style={{ backgroundColor: '#52c41a', borderColor: '#52c41a' }}
-                  onClick={() => updateApplicationStatus(record._id, 'approved')}
+                  style={{ backgroundColor: "#52c41a", borderColor: "#52c41a" }}
+                  onClick={() =>
+                    updateApplicationStatus(record._id, "approved")
+                  }
                 >
-                  {t('actions.approve')}
+                  {t("actions.approve")}
                 </Button>
                 <Button
                   icon={<CloseOutlined />}
                   size="small"
                   danger
-                  onClick={() => updateApplicationStatus(record._id, 'rejected')}
+                  onClick={() =>
+                    updateApplicationStatus(record._id, "rejected")
+                  }
                 >
-                  {t('actions.reject')}
+                  {t("actions.reject")}
                 </Button>
               </>
             )}
           </Space>
-        )
-      }
+        ),
+      },
     ];
 
     const messageColumns = [
       {
-        title: t('adminDashboard.contact.contactInfo'),
-        key: 'contact',
+        title: t("adminDashboard.contact.contactInfo"),
+        key: "contact",
         render: (_, record) => (
           <div>
             <Text strong>{record.name}</Text>
             <br />
-            <Text type="secondary" style={{ fontSize: '12px' }}>
+            <Text type="secondary" style={{ fontSize: "12px" }}>
               {record.email}
             </Text>
           </div>
-        )
+        ),
       },
       {
-        title: t('adminDashboard.contact.subject'),
-        dataIndex: 'subject',
-        key: 'subject',
+        title: t("adminDashboard.contact.subject"),
+        dataIndex: "subject",
+        key: "subject",
         render: (subject) => (
-          <Text ellipsis style={{ maxWidth: 200 }}>{subject}</Text>
-        )
+          <Text ellipsis style={{ maxWidth: 200 }}>
+            {subject}
+          </Text>
+        ),
       },
       {
-        title: t('adminDashboard.contact.status'),
-        dataIndex: 'status',
-        key: 'status',
+        title: t("adminDashboard.contact.status"),
+        dataIndex: "status",
+        key: "status",
         render: (status) => {
           const statusConfig = {
-            pending: { color: 'orange', text: t('adminDashboard.contact.statusValues.pending') },
-            resolved: { color: 'green', text: t('adminDashboard.contact.statusValues.resolved') },
-            approved: { color: 'blue', text: t('adminDashboard.contact.statusValues.approved') },
-            ignored: { color: 'red', text: t('adminDashboard.contact.statusValues.ignored') }
+            pending: {
+              color: "orange",
+              text: t("adminDashboard.contact.statusValues.pending"),
+            },
+            resolved: {
+              color: "green",
+              text: t("adminDashboard.contact.statusValues.resolved"),
+            },
+            approved: {
+              color: "blue",
+              text: t("adminDashboard.contact.statusValues.approved"),
+            },
+            ignored: {
+              color: "red",
+              text: t("adminDashboard.contact.statusValues.ignored"),
+            },
           };
-          const config = statusConfig[status] || { color: 'default', text: status || t('adminDashboard.contact.statusValues.unknown') };
+          const config = statusConfig[status] || {
+            color: "default",
+            text: status || t("adminDashboard.contact.statusValues.unknown"),
+          };
           return <Tag color={config.color}>{config.text}</Tag>;
-        }
+        },
       },
       {
-        title: t('adminDashboard.contact.received'),
-        dataIndex: 'createdAt',
-        key: 'createdAt',
-        render: (date) => moment(date).format('MMM DD, YYYY')
+        title: t("adminDashboard.contact.received"),
+        dataIndex: "createdAt",
+        key: "createdAt",
+        render: (date) => moment(date).format("MMM DD, YYYY"),
       },
       {
-        title: t('adminDashboard.contact.actions'),
-        key: 'actions',
+        title: t("adminDashboard.contact.actions"),
+        key: "actions",
         render: (_, record) => (
           <Space>
             <Button
@@ -2534,75 +3063,97 @@ const AdminFacultyDashboard = () => {
               onClick={() => {
                 setSelectedMessage(record);
                 setMessageModalVisible(true);
-                if (record.status === 'pending') {
-                  updateContactStatus(record._id, 'resolved');
+                if (record.status === "pending") {
+                  updateContactStatus(record._id, "resolved");
                 }
               }}
             >
-              {t('adminDashboard.contact.view')}
+              {t("adminDashboard.contact.view")}
             </Button>
-            {record.status === 'pending' && (
+            {record.status === "pending" && (
               <Button
                 icon={<CheckOutlined />}
                 size="small"
                 type="primary"
-                onClick={() => updateContactStatus(record._id, 'resolved')}
+                onClick={() => updateContactStatus(record._id, "resolved")}
               >
-                {t('adminDashboard.contact.markResolved')}
+                {t("adminDashboard.contact.markResolved")}
               </Button>
             )}
           </Space>
-        )
-      }
+        ),
+      },
     ];
 
     const userColumns = [
       {
-        title: t('adminDashboard.users.userInfo'),
-        key: 'userInfo',
+        title: t("adminDashboard.users.userInfo"),
+        key: "userInfo",
         render: (_, record) => (
           <div>
-            <Text strong>{record.firstName} {record.lastName}</Text>
+            <Text strong>
+              {record.firstName} {record.lastName}
+            </Text>
             <br />
-            <Text type="secondary" style={{ fontSize: '12px' }}>
+            <Text type="secondary" style={{ fontSize: "12px" }}>
               {record.email}
             </Text>
           </div>
-        )
+        ),
       },
       {
-        title: t('adminDashboard.users.role'),
-        dataIndex: 'role',
-        key: 'role',
+        title: t("adminDashboard.users.role"),
+        dataIndex: "role",
+        key: "role",
         render: (role) => (
-          <Tag color={role === 'teacher' ? 'blue' : role === 'student' ? 'green' : 'default'}>
+          <Tag
+            color={
+              role === "teacher"
+                ? "blue"
+                : role === "student"
+                ? "green"
+                : "default"
+            }
+          >
             {t(`adminDashboard.users.roleValues.${role?.toLowerCase()}`)}
           </Tag>
-        )
+        ),
       },
       {
-        title: t('adminDashboard.users.status'),
-        dataIndex: 'isApproved',
-        key: 'isApproved',
+        title: t("adminDashboard.users.status"),
+        dataIndex: "isApproved",
+        key: "isApproved",
         render: (isApproved) => {
           if (isApproved === true) {
-            return <Tag color="green" icon={<CheckCircleOutlined />}>{t('adminDashboard.users.statusValues.approved')}</Tag>;
+            return (
+              <Tag color="green" icon={<CheckCircleOutlined />}>
+                {t("adminDashboard.users.statusValues.approved")}
+              </Tag>
+            );
           } else if (isApproved === false) {
-            return <Tag color="red" icon={<CloseCircleOutlined />}>{t('adminDashboard.users.statusValues.rejected')}</Tag>;
+            return (
+              <Tag color="red" icon={<CloseCircleOutlined />}>
+                {t("adminDashboard.users.statusValues.rejected")}
+              </Tag>
+            );
           } else {
-            return <Tag color="orange">{t('adminDashboard.users.statusValues.pending')}</Tag>;
+            return (
+              <Tag color="orange">
+                {t("adminDashboard.users.statusValues.pending")}
+              </Tag>
+            );
           }
-        }
+        },
       },
       {
-        title: t('adminDashboard.users.registrationDate'),
-        dataIndex: 'createdAt',
-        key: 'createdAt',
-        render: (date) => moment(date).format('MMM DD, YYYY')
+        title: t("adminDashboard.users.registrationDate"),
+        dataIndex: "createdAt",
+        key: "createdAt",
+        render: (date) => moment(date).format("MMM DD, YYYY"),
       },
       {
-        title: t('adminDashboard.users.actions'),
-        key: 'actions',
+        title: t("adminDashboard.users.actions"),
+        key: "actions",
         render: (_, record) => (
           <Space>
             <Button
@@ -2613,17 +3164,17 @@ const AdminFacultyDashboard = () => {
                 setUserModalVisible(true);
               }}
             >
-              {t('adminDashboard.users.view')}
+              {t("adminDashboard.users.view")}
             </Button>
             {record.isApproved !== true && (
               <Button
                 icon={<CheckOutlined />}
                 size="small"
                 type="primary"
-                style={{ backgroundColor: '#52c41a', borderColor: '#52c41a' }}
+                style={{ backgroundColor: "#52c41a", borderColor: "#52c41a" }}
                 onClick={() => updateUserStatus(record._id, true)}
               >
-                {t('adminDashboard.users.approve')}
+                {t("adminDashboard.users.approve")}
               </Button>
             )}
             {record.isApproved !== false && (
@@ -2633,32 +3184,35 @@ const AdminFacultyDashboard = () => {
                 danger
                 onClick={() => updateUserStatus(record._id, false)}
               >
-                {t('adminDashboard.users.reject')}
+                {t("adminDashboard.users.reject")}
               </Button>
             )}
           </Space>
-        )
-      }
+        ),
+      },
     ];
 
-    const filteredApplications = applications.filter(app => {
+    const filteredApplications = applications.filter((app) => {
       const matchesStatus = !filterStatus || app.status === filterStatus;
-      const matchesSearch = !searchTerm || 
+      const matchesSearch =
+        !searchTerm ||
         app.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         app.email?.toLowerCase().includes(searchTerm.toLowerCase());
       return matchesStatus && matchesSearch;
     });
 
-    const filteredMessages = contactMessages.filter(msg => {
-      const matchesSearch = !searchTerm || 
+    const filteredMessages = contactMessages.filter((msg) => {
+      const matchesSearch =
+        !searchTerm ||
         msg.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         msg.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         msg.subject?.toLowerCase().includes(searchTerm.toLowerCase());
       return matchesSearch;
     });
 
-    const filteredUsers = users.filter(user => {
-      const matchesSearch = !searchTerm || 
+    const filteredUsers = users.filter((user) => {
+      const matchesSearch =
+        !searchTerm ||
         user.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.email?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -2668,48 +3222,56 @@ const AdminFacultyDashboard = () => {
 
     return (
       <div>
-        <Title level={2}>📋 {t('applicationManagement.title')}</Title>
-        <Text type="secondary">{t('applicationManagement.subtitle')}</Text>
+        <Title level={2}>📋 {t("applicationManagement.title")}</Title>
+        <Text type="secondary">{t("applicationManagement.subtitle")}</Text>
 
         {/* Statistics Cards */}
-        <Row gutter={[16, 16]} style={{ marginTop: '24px', marginBottom: '24px' }}>
+        <Row
+          gutter={[16, 16]}
+          style={{ marginTop: "24px", marginBottom: "24px" }}
+        >
           <Col xs={24} sm={12} md={6}>
             <Card>
               <Statistic
-                title={t('adminDashboard.applications.totalApplicationsCount')}
+                title={t("adminDashboard.applications.totalApplicationsCount")}
                 value={dashboardStats.totalApplications}
                 prefix={<UserOutlined />}
-                valueStyle={{ color: '#1890ff' }}
+                valueStyle={{ color: "#1890ff" }}
               />
             </Card>
           </Col>
           <Col xs={24} sm={12} md={6}>
             <Card>
               <Statistic
-                title={t('adminDashboard.applications.pendingReview')}
+                title={t("adminDashboard.applications.pendingReview")}
                 value={dashboardStats.pendingApplications}
                 prefix={<CalendarOutlined />}
-                valueStyle={{ color: '#faad14' }}
+                valueStyle={{ color: "#faad14" }}
               />
             </Card>
           </Col>
           <Col xs={24} sm={12} md={6}>
             <Card>
               <Statistic
-                title={t('adminDashboard.applications.contactMessages')}
+                title={t("adminDashboard.applications.contactMessages")}
                 value={dashboardStats.totalMessages}
                 prefix={<MessageOutlined />}
-                valueStyle={{ color: '#52c41a' }}
+                valueStyle={{ color: "#52c41a" }}
               />
             </Card>
           </Col>
           <Col xs={24} sm={12} md={6}>
             <Card>
               <Statistic
-                title={t('adminDashboard.applications.pendingUsers')}
-                value={users.filter(user => user.isApproved !== true && user.isApproved !== false).length}
+                title={t("adminDashboard.applications.pendingUsers")}
+                value={
+                  users.filter(
+                    (user) =>
+                      user.isApproved !== true && user.isApproved !== false
+                  ).length
+                }
                 prefix={<UserOutlined />}
-                valueStyle={{ color: '#f5222d' }}
+                valueStyle={{ color: "#f5222d" }}
               />
             </Card>
           </Col>
@@ -2720,30 +3282,46 @@ const AdminFacultyDashboard = () => {
           defaultActiveKey="applications"
           items={[
             {
-              key: 'applications',
-              label: `📋 ${t('adminDashboard.applications.title')}`,
+              key: "applications",
+              label: `📋 ${t("adminDashboard.applications.title")}`,
               children: (
-                <Card 
-                  title={t('adminDashboard.applications.studentApplications')} 
+                <Card
+                  title={t("adminDashboard.applications.studentApplications")}
                   extra={
                     <Space>
                       <Input
-                        placeholder={t('adminDashboard.applications.searchApplications')}
+                        placeholder={t(
+                          "adminDashboard.applications.searchApplications"
+                        )}
                         prefix={<SearchOutlined />}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         style={{ width: 200 }}
                       />
                       <Select
-                        placeholder={t('adminDashboard.applications.filterStatus')}
+                        placeholder={t(
+                          "adminDashboard.applications.filterStatus"
+                        )}
                         value={filterStatus}
                         onChange={setFilterStatus}
                         style={{ width: 150 }}
                         allowClear
                       >
-                        <Select.Option value="pending">{t('adminDashboard.applications.statusValues.pending')}</Select.Option>
-                        <Select.Option value="approved">{t('adminDashboard.applications.statusValues.approved')}</Select.Option>
-                        <Select.Option value="rejected">{t('adminDashboard.applications.statusValues.rejected')}</Select.Option>
+                        <Select.Option value="pending">
+                          {t(
+                            "adminDashboard.applications.statusValues.pending"
+                          )}
+                        </Select.Option>
+                        <Select.Option value="approved">
+                          {t(
+                            "adminDashboard.applications.statusValues.approved"
+                          )}
+                        </Select.Option>
+                        <Select.Option value="rejected">
+                          {t(
+                            "adminDashboard.applications.statusValues.rejected"
+                          )}
+                        </Select.Option>
                       </Select>
                     </Space>
                   }
@@ -2759,18 +3337,18 @@ const AdminFacultyDashboard = () => {
                     }}
                   />
                 </Card>
-              )
+              ),
             },
             {
-              key: 'contacts',
-              label: `💬 ${t('adminDashboard.applications.messages')}`,
+              key: "contacts",
+              label: `💬 ${t("adminDashboard.applications.messages")}`,
               children: (
-                <Card 
-                  title={t('adminDashboard.contact.title')}
+                <Card
+                  title={t("adminDashboard.contact.title")}
                   extra={
                     <Space>
                       <Input
-                        placeholder={t('adminDashboard.contact.searchMessages')}
+                        placeholder={t("adminDashboard.contact.searchMessages")}
                         prefix={<SearchOutlined />}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -2793,40 +3371,48 @@ const AdminFacultyDashboard = () => {
                     }}
                   />
                 </Card>
-              )
+              ),
             },
             {
-              key: 'users',
-              label: `👥 ${t('adminDashboard.applications.users')}`,
+              key: "users",
+              label: `👥 ${t("adminDashboard.applications.users")}`,
               children: (
-                <Card 
-                  title={t('adminDashboard.users.title')}
+                <Card
+                  title={t("adminDashboard.users.title")}
                   extra={
                     <Space>
                       <Input
-                        placeholder={t('adminDashboard.users.searchUsers')}
+                        placeholder={t("adminDashboard.users.searchUsers")}
                         prefix={<SearchOutlined />}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         style={{ width: 200 }}
                       />
                       <Select
-                        placeholder={t('adminDashboard.users.roleValues.filterByRole')}
+                        placeholder={t(
+                          "adminDashboard.users.roleValues.filterByRole"
+                        )}
                         value={roleFilter}
                         onChange={(value) => setRoleFilter(value)}
                         style={{ width: 150 }}
                         allowClear
                       >
-                        <Select.Option value="teacher">{t('adminDashboard.users.roleValues.teacher')}</Select.Option>
-                        <Select.Option value="student">{t('adminDashboard.users.roleValues.student')}</Select.Option>
-                        <Select.Option value="admin">{t('adminDashboard.users.roleValues.admin')}</Select.Option>
+                        <Select.Option value="teacher">
+                          {t("adminDashboard.users.roleValues.teacher")}
+                        </Select.Option>
+                        <Select.Option value="student">
+                          {t("adminDashboard.users.roleValues.student")}
+                        </Select.Option>
+                        <Select.Option value="admin">
+                          {t("adminDashboard.users.roleValues.admin")}
+                        </Select.Option>
                       </Select>
-                      <Button 
-                        type="primary" 
+                      <Button
+                        type="primary"
                         icon={<UserOutlined />}
                         onClick={() => setCreateUserModalVisible(true)}
                       >
-                        {t('adminDashboard.users.createUser')}
+                        {t("adminDashboard.users.createUser")}
                       </Button>
                     </Space>
                   }
@@ -2842,8 +3428,8 @@ const AdminFacultyDashboard = () => {
                     }}
                   />
                 </Card>
-              )
-            }
+              ),
+            },
           ]}
         />
       </div>
@@ -2854,66 +3440,76 @@ const AdminFacultyDashboard = () => {
   const renderCourseManagement = () => {
     const courseColumns = [
       {
-        title: t('admin.courseManagement.table.columns.courseTitle'),
-        dataIndex: 'title',
-        key: 'title',
+        title: t("admin.courseManagement.table.columns.courseTitle"),
+        dataIndex: "title",
+        key: "title",
         render: (title, record) => (
           <div>
             <Text strong>{title}</Text>
             <br />
-            <Text type="secondary" style={{ fontSize: '12px' }}>
-              {t('admin.courseManagement.table.columns.code')}: {record.code}
+            <Text type="secondary" style={{ fontSize: "12px" }}>
+              {t("admin.courseManagement.table.columns.code")}: {record.code}
             </Text>
           </div>
-        )
+        ),
       },
       {
-        title: t('admin.courseManagement.table.columns.category'),
-        dataIndex: 'category',
-        key: 'category',
-        render: (category) => <Tag color="blue">{t(`admin.courseManagement.filters.categories.${category}`)}</Tag>
+        title: t("admin.courseManagement.table.columns.category"),
+        dataIndex: "category",
+        key: "category",
+        render: (category) => (
+          <Tag color="blue">
+            {t(`admin.courseManagement.filters.categories.${category}`)}
+          </Tag>
+        ),
       },
       {
-        title: t('admin.courseManagement.table.columns.level'),
-        dataIndex: 'level',
-        key: 'level',
+        title: t("admin.courseManagement.table.columns.level"),
+        dataIndex: "level",
+        key: "level",
         render: (level) => {
           const colors = {
-            beginner: 'green',
-            intermediate: 'orange',
-            advanced: 'red'
+            beginner: "green",
+            intermediate: "orange",
+            advanced: "red",
           };
-          return <Tag color={colors[level]}>{t(`admin.courseManagement.table.levelValues.${level}`)}</Tag>;
-        }
+          return (
+            <Tag color={colors[level]}>
+              {t(`admin.courseManagement.table.levelValues.${level}`)}
+            </Tag>
+          );
+        },
       },
       {
-        title: t('admin.courseManagement.table.columns.students'),
-        dataIndex: 'students',
-        key: 'students',
+        title: t("admin.courseManagement.table.columns.students"),
+        dataIndex: "students",
+        key: "students",
         render: (students) => (
           <Badge count={students?.length || 0} showZero>
             <TeamOutlined style={{ fontSize: 20 }} />
           </Badge>
-        )
+        ),
       },
       {
-        title: t('admin.courseManagement.table.columns.status'),
-        dataIndex: 'isActive',
-        key: 'isActive',
+        title: t("admin.courseManagement.table.columns.status"),
+        dataIndex: "isActive",
+        key: "isActive",
         render: (isActive) => {
           return (
-            <Tag color={isActive ? 'green' : 'default'}>
-              {isActive ? t('admin.courseManagement.table.statusValues.active') : t('admin.courseManagement.table.statusValues.inactive')}
+            <Tag color={isActive ? "green" : "default"}>
+              {isActive
+                ? t("admin.courseManagement.table.statusValues.active")
+                : t("admin.courseManagement.table.statusValues.inactive")}
             </Tag>
           );
-        }
+        },
       },
       {
-        title: t('admin.courseManagement.table.columns.actions'),
-        key: 'actions',
+        title: t("admin.courseManagement.table.columns.actions"),
+        key: "actions",
         render: (_, record) => (
           <Space>
-            <Tooltip title={t('admin.courseManagement.actions.edit')}>
+            <Tooltip title={t("admin.courseManagement.actions.edit")}>
               <Button
                 icon={<EditOutlined />}
                 size="small"
@@ -2922,9 +3518,9 @@ const AdminFacultyDashboard = () => {
                   const formValues = {
                     ...record,
                     capacity: record.maxStudents || record.capacity || 30,
-                    status: record.isActive ? 'active' : 'inactive'
+                    status: record.isActive ? "active" : "inactive",
                   };
-                  
+
                   // Handle dates safely
                   if (record.startDate) {
                     const startDate = moment(record.startDate);
@@ -2932,20 +3528,20 @@ const AdminFacultyDashboard = () => {
                       formValues.startDate = startDate;
                     }
                   }
-                  
+
                   if (record.endDate) {
                     const endDate = moment(record.endDate);
                     if (endDate.isValid()) {
                       formValues.endDate = endDate;
                     }
                   }
-                  
+
                   courseForm.setFieldsValue(formValues);
                   setCourseModalVisible(true);
                 }}
               />
             </Tooltip>
-            <Tooltip title={t('admin.courseManagement.actions.view')}>
+            <Tooltip title={t("admin.courseManagement.actions.view")}>
               <Button
                 icon={<EyeOutlined />}
                 size="small"
@@ -2956,97 +3552,120 @@ const AdminFacultyDashboard = () => {
               />
             </Tooltip>
             <Popconfirm
-              title={t('admin.courseManagement.actions.deleteConfirm')}
+              title={t("admin.courseManagement.actions.deleteConfirm")}
               onConfirm={async () => {
                 try {
                   await courseAPI.delete(record._id);
-                  message.success(t('admin.courseManagement.messages.deleteSuccess'));
+                  message.success(
+                    t("admin.courseManagement.messages.deleteSuccess")
+                  );
                   fetchCourses();
                 } catch (error) {
-                  message.error(t('admin.courseManagement.messages.deleteError'));
+                  message.error(
+                    t("admin.courseManagement.messages.deleteError")
+                  );
                 }
               }}
             >
-              <Tooltip title={t('admin.courseManagement.actions.delete')}>
+              <Tooltip title={t("admin.courseManagement.actions.delete")}>
                 <Button icon={<DeleteOutlined />} size="small" danger />
               </Tooltip>
             </Popconfirm>
           </Space>
-        )
-      }
+        ),
+      },
     ];
 
     return (
       <div>
-        <Title level={2}>📚 {t('admin.courseManagement.title')}</Title>
-        <Text type="secondary">{t('admin.courseManagement.subtitle')}</Text>
+        <Title level={2}>📚 {t("admin.courseManagement.title")}</Title>
+        <Text type="secondary">{t("admin.courseManagement.subtitle")}</Text>
 
         <Row gutter={[16, 16]} style={{ marginTop: 24, marginBottom: 24 }}>
           <Col xs={24} sm={12} md={6}>
             <Card>
               <Statistic
-                title={t('admin.courseManagement.stats.totalCourses')}
+                title={t("admin.courseManagement.stats.totalCourses")}
                 value={courses.length}
                 prefix={<BookOutlined />}
-                valueStyle={{ color: '#1890ff' }}
+                valueStyle={{ color: "#1890ff" }}
               />
             </Card>
           </Col>
           <Col xs={24} sm={12} md={6}>
             <Card>
               <Statistic
-                title={t('admin.courseManagement.stats.activeCourses')}
-                value={courses.filter(c => c.isActive !== false).length}
+                title={t("admin.courseManagement.stats.activeCourses")}
+                value={courses.filter((c) => c.isActive !== false).length}
                 prefix={<CheckCircleOutlined />}
-                valueStyle={{ color: '#52c41a' }}
+                valueStyle={{ color: "#52c41a" }}
               />
             </Card>
           </Col>
           <Col xs={24} sm={12} md={6}>
             <Card>
               <Statistic
-                title={t('admin.courseManagement.stats.totalEnrolled')}
-                value={courses.reduce((sum, c) => sum + (c.students?.length || 0), 0)}
+                title={t("admin.courseManagement.stats.totalEnrolled")}
+                value={courses.reduce(
+                  (sum, c) => sum + (c.students?.length || 0),
+                  0
+                )}
                 prefix={<TeamOutlined />}
-                valueStyle={{ color: '#faad14' }}
+                valueStyle={{ color: "#faad14" }}
               />
             </Card>
           </Col>
           <Col xs={24} sm={12} md={6}>
             <Card>
               <Statistic
-                title={t('admin.courseManagement.stats.avgCompletion')}
+                title={t("admin.courseManagement.stats.avgCompletion")}
                 value={75}
                 suffix="%"
                 prefix={<TrophyOutlined />}
-                valueStyle={{ color: '#722ed1' }}
+                valueStyle={{ color: "#722ed1" }}
               />
             </Card>
           </Col>
         </Row>
 
         <Card
-          title={t('admin.courseManagement.table.title')}
+          title={t("admin.courseManagement.table.title")}
           extra={
             <Space>
               <Input
-                placeholder={t('admin.courseManagement.filters.searchPlaceholder')}
+                placeholder={t(
+                  "admin.courseManagement.filters.searchPlaceholder"
+                )}
                 prefix={<SearchOutlined />}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 style={{ width: 200 }}
               />
               <Select
-                placeholder={t('admin.courseManagement.filters.filterByCategory')}
+                placeholder={t(
+                  "admin.courseManagement.filters.filterByCategory"
+                )}
                 style={{ width: 150 }}
                 onChange={setSelectedCategory}
                 allowClear
               >
-                <Option value="language">{t('admin.courseManagement.filters.categories.language')}</Option>
-                <Option value="business">{t('admin.courseManagement.filters.categories.business')}</Option>
-                <Option value="technology">{t('admin.courseManagement.filters.categories.technology')}</Option>
-                <Option value="arts">{t('admin.courseManagement.filters.categories.arts')}</Option>
-                <Option value="science">{t('admin.courseManagement.filters.categories.science')}</Option>
-                <Option value="other">{t('admin.courseManagement.filters.categories.other')}</Option>
+                <Option value="language">
+                  {t("admin.courseManagement.filters.categories.language")}
+                </Option>
+                <Option value="business">
+                  {t("admin.courseManagement.filters.categories.business")}
+                </Option>
+                <Option value="technology">
+                  {t("admin.courseManagement.filters.categories.technology")}
+                </Option>
+                <Option value="arts">
+                  {t("admin.courseManagement.filters.categories.arts")}
+                </Option>
+                <Option value="science">
+                  {t("admin.courseManagement.filters.categories.science")}
+                </Option>
+                <Option value="other">
+                  {t("admin.courseManagement.filters.categories.other")}
+                </Option>
               </Select>
               <Button
                 type="primary"
@@ -3057,25 +3676,29 @@ const AdminFacultyDashboard = () => {
                   setCourseModalVisible(true);
                 }}
               >
-                {t('admin.courseManagement.actions.createCourse')}
+                {t("admin.courseManagement.actions.createCourse")}
               </Button>
             </Space>
           }
         >
           <Table
             columns={courseColumns}
-            dataSource={courses.filter(course => {
-              const matchesSearch = !searchTerm || 
-                course.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            dataSource={courses.filter((course) => {
+              const matchesSearch =
+                !searchTerm ||
+                course.title
+                  ?.toLowerCase()
+                  .includes(searchTerm.toLowerCase()) ||
                 course.code?.toLowerCase().includes(searchTerm.toLowerCase());
-              const matchesCategory = !selectedCategory || course.category === selectedCategory;
+              const matchesCategory =
+                !selectedCategory || course.category === selectedCategory;
               return matchesSearch && matchesCategory;
             })}
             rowKey="_id"
             pagination={{
               pageSize: 10,
               showSizeChanger: true,
-              showQuickJumper: true
+              showQuickJumper: true,
             }}
           />
         </Card>
@@ -3087,71 +3710,86 @@ const AdminFacultyDashboard = () => {
   const renderMaterialManagement = () => {
     const materialColumns = [
       {
-        title: t('admin.materialManagement.table.columns.material'),
-        key: 'material',
+        title: t("admin.materialManagement.table.columns.material"),
+        key: "material",
         render: (_, record) => (
           <Space>
-            {record.fileType === 'video' ? <VideoCameraOutlined /> : 
-             record.fileType === 'pdf' ? <FileTextOutlined /> : 
-             <FileOutlined />}
+            {record.fileType === "video" ? (
+              <VideoCameraOutlined />
+            ) : record.fileType === "pdf" ? (
+              <FileTextOutlined />
+            ) : (
+              <FileOutlined />
+            )}
             <div>
               <Text strong>{record.title}</Text>
               <br />
-              <Text type="secondary" style={{ fontSize: '12px' }}>
+              <Text type="secondary" style={{ fontSize: "12px" }}>
                 {record.description}
               </Text>
             </div>
           </Space>
-        )
+        ),
       },
       {
-        title: t('admin.materialManagement.table.columns.course'),
-        dataIndex: 'course',
-        key: 'course',
+        title: t("admin.materialManagement.table.columns.course"),
+        dataIndex: "course",
+        key: "course",
         render: (course) => {
-          const courseData = courses.find(c => c._id === course);
-          return <Tag color="blue">{courseData?.title || t('admin.materialManagement.table.values.unknown')}</Tag>;
-        }
+          const courseData = courses.find((c) => c._id === course);
+          return (
+            <Tag color="blue">
+              {courseData?.title ||
+                t("admin.materialManagement.table.values.unknown")}
+            </Tag>
+          );
+        },
       },
       {
-        title: t('admin.materialManagement.table.columns.category'),
-        dataIndex: 'category',
-        key: 'category',
-        render: (category) => <Tag>{t(`admin.materialManagement.upload.categories.${category}`) || category}</Tag>
+        title: t("admin.materialManagement.table.columns.category"),
+        dataIndex: "category",
+        key: "category",
+        render: (category) => (
+          <Tag>
+            {t(`admin.materialManagement.upload.categories.${category}`) ||
+              category}
+          </Tag>
+        ),
       },
       {
-        title: t('admin.materialManagement.table.columns.size'),
-        dataIndex: 'fileSize',
-        key: 'fileSize',
+        title: t("admin.materialManagement.table.columns.size"),
+        dataIndex: "fileSize",
+        key: "fileSize",
         render: (size) => {
           const sizeInMB = (size / (1024 * 1024)).toFixed(2);
           return `${sizeInMB} MB`;
-        }
+        },
       },
       {
-        title: t('admin.materialManagement.table.columns.uploaded'),
-        dataIndex: 'createdAt',
-        key: 'createdAt',
-        render: (date) => moment(date).format('MMM DD, YYYY')
+        title: t("admin.materialManagement.table.columns.uploaded"),
+        dataIndex: "createdAt",
+        key: "createdAt",
+        render: (date) => moment(date).format("MMM DD, YYYY"),
       },
       {
-        title: t('admin.materialManagement.table.columns.actions'),
-        key: 'actions',
+        title: t("admin.materialManagement.table.columns.actions"),
+        key: "actions",
         render: (_, record) => (
           <Space>
-            <Tooltip title={t('admin.materialManagement.actions.download')}>
+            <Tooltip title={t("admin.materialManagement.actions.download")}>
               <Button
                 icon={<DownloadOutlined />}
                 size="small"
                 onClick={() => {
                   // Remove duplicate '/uploads/' prefix if filePath already contains it
-                  const filePath = record.filePath.startsWith('uploads/') ?
-                    record.filePath : `uploads/${record.filePath}`;
-                  window.open(`${API_BASE_URL}/${filePath}`, '_blank');
+                  const filePath = record.filePath.startsWith("uploads/")
+                    ? record.filePath
+                    : `uploads/${record.filePath}`;
+                  window.open(`${API_BASE_URL}/${filePath}`, "_blank");
                 }}
               />
             </Tooltip>
-            <Tooltip title={t('admin.materialManagement.actions.preview')}>
+            <Tooltip title={t("admin.materialManagement.actions.preview")}>
               <Button
                 icon={<EyeOutlined />}
                 size="small"
@@ -3162,94 +3800,111 @@ const AdminFacultyDashboard = () => {
               />
             </Tooltip>
             <Popconfirm
-              title={t('admin.materialManagement.actions.deleteConfirm')}
+              title={t("admin.materialManagement.actions.deleteConfirm")}
               onConfirm={async () => {
                 try {
                   await materialAPI.delete(record._id);
-                  message.success(t('admin.materialManagement.messages.deleteSuccess'));
+                  message.success(
+                    t("admin.materialManagement.messages.deleteSuccess")
+                  );
                   fetchMaterials();
                 } catch (error) {
-                  message.error(t('admin.materialManagement.messages.deleteError'));
+                  message.error(
+                    t("admin.materialManagement.messages.deleteError")
+                  );
                 }
               }}
             >
-              <Tooltip title={t('admin.materialManagement.actions.delete')}>
+              <Tooltip title={t("admin.materialManagement.actions.delete")}>
                 <Button icon={<DeleteOutlined />} size="small" danger />
               </Tooltip>
             </Popconfirm>
           </Space>
-        )
-      }
+        ),
+      },
     ];
 
     return (
       <div>
-        <Title level={2}>📄 {t('admin.materialManagement.title')}</Title>
-        <Text type="secondary">{t('admin.materialManagement.subtitle')}</Text>
+        <Title level={2}>📄 {t("admin.materialManagement.title")}</Title>
+        <Text type="secondary">{t("admin.materialManagement.subtitle")}</Text>
 
         <Row gutter={[16, 16]} style={{ marginTop: 24, marginBottom: 24 }}>
           <Col xs={24} sm={12} md={6}>
             <Card>
               <Statistic
-                title={t('admin.materialManagement.stats.totalMaterials')}
+                title={t("admin.materialManagement.stats.totalMaterials")}
                 value={materials.length}
                 prefix={<FolderOutlined />}
-                valueStyle={{ color: '#1890ff' }}
+                valueStyle={{ color: "#1890ff" }}
               />
             </Card>
           </Col>
           <Col xs={24} sm={12} md={6}>
             <Card>
               <Statistic
-                title={t('admin.materialManagement.stats.videos')}
-                value={materials.filter(m => m.category === 'video').length}
+                title={t("admin.materialManagement.stats.videos")}
+                value={materials.filter((m) => m.category === "video").length}
                 prefix={<VideoCameraOutlined />}
-                valueStyle={{ color: '#52c41a' }}
+                valueStyle={{ color: "#52c41a" }}
               />
             </Card>
           </Col>
           <Col xs={24} sm={12} md={6}>
             <Card>
               <Statistic
-                title={t('admin.materialManagement.stats.documents')}
-                value={materials.filter(m => m.category === 'document').length}
+                title={t("admin.materialManagement.stats.documents")}
+                value={
+                  materials.filter((m) => m.category === "document").length
+                }
                 prefix={<FileTextOutlined />}
-                valueStyle={{ color: '#faad14' }}
+                valueStyle={{ color: "#faad14" }}
               />
             </Card>
           </Col>
           <Col xs={24} sm={12} md={6}>
             <Card>
               <Statistic
-                title={t('admin.materialManagement.stats.totalSize')}
-                value={(materials.reduce((sum, m) => sum + (m.fileSize || 0), 0) / (1024 * 1024)).toFixed(1)}
+                title={t("admin.materialManagement.stats.totalSize")}
+                value={(
+                  materials.reduce((sum, m) => sum + (m.fileSize || 0), 0) /
+                  (1024 * 1024)
+                ).toFixed(1)}
                 suffix="MB"
                 prefix={<CloudOutlined />}
-                valueStyle={{ color: '#722ed1' }}
+                valueStyle={{ color: "#722ed1" }}
               />
             </Card>
           </Col>
         </Row>
 
         <Card
-          title={t('admin.materialManagement.table.title')}
+          title={t("admin.materialManagement.table.title")}
           extra={
             <Space>
               <Input
-                placeholder={t('admin.materialManagement.filters.searchPlaceholder')}
+                placeholder={t(
+                  "admin.materialManagement.filters.searchPlaceholder"
+                )}
                 prefix={<SearchOutlined />}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 style={{ width: 200 }}
               />
               <Select
-                placeholder={t('admin.materialManagement.filters.filterByType')}
+                placeholder={t("admin.materialManagement.filters.filterByType")}
                 style={{ width: 150 }}
                 onChange={setSelectedFileType}
                 allowClear
               >
-                <Option value="video">{t('admin.materialManagement.filters.types.video')}</Option>
-                <Option value="document">{t('admin.materialManagement.filters.types.document')}</Option>
-                <Option value="resource">{t('admin.materialManagement.filters.types.resource')}</Option>
+                <Option value="video">
+                  {t("admin.materialManagement.filters.types.video")}
+                </Option>
+                <Option value="document">
+                  {t("admin.materialManagement.filters.types.document")}
+                </Option>
+                <Option value="resource">
+                  {t("admin.materialManagement.filters.types.resource")}
+                </Option>
               </Select>
               <Button
                 type="primary"
@@ -3260,24 +3915,28 @@ const AdminFacultyDashboard = () => {
                   setMaterialModalVisible(true);
                 }}
               >
-                {t('admin.materialManagement.actions.uploadMaterial')}
+                {t("admin.materialManagement.actions.uploadMaterial")}
               </Button>
             </Space>
           }
         >
           <Table
             columns={materialColumns}
-            dataSource={materials.filter(material => {
-              const matchesSearch = !searchTerm || 
-                material.title?.toLowerCase().includes(searchTerm.toLowerCase());
-              const matchesType = !selectedFileType || material.category === selectedFileType;
+            dataSource={materials.filter((material) => {
+              const matchesSearch =
+                !searchTerm ||
+                material.title
+                  ?.toLowerCase()
+                  .includes(searchTerm.toLowerCase());
+              const matchesType =
+                !selectedFileType || material.category === selectedFileType;
               return matchesSearch && matchesType;
             })}
             rowKey="_id"
             pagination={{
               pageSize: 10,
               showSizeChanger: true,
-              showQuickJumper: true
+              showQuickJumper: true,
             }}
           />
         </Card>
@@ -3289,117 +3948,143 @@ const AdminFacultyDashboard = () => {
 
   const renderStudentProgress = () => (
     <div>
-      <Title level={2}>🎓 {t('adminDashboard.students.title')}</Title>
-      <Text type="secondary">{t('adminDashboard.students.subtitle')}</Text>
+      <Title level={2}>🎓 {t("adminDashboard.students.title")}</Title>
+      <Text type="secondary">{t("adminDashboard.students.subtitle")}</Text>
 
       <Row gutter={[16, 16]} style={{ marginTop: 24, marginBottom: 24 }}>
         <Col xs={24} sm={12} md={6}>
           <Card>
             <Statistic
-              title={t('adminDashboard.students.totalStudents')}
+              title={t("adminDashboard.students.totalStudents")}
               value={students.length}
               prefix={<TeamOutlined />}
-              valueStyle={{ color: '#1890ff' }}
+              valueStyle={{ color: "#1890ff" }}
             />
           </Card>
         </Col>
         <Col xs={24} sm={12} md={6}>
           <Card>
             <Statistic
-              title={t('adminDashboard.students.activeStudents')}
-              value={students.filter(s => s.isApproved === true).length}
+              title={t("adminDashboard.students.activeStudents")}
+              value={students.filter((s) => s.isApproved === true).length}
               prefix={<CheckCircleOutlined />}
-              valueStyle={{ color: '#52c41a' }}
+              valueStyle={{ color: "#52c41a" }}
             />
           </Card>
         </Col>
         <Col xs={24} sm={12} md={6}>
           <Card>
             <Statistic
-              title={t('adminDashboard.students.avgProgress')}
+              title={t("adminDashboard.students.avgProgress")}
               value={Math.round((79 + 3 + 88) / 3)}
               suffix="%"
               prefix={<TrophyOutlined />}
-              valueStyle={{ color: '#faad14' }}
+              valueStyle={{ color: "#faad14" }}
             />
           </Card>
         </Col>
         <Col xs={24} sm={12} md={6}>
           <Card>
             <Statistic
-              title={t('adminDashboard.students.completionRate')}
-              value={Math.round(((79 >= 80 ? 1 : 0) + (3 >= 80 ? 1 : 0) + (88 >= 80 ? 1 : 0)) / 3 * 100)}
+              title={t("adminDashboard.students.completionRate")}
+              value={Math.round(
+                (((79 >= 80 ? 1 : 0) + (3 >= 80 ? 1 : 0) + (88 >= 80 ? 1 : 0)) /
+                  3) *
+                  100
+              )}
               suffix="%"
               prefix={<CheckSquareOutlined />}
-              valueStyle={{ color: '#722ed1' }}
+              valueStyle={{ color: "#722ed1" }}
             />
           </Card>
         </Col>
       </Row>
 
-      <Card title={t('adminDashboard.students.studentPerformance')}>
+      <Card title={t("adminDashboard.students.studentPerformance")}>
         <Table
           columns={[
             {
-              title: t('adminDashboard.students.student'),
-              key: 'student',
+              title: t("adminDashboard.students.student"),
+              key: "student",
               render: (_, record) => (
                 <div>
-                  <Text strong>{record.firstName} {record.lastName}</Text>
+                  <Text strong>
+                    {record.firstName} {record.lastName}
+                  </Text>
                   <br />
-                  <Text type="secondary" style={{ fontSize: '12px' }}>
+                  <Text type="secondary" style={{ fontSize: "12px" }}>
                     {record.email}
                   </Text>
                 </div>
-              )
+              ),
             },
             {
-              title: t('adminDashboard.students.enrolledCourses'),
-              key: 'courses',
+              title: t("adminDashboard.students.enrolledCourses"),
+              key: "courses",
               render: (_, record) => {
                 // Calculate enrolled courses based on student data
-                const enrolledCount = record.email === 'mesheka@gmail.com' ? 2 : 
-                                    record.email === 'gabby1@gmail.com' ? 1 : 
-                                    record.email === 'gabby25@gmail.com' ? 3 : 1;
+                const enrolledCount =
+                  record.email === "mesheka@gmail.com"
+                    ? 2
+                    : record.email === "gabby1@gmail.com"
+                    ? 1
+                    : record.email === "gabby25@gmail.com"
+                    ? 3
+                    : 1;
                 return (
                   <Badge count={enrolledCount} showZero>
                     <BookOutlined style={{ fontSize: 20 }} />
                   </Badge>
                 );
-              }
+              },
             },
             {
-              title: t('adminDashboard.students.progress'),
-              key: 'progress',
+              title: t("adminDashboard.students.progress"),
+              key: "progress",
               render: (_, record) => {
                 // Set realistic progress based on student data
-                const progress = record.email === 'mesheka@gmail.com' ? 79 : 
-                               record.email === 'gabby1@gmail.com' ? 3 : 
-                               record.email === 'gabby25@gmail.com' ? 88 : 50;
+                const progress =
+                  record.email === "mesheka@gmail.com"
+                    ? 79
+                    : record.email === "gabby1@gmail.com"
+                    ? 3
+                    : record.email === "gabby25@gmail.com"
+                    ? 88
+                    : 50;
                 return (
                   <Progress
                     percent={progress}
                     size="small"
-                    strokeColor={progress >= 70 ? '#52c41a' : progress >= 40 ? '#faad14' : '#f5222d'}
+                    strokeColor={
+                      progress >= 70
+                        ? "#52c41a"
+                        : progress >= 40
+                        ? "#faad14"
+                        : "#f5222d"
+                    }
                   />
                 );
-              }
+              },
             },
             {
-              title: t('adminDashboard.students.lastActivity'),
-              key: 'lastActivity',
+              title: t("adminDashboard.students.lastActivity"),
+              key: "lastActivity",
               render: (_, record) => {
                 // Set realistic last activity dates
-                const activityDate = record.email === 'mesheka@gmail.com' ? moment('2025-09-29') : 
-                                   record.email === 'gabby1@gmail.com' ? moment('2025-10-01') : 
-                                   record.email === 'gabby25@gmail.com' ? moment('2025-09-30') : 
-                                   moment().subtract(2, 'days');
-                return activityDate.format('MMM DD, YYYY');
-              }
+                const activityDate =
+                  record.email === "mesheka@gmail.com"
+                    ? moment("2025-09-29")
+                    : record.email === "gabby1@gmail.com"
+                    ? moment("2025-10-01")
+                    : record.email === "gabby25@gmail.com"
+                    ? moment("2025-09-30")
+                    : moment().subtract(2, "days");
+                return activityDate.format("MMM DD, YYYY");
+              },
             },
             {
-              title: t('adminDashboard.applications.actions'),
-              key: 'actions',
+              title: t("adminDashboard.applications.actions"),
+              key: "actions",
               render: (_, record) => (
                 <Space>
                   <Button
@@ -3410,18 +4095,18 @@ const AdminFacultyDashboard = () => {
                       setProgressModalVisible(true);
                     }}
                   >
-                    {t('adminDashboard.applications.viewDetails')}
+                    {t("adminDashboard.applications.viewDetails")}
                   </Button>
                 </Space>
-              )
-            }
+              ),
+            },
           ]}
           dataSource={students}
           rowKey="_id"
           pagination={{
             pageSize: 10,
             showSizeChanger: true,
-            showQuickJumper: true
+            showQuickJumper: true,
           }}
         />
       </Card>
@@ -3431,13 +4116,20 @@ const AdminFacultyDashboard = () => {
   // Render Announcements Management
   const renderAnnouncementsManagement = () => (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: 24,
+        }}
+      >
         <div>
-          <Title level={2}>📢 {t('announcements.title')}</Title>
-          <Text type="secondary">{t('announcements.subtitle')}</Text>
+          <Title level={2}>📢 {t("announcements.title")}</Title>
+          <Text type="secondary">{t("announcements.subtitle")}</Text>
         </div>
-        <Button 
-          type="primary" 
+        <Button
+          type="primary"
           icon={<PlusOutlined />}
           onClick={() => {
             setAnnouncementViewModalVisible(false); // Ensure announcement view modal is closed
@@ -3447,7 +4139,7 @@ const AdminFacultyDashboard = () => {
             setAnnouncementModalVisible(true);
           }}
         >
-          {t('announcements.createButton')}
+          {t("announcements.createButton")}
         </Button>
       </div>
 
@@ -3455,116 +4147,169 @@ const AdminFacultyDashboard = () => {
         <Col xs={24} sm={12} md={6}>
           <Card>
             <Statistic
-              title={t('announcements.stats.totalAnnouncements')}
+              title={t("announcements.stats.totalAnnouncements")}
               value={announcements.length}
-              prefix={<SoundOutlined className="stat-icon-blue" style={{ fontSize: '20px' }} />}
-              valueStyle={{ color: '#1890ff' }}
+              prefix={
+                <SoundOutlined
+                  className="stat-icon-blue"
+                  style={{ fontSize: "20px" }}
+                />
+              }
+              valueStyle={{ color: "#1890ff" }}
             />
           </Card>
         </Col>
         <Col xs={24} sm={12} md={6}>
           <Card>
             <Statistic
-              title={t('announcements.stats.activeAnnouncements')}
-              value={announcements.filter(a => !a.expiryDate || new Date(a.expiryDate) > new Date()).length}
-              prefix={<CheckCircleOutlined className="stat-icon-green" style={{ fontSize: '20px' }} />}
-              valueStyle={{ color: '#52c41a' }}
+              title={t("announcements.stats.activeAnnouncements")}
+              value={
+                announcements.filter(
+                  (a) => !a.expiryDate || new Date(a.expiryDate) > new Date()
+                ).length
+              }
+              prefix={
+                <CheckCircleOutlined
+                  className="stat-icon-green"
+                  style={{ fontSize: "20px" }}
+                />
+              }
+              valueStyle={{ color: "#52c41a" }}
             />
           </Card>
         </Col>
         <Col xs={24} sm={12} md={6}>
           <Card>
             <Statistic
-              title={t('announcements.stats.highPriority')}
-              value={announcements.filter(a => a.priority === 'high').length}
-              prefix={<ExclamationCircleOutlined className="stat-icon-orange" style={{ fontSize: '20px' }} />}
-              valueStyle={{ color: '#faad14' }}
+              title={t("announcements.stats.highPriority")}
+              value={announcements.filter((a) => a.priority === "high").length}
+              prefix={
+                <ExclamationCircleOutlined
+                  className="stat-icon-orange"
+                  style={{ fontSize: "20px" }}
+                />
+              }
+              valueStyle={{ color: "#faad14" }}
             />
           </Card>
         </Col>
         <Col xs={24} sm={12} md={6}>
           <Card>
             <Statistic
-              title={t('announcements.stats.thisMonth')}
-              value={announcements.filter(a => new Date(a.createdAt).getMonth() === new Date().getMonth()).length}
-              prefix={<CalendarOutlined className="stat-icon-purple" style={{ fontSize: '20px' }} />}
-              valueStyle={{ color: '#722ed1' }}
+              title={t("announcements.stats.thisMonth")}
+              value={
+                announcements.filter(
+                  (a) =>
+                    new Date(a.createdAt).getMonth() === new Date().getMonth()
+                ).length
+              }
+              prefix={
+                <CalendarOutlined
+                  className="stat-icon-purple"
+                  style={{ fontSize: "20px" }}
+                />
+              }
+              valueStyle={{ color: "#722ed1" }}
             />
           </Card>
         </Col>
       </Row>
 
-      <Card title={t('announcements.table.title')}>
+      <Card title={t("announcements.table.title")}>
         <Table
           columns={[
             {
-              title: t('announcements.table.columns.title'),
-              dataIndex: 'title',
-              key: 'title',
+              title: t("announcements.table.columns.title"),
+              dataIndex: "title",
+              key: "title",
               render: (text, record) => (
                 <div>
                   <Text strong>{text}</Text>
-                  {record.isSticky && <Tag color="orange" style={{ marginLeft: 8 }}>📌 Pinned</Tag>}
+                  {record.isSticky && (
+                    <Tag color="orange" style={{ marginLeft: 8 }}>
+                      📌 Pinned
+                    </Tag>
+                  )}
                   <br />
-                  <Text type="secondary" style={{ fontSize: '12px' }}>
-                    {t('announcements.table.createdAgo', { time: moment(record.createdAt).fromNow() })}
+                  <Text type="secondary" style={{ fontSize: "12px" }}>
+                    {t("announcements.table.createdAgo", {
+                      time: moment(record.createdAt).fromNow(),
+                    })}
                   </Text>
                 </div>
-              )
+              ),
             },
             {
-              title: t('announcements.table.columns.targetAudience'),
-              dataIndex: 'targetAudience',
-              key: 'targetAudience',
+              title: t("announcements.table.columns.targetAudience"),
+              dataIndex: "targetAudience",
+              key: "targetAudience",
               render: (audience) => {
                 const colors = {
-                  'all': 'blue',
-                  'students': 'green',
-                  'teachers': 'orange',
-                  'admins': 'red'
+                  all: "blue",
+                  students: "green",
+                  teachers: "orange",
+                  admins: "red",
                 };
-                return <Tag color={colors[audience] || 'default'}>{t(`announcements.targetAudience.${audience}`)}</Tag>;
-              }
+                return (
+                  <Tag color={colors[audience] || "default"}>
+                    {t(`announcements.targetAudience.${audience}`)}
+                  </Tag>
+                );
+              },
             },
             {
-              title: t('announcements.table.columns.priority'),
-              dataIndex: 'priority',
-              key: 'priority',
+              title: t("announcements.table.columns.priority"),
+              dataIndex: "priority",
+              key: "priority",
               render: (priority) => {
                 const colors = {
-                  'low': 'default',
-                  'medium': 'processing',
-                  'high': 'warning'
+                  low: "default",
+                  medium: "processing",
+                  high: "warning",
                 };
-                return <Tag color={colors[priority]}>{t(`announcements.priority.${priority}`)}</Tag>;
-              }
+                return (
+                  <Tag color={colors[priority]}>
+                    {t(`announcements.priority.${priority}`)}
+                  </Tag>
+                );
+              },
             },
             {
-              title: t('announcements.table.columns.type'),
-              dataIndex: 'type',
-              key: 'type',
-              render: (type) => <Tag>{t(`announcements.type.${type}`)}</Tag>
+              title: t("announcements.table.columns.type"),
+              dataIndex: "type",
+              key: "type",
+              render: (type) => <Tag>{t(`announcements.type.${type}`)}</Tag>,
             },
             {
-              title: t('announcements.table.columns.status'),
-              key: 'status',
+              title: t("announcements.table.columns.status"),
+              key: "status",
               render: (_, record) => {
                 const now = new Date();
                 const publishDate = new Date(record.publishDate);
-                const expiryDate = record.expiryDate ? new Date(record.expiryDate) : null;
-                
+                const expiryDate = record.expiryDate
+                  ? new Date(record.expiryDate)
+                  : null;
+
                 if (publishDate > now) {
-                  return <Tag color="orange">{t('announcements.status.scheduled')}</Tag>;
+                  return (
+                    <Tag color="orange">
+                      {t("announcements.status.scheduled")}
+                    </Tag>
+                  );
                 } else if (expiryDate && expiryDate < now) {
-                  return <Tag color="red">{t('announcements.status.expired')}</Tag>;
+                  return (
+                    <Tag color="red">{t("announcements.status.expired")}</Tag>
+                  );
                 } else {
-                  return <Tag color="green">{t('announcements.status.active')}</Tag>;
+                  return (
+                    <Tag color="green">{t("announcements.status.active")}</Tag>
+                  );
                 }
-              }
+              },
             },
             {
-              title: t('announcements.table.columns.actions'),
-              key: 'actions',
+              title: t("announcements.table.columns.actions"),
+              key: "actions",
               render: (_, record) => (
                 <Space>
                   <Button
@@ -3587,8 +4332,12 @@ const AdminFacultyDashboard = () => {
                       setSelectedAnnouncement(record);
                       announcementForm.setFieldsValue({
                         ...record,
-                        publishDate: record.publishDate ? moment(record.publishDate) : null,
-                        expiryDate: record.expiryDate ? moment(record.expiryDate) : null
+                        publishDate: record.publishDate
+                          ? moment(record.publishDate)
+                          : null,
+                        expiryDate: record.expiryDate
+                          ? moment(record.expiryDate)
+                          : null,
                       });
                       setAnnouncementModalVisible(true);
                     }}
@@ -3599,35 +4348,41 @@ const AdminFacultyDashboard = () => {
                     danger
                     onClick={() => {
                       confirm({
-                        title: 'Delete Announcement',
-                        content: 'Are you sure you want to delete this announcement?',
+                        title: "Delete Announcement",
+                        content:
+                          "Are you sure you want to delete this announcement?",
                         onOk: async () => {
                           try {
-                            const response = await fetch(`${API_BASE_URL}/api/announcements/${record._id}`, {
-                              method: 'DELETE',
-                              headers: getAuthHeaders()
-                            });
+                            const response = await fetch(
+                              `${API_BASE_URL}/api/announcements/${record._id}`,
+                              {
+                                method: "DELETE",
+                                headers: getAuthHeaders(),
+                              }
+                            );
                             if (response.ok) {
-                              message.success('Announcement deleted successfully');
+                              message.success(
+                                "Announcement deleted successfully"
+                              );
                               fetchAnnouncements();
                             }
                           } catch (error) {
-                            message.error('Failed to delete announcement');
+                            message.error("Failed to delete announcement");
                           }
-                        }
+                        },
                       });
                     }}
                   />
                 </Space>
-              )
-            }
+              ),
+            },
           ]}
           dataSource={announcements}
           rowKey="_id"
           pagination={{
             pageSize: 10,
             showSizeChanger: true,
-            showQuickJumper: true
+            showQuickJumper: true,
           }}
         />
       </Card>
@@ -3637,57 +4392,68 @@ const AdminFacultyDashboard = () => {
   // Render Analytics & Reports
   const renderAnalytics = () => (
     <div>
-      <Title level={2}>📊 {t('adminDashboard.analytics.title')}</Title>
-      <Text type="secondary">{t('adminDashboard.analytics.subtitle')}</Text>
+      <Title level={2}>📊 {t("adminDashboard.analytics.title")}</Title>
+      <Text type="secondary">{t("adminDashboard.analytics.subtitle")}</Text>
 
       <Row gutter={[24, 24]} style={{ marginTop: 24 }}>
         <Col xs={24} lg={12}>
-          <Card title={t('adminDashboard.analytics.courseEnrollmentTrends')}>
+          <Card title={t("adminDashboard.analytics.courseEnrollmentTrends")}>
             <Bar
               data={{
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                datasets: [{
-                  label: t('adminDashboard.analytics.newEnrollments'),
-                  data: [12, 19, 15, 25, 22, 30],
-                  backgroundColor: 'rgba(24, 144, 255, 0.6)',
-                  borderColor: '#1890ff',
-                  borderWidth: 1
-                }]
+                labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+                datasets: [
+                  {
+                    label: t("adminDashboard.analytics.newEnrollments"),
+                    data: [12, 19, 15, 25, 22, 30],
+                    backgroundColor: "rgba(24, 144, 255, 0.6)",
+                    borderColor: "#1890ff",
+                    borderWidth: 1,
+                  },
+                ],
               }}
               options={{
                 responsive: true,
                 plugins: {
                   legend: {
-                    position: 'top'
-                  }
-                }
+                    position: "top",
+                  },
+                },
               }}
             />
           </Card>
         </Col>
-        
+
         <Col xs={24} lg={12}>
-          <Card title={t('adminDashboard.analytics.studentPerformanceDistribution')}>
+          <Card
+            title={t("adminDashboard.analytics.studentPerformanceDistribution")}
+          >
             <Pie
               data={{
-                labels: [t('adminDashboard.analytics.excellent'), t('adminDashboard.analytics.good'), t('adminDashboard.analytics.average'), t('adminDashboard.analytics.belowAverage')],
-                datasets: [{
-                  data: [25, 35, 30, 10],
-                  backgroundColor: [
-                    '#52c41a',
-                    '#1890ff',
-                    '#faad14',
-                    '#f5222d'
-                  ]
-                }]
+                labels: [
+                  t("adminDashboard.analytics.excellent"),
+                  t("adminDashboard.analytics.good"),
+                  t("adminDashboard.analytics.average"),
+                  t("adminDashboard.analytics.belowAverage"),
+                ],
+                datasets: [
+                  {
+                    data: [25, 35, 30, 10],
+                    backgroundColor: [
+                      "#52c41a",
+                      "#1890ff",
+                      "#faad14",
+                      "#f5222d",
+                    ],
+                  },
+                ],
               }}
               options={{
                 responsive: true,
                 plugins: {
                   legend: {
-                    position: 'bottom'
-                  }
-                }
+                    position: "bottom",
+                  },
+                },
               }}
             />
           </Card>
@@ -3696,46 +4462,46 @@ const AdminFacultyDashboard = () => {
 
       <Row gutter={[24, 24]} style={{ marginTop: 24 }}>
         <Col xs={24}>
-          <Card title={t('adminDashboard.analytics.monthlyActivityReport')}>
+          <Card title={t("adminDashboard.analytics.monthlyActivityReport")}>
             <Line
               data={{
-                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
                 datasets: [
                   {
-                    label: t('adminDashboard.analytics.quizSubmissions'),
+                    label: t("adminDashboard.analytics.quizSubmissions"),
                     data: [45, 52, 48, 61],
-                    borderColor: '#1890ff',
-                    backgroundColor: 'rgba(24, 144, 255, 0.1)',
-                    tension: 0.4
+                    borderColor: "#1890ff",
+                    backgroundColor: "rgba(24, 144, 255, 0.1)",
+                    tension: 0.4,
                   },
                   {
-                    label: t('adminDashboard.analytics.homeworkSubmissions'),
+                    label: t("adminDashboard.analytics.homeworkSubmissions"),
                     data: [38, 42, 35, 48],
-                    borderColor: '#52c41a',
-                    backgroundColor: 'rgba(82, 196, 26, 0.1)',
-                    tension: 0.4
+                    borderColor: "#52c41a",
+                    backgroundColor: "rgba(82, 196, 26, 0.1)",
+                    tension: 0.4,
                   },
                   {
-                    label: t('adminDashboard.analytics.materialDownloads'),
+                    label: t("adminDashboard.analytics.materialDownloads"),
                     data: [65, 78, 72, 85],
-                    borderColor: '#faad14',
-                    backgroundColor: 'rgba(250, 173, 20, 0.1)',
-                    tension: 0.4
-                  }
-                ]
+                    borderColor: "#faad14",
+                    backgroundColor: "rgba(250, 173, 20, 0.1)",
+                    tension: 0.4,
+                  },
+                ],
               }}
               options={{
                 responsive: true,
                 plugins: {
                   legend: {
-                    position: 'top'
-                  }
+                    position: "top",
+                  },
                 },
                 scales: {
                   y: {
-                    beginAtZero: true
-                  }
-                }
+                    beginAtZero: true,
+                  },
+                },
               }}
             />
           </Card>
@@ -3747,17 +4513,21 @@ const AdminFacultyDashboard = () => {
   // Render Settings
   const renderSettings = () => (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: 24,
+        }}
+      >
         <div>
-          <Title level={2}>{t('adminDashboard.settings.title')}</Title>
-          <Text type="secondary">{t('adminDashboard.settings.subtitle')}</Text>
+          <Title level={2}>{t("adminDashboard.settings.title")}</Title>
+          <Text type="secondary">{t("adminDashboard.settings.subtitle")}</Text>
         </div>
         <Space>
-          <Button 
-            onClick={handleResetSettings}
-            icon={<UndoOutlined />}
-          >
-            {t('adminDashboard.settings.resetToDefault')}
+          <Button onClick={handleResetSettings} icon={<UndoOutlined />}>
+            {t("adminDashboard.settings.resetToDefault")}
           </Button>
         </Space>
       </div>
@@ -3770,27 +4540,30 @@ const AdminFacultyDashboard = () => {
       >
         <Row gutter={[24, 24]}>
           <Col xs={24} lg={12}>
-            <Card title={t('adminDashboard.settings.generalSettings')}>
-              <Form.Item 
-                label={t('adminDashboard.settings.systemName')} 
+            <Card title={t("adminDashboard.settings.generalSettings")}>
+              <Form.Item
+                label={t("adminDashboard.settings.systemName")}
                 name="systemName"
-                rules={[{ required: true, message: 'System name is required' }]}
+                rules={[{ required: true, message: "System name is required" }]}
               >
                 <Input placeholder="Enter system name" />
               </Form.Item>
-              
-              <Form.Item 
-                label={t('adminDashboard.settings.adminEmail')} 
+
+              <Form.Item
+                label={t("adminDashboard.settings.adminEmail")}
                 name="adminEmail"
                 rules={[
-                  { required: true, message: 'Admin email is required' },
-                  { type: 'email', message: 'Please enter a valid email' }
+                  { required: true, message: "Admin email is required" },
+                  { type: "email", message: "Please enter a valid email" },
                 ]}
               >
                 <Input placeholder="Enter admin email" />
               </Form.Item>
-              
-              <Form.Item label={t('adminDashboard.settings.timeZone')} name="timeZone">
+
+              <Form.Item
+                label={t("adminDashboard.settings.timeZone")}
+                name="timeZone"
+              >
                 <Select>
                   <Option value="UTC">UTC - Coordinated Universal Time</Option>
                   <Option value="EST">EST - Eastern Standard Time</Option>
@@ -3800,9 +4573,16 @@ const AdminFacultyDashboard = () => {
                   <Option value="CET">CET - Central European Time</Option>
                 </Select>
               </Form.Item>
-              
-              <Form.Item label={t('adminDashboard.settings.language')} name="language">
-                <Select onChange={(value) => translationInstance.changeLanguage(value)}>
+
+              <Form.Item
+                label={t("adminDashboard.settings.language")}
+                name="language"
+              >
+                <Select
+                  onChange={(value) =>
+                    translationInstance.changeLanguage(value)
+                  }
+                >
                   <Option value="en">🇺🇸 English</Option>
                   <Option value="ja">🇯🇵 Japanese (日本語)</Option>
                 </Select>
@@ -3811,33 +4591,33 @@ const AdminFacultyDashboard = () => {
           </Col>
 
           <Col xs={24} lg={12}>
-            <Card title={t('adminDashboard.settings.notificationSettings')}>
-              <Form.Item 
-                label={t('adminDashboard.settings.emailNotifications')} 
+            <Card title={t("adminDashboard.settings.notificationSettings")}>
+              <Form.Item
+                label={t("adminDashboard.settings.emailNotifications")}
                 name="emailNotifications"
                 valuePropName="checked"
               >
                 <Switch />
               </Form.Item>
-              
-              <Form.Item 
-                label={t('adminDashboard.settings.smsNotifications')} 
+
+              <Form.Item
+                label={t("adminDashboard.settings.smsNotifications")}
                 name="smsNotifications"
                 valuePropName="checked"
               >
                 <Switch />
               </Form.Item>
-              
-              <Form.Item 
-                label={t('adminDashboard.settings.pushNotifications')} 
+
+              <Form.Item
+                label={t("adminDashboard.settings.pushNotifications")}
                 name="pushNotifications"
                 valuePropName="checked"
               >
                 <Switch />
               </Form.Item>
-              
-              <Form.Item 
-                label={t('adminDashboard.settings.weeklyReports')} 
+
+              <Form.Item
+                label={t("adminDashboard.settings.weeklyReports")}
                 name="weeklyReports"
                 valuePropName="checked"
               >
@@ -3849,33 +4629,37 @@ const AdminFacultyDashboard = () => {
 
         <Row gutter={[24, 24]} style={{ marginTop: 24 }}>
           <Col xs={24} lg={12}>
-            <Card title={t('adminDashboard.settings.securitySettings')}>
-              <Form.Item 
-                label={t('adminDashboard.settings.sessionTimeout')} 
+            <Card title={t("adminDashboard.settings.securitySettings")}>
+              <Form.Item
+                label={t("adminDashboard.settings.sessionTimeout")}
                 name="sessionTimeout"
-                rules={[{ required: true, message: 'Session timeout is required' }]}
+                rules={[
+                  { required: true, message: "Session timeout is required" },
+                ]}
               >
-                <InputNumber min={5} max={120} style={{ width: '100%' }} />
+                <InputNumber min={5} max={120} style={{ width: "100%" }} />
               </Form.Item>
-              
-              <Form.Item 
-                label={t('adminDashboard.settings.maxLoginAttempts')} 
+
+              <Form.Item
+                label={t("adminDashboard.settings.maxLoginAttempts")}
                 name="maxLoginAttempts"
-                rules={[{ required: true, message: 'Max login attempts is required' }]}
+                rules={[
+                  { required: true, message: "Max login attempts is required" },
+                ]}
               >
-                <InputNumber min={3} max={10} style={{ width: '100%' }} />
+                <InputNumber min={3} max={10} style={{ width: "100%" }} />
               </Form.Item>
-              
-              <Form.Item 
-                label={t('adminDashboard.settings.maintenanceMode')} 
+
+              <Form.Item
+                label={t("adminDashboard.settings.maintenanceMode")}
                 name="maintenanceMode"
                 valuePropName="checked"
               >
                 <Switch />
               </Form.Item>
-              
-              <Form.Item 
-                label={t('adminDashboard.settings.autoBackup')} 
+
+              <Form.Item
+                label={t("adminDashboard.settings.autoBackup")}
                 name="autoBackup"
                 valuePropName="checked"
               >
@@ -3885,53 +4669,69 @@ const AdminFacultyDashboard = () => {
           </Col>
 
           <Col xs={24} lg={12}>
-            <Card title={t('adminDashboard.settings.systemInformation')}>
+            <Card title={t("adminDashboard.settings.systemInformation")}>
               <Descriptions bordered column={1} size="small">
-                <Descriptions.Item label={t('adminDashboard.settings.version')}>
+                <Descriptions.Item label={t("adminDashboard.settings.version")}>
                   <Tag color="blue">v2.1.0</Tag>
                 </Descriptions.Item>
-                <Descriptions.Item label={t('adminDashboard.settings.lastUpdated')}>
-                  {moment().subtract(2, 'days').format('MMMM DD, YYYY')}
+                <Descriptions.Item
+                  label={t("adminDashboard.settings.lastUpdated")}
+                >
+                  {moment().subtract(2, "days").format("MMMM DD, YYYY")}
                 </Descriptions.Item>
-                <Descriptions.Item label={t('adminDashboard.settings.databaseStatus')}>
+                <Descriptions.Item
+                  label={t("adminDashboard.settings.databaseStatus")}
+                >
                   <Tag color="green" icon={<CheckCircleOutlined />}>
-                    {t('adminDashboard.settings.connected')}
+                    {t("adminDashboard.settings.connected")}
                   </Tag>
                 </Descriptions.Item>
-                <Descriptions.Item label={t('adminDashboard.settings.serverStatus')}>
+                <Descriptions.Item
+                  label={t("adminDashboard.settings.serverStatus")}
+                >
                   <Tag color="green" icon={<CheckCircleOutlined />}>
-                    {t('adminDashboard.settings.online')}
+                    {t("adminDashboard.settings.online")}
                   </Tag>
                 </Descriptions.Item>
-                <Descriptions.Item label={t('adminDashboard.settings.totalUsers')}>
+                <Descriptions.Item
+                  label={t("adminDashboard.settings.totalUsers")}
+                >
                   <Text strong>{users.length}</Text>
                 </Descriptions.Item>
-                <Descriptions.Item label={t('adminDashboard.settings.totalCourses')}>
+                <Descriptions.Item
+                  label={t("adminDashboard.settings.totalCourses")}
+                >
                   <Text strong>{courses.length}</Text>
                 </Descriptions.Item>
-                <Descriptions.Item label={t('adminDashboard.settings.storageUsed')}>
+                <Descriptions.Item
+                  label={t("adminDashboard.settings.storageUsed")}
+                >
                   <Progress percent={65} size="small" />
                 </Descriptions.Item>
-                <Descriptions.Item label={t('adminDashboard.settings.lastBackup')}>
-                  {moment().subtract(1, 'day').format('MMM DD, YYYY HH:mm')}
+                <Descriptions.Item
+                  label={t("adminDashboard.settings.lastBackup")}
+                >
+                  {moment().subtract(1, "day").format("MMM DD, YYYY HH:mm")}
                 </Descriptions.Item>
               </Descriptions>
-              
-              <div style={{ marginTop: 16, textAlign: 'center' }}>
+
+              <div style={{ marginTop: 16, textAlign: "center" }}>
                 <Space>
-                  <Button 
-                    type="dashed" 
+                  <Button
+                    type="dashed"
                     icon={<DownloadOutlined />}
-                    onClick={() => message.info('Backup feature coming soon')}
+                    onClick={() => message.info("Backup feature coming soon")}
                   >
-                    {t('adminDashboard.settings.createBackup')}
+                    {t("adminDashboard.settings.createBackup")}
                   </Button>
-                  <Button 
-                    type="dashed" 
+                  <Button
+                    type="dashed"
                     icon={<DeleteOutlined />}
-                    onClick={() => message.info('Clear cache feature coming soon')}
+                    onClick={() =>
+                      message.info("Clear cache feature coming soon")
+                    }
                   >
-                    {t('adminDashboard.settings.clearCache')}
+                    {t("adminDashboard.settings.clearCache")}
                   </Button>
                 </Space>
               </div>
@@ -3942,22 +4742,22 @@ const AdminFacultyDashboard = () => {
         <Row style={{ marginTop: 24 }}>
           <Col span={24}>
             <Card>
-              <div style={{ textAlign: 'center' }}>
+              <div style={{ textAlign: "center" }}>
                 <Space size="large">
-                  <Button 
-                    type="primary" 
-                    htmlType="submit" 
+                  <Button
+                    type="primary"
+                    htmlType="submit"
                     size="large"
                     loading={settingsLoading}
                     icon={<SaveOutlined />}
                   >
-                    {t('adminDashboard.settings.saveSettings')}
+                    {t("adminDashboard.settings.saveSettings")}
                   </Button>
-                  <Button 
+                  <Button
                     size="large"
                     onClick={() => settingsForm.resetFields()}
                   >
-                    {t('adminDashboard.settings.cancel')}
+                    {t("adminDashboard.settings.cancel")}
                   </Button>
                 </Space>
               </div>
@@ -3969,117 +4769,235 @@ const AdminFacultyDashboard = () => {
   );
 
   const renderEnrollmentsManagement = () => {
-    console.log('📊 Rendering enrollment analytics with real data:', { enrollmentStats, enrollmentAnalytics });
+    console.log("📊 Rendering enrollment analytics with real data:", {
+      enrollmentStats,
+      enrollmentAnalytics,
+    });
 
     return (
-      <div style={{ background: '#f5f5f5', padding: '24px', borderRadius: '8px' }}>
-        <div style={{ marginBottom: '24px' }}>
-          <Title level={2} style={{ color: '#1890ff', margin: 0 }}>
-            📈 {t('adminDashboard.enrollment.title')}
+      <div
+        style={{ background: "#f5f5f5", padding: "24px", borderRadius: "8px" }}
+      >
+        <div style={{ marginBottom: "24px" }}>
+          <Title level={2} style={{ color: "#1890ff", margin: 0 }}>
+            📈 {t("adminDashboard.enrollment.title")}
           </Title>
-          <Text type="secondary" style={{ fontSize: '16px' }}>
-            {t('adminDashboard.enrollment.subtitle')}
+          <Text type="secondary" style={{ fontSize: "16px" }}>
+            {t("adminDashboard.enrollment.subtitle")}
           </Text>
         </div>
 
         {/* Enhanced Metrics Cards with Real Data */}
-        <Row gutter={[24, 24]} style={{ marginBottom: '32px' }}>
+        <Row gutter={[24, 24]} style={{ marginBottom: "32px" }}>
           <Col xs={24} sm={12} lg={6}>
-            <Card 
-              className="metric-card" 
-              style={{ 
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                border: 'none',
-                borderRadius: '12px'
+            <Card
+              className="metric-card"
+              style={{
+                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                border: "none",
+                borderRadius: "12px",
               }}
             >
-              <div style={{ color: 'white' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ color: "white" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
                   <div>
-                    <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: '14px' }}>{t('adminDashboard.enrollment.metrics.totalEnrollments')}</Text>
-                    <div style={{ fontSize: '32px', fontWeight: 'bold', color: 'white' }}>
-                      {enrollmentStats.totalEnrollments || dashboardStats.totalEnrollments || 0}
+                    <Text
+                      style={{
+                        color: "rgba(255,255,255,0.8)",
+                        fontSize: "14px",
+                      }}
+                    >
+                      {t("adminDashboard.enrollment.metrics.totalEnrollments")}
+                    </Text>
+                    <div
+                      style={{
+                        fontSize: "32px",
+                        fontWeight: "bold",
+                        color: "white",
+                      }}
+                    >
+                      {enrollmentStats.totalEnrollments ||
+                        dashboardStats.totalEnrollments ||
+                        0}
                     </div>
-                    <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: '12px' }}>
-                      <ArrowUpOutlined /> +{enrollmentStats.monthlyGrowth || 18}% from last month
+                    <Text
+                      style={{
+                        color: "rgba(255,255,255,0.9)",
+                        fontSize: "12px",
+                      }}
+                    >
+                      <ArrowUpOutlined /> +{enrollmentStats.monthlyGrowth || 18}
+                      % from last month
                     </Text>
                   </div>
-                  <UsergroupAddOutlined style={{ fontSize: '40px', color: 'rgba(255,255,255,0.7)' }} />
+                  <UsergroupAddOutlined
+                    style={{ fontSize: "40px", color: "rgba(255,255,255,0.7)" }}
+                  />
                 </div>
               </div>
             </Card>
           </Col>
-          
+
           <Col xs={24} sm={12} lg={6}>
-            <Card 
-              style={{ 
-                background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                border: 'none',
-                borderRadius: '12px'
+            <Card
+              style={{
+                background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+                border: "none",
+                borderRadius: "12px",
               }}
             >
-              <div style={{ color: 'white' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ color: "white" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
                   <div>
-                    <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: '14px' }}>{t('adminDashboard.enrollment.metrics.activeStudents')}</Text>
-                    <div style={{ fontSize: '32px', fontWeight: 'bold', color: 'white' }}>
-                      {enrollmentStats.activeStudents || dashboardStats.activeEnrollments || 0}
+                    <Text
+                      style={{
+                        color: "rgba(255,255,255,0.8)",
+                        fontSize: "14px",
+                      }}
+                    >
+                      {t("adminDashboard.enrollment.metrics.activeStudents")}
+                    </Text>
+                    <div
+                      style={{
+                        fontSize: "32px",
+                        fontWeight: "bold",
+                        color: "white",
+                      }}
+                    >
+                      {enrollmentStats.activeStudents ||
+                        dashboardStats.activeEnrollments ||
+                        0}
                     </div>
-                    <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: '12px' }}>
-                      {enrollmentStats.engagementRate || 73}% {t('adminDashboard.enrollment.metrics.engagementRate')}
+                    <Text
+                      style={{
+                        color: "rgba(255,255,255,0.9)",
+                        fontSize: "12px",
+                      }}
+                    >
+                      {enrollmentStats.engagementRate || 73}%{" "}
+                      {t("adminDashboard.enrollment.metrics.engagementRate")}
                     </Text>
                   </div>
-                  <CheckCircleOutlined style={{ fontSize: '40px', color: 'rgba(255,255,255,0.7)' }} />
+                  <CheckCircleOutlined
+                    style={{ fontSize: "40px", color: "rgba(255,255,255,0.7)" }}
+                  />
                 </div>
               </div>
             </Card>
           </Col>
-          
+
           <Col xs={24} sm={12} lg={6}>
-            <Card 
-              style={{ 
-                background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-                border: 'none',
-                borderRadius: '12px'
+            <Card
+              style={{
+                background: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+                border: "none",
+                borderRadius: "12px",
               }}
             >
-              <div style={{ color: 'white' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ color: "white" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
                   <div>
-                    <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: '14px' }}>{t('adminDashboard.enrollment.metrics.courseCompletions')}</Text>
-                    <div style={{ fontSize: '32px', fontWeight: 'bold', color: 'white' }}>
+                    <Text
+                      style={{
+                        color: "rgba(255,255,255,0.8)",
+                        fontSize: "14px",
+                      }}
+                    >
+                      {t("adminDashboard.enrollment.metrics.courseCompletions")}
+                    </Text>
+                    <div
+                      style={{
+                        fontSize: "32px",
+                        fontWeight: "bold",
+                        color: "white",
+                      }}
+                    >
                       {enrollmentStats.courseCompletions || 127}
                     </div>
-                    <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: '12px' }}>
-                      <TrophyOutlined /> {enrollmentStats.successRate || 69}% {t('adminDashboard.enrollment.metrics.successRate')}
+                    <Text
+                      style={{
+                        color: "rgba(255,255,255,0.9)",
+                        fontSize: "12px",
+                      }}
+                    >
+                      <TrophyOutlined /> {enrollmentStats.successRate || 69}%{" "}
+                      {t("adminDashboard.enrollment.metrics.successRate")}
                     </Text>
                   </div>
-                  <CheckSquareOutlined style={{ fontSize: '40px', color: 'rgba(255,255,255,0.7)' }} />
+                  <CheckSquareOutlined
+                    style={{ fontSize: "40px", color: "rgba(255,255,255,0.7)" }}
+                  />
                 </div>
               </div>
             </Card>
           </Col>
-          
+
           <Col xs={24} sm={12} lg={6}>
-            <Card 
-              style={{ 
-                background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-                border: 'none',
-                borderRadius: '12px'
+            <Card
+              style={{
+                background: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
+                border: "none",
+                borderRadius: "12px",
               }}
             >
-              <div style={{ color: 'white' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ color: "white" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
                   <div>
-                    <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: '14px' }}>{t('adminDashboard.enrollment.metrics.avgProgress')}</Text>
-                    <div style={{ fontSize: '32px', fontWeight: 'bold', color: 'white' }}>
+                    <Text
+                      style={{
+                        color: "rgba(255,255,255,0.8)",
+                        fontSize: "14px",
+                      }}
+                    >
+                      {t("adminDashboard.enrollment.metrics.avgProgress")}
+                    </Text>
+                    <div
+                      style={{
+                        fontSize: "32px",
+                        fontWeight: "bold",
+                        color: "white",
+                      }}
+                    >
                       {enrollmentStats.averageProgress || 76}%
                     </div>
-                    <Text style={{ color: 'rgba(255,255,255,0.9)', fontSize: '12px' }}>
-                      <RiseOutlined /> +{enrollmentStats.progressImprovement || 12}% {t('adminDashboard.enrollment.metrics.improvement')}
+                    <Text
+                      style={{
+                        color: "rgba(255,255,255,0.9)",
+                        fontSize: "12px",
+                      }}
+                    >
+                      <RiseOutlined /> +
+                      {enrollmentStats.progressImprovement || 12}%{" "}
+                      {t("adminDashboard.enrollment.metrics.improvement")}
                     </Text>
                   </div>
-                  <LineChartOutlined style={{ fontSize: '40px', color: 'rgba(255,255,255,0.7)' }} />
+                  <LineChartOutlined
+                    style={{ fontSize: "40px", color: "rgba(255,255,255,0.7)" }}
+                  />
                 </div>
               </div>
             </Card>
@@ -4087,15 +5005,20 @@ const AdminFacultyDashboard = () => {
         </Row>
 
         {/* Student & Teacher Monitoring Section */}
-        <Row gutter={[24, 24]} style={{ marginTop: '32px' }}>
+        <Row gutter={[24, 24]} style={{ marginTop: "32px" }}>
           <Col xs={24}>
-            <Card 
+            <Card
               title={
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <TeamOutlined style={{ marginRight: '8px', color: '#1890ff' }} />
-                  {t('adminDashboard.enrollment.studentMonitoring.title')}
-                  <Tag color="blue" style={{ marginLeft: '12px' }}>
-                    {students.length} {t('adminDashboard.enrollment.studentMonitoring.totalStudentsTag')}
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <TeamOutlined
+                    style={{ marginRight: "8px", color: "#1890ff" }}
+                  />
+                  {t("adminDashboard.enrollment.studentMonitoring.title")}
+                  <Tag color="blue" style={{ marginLeft: "12px" }}>
+                    {students.length}{" "}
+                    {t(
+                      "adminDashboard.enrollment.studentMonitoring.totalStudentsTag"
+                    )}
                   </Tag>
                 </div>
               }
@@ -4106,39 +5029,60 @@ const AdminFacultyDashboard = () => {
                     style={{ width: 120 }}
                     onChange={(value) => setRoleFilter(value)}
                   >
-                    <Option value="all">{t('adminDashboard.enrollment.studentMonitoring.filters.allStudents')}</Option>
-                    <Option value="active">{t('adminDashboard.enrollment.studentMonitoring.filters.activeOnly')}</Option>
-                    <Option value="inactive">{t('adminDashboard.enrollment.studentMonitoring.filters.inactiveOnly')}</Option>
-                    <Option value="pending">{t('adminDashboard.enrollment.studentMonitoring.filters.pendingApproval')}</Option>
+                    <Option value="all">
+                      {t(
+                        "adminDashboard.enrollment.studentMonitoring.filters.allStudents"
+                      )}
+                    </Option>
+                    <Option value="active">
+                      {t(
+                        "adminDashboard.enrollment.studentMonitoring.filters.activeOnly"
+                      )}
+                    </Option>
+                    <Option value="inactive">
+                      {t(
+                        "adminDashboard.enrollment.studentMonitoring.filters.inactiveOnly"
+                      )}
+                    </Option>
+                    <Option value="pending">
+                      {t(
+                        "adminDashboard.enrollment.studentMonitoring.filters.pendingApproval"
+                      )}
+                    </Option>
                   </Select>
                   <Button icon={<ReloadOutlined />} onClick={fetchStudents}>
-                    {t('adminDashboard.enrollment.studentMonitoring.refresh')}
+                    {t("adminDashboard.enrollment.studentMonitoring.refresh")}
                   </Button>
                 </Space>
               }
-              style={{ borderRadius: '12px' }}
+              style={{ borderRadius: "12px" }}
             >
               <Table
                 columns={[
                   {
-                    title: t('adminDashboard.enrollment.studentMonitoring.columns.studentInfo'),
-                    key: 'studentInfo',
+                    title: t(
+                      "adminDashboard.enrollment.studentMonitoring.columns.studentInfo"
+                    ),
+                    key: "studentInfo",
                     render: (_, record) => (
-                      <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <Avatar 
-                          style={{ 
-                            backgroundColor: record.isApproved ? '#52c41a' : '#faad14',
-                            marginRight: 12 
+                      <div style={{ display: "flex", alignItems: "center" }}>
+                        <Avatar
+                          style={{
+                            backgroundColor: record.isApproved
+                              ? "#52c41a"
+                              : "#faad14",
+                            marginRight: 12,
                           }}
                         >
-                          {record.firstName?.[0]}{record.lastName?.[0]}
+                          {record.firstName?.[0]}
+                          {record.lastName?.[0]}
                         </Avatar>
                         <div>
-                          <Text strong style={{ color: '#1890ff' }}>
+                          <Text strong style={{ color: "#1890ff" }}>
                             {record.firstName} {record.lastName}
                           </Text>
                           <br />
-                          <Text type="secondary" style={{ fontSize: '12px' }}>
+                          <Text type="secondary" style={{ fontSize: "12px" }}>
                             {record.email}
                           </Text>
                         </div>
@@ -4147,63 +5091,122 @@ const AdminFacultyDashboard = () => {
                     width: 250,
                   },
                   {
-                    title: t('adminDashboard.enrollment.studentMonitoring.columns.status'),
-                    key: 'status',
+                    title: t(
+                      "adminDashboard.enrollment.studentMonitoring.columns.status"
+                    ),
+                    key: "status",
                     render: (_, record) => (
                       <div>
-                        <Tag color={record.isApproved ? 'green' : 'orange'}>
-                          {record.isApproved ? t('adminDashboard.enrollment.studentMonitoring.statusValues.active') : t('adminDashboard.enrollment.studentMonitoring.statusValues.pending')}
+                        <Tag color={record.isApproved ? "green" : "orange"}>
+                          {record.isApproved
+                            ? t(
+                                "adminDashboard.enrollment.studentMonitoring.statusValues.active"
+                              )
+                            : t(
+                                "adminDashboard.enrollment.studentMonitoring.statusValues.pending"
+                              )}
                         </Tag>
                         <br />
-                        <Text type="secondary" style={{ fontSize: '12px' }}>
-                          {t('adminDashboard.enrollment.studentMonitoring.statusValues.role')}: {record.role}
+                        <Text type="secondary" style={{ fontSize: "12px" }}>
+                          {t(
+                            "adminDashboard.enrollment.studentMonitoring.statusValues.role"
+                          )}
+                          : {record.role}
                         </Text>
                       </div>
                     ),
                     filters: [
-                      { text: t('adminDashboard.enrollment.studentMonitoring.statusValues.active'), value: true },
-                      { text: t('adminDashboard.enrollment.studentMonitoring.statusValues.pending'), value: false }
+                      {
+                        text: t(
+                          "adminDashboard.enrollment.studentMonitoring.statusValues.active"
+                        ),
+                        value: true,
+                      },
+                      {
+                        text: t(
+                          "adminDashboard.enrollment.studentMonitoring.statusValues.pending"
+                        ),
+                        value: false,
+                      },
                     ],
                     onFilter: (value, record) => record.isApproved === value,
                     width: 120,
                   },
                   {
-                    title: t('adminDashboard.enrollment.studentMonitoring.columns.enrollmentDetails'),
-                    key: 'enrollment',
+                    title: t(
+                      "adminDashboard.enrollment.studentMonitoring.columns.enrollmentDetails"
+                    ),
+                    key: "enrollment",
                     render: () => (
                       <div>
                         <Text strong>{Math.floor(Math.random() * 5) + 1}</Text>
-                        <Text type="secondary"> {t('adminDashboard.enrollment.studentMonitoring.enrollmentInfo.coursesEnrolled')}</Text>
+                        <Text type="secondary">
+                          {" "}
+                          {t(
+                            "adminDashboard.enrollment.studentMonitoring.enrollmentInfo.coursesEnrolled"
+                          )}
+                        </Text>
                         <br />
-                        <Progress 
+                        <Progress
                           percent={Math.floor(Math.random() * 100)}
                           size="small"
                           strokeColor={
-                            Math.random() > 0.3 ? '#52c41a' : 
-                            Math.random() > 0.1 ? '#faad14' : '#f5222d'
+                            Math.random() > 0.3
+                              ? "#52c41a"
+                              : Math.random() > 0.1
+                              ? "#faad14"
+                              : "#f5222d"
                           }
                         />
-                        <Text type="secondary" style={{ fontSize: '11px' }}>
-                          {t('adminDashboard.enrollment.studentMonitoring.enrollmentInfo.overallProgress')}
+                        <Text type="secondary" style={{ fontSize: "11px" }}>
+                          {t(
+                            "adminDashboard.enrollment.studentMonitoring.enrollmentInfo.overallProgress"
+                          )}
                         </Text>
                       </div>
                     ),
                     width: 160,
                   },
                   {
-                    title: t('adminDashboard.enrollment.studentMonitoring.columns.lastActivity'),
-                    key: 'lastActivity',
+                    title: t(
+                      "adminDashboard.enrollment.studentMonitoring.columns.lastActivity"
+                    ),
+                    key: "lastActivity",
                     render: () => {
                       const daysAgo = Math.floor(Math.random() * 30);
                       const isRecent = daysAgo < 7;
                       return (
                         <div>
-                          <Tag color={isRecent ? 'green' : daysAgo < 14 ? 'orange' : 'red'}>
-                            {daysAgo === 0 ? t('adminDashboard.enrollment.studentMonitoring.activityInfo.today') : `${daysAgo} ${t('adminDashboard.enrollment.studentMonitoring.activityInfo.daysAgo')}`}
+                          <Tag
+                            color={
+                              isRecent
+                                ? "green"
+                                : daysAgo < 14
+                                ? "orange"
+                                : "red"
+                            }
+                          >
+                            {daysAgo === 0
+                              ? t(
+                                  "adminDashboard.enrollment.studentMonitoring.activityInfo.today"
+                                )
+                              : `${daysAgo} ${t(
+                                  "adminDashboard.enrollment.studentMonitoring.activityInfo.daysAgo"
+                                )}`}
                           </Tag>
                           <br />
-                          <Text type="secondary" style={{ fontSize: '11px' }}>
-                            {isRecent ? t('adminDashboard.enrollment.studentMonitoring.activityInfo.recentlyActive') : daysAgo < 14 ? t('adminDashboard.enrollment.studentMonitoring.activityInfo.moderatelyActive') : t('adminDashboard.enrollment.studentMonitoring.activityInfo.inactive')}
+                          <Text type="secondary" style={{ fontSize: "11px" }}>
+                            {isRecent
+                              ? t(
+                                  "adminDashboard.enrollment.studentMonitoring.activityInfo.recentlyActive"
+                                )
+                              : daysAgo < 14
+                              ? t(
+                                  "adminDashboard.enrollment.studentMonitoring.activityInfo.moderatelyActive"
+                                )
+                              : t(
+                                  "adminDashboard.enrollment.studentMonitoring.activityInfo.inactive"
+                                )}
                           </Text>
                         </div>
                       );
@@ -4212,25 +5215,45 @@ const AdminFacultyDashboard = () => {
                     width: 130,
                   },
                   {
-                    title: t('adminDashboard.enrollment.studentMonitoring.columns.performance'),
-                    key: 'performance',
+                    title: t(
+                      "adminDashboard.enrollment.studentMonitoring.columns.performance"
+                    ),
+                    key: "performance",
                     render: () => {
                       const score = Math.floor(Math.random() * 40) + 60;
                       const submissions = Math.floor(Math.random() * 20) + 5;
                       return (
                         <div>
-                          <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <Text strong style={{ 
-                              color: score >= 85 ? '#52c41a' : score >= 70 ? '#faad14' : '#f5222d' 
-                            }}>
+                          <div
+                            style={{ display: "flex", alignItems: "center" }}
+                          >
+                            <Text
+                              strong
+                              style={{
+                                color:
+                                  score >= 85
+                                    ? "#52c41a"
+                                    : score >= 70
+                                    ? "#faad14"
+                                    : "#f5222d",
+                              }}
+                            >
                               {score}%
                             </Text>
-                            <Text type="secondary" style={{ marginLeft: 8, fontSize: '11px' }}>
-                              {t('adminDashboard.enrollment.studentMonitoring.performanceInfo.avgScore')}
+                            <Text
+                              type="secondary"
+                              style={{ marginLeft: 8, fontSize: "11px" }}
+                            >
+                              {t(
+                                "adminDashboard.enrollment.studentMonitoring.performanceInfo.avgScore"
+                              )}
                             </Text>
                           </div>
-                          <Text type="secondary" style={{ fontSize: '11px' }}>
-                            {submissions} {t('adminDashboard.enrollment.studentMonitoring.performanceInfo.submissions')}
+                          <Text type="secondary" style={{ fontSize: "11px" }}>
+                            {submissions}{" "}
+                            {t(
+                              "adminDashboard.enrollment.studentMonitoring.performanceInfo.submissions"
+                            )}
                           </Text>
                         </div>
                       );
@@ -4239,8 +5262,10 @@ const AdminFacultyDashboard = () => {
                     width: 120,
                   },
                   {
-                    title: t('adminDashboard.enrollment.studentMonitoring.columns.actions'),
-                    key: 'actions',
+                    title: t(
+                      "adminDashboard.enrollment.studentMonitoring.columns.actions"
+                    ),
+                    key: "actions",
                     render: (_, record) => (
                       <Space direction="vertical" size="small">
                         <Space>
@@ -4253,43 +5278,50 @@ const AdminFacultyDashboard = () => {
                               setUserModalVisible(true);
                             }}
                           >
-                            {t('adminDashboard.enrollment.studentMonitoring.actions.view')}
+                            {t(
+                              "adminDashboard.enrollment.studentMonitoring.actions.view"
+                            )}
                           </Button>
                           <Button
                             icon={<MessageOutlined />}
                             size="small"
                             type="link"
                             onClick={() => {
-                              setReplyType('student');
+                              setReplyType("student");
                               setReplyTarget(record);
                               setReplyModalVisible(true);
                             }}
                           >
-                            {t('adminDashboard.enrollment.studentMonitoring.actions.message')}
+                            {t(
+                              "adminDashboard.enrollment.studentMonitoring.actions.message"
+                            )}
                           </Button>
                         </Space>
                         <Button
                           icon={<VideoCameraOutlined />}
                           size="small"
                           type="primary"
-                          style={{ 
-                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                            border: 'none',
-                            borderRadius: '6px'
+                          style={{
+                            background:
+                              "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                            border: "none",
+                            borderRadius: "6px",
                           }}
-                          onClick={() => handleVideoCall(record, 'student')}
+                          onClick={() => handleVideoCall(record, "student")}
                         >
-                          {t('adminDashboard.enrollment.studentMonitoring.actions.videoCall')}
+                          {t(
+                            "adminDashboard.enrollment.studentMonitoring.actions.videoCall"
+                          )}
                         </Button>
                       </Space>
                     ),
                     width: 140,
-                  }
+                  },
                 ]}
-                dataSource={students.filter(student => {
-                  if (roleFilter === 'active') return student.isApproved;
-                  if (roleFilter === 'inactive') return !student.isApproved;
-                  if (roleFilter === 'pending') return !student.isApproved;
+                dataSource={students.filter((student) => {
+                  if (roleFilter === "active") return student.isApproved;
+                  if (roleFilter === "inactive") return !student.isApproved;
+                  if (roleFilter === "pending") return !student.isApproved;
                   return true;
                 })}
                 rowKey="_id"
@@ -4297,7 +5329,11 @@ const AdminFacultyDashboard = () => {
                   pageSize: 8,
                   showSizeChanger: true,
                   showQuickJumper: true,
-                  showTotal: (total, range) => t('adminDashboard.enrollment.studentMonitoring.pagination.showTotal', { range: `${range[0]}-${range[1]}`, total })
+                  showTotal: (total, range) =>
+                    t(
+                      "adminDashboard.enrollment.studentMonitoring.pagination.showTotal",
+                      { range: `${range[0]}-${range[1]}`, total }
+                    ),
                 }}
                 scroll={{ x: 1200 }}
               />
@@ -4305,56 +5341,76 @@ const AdminFacultyDashboard = () => {
           </Col>
         </Row>
 
-        <Row gutter={[24, 24]} style={{ marginTop: '24px' }}>
+        <Row gutter={[24, 24]} style={{ marginTop: "24px" }}>
           <Col xs={24}>
-            <Card 
+            <Card
               title={
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <UserOutlined style={{ marginRight: '8px', color: '#52c41a' }} />
-                  {t('adminDashboard.enrollment.teacherMonitoring.title')}
-                  <Tag color="green" style={{ marginLeft: '12px' }}>
-                    {teachers.length || users.filter(u => u.role === 'teacher').length} {t('adminDashboard.enrollment.teacherMonitoring.totalTeachersTag')}
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <UserOutlined
+                    style={{ marginRight: "8px", color: "#52c41a" }}
+                  />
+                  {t("adminDashboard.enrollment.teacherMonitoring.title")}
+                  <Tag color="green" style={{ marginLeft: "12px" }}>
+                    {teachers.length ||
+                      users.filter((u) => u.role === "teacher").length}{" "}
+                    {t(
+                      "adminDashboard.enrollment.teacherMonitoring.totalTeachersTag"
+                    )}
                   </Tag>
                 </div>
               }
               extra={
                 <Space>
-                  <Select
-                    defaultValue="all"
-                    style={{ width: 120 }}
-                  >
-                    <Option value="all">{t('adminDashboard.enrollment.teacherMonitoring.filters.allTeachers')}</Option>
-                    <Option value="active">{t('adminDashboard.enrollment.teacherMonitoring.filters.activeOnly')}</Option>
-                    <Option value="inactive">{t('adminDashboard.enrollment.teacherMonitoring.filters.inactiveOnly')}</Option>
+                  <Select defaultValue="all" style={{ width: 120 }}>
+                    <Option value="all">
+                      {t(
+                        "adminDashboard.enrollment.teacherMonitoring.filters.allTeachers"
+                      )}
+                    </Option>
+                    <Option value="active">
+                      {t(
+                        "adminDashboard.enrollment.teacherMonitoring.filters.activeOnly"
+                      )}
+                    </Option>
+                    <Option value="inactive">
+                      {t(
+                        "adminDashboard.enrollment.teacherMonitoring.filters.inactiveOnly"
+                      )}
+                    </Option>
                   </Select>
                   <Button icon={<ReloadOutlined />} onClick={fetchUsers}>
-                    {t('adminDashboard.enrollment.teacherMonitoring.refresh')}
+                    {t("adminDashboard.enrollment.teacherMonitoring.refresh")}
                   </Button>
                 </Space>
               }
-              style={{ borderRadius: '12px' }}
+              style={{ borderRadius: "12px" }}
             >
               <Table
                 columns={[
                   {
-                    title: t('adminDashboard.enrollment.teacherMonitoring.columns.teacherInfo'),
-                    key: 'teacherInfo',
+                    title: t(
+                      "adminDashboard.enrollment.teacherMonitoring.columns.teacherInfo"
+                    ),
+                    key: "teacherInfo",
                     render: (_, record) => (
-                      <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <Avatar 
-                          style={{ 
-                            backgroundColor: record.isApproved ? '#52c41a' : '#faad14',
-                            marginRight: 12 
+                      <div style={{ display: "flex", alignItems: "center" }}>
+                        <Avatar
+                          style={{
+                            backgroundColor: record.isApproved
+                              ? "#52c41a"
+                              : "#faad14",
+                            marginRight: 12,
                           }}
                         >
-                          {record.firstName?.[0]}{record.lastName?.[0]}
+                          {record.firstName?.[0]}
+                          {record.lastName?.[0]}
                         </Avatar>
                         <div>
-                          <Text strong style={{ color: '#52c41a' }}>
+                          <Text strong style={{ color: "#52c41a" }}>
                             {record.firstName} {record.lastName}
                           </Text>
                           <br />
-                          <Text type="secondary" style={{ fontSize: '12px' }}>
+                          <Text type="secondary" style={{ fontSize: "12px" }}>
                             {record.email}
                           </Text>
                         </div>
@@ -4363,12 +5419,20 @@ const AdminFacultyDashboard = () => {
                     width: 250,
                   },
                   {
-                    title: t('adminDashboard.enrollment.teacherMonitoring.columns.status'),
-                    key: 'status',
+                    title: t(
+                      "adminDashboard.enrollment.teacherMonitoring.columns.status"
+                    ),
+                    key: "status",
                     render: (_, record) => (
                       <div>
-                        <Tag color={record.isApproved ? 'green' : 'orange'}>
-                          {record.isApproved ? t('adminDashboard.enrollment.teacherMonitoring.statusValues.active') : t('adminDashboard.enrollment.teacherMonitoring.statusValues.pending')}
+                        <Tag color={record.isApproved ? "green" : "orange"}>
+                          {record.isApproved
+                            ? t(
+                                "adminDashboard.enrollment.teacherMonitoring.statusValues.active"
+                              )
+                            : t(
+                                "adminDashboard.enrollment.teacherMonitoring.statusValues.pending"
+                              )}
                         </Tag>
                         <br />
                         <Tag color="blue" size="small">
@@ -4377,30 +5441,59 @@ const AdminFacultyDashboard = () => {
                       </div>
                     ),
                     filters: [
-                      { text: t('adminDashboard.enrollment.teacherMonitoring.statusValues.active'), value: true },
-                      { text: t('adminDashboard.enrollment.teacherMonitoring.statusValues.pending'), value: false }
+                      {
+                        text: t(
+                          "adminDashboard.enrollment.teacherMonitoring.statusValues.active"
+                        ),
+                        value: true,
+                      },
+                      {
+                        text: t(
+                          "adminDashboard.enrollment.teacherMonitoring.statusValues.pending"
+                        ),
+                        value: false,
+                      },
                     ],
                     onFilter: (value, record) => record.isApproved === value,
                     width: 120,
                   },
                   {
-                    title: t('adminDashboard.enrollment.teacherMonitoring.columns.teachingLoad'),
-                    key: 'teachingLoad',
+                    title: t(
+                      "adminDashboard.enrollment.teacherMonitoring.columns.teachingLoad"
+                    ),
+                    key: "teachingLoad",
                     render: () => {
                       const assignedCourses = Math.floor(Math.random() * 6) + 1;
-                      const activeStudents = Math.floor(Math.random() * 50) + 10;
+                      const activeStudents =
+                        Math.floor(Math.random() * 50) + 10;
                       return (
                         <div>
                           <Text strong>{assignedCourses}</Text>
-                          <Text type="secondary"> {t('adminDashboard.enrollment.teacherMonitoring.teachingLoadInfo.courses')}</Text>
+                          <Text type="secondary">
+                            {" "}
+                            {t(
+                              "adminDashboard.enrollment.teacherMonitoring.teachingLoadInfo.courses"
+                            )}
+                          </Text>
                           <br />
                           <Text strong>{activeStudents}</Text>
-                          <Text type="secondary" style={{ fontSize: '11px' }}> {t('adminDashboard.enrollment.teacherMonitoring.teachingLoadInfo.activeStudents')}</Text>
+                          <Text type="secondary" style={{ fontSize: "11px" }}>
+                            {" "}
+                            {t(
+                              "adminDashboard.enrollment.teacherMonitoring.teachingLoadInfo.activeStudents"
+                            )}
+                          </Text>
                           <br />
-                          <Progress 
+                          <Progress
                             percent={Math.min((assignedCourses / 6) * 100, 100)}
                             size="small"
-                            strokeColor={assignedCourses > 4 ? '#f5222d' : assignedCourses > 2 ? '#faad14' : '#52c41a'}
+                            strokeColor={
+                              assignedCourses > 4
+                                ? "#f5222d"
+                                : assignedCourses > 2
+                                ? "#faad14"
+                                : "#52c41a"
+                            }
                           />
                         </div>
                       );
@@ -4408,21 +5501,49 @@ const AdminFacultyDashboard = () => {
                     width: 150,
                   },
                   {
-                    title: t('adminDashboard.enrollment.teacherMonitoring.columns.lastActivity'),
-                    key: 'lastActivity',
+                    title: t(
+                      "adminDashboard.enrollment.teacherMonitoring.columns.lastActivity"
+                    ),
+                    key: "lastActivity",
                     render: () => {
                       const hoursAgo = Math.floor(Math.random() * 72);
                       const isRecent = hoursAgo < 24;
                       return (
                         <div>
-                          <Tag color={isRecent ? 'green' : hoursAgo < 48 ? 'orange' : 'red'}>
-                            {hoursAgo < 1 ? t('adminDashboard.enrollment.teacherMonitoring.activityInfo.justNow') : 
-                             hoursAgo < 24 ? `${hoursAgo}${t('adminDashboard.enrollment.teacherMonitoring.activityInfo.hoursAgo')}` : 
-                             `${Math.floor(hoursAgo / 24)}${t('adminDashboard.enrollment.teacherMonitoring.activityInfo.daysAgo')}`}
+                          <Tag
+                            color={
+                              isRecent
+                                ? "green"
+                                : hoursAgo < 48
+                                ? "orange"
+                                : "red"
+                            }
+                          >
+                            {hoursAgo < 1
+                              ? t(
+                                  "adminDashboard.enrollment.teacherMonitoring.activityInfo.justNow"
+                                )
+                              : hoursAgo < 24
+                              ? `${hoursAgo}${t(
+                                  "adminDashboard.enrollment.teacherMonitoring.activityInfo.hoursAgo"
+                                )}`
+                              : `${Math.floor(hoursAgo / 24)}${t(
+                                  "adminDashboard.enrollment.teacherMonitoring.activityInfo.daysAgo"
+                                )}`}
                           </Tag>
                           <br />
-                          <Text type="secondary" style={{ fontSize: '11px' }}>
-                            {isRecent ? t('adminDashboard.enrollment.teacherMonitoring.activityInfo.online') : hoursAgo < 48 ? t('adminDashboard.enrollment.teacherMonitoring.activityInfo.recentlyOnline') : t('adminDashboard.enrollment.teacherMonitoring.activityInfo.offline')}
+                          <Text type="secondary" style={{ fontSize: "11px" }}>
+                            {isRecent
+                              ? t(
+                                  "adminDashboard.enrollment.teacherMonitoring.activityInfo.online"
+                                )
+                              : hoursAgo < 48
+                              ? t(
+                                  "adminDashboard.enrollment.teacherMonitoring.activityInfo.recentlyOnline"
+                                )
+                              : t(
+                                  "adminDashboard.enrollment.teacherMonitoring.activityInfo.offline"
+                                )}
                           </Text>
                         </div>
                       );
@@ -4430,25 +5551,41 @@ const AdminFacultyDashboard = () => {
                     width: 130,
                   },
                   {
-                    title: t('adminDashboard.enrollment.teacherMonitoring.columns.performanceMetrics'),
-                    key: 'performance',
+                    title: t(
+                      "adminDashboard.enrollment.teacherMonitoring.columns.performanceMetrics"
+                    ),
+                    key: "performance",
                     render: () => {
-                      const studentSatisfaction = Math.floor(Math.random() * 30) + 70;
+                      const studentSatisfaction =
+                        Math.floor(Math.random() * 30) + 70;
                       const responseTime = Math.floor(Math.random() * 48) + 2;
                       return (
                         <div>
-                          <div style={{ display: 'flex', alignItems: 'center' }}>
-                            <Rate 
-                              disabled 
-                              defaultValue={Math.floor(studentSatisfaction / 20)} 
+                          <div
+                            style={{ display: "flex", alignItems: "center" }}
+                          >
+                            <Rate
+                              disabled
+                              defaultValue={Math.floor(
+                                studentSatisfaction / 20
+                              )}
                               style={{ fontSize: 12 }}
                             />
-                            <Text style={{ marginLeft: 4, fontSize: '11px', color: '#faad14' }}>
+                            <Text
+                              style={{
+                                marginLeft: 4,
+                                fontSize: "11px",
+                                color: "#faad14",
+                              }}
+                            >
                               {(studentSatisfaction / 20).toFixed(1)}
                             </Text>
                           </div>
-                          <Text type="secondary" style={{ fontSize: '11px' }}>
-                            ~{responseTime}{t('adminDashboard.enrollment.teacherMonitoring.performanceInfo.responseTime')}
+                          <Text type="secondary" style={{ fontSize: "11px" }}>
+                            ~{responseTime}
+                            {t(
+                              "adminDashboard.enrollment.teacherMonitoring.performanceInfo.responseTime"
+                            )}
                           </Text>
                         </div>
                       );
@@ -4456,8 +5593,10 @@ const AdminFacultyDashboard = () => {
                     width: 160,
                   },
                   {
-                    title: t('adminDashboard.enrollment.teacherMonitoring.columns.actions'),
-                    key: 'actions',
+                    title: t(
+                      "adminDashboard.enrollment.teacherMonitoring.columns.actions"
+                    ),
+                    key: "actions",
                     render: (_, record) => (
                       <Space direction="vertical" size="small">
                         <Space>
@@ -4470,46 +5609,59 @@ const AdminFacultyDashboard = () => {
                               setUserModalVisible(true);
                             }}
                           >
-                            {t('adminDashboard.enrollment.teacherMonitoring.actions.view')}
+                            {t(
+                              "adminDashboard.enrollment.teacherMonitoring.actions.view"
+                            )}
                           </Button>
                           <Button
                             icon={<MessageOutlined />}
                             size="small"
                             type="link"
                             onClick={() => {
-                              setReplyType('teacher');
+                              setReplyType("teacher");
                               setReplyTarget(record);
                               setReplyModalVisible(true);
                             }}
                           >
-                            {t('adminDashboard.enrollment.teacherMonitoring.actions.message')}
+                            {t(
+                              "adminDashboard.enrollment.teacherMonitoring.actions.message"
+                            )}
                           </Button>
                         </Space>
                         <Button
                           icon={<VideoCameraOutlined />}
                           size="small"
                           type="primary"
-                          style={{ 
-                            background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-                            border: 'none',
-                            borderRadius: '6px'
+                          style={{
+                            background:
+                              "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
+                            border: "none",
+                            borderRadius: "6px",
                           }}
-                          onClick={() => handleVideoCall(record, 'teacher')}
+                          onClick={() => handleVideoCall(record, "teacher")}
                         >
-                          {t('adminDashboard.enrollment.teacherMonitoring.actions.videoCall')}
+                          {t(
+                            "adminDashboard.enrollment.teacherMonitoring.actions.videoCall"
+                          )}
                         </Button>
                       </Space>
                     ),
                     width: 140,
-                  }
+                  },
                 ]}
-                dataSource={users.filter(user => user.role === 'teacher' || user.role === 'admin')}
+                dataSource={users.filter(
+                  (user) => user.role === "teacher" || user.role === "admin"
+                )}
                 rowKey="_id"
                 pagination={{
                   pageSize: 8,
                   showSizeChanger: true,
                   showQuickJumper: true,
-                  showTotal: (total, range) => t('adminDashboard.enrollment.teacherMonitoring.pagination.showTotal', { range: `${range[0]}-${range[1]}`, total })
+                  showTotal: (total, range) =>
+                    t(
+                      "adminDashboard.enrollment.teacherMonitoring.pagination.showTotal",
+                      { range: `${range[0]}-${range[1]}`, total }
+                    ),
                 }}
                 scroll={{ x: 1200 }}
               />
@@ -4518,64 +5670,90 @@ const AdminFacultyDashboard = () => {
         </Row>
 
         {/* Quick Activity Summary */}
-        <Row gutter={[24, 24]} style={{ marginTop: '24px' }}>
+        <Row gutter={[24, 24]} style={{ marginTop: "24px" }}>
           <Col xs={24} sm={12} lg={8}>
-            <Card 
-              title={t('adminDashboard.enrollment.activitySummary.activeUsersTitle')}
-              style={{ borderRadius: '12px' }}
+            <Card
+              title={t(
+                "adminDashboard.enrollment.activitySummary.activeUsersTitle"
+              )}
+              style={{ borderRadius: "12px" }}
             >
               <Statistic
-                title={t('adminDashboard.enrollment.activitySummary.currentlyOnline')}
+                title={t(
+                  "adminDashboard.enrollment.activitySummary.currentlyOnline"
+                )}
                 value={Math.floor(Math.random() * 20) + 5}
                 prefix={<UserOutlined />}
-                valueStyle={{ color: '#52c41a' }}
-                suffix={t('adminDashboard.enrollment.activitySummary.users')}
+                valueStyle={{ color: "#52c41a" }}
+                suffix={t("adminDashboard.enrollment.activitySummary.users")}
               />
               <div style={{ marginTop: 16 }}>
                 <Text type="secondary">
                   <TeamOutlined style={{ marginRight: 4 }} />
-                  {Math.floor(Math.random() * 15) + 3} {t('adminDashboard.enrollment.activitySummary.studentsTeachers').split(', ')[0]}, {Math.floor(Math.random() * 5) + 2} {t('adminDashboard.enrollment.activitySummary.studentsTeachers').split(', ')[1]}
+                  {Math.floor(Math.random() * 15) + 3}{" "}
+                  {
+                    t(
+                      "adminDashboard.enrollment.activitySummary.studentsTeachers"
+                    ).split(", ")[0]
+                  }
+                  , {Math.floor(Math.random() * 5) + 2}{" "}
+                  {
+                    t(
+                      "adminDashboard.enrollment.activitySummary.studentsTeachers"
+                    ).split(", ")[1]
+                  }
                 </Text>
               </div>
             </Card>
           </Col>
-          
+
           <Col xs={24} sm={12} lg={8}>
-            <Card 
-              title={t('adminDashboard.enrollment.activitySummary.activityThisWeekTitle')}
-              style={{ borderRadius: '12px' }}
+            <Card
+              title={t(
+                "adminDashboard.enrollment.activitySummary.activityThisWeekTitle"
+              )}
+              style={{ borderRadius: "12px" }}
             >
               <Statistic
-                title={t('adminDashboard.enrollment.activitySummary.loginSessions')}
+                title={t(
+                  "adminDashboard.enrollment.activitySummary.loginSessions"
+                )}
                 value={Math.floor(Math.random() * 200) + 150}
                 prefix={<LoginOutlined />}
-                valueStyle={{ color: '#1890ff' }}
+                valueStyle={{ color: "#1890ff" }}
               />
               <div style={{ marginTop: 16 }}>
                 <Text type="secondary">
-                  <ArrowUpOutlined style={{ color: '#52c41a', marginRight: 4 }} />
-                  +{Math.floor(Math.random() * 20) + 5}% {t('adminDashboard.enrollment.activitySummary.fromLastWeek')}
+                  <ArrowUpOutlined
+                    style={{ color: "#52c41a", marginRight: 4 }}
+                  />
+                  +{Math.floor(Math.random() * 20) + 5}%{" "}
+                  {t("adminDashboard.enrollment.activitySummary.fromLastWeek")}
                 </Text>
               </div>
             </Card>
           </Col>
-          
+
           <Col xs={24} sm={12} lg={8}>
-            <Card 
-              title={t('adminDashboard.enrollment.activitySummary.attentionRequiredTitle')}
-              style={{ borderRadius: '12px' }}
+            <Card
+              title={t(
+                "adminDashboard.enrollment.activitySummary.attentionRequiredTitle"
+              )}
+              style={{ borderRadius: "12px" }}
             >
               <Statistic
-                title={t('adminDashboard.enrollment.activitySummary.inactiveUsers')}
+                title={t(
+                  "adminDashboard.enrollment.activitySummary.inactiveUsers"
+                )}
                 value={Math.floor(Math.random() * 10) + 2}
                 prefix={<ExclamationCircleOutlined />}
-                valueStyle={{ color: '#f5222d' }}
-                suffix={t('adminDashboard.enrollment.activitySummary.users')}
+                valueStyle={{ color: "#f5222d" }}
+                suffix={t("adminDashboard.enrollment.activitySummary.users")}
               />
               <div style={{ marginTop: 16 }}>
                 <Text type="secondary">
                   <ClockCircleOutlined style={{ marginRight: 4 }} />
-                  {t('adminDashboard.enrollment.activitySummary.notActiveFor')}
+                  {t("adminDashboard.enrollment.activitySummary.notActiveFor")}
                 </Text>
               </div>
             </Card>
@@ -4587,13 +5765,15 @@ const AdminFacultyDashboard = () => {
 
   if (loading) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '100vh',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-      }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+        }}
+      >
         <Spin size="large" tip="Loading Dashboard..." />
       </div>
     );
@@ -4601,24 +5781,24 @@ const AdminFacultyDashboard = () => {
 
   // Main content renderer with integrated dashboard components
   const renderContent = () => {
-    switch(activeKey) {
-      case 'overview':
+    switch (activeKey) {
+      case "overview":
         return renderOverview();
-      case 'applications':
+      case "applications":
         return renderApplicationsManagement();
-      case 'enrollments':
+      case "enrollments":
         return renderEnrollmentsManagement();
-      case 'courses':
+      case "courses":
         return renderCourseManagement();
-      case 'materials':
+      case "materials":
         return renderMaterialManagement();
-      case 'students':
+      case "students":
         return renderStudentProgress();
-      case 'announcements':
+      case "announcements":
         return renderAnnouncementsManagement();
-      case 'analytics':
+      case "analytics":
         return renderAnalytics();
-      case 'settings':
+      case "settings":
         return renderSettings();
       default:
         return renderOverview();
@@ -4907,2494 +6087,3346 @@ const AdminFacultyDashboard = () => {
         }
       `}</style>
 
-    <Layout style={{ minHeight: '100vh' }}>
-      {/* Desktop/Tablet Sidebar */}
-      {!isMobile && (
-      <Sider 
-        trigger={null} 
-        collapsible 
-        collapsed={collapsed}
-        breakpoint="lg"
-        onBreakpoint={(broken) => {
-          setCollapsed(broken);
-        }}
-        width={260}
-        className="modern-sidebar"
-        style={{
-          background: '#001529',
-          position: 'fixed',
-          height: '100vh',
-          left: 0,
-          top: 0,
-          bottom: 0,
-          zIndex: 1000,
-          boxShadow: '2px 0 12px rgba(0, 0, 0, 0.1)'
-        }}
-      >
-        {/* Logo Section */}
-        <div className="logo-container">
-          <div className="logo-icon-box">
-            <RocketOutlined style={{ fontSize: 24, color: '#fff' }} />
-          </div>
-          {!collapsed && (
-            <div>
-              <Title level={4} style={{ color: '#fff', margin: 0, fontSize: '18px' }}>
-                {t('header.academy')}
-              </Title>
-              <Text style={{ color: 'rgba(255, 255, 255, 0.65)', fontSize: '12px' }}>
-                {t('adminDashboard.breadcrumb.adminPortal')}
-              </Text>
-            </div>
-          )}
-        </div>
-        
-        {/* Navigation Menu */}
-        <Menu
-          theme="dark"
-          mode="inline"
-          selectedKeys={[activeKey]}
-          onClick={(e) => setActiveKey(e.key)}
-          style={{ 
-            background: 'transparent',
-            borderRight: 0,
-            padding: '20px 10px'
-          }}
-          items={menuItems.map(item => ({
-            ...item,
-            style: {
-              margin: '8px 0',
-              borderRadius: '12px'
-            }
-          }))}
-        />
-      </Sider>
-      )}
-
-      {/* Main Layout */}
-      <Layout style={{ marginLeft: isMobile ? 0 : (collapsed ? 80 : 260), transition: 'all 0.3s' }}>
-        {/* Header */}
-        <Header style={{ 
-          padding: isMobile ? '0 16px' : '0 24px', 
-          background: '#fff',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-          position: 'sticky',
-          top: 0,
-          zIndex: 999
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <Button
-              type="text"
-              icon={isMobile ? <MenuUnfoldOutlined /> : (collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />)}
-              onClick={() => isMobile ? setMobileDrawerVisible(true) : setCollapsed(!collapsed)}
-              style={{
-                fontSize: '16px',
-                width: isMobile ? 48 : 64,
-                height: isMobile ? 48 : 64,
-              }}
-            />
-            <Breadcrumb style={{ marginLeft: 16 }}>
-              <Breadcrumb.Item>
-                <HomeOutlined />
-              </Breadcrumb.Item>
-              <Breadcrumb.Item>{t('adminDashboard.breadcrumb.dashboard')}</Breadcrumb.Item>
-              <Breadcrumb.Item>{menuItems.find(item => item.key === activeKey)?.label}</Breadcrumb.Item>
-            </Breadcrumb>
-          </div>
-          
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            {/* Refresh Notifications */}
-            <Button
-              type="text"
-              icon={<ReloadOutlined />}
-              onClick={refreshNotificationsWithLanguage}
-              style={{ fontSize: 16 }}
-            />
-            
-            {/* Language Toggle */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Text type="secondary" style={{ fontSize: 12 }}>EN</Text>
-              <Switch
-                size="small"
-                checked={i18n.language === 'ja'}
-                onChange={(checked) => {
-                  const newLang = checked ? 'ja' : 'en';
-                  i18n.changeLanguage(newLang);
-                  localStorage.setItem('language', newLang);
-                }}
-                style={{
-                  backgroundColor: i18n.language === 'ja' ? '#52c41a' : '#d9d9d9'
-                }}
-              />
-              <Text type="secondary" style={{ fontSize: 12 }}>日本語</Text>
-            </div>
-            
-            {/* Notifications Badge */}
-            <Badge count={unreadCount} overflowCount={99}>
-              <Button
-                type="text"
-                icon={<BellOutlined />}
-                onClick={() => setNotificationDrawerVisible(true)}
-                style={{ fontSize: 18 }}
-              />
-            </Badge>
-            
-            {/* Old Notifications Dropdown - Keeping for backward compatibility */}
-            <Dropdown
-              open={notificationVisible}
-              onOpenChange={setNotificationVisible}
-              dropdownRender={() => (
-                <div style={{ 
-                  backgroundColor: 'white', 
-                  borderRadius: 8, 
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                  border: '1px solid #d9d9d9',
-                  maxWidth: 400,
-                  maxHeight: 400,
-                  overflow: 'hidden'
-                }}>
-                  <div style={{ 
-                    padding: '12px 16px', 
-                    borderBottom: '1px solid #f0f0f0',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
-                  }}>
-                    <Text strong>{t('adminPortal.notifications.title') || 'Notifications'}</Text>
-                    {unreadCount > 0 && (
-                      <Badge count={unreadCount} size="small" />
-                    )}
-                  </div>
-                  <div style={{ maxHeight: 300, overflowY: 'auto' }}>
-                    {notifications.length === 0 ? (
-                      <div style={{ padding: '20px', textAlign: 'center' }}>
-                        <Text type="secondary">{t('adminPortal.notifications.noNotifications') || 'No notifications'}</Text>
-                      </div>
-                    ) : (
-                      notifications.map(notification => (
-                        <div 
-                          key={notification.id}
-                          style={{
-                            padding: '12px 16px',
-                            borderBottom: '1px solid #f0f0f0',
-                            cursor: 'pointer',
-                            backgroundColor: notification.read ? 'white' : '#f6ffed',
-                            ':hover': { backgroundColor: '#f5f5f5' }
-                          }}
-                          onClick={() => handleNotificationClick(notification)}
-                        >
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                            <div style={{ flex: 1 }}>
-                              <Text strong style={{ fontSize: 13 }}>
-                                {notification.title}
-                              </Text>
-                              <div style={{ marginTop: 4 }}>
-                                <Text style={{ fontSize: 12, color: '#666' }}>
-                                  {notification.message}
-                                </Text>
-                              </div>
-                              <div style={{ marginTop: 4 }}>
-                                <Text type="secondary" style={{ fontSize: 11 }}>
-                                  {notification.timestamp.toLocaleString()}
-                                </Text>
-                              </div>
-                            </div>
-                            {!notification.read && (
-                              <div style={{ width: 8, height: 8, backgroundColor: '#52c41a', borderRadius: '50%', marginLeft: 8, marginTop: 2 }} />
-                            )}
-                          </div>
-                          {notification.type === 'application' || notification.type === 'contact' ? (
-                            <div style={{ marginTop: 8, display: 'flex', gap: 8 }}>
-                              <Button
-                                size="small"
-                                type="primary"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  approveItem(notification.type, notification.data._id);
-                                }}
-                              >
-                                {t('adminPortal.notifications.approve') || 'Approve'}
-                              </Button>
-                              <Button
-                                size="small"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  rejectItem(notification.type, notification.data._id);
-                                }}
-                              >
-                                {t('adminPortal.notifications.reject') || 'Reject'}
-                              </Button>
-                            </div>
-                          ) : null}
-                        </div>
-                      ))
-                    )}
-                  </div>
+      <Layout style={{ minHeight: "100vh" }}>
+        {/* Desktop/Tablet Sidebar */}
+        {!isMobile && (
+          <Sider
+            trigger={null}
+            collapsible
+            collapsed={collapsed}
+            breakpoint="lg"
+            onBreakpoint={(broken) => {
+              setCollapsed(broken);
+            }}
+            width={260}
+            className="modern-sidebar"
+            style={{
+              background: "#001529",
+              position: "fixed",
+              height: "100vh",
+              left: 0,
+              top: 0,
+              bottom: 0,
+              zIndex: 1000,
+              boxShadow: "2px 0 12px rgba(0, 0, 0, 0.1)",
+            }}
+          >
+            {/* Logo Section */}
+            <div className="logo-container">
+              <div className="logo-icon-box">
+                <RocketOutlined style={{ fontSize: 24, color: "#fff" }} />
+              </div>
+              {!collapsed && (
+                <div>
+                  <Title
+                    level={4}
+                    style={{ color: "#fff", margin: 0, fontSize: "18px" }}
+                  >
+                    {t("header.academy")}
+                  </Title>
+                  <Text
+                    style={{
+                      color: "rgba(255, 255, 255, 0.65)",
+                      fontSize: "12px",
+                    }}
+                  >
+                    {t("adminDashboard.breadcrumb.adminPortal")}
+                  </Text>
                 </div>
               )}
-              trigger={['click']}
-            >
-              <Badge count={unreadCount} size="small">
+            </div>
+
+            {/* Navigation Menu */}
+            <Menu
+              theme="dark"
+              mode="inline"
+              selectedKeys={[activeKey]}
+              onClick={(e) => setActiveKey(e.key)}
+              style={{
+                background: "transparent",
+                borderRight: 0,
+                padding: "20px 10px",
+              }}
+              items={menuItems.map((item) => ({
+                ...item,
+                style: {
+                  margin: "8px 0",
+                  borderRadius: "12px",
+                },
+              }))}
+            />
+          </Sider>
+        )}
+
+        {/* Main Layout */}
+        <Layout
+          style={{
+            marginLeft: isMobile ? 0 : collapsed ? 80 : 260,
+            transition: "all 0.3s",
+          }}
+        >
+          {/* Header */}
+          <Header
+            style={{
+              padding: isMobile ? "0 16px" : "0 24px",
+              background: "#fff",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+              position: "sticky",
+              top: 0,
+              zIndex: 999,
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <Button
+                type="text"
+                icon={
+                  isMobile ? (
+                    <MenuUnfoldOutlined />
+                  ) : collapsed ? (
+                    <MenuUnfoldOutlined />
+                  ) : (
+                    <MenuFoldOutlined />
+                  )
+                }
+                onClick={() =>
+                  isMobile
+                    ? setMobileDrawerVisible(true)
+                    : setCollapsed(!collapsed)
+                }
+                style={{
+                  fontSize: "16px",
+                  width: isMobile ? 48 : 64,
+                  height: isMobile ? 48 : 64,
+                }}
+              />
+              <Breadcrumb style={{ marginLeft: 16 }}>
+                <Breadcrumb.Item>
+                  <HomeOutlined />
+                </Breadcrumb.Item>
+                <Breadcrumb.Item>
+                  {t("adminDashboard.breadcrumb.dashboard")}
+                </Breadcrumb.Item>
+                <Breadcrumb.Item>
+                  {menuItems.find((item) => item.key === activeKey)?.label}
+                </Breadcrumb.Item>
+              </Breadcrumb>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+              {/* Refresh Notifications */}
+              <Button
+                type="text"
+                icon={<ReloadOutlined />}
+                onClick={refreshNotificationsWithLanguage}
+                style={{ fontSize: 16 }}
+              />
+
+              {/* Language Toggle */}
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <Text type="secondary" style={{ fontSize: 12 }}>
+                  EN
+                </Text>
+                <Switch
+                  size="small"
+                  checked={i18n.language === "ja"}
+                  onChange={(checked) => {
+                    const newLang = checked ? "ja" : "en";
+                    i18n.changeLanguage(newLang);
+                    localStorage.setItem("language", newLang);
+                  }}
+                  style={{
+                    backgroundColor:
+                      i18n.language === "ja" ? "#52c41a" : "#d9d9d9",
+                  }}
+                />
+                <Text type="secondary" style={{ fontSize: 12 }}>
+                  日本語
+                </Text>
+              </div>
+
+              {/* Notifications Badge */}
+              <Badge count={unreadCount} overflowCount={99}>
                 <Button
                   type="text"
                   icon={<BellOutlined />}
+                  onClick={() => setNotificationDrawerVisible(true)}
                   style={{ fontSize: 18 }}
                 />
               </Badge>
-            </Dropdown>
-            
-            {/* User Profile Dropdown */}
-            <Dropdown
-              menu={{
-                items: [
-                  {
-                    key: 'profile',
-                    icon: <UserOutlined />,
-                    label: t('adminSidebar.navigation.profile'),
-                    onClick: () => setProfileModalVisible(true)
-                  },
-                  {
-                    key: 'settings',
-                    icon: <SettingOutlined />,
-                    label: t('adminSidebar.navigation.settings'),
-                    onClick: () => setActiveKey('settings')
-                  },
-                  {
-                    type: 'divider'
-                  },
-                  {
-                    key: 'logout',
-                    icon: <LogoutOutlined />,
-                    label: t('adminSidebar.navigation.logout'),
-                    onClick: handleLogout
-                  }
-                ]
-              }}
-              placement="bottomRight"
-            >
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                cursor: 'pointer',
-                padding: '4px 12px',
-                borderRadius: 8,
-                transition: 'background 0.3s',
-                maxWidth: '200px',
-                '&:hover': {
-                  background: '#f0f0f0'
-                }
-              }}>
-                <Avatar
+
+              {/* Old Notifications Dropdown - Keeping for backward compatibility */}
+              <Dropdown
+                open={notificationVisible}
+                onOpenChange={setNotificationVisible}
+                dropdownRender={() => (
+                  <div
+                    style={{
+                      backgroundColor: "white",
+                      borderRadius: 8,
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                      border: "1px solid #d9d9d9",
+                      maxWidth: 400,
+                      maxHeight: 400,
+                      overflow: "hidden",
+                    }}
+                  >
+                    <div
+                      style={{
+                        padding: "12px 16px",
+                        borderBottom: "1px solid #f0f0f0",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text strong>
+                        {t("adminPortal.notifications.title") ||
+                          "Notifications"}
+                      </Text>
+                      {unreadCount > 0 && (
+                        <Badge count={unreadCount} size="small" />
+                      )}
+                    </div>
+                    <div style={{ maxHeight: 300, overflowY: "auto" }}>
+                      {notifications.length === 0 ? (
+                        <div style={{ padding: "20px", textAlign: "center" }}>
+                          <Text type="secondary">
+                            {t("adminPortal.notifications.noNotifications") ||
+                              "No notifications"}
+                          </Text>
+                        </div>
+                      ) : (
+                        notifications.map((notification) => (
+                          <div
+                            key={notification.id}
+                            style={{
+                              padding: "12px 16px",
+                              borderBottom: "1px solid #f0f0f0",
+                              cursor: "pointer",
+                              backgroundColor: notification.read
+                                ? "white"
+                                : "#f6ffed",
+                              ":hover": { backgroundColor: "#f5f5f5" },
+                            }}
+                            onClick={() =>
+                              handleNotificationClick(notification)
+                            }
+                          >
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "flex-start",
+                              }}
+                            >
+                              <div style={{ flex: 1 }}>
+                                <Text strong style={{ fontSize: 13 }}>
+                                  {notification.title}
+                                </Text>
+                                <div style={{ marginTop: 4 }}>
+                                  <Text style={{ fontSize: 12, color: "#666" }}>
+                                    {notification.message}
+                                  </Text>
+                                </div>
+                                <div style={{ marginTop: 4 }}>
+                                  <Text
+                                    type="secondary"
+                                    style={{ fontSize: 11 }}
+                                  >
+                                    {notification.timestamp.toLocaleString()}
+                                  </Text>
+                                </div>
+                              </div>
+                              {!notification.read && (
+                                <div
+                                  style={{
+                                    width: 8,
+                                    height: 8,
+                                    backgroundColor: "#52c41a",
+                                    borderRadius: "50%",
+                                    marginLeft: 8,
+                                    marginTop: 2,
+                                  }}
+                                />
+                              )}
+                            </div>
+                            {notification.type === "application" ||
+                            notification.type === "contact" ? (
+                              <div
+                                style={{
+                                  marginTop: 8,
+                                  display: "flex",
+                                  gap: 8,
+                                }}
+                              >
+                                <Button
+                                  size="small"
+                                  type="primary"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    approveItem(
+                                      notification.type,
+                                      notification.data._id
+                                    );
+                                  }}
+                                >
+                                  {t("adminPortal.notifications.approve") ||
+                                    "Approve"}
+                                </Button>
+                                <Button
+                                  size="small"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    rejectItem(
+                                      notification.type,
+                                      notification.data._id
+                                    );
+                                  }}
+                                >
+                                  {t("adminPortal.notifications.reject") ||
+                                    "Reject"}
+                                </Button>
+                              </div>
+                            ) : null}
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                )}
+                trigger={["click"]}
+              >
+                <Badge count={unreadCount} size="small">
+                  <Button
+                    type="text"
+                    icon={<BellOutlined />}
+                    style={{ fontSize: 18 }}
+                  />
+                </Badge>
+              </Dropdown>
+
+              {/* User Profile Dropdown */}
+              <Dropdown
+                menu={{
+                  items: [
+                    {
+                      key: "profile",
+                      icon: <UserOutlined />,
+                      label: t("adminSidebar.navigation.profile"),
+                      onClick: () => setProfileModalVisible(true),
+                    },
+                    {
+                      key: "settings",
+                      icon: <SettingOutlined />,
+                      label: t("adminSidebar.navigation.settings"),
+                      onClick: () => setActiveKey("settings"),
+                    },
+                    {
+                      type: "divider",
+                    },
+                    {
+                      key: "logout",
+                      icon: <LogoutOutlined />,
+                      label: t("adminSidebar.navigation.logout"),
+                      onClick: handleLogout,
+                    },
+                  ],
+                }}
+                placement="bottomRight"
+              >
+                <div
                   style={{
-                    backgroundColor: '#1890ff',
-                    marginRight: 8,
-                    flexShrink: 0
+                    display: "flex",
+                    alignItems: "center",
+                    cursor: "pointer",
+                    padding: "4px 12px",
+                    borderRadius: 8,
+                    transition: "background 0.3s",
+                    maxWidth: "200px",
+                    "&:hover": {
+                      background: "#f0f0f0",
+                    },
                   }}
-                  src={currentUser?.profileImage ? `${API_BASE_URL}${currentUser.profileImage}` : undefined}
-                  icon={<UserOutlined />}
-                />
-                <div style={{ minWidth: 0, flex: 1 }}>
-                  <Text strong style={{
-                    display: 'block',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    fontSize: '14px'
-                  }}>
-                    {currentUser?.firstName} {currentUser?.lastName}
-                  </Text>
-                  <Text type="secondary" style={{
-                    fontSize: 12,
-                    display: 'block',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis'
-                  }}>
-                    {currentUser?.role?.toUpperCase()}
-                  </Text>
+                >
+                  <Avatar
+                    style={{
+                      backgroundColor: "#1890ff",
+                      marginRight: 8,
+                      flexShrink: 0,
+                    }}
+                    src={
+                      currentUser?.profileImage
+                        ? `${API_BASE_URL}${currentUser.profileImage}`
+                        : undefined
+                    }
+                    icon={<UserOutlined />}
+                  />
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <Text
+                      strong
+                      style={{
+                        display: "block",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        fontSize: "14px",
+                      }}
+                    >
+                      {currentUser?.firstName} {currentUser?.lastName}
+                    </Text>
+                    <Text
+                      type="secondary"
+                      style={{
+                        fontSize: 12,
+                        display: "block",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
+                      {currentUser?.role?.toUpperCase()}
+                    </Text>
+                  </div>
                 </div>
-              </div>
-            </Dropdown>
-          </div>
-        </Header>
+              </Dropdown>
+            </div>
+          </Header>
 
-        {/* Content */}
-        <Content style={{ 
-          margin: '24px',
-          minHeight: 280,
-          background: '#f0f2f5'
-        }}>
-          {renderContent()}
-        </Content>
-
-        {/* Footer */}
-        <Layout.Footer style={{ 
-          textAlign: 'center',
-          background: '#fff',
-          borderTop: '1px solid #f0f0f0'
-        }}>
-          <Text type="secondary">
-            {t('footer.aboutAcademy')} {t('adminDashboard.breadcrumb.dashboard')} c {new Date().getFullYear()} | 
-            <span style={{ marginLeft: 8 }}>
-              Made with <HeartOutlined style={{ color: '#ff4d4f' }} /> by Forum Academy Team
-            </span>
-          </Text>
-        </Layout.Footer>
-      </Layout>
-
-      {/* Modals */}
-      
-      {/* Application Details Modal */}
-      <Modal
-        title={t('adminDashboard.applications.applicationDetails')}
-        visible={applicationModalVisible}
-        onCancel={() => setApplicationModalVisible(false)}
-        width={800}
-        footer={[
-          <Button key="close" onClick={() => setApplicationModalVisible(false)}>
-            {t('actions.close')}
-          </Button>,
-          <Button
-            key="reply"
-            icon={<MessageOutlined />}
-            onClick={() => {
-              setReplyType('application');
-              setReplyTarget(selectedApplication);
-              setApplicationModalVisible(false);
-              setReplyModalVisible(true);
+          {/* Content */}
+          <Content
+            style={{
+              margin: "24px",
+              minHeight: 280,
+              background: "#f0f2f5",
             }}
           >
-            {t('adminDashboard.applications.replyToApplicant')}
-          </Button>,
-          selectedApplication?.status === 'pending' && (
-            <>
-              <Button
-                key="reject"
-                danger
-                onClick={() => updateApplicationStatus(selectedApplication._id, 'rejected')}
+            {renderContent()}
+          </Content>
+
+          {/* Footer */}
+          <Layout.Footer
+            style={{
+              textAlign: "center",
+              background: "#fff",
+              borderTop: "1px solid #f0f0f0",
+            }}
+          >
+            <Text type="secondary">
+              {t("footer.aboutAcademy")}{" "}
+              {t("adminDashboard.breadcrumb.dashboard")} c{" "}
+              {new Date().getFullYear()} |
+              <span style={{ marginLeft: 8 }}>
+                Made with <HeartOutlined style={{ color: "#ff4d4f" }} /> by
+                Forum Academy Team
+              </span>
+            </Text>
+          </Layout.Footer>
+        </Layout>
+
+        {/* Modals */}
+
+        {/* Application Details Modal */}
+        <Modal
+          title={t("adminDashboard.applications.applicationDetails")}
+          visible={applicationModalVisible}
+          onCancel={() => setApplicationModalVisible(false)}
+          width={800}
+          footer={[
+            <Button
+              key="close"
+              onClick={() => setApplicationModalVisible(false)}
+            >
+              {t("actions.close")}
+            </Button>,
+            <Button
+              key="reply"
+              icon={<MessageOutlined />}
+              onClick={() => {
+                setReplyType("application");
+                setReplyTarget(selectedApplication);
+                setApplicationModalVisible(false);
+                setReplyModalVisible(true);
+              }}
+            >
+              {t("adminDashboard.applications.replyToApplicant")}
+            </Button>,
+            selectedApplication?.status === "pending" && (
+              <>
+                <Button
+                  key="reject"
+                  danger
+                  onClick={() =>
+                    updateApplicationStatus(selectedApplication._id, "rejected")
+                  }
+                >
+                  Reject
+                </Button>
+                <Button
+                  key="approve"
+                  type="primary"
+                  onClick={() =>
+                    updateApplicationStatus(selectedApplication._id, "approved")
+                  }
+                >
+                  Approve
+                </Button>
+              </>
+            ),
+          ]}
+        >
+          {selectedApplication && (
+            <Descriptions bordered column={2}>
+              <Descriptions.Item
+                label={t("adminDashboard.applications.fullName")}
+                span={2}
               >
-                Reject
-              </Button>
+                {selectedApplication.fullName}
+              </Descriptions.Item>
+              <Descriptions.Item label={t("adminDashboard.applications.email")}>
+                {selectedApplication.email}
+              </Descriptions.Item>
+              <Descriptions.Item label={t("adminDashboard.applications.phone")}>
+                {selectedApplication.phone}
+              </Descriptions.Item>
+              <Descriptions.Item
+                label={t("adminDashboard.applications.program")}
+              >
+                {selectedApplication.course || selectedApplication.program}
+              </Descriptions.Item>
+              <Descriptions.Item
+                label={t("adminDashboard.applications.status")}
+              >
+                <Tag
+                  color={
+                    selectedApplication.status === "pending"
+                      ? "orange"
+                      : selectedApplication.status === "approved"
+                      ? "green"
+                      : "red"
+                  }
+                >
+                  {t(
+                    `adminDashboard.applications.statusValues.${selectedApplication.status?.toLowerCase()}`
+                  )}
+                </Tag>
+              </Descriptions.Item>
+              <Descriptions.Item
+                label={t("adminDashboard.applications.appliedDate")}
+              >
+                {moment(selectedApplication.createdAt).format("MMMM DD, YYYY")}
+              </Descriptions.Item>
+              <Descriptions.Item
+                label={t("adminDashboard.applications.message")}
+                span={2}
+              >
+                <Paragraph ellipsis={{ rows: 3, expandable: true }}>
+                  {selectedApplication.message}
+                </Paragraph>
+              </Descriptions.Item>
+            </Descriptions>
+          )}
+        </Modal>
+
+        {/* Course View Modal */}
+        <Modal
+          title={t("admin.courseManagement.modals.view.title")}
+          visible={courseViewModalVisible}
+          onCancel={() => setCourseViewModalVisible(false)}
+          width={800}
+          footer={[
+            <Button
+              key="close"
+              onClick={() => setCourseViewModalVisible(false)}
+            >
+              {t("actions.close")}
+            </Button>,
+            <Button
+              key="edit"
+              icon={<EditOutlined />}
+              onClick={() => {
+                setEditingCourse(selectedCourse);
+                const formValues = {
+                  ...selectedCourse,
+                  capacity:
+                    selectedCourse.maxStudents || selectedCourse.capacity || 30,
+                  status: selectedCourse.isActive ? "active" : "inactive",
+                };
+
+                if (selectedCourse.startDate) {
+                  const startDate = moment(selectedCourse.startDate);
+                  if (startDate.isValid()) {
+                    formValues.startDate = startDate;
+                  }
+                }
+
+                if (selectedCourse.endDate) {
+                  const endDate = moment(selectedCourse.endDate);
+                  if (endDate.isValid()) {
+                    formValues.endDate = endDate;
+                  }
+                }
+
+                courseForm.setFieldsValue(formValues);
+                setCourseViewModalVisible(false);
+                setCourseModalVisible(true);
+              }}
+            >
+              {t("admin.courseManagement.modals.edit.button")}
+            </Button>,
+          ]}
+        >
+          {selectedCourse && (
+            <Descriptions bordered column={2}>
+              <Descriptions.Item
+                label={t("admin.courseManagement.viewModal.labels.title")}
+                span={2}
+              >
+                <Text strong>{selectedCourse.title}</Text>
+              </Descriptions.Item>
+              <Descriptions.Item
+                label={t("admin.courseManagement.viewModal.labels.code")}
+              >
+                <Tag color="blue">{selectedCourse.code}</Tag>
+              </Descriptions.Item>
+              <Descriptions.Item
+                label={t("admin.courseManagement.viewModal.labels.category")}
+              >
+                <Tag color="green">
+                  {t(
+                    `admin.courseManagement.filters.categories.${selectedCourse.category}`
+                  )}
+                </Tag>
+              </Descriptions.Item>
+              <Descriptions.Item
+                label={t("admin.courseManagement.viewModal.labels.level")}
+              >
+                <Tag
+                  color={
+                    selectedCourse.level === "beginner"
+                      ? "green"
+                      : selectedCourse.level === "intermediate"
+                      ? "orange"
+                      : "red"
+                  }
+                >
+                  {t(
+                    `admin.courseManagement.table.levelValues.${selectedCourse.level}`
+                  )}
+                </Tag>
+              </Descriptions.Item>
+              <Descriptions.Item
+                label={t("admin.courseManagement.viewModal.labels.description")}
+                span={2}
+              >
+                <Paragraph ellipsis={{ rows: 3, expandable: true }}>
+                  {selectedCourse.description}
+                </Paragraph>
+              </Descriptions.Item>
+              <Descriptions.Item
+                label={t("admin.courseManagement.viewModal.labels.duration")}
+              >
+                {selectedCourse.duration || 12}{" "}
+                {t("admin.courseManagement.viewModal.values.weeks")}
+              </Descriptions.Item>
+              <Descriptions.Item
+                label={t("admin.courseManagement.viewModal.labels.capacity")}
+              >
+                {selectedCourse.maxStudents || selectedCourse.capacity || 30}{" "}
+                {t("admin.courseManagement.viewModal.values.students")}
+              </Descriptions.Item>
+              <Descriptions.Item
+                label={t("admin.courseManagement.viewModal.labels.status")}
+              >
+                <Tag color={selectedCourse.isActive ? "green" : "default"}>
+                  {selectedCourse.isActive
+                    ? t("admin.courseManagement.table.statusValues.active")
+                    : t("admin.courseManagement.table.statusValues.inactive")}
+                </Tag>
+              </Descriptions.Item>
+              {selectedCourse.startDate && (
+                <Descriptions.Item
+                  label={t("admin.courseManagement.viewModal.labels.startDate")}
+                >
+                  {moment(selectedCourse.startDate).format("MMMM DD, YYYY")}
+                </Descriptions.Item>
+              )}
+              {selectedCourse.endDate && (
+                <Descriptions.Item
+                  label={t("admin.courseManagement.viewModal.labels.endDate")}
+                >
+                  {moment(selectedCourse.endDate).format("MMMM DD, YYYY")}
+                </Descriptions.Item>
+              )}
+              <Descriptions.Item
+                label={t(
+                  "admin.courseManagement.viewModal.labels.studentsEnrolled"
+                )}
+                span={2}
+              >
+                <List
+                  dataSource={selectedCourse.students || []}
+                  renderItem={(studentId) => {
+                    const student = students.find((s) => s._id === studentId);
+                    return (
+                      <List.Item>
+                        <Space>
+                          <Avatar icon={<UserOutlined />} size="small" />
+                          <Text>
+                            {student
+                              ? `${student.firstName} ${student.lastName}`
+                              : "Unknown"}
+                          </Text>
+                        </Space>
+                      </List.Item>
+                    );
+                  }}
+                  size="small"
+                  bordered={false}
+                  style={{ maxHeight: 200, overflow: "auto" }}
+                />
+                {(!selectedCourse.students ||
+                  selectedCourse.students.length === 0) && (
+                  <Text type="secondary">
+                    {t(
+                      "admin.courseManagement.viewModal.values.noStudentsEnrolled"
+                    )}
+                  </Text>
+                )}
+              </Descriptions.Item>
+              <Descriptions.Item
+                label={t("admin.courseManagement.viewModal.labels.created")}
+                span={2}
+              >
+                {moment(selectedCourse.createdAt).format("MMMM DD, YYYY")}
+              </Descriptions.Item>
+            </Descriptions>
+          )}
+        </Modal>
+
+        {/* Message Details Modal */}
+        <Modal
+          title={t("adminDashboard.contact.messageDetails")}
+          visible={messageModalVisible}
+          onCancel={() => setMessageModalVisible(false)}
+          width={700}
+          footer={[
+            <Button key="close" onClick={() => setMessageModalVisible(false)}>
+              {t("actions.close")}
+            </Button>,
+            <Button
+              key="reply"
+              type="primary"
+              icon={<MailOutlined />}
+              onClick={() => {
+                setReplyType("message");
+                setReplyTarget(selectedMessage);
+                setReplyModalVisible(true);
+              }}
+            >
+              {t("adminDashboard.contact.reply")}
+            </Button>,
+          ]}
+        >
+          {selectedMessage && (
+            <Descriptions bordered column={1}>
+              <Descriptions.Item label={t("adminDashboard.contact.from")}>
+                {selectedMessage.name} ({selectedMessage.email})
+              </Descriptions.Item>
+              <Descriptions.Item label={t("adminDashboard.contact.phone")}>
+                {selectedMessage.phone ||
+                  t("adminDashboard.contact.notProvided")}
+              </Descriptions.Item>
+              <Descriptions.Item label={t("adminDashboard.contact.subject")}>
+                {selectedMessage.subject}
+              </Descriptions.Item>
+              <Descriptions.Item label={t("adminDashboard.contact.message")}>
+                <Paragraph>{selectedMessage.message}</Paragraph>
+              </Descriptions.Item>
+              <Descriptions.Item label={t("adminDashboard.contact.received")}>
+                {moment(selectedMessage.createdAt).format(
+                  "MMMM DD, YYYY HH:mm"
+                )}
+              </Descriptions.Item>
+              <Descriptions.Item label={t("adminDashboard.contact.status")}>
+                <Tag
+                  color={
+                    selectedMessage.status === "pending" ? "orange" : "green"
+                  }
+                >
+                  {t(
+                    `adminDashboard.contact.statusValues.${selectedMessage.status?.toLowerCase()}`
+                  )}
+                </Tag>
+              </Descriptions.Item>
+            </Descriptions>
+          )}
+        </Modal>
+
+        {/* User Details Modal */}
+        <Modal
+          title={t("adminDashboard.users.userDetails")}
+          visible={userModalVisible}
+          onCancel={() => setUserModalVisible(false)}
+          width={700}
+          footer={[
+            <Button key="close" onClick={() => setUserModalVisible(false)}>
+              {t("actions.close")}
+            </Button>,
+            selectedUser?.isApproved !== true && (
               <Button
                 key="approve"
                 type="primary"
-                onClick={() => updateApplicationStatus(selectedApplication._id, 'approved')}
+                onClick={() => updateUserStatus(selectedUser._id, true)}
               >
-                Approve
+                {t("adminDashboard.users.approveUser")}
               </Button>
-            </>
-          )
-        ]}
-      >
-        {selectedApplication && (
-          <Descriptions bordered column={2}>
-            <Descriptions.Item label={t('adminDashboard.applications.fullName')} span={2}>
-              {selectedApplication.fullName}
-            </Descriptions.Item>
-            <Descriptions.Item label={t('adminDashboard.applications.email')}>
-              {selectedApplication.email}
-            </Descriptions.Item>
-            <Descriptions.Item label={t('adminDashboard.applications.phone')}>
-              {selectedApplication.phone}
-            </Descriptions.Item>
-            <Descriptions.Item label={t('adminDashboard.applications.program')}>
-              {selectedApplication.course || selectedApplication.program}
-            </Descriptions.Item>
-            <Descriptions.Item label={t('adminDashboard.applications.status')}>
-              <Tag color={
-                selectedApplication.status === 'pending' ? 'orange' :
-                selectedApplication.status === 'approved' ? 'green' : 'red'
-              }>
-                {t(`adminDashboard.applications.statusValues.${selectedApplication.status?.toLowerCase()}`)}
-              </Tag>
-            </Descriptions.Item>
-            <Descriptions.Item label={t('adminDashboard.applications.appliedDate')}>
-              {moment(selectedApplication.createdAt).format('MMMM DD, YYYY')}
-            </Descriptions.Item>
-            <Descriptions.Item label={t('adminDashboard.applications.message')} span={2}>
-              <Paragraph ellipsis={{ rows: 3, expandable: true }}>
-                {selectedApplication.message}
-              </Paragraph>
-            </Descriptions.Item>
-          </Descriptions>
-        )}
-      </Modal>
-
-      {/* Course View Modal */}
-      <Modal
-        title={t('admin.courseManagement.modals.view.title')}
-        visible={courseViewModalVisible}
-        onCancel={() => setCourseViewModalVisible(false)}
-        width={800}
-        footer={[
-          <Button key="close" onClick={() => setCourseViewModalVisible(false)}>
-            {t('actions.close')}
-          </Button>,
-          <Button
-            key="edit"
-            icon={<EditOutlined />}
-            onClick={() => {
-              setEditingCourse(selectedCourse);
-              const formValues = {
-                ...selectedCourse,
-                capacity: selectedCourse.maxStudents || selectedCourse.capacity || 30,
-                status: selectedCourse.isActive ? 'active' : 'inactive'
-              };
-              
-              if (selectedCourse.startDate) {
-                const startDate = moment(selectedCourse.startDate);
-                if (startDate.isValid()) {
-                  formValues.startDate = startDate;
-                }
-              }
-              
-              if (selectedCourse.endDate) {
-                const endDate = moment(selectedCourse.endDate);
-                if (endDate.isValid()) {
-                  formValues.endDate = endDate;
-                }
-              }
-              
-              courseForm.setFieldsValue(formValues);
-              setCourseViewModalVisible(false);
-              setCourseModalVisible(true);
-            }}
-          >
-            {t('admin.courseManagement.modals.edit.button')}
-          </Button>
-        ]}
-      >
-        {selectedCourse && (
-          <Descriptions bordered column={2}>
-            <Descriptions.Item label={t('admin.courseManagement.viewModal.labels.title')} span={2}>
-              <Text strong>{selectedCourse.title}</Text>
-            </Descriptions.Item>
-            <Descriptions.Item label={t('admin.courseManagement.viewModal.labels.code')}>
-              <Tag color="blue">{selectedCourse.code}</Tag>
-            </Descriptions.Item>
-            <Descriptions.Item label={t('admin.courseManagement.viewModal.labels.category')}>
-              <Tag color="green">{t(`admin.courseManagement.filters.categories.${selectedCourse.category}`)}</Tag>
-            </Descriptions.Item>
-            <Descriptions.Item label={t('admin.courseManagement.viewModal.labels.level')}>
-              <Tag color={
-                selectedCourse.level === 'beginner' ? 'green' :
-                selectedCourse.level === 'intermediate' ? 'orange' : 'red'
-              }>
-                {t(`admin.courseManagement.table.levelValues.${selectedCourse.level}`)}
-              </Tag>
-            </Descriptions.Item>
-            <Descriptions.Item label={t('admin.courseManagement.viewModal.labels.description')} span={2}>
-              <Paragraph ellipsis={{ rows: 3, expandable: true }}>
-                {selectedCourse.description}
-              </Paragraph>
-            </Descriptions.Item>
-            <Descriptions.Item label={t('admin.courseManagement.viewModal.labels.duration')}>
-              {selectedCourse.duration || 12} {t('admin.courseManagement.viewModal.values.weeks')}
-            </Descriptions.Item>
-            <Descriptions.Item label={t('admin.courseManagement.viewModal.labels.capacity')}>
-              {selectedCourse.maxStudents || selectedCourse.capacity || 30} {t('admin.courseManagement.viewModal.values.students')}
-            </Descriptions.Item>
-            <Descriptions.Item label={t('admin.courseManagement.viewModal.labels.status')}>
-              <Tag color={selectedCourse.isActive ? 'green' : 'default'}>
-                {selectedCourse.isActive ? t('admin.courseManagement.table.statusValues.active') : t('admin.courseManagement.table.statusValues.inactive')}
-              </Tag>
-            </Descriptions.Item>
-            {selectedCourse.startDate && (
-              <Descriptions.Item label={t('admin.courseManagement.viewModal.labels.startDate')}>
-                {moment(selectedCourse.startDate).format('MMMM DD, YYYY')}
+            ),
+            selectedUser?.isApproved !== false && (
+              <Button
+                key="reject"
+                danger
+                onClick={() => updateUserStatus(selectedUser._id, false)}
+              >
+                {t("adminDashboard.users.rejectUser")}
+              </Button>
+            ),
+          ]}
+        >
+          {selectedUser && (
+            <Descriptions bordered column={2}>
+              <Descriptions.Item
+                label={t("adminDashboard.users.name")}
+                span={2}
+              >
+                {selectedUser.firstName} {selectedUser.lastName}
               </Descriptions.Item>
-            )}
-            {selectedCourse.endDate && (
-              <Descriptions.Item label={t('admin.courseManagement.viewModal.labels.endDate')}>
-                {moment(selectedCourse.endDate).format('MMMM DD, YYYY')}
+              <Descriptions.Item label={t("adminDashboard.users.email")}>
+                {selectedUser.email}
               </Descriptions.Item>
-            )}
-            <Descriptions.Item label={t('admin.courseManagement.viewModal.labels.studentsEnrolled')} span={2}>
-              <List
-                dataSource={selectedCourse.students || []}
-                renderItem={(studentId) => {
-                  const student = students.find(s => s._id === studentId);
-                  return (
-                    <List.Item>
-                      <Space>
-                        <Avatar icon={<UserOutlined />} size="small" />
-                        <Text>{student ? `${student.firstName} ${student.lastName}` : 'Unknown'}</Text>
-                      </Space>
-                    </List.Item>
-                  );
-                }}
-                size="small"
-                bordered={false}
-                style={{ maxHeight: 200, overflow: 'auto' }}
-              />
-              {(!selectedCourse.students || selectedCourse.students.length === 0) && (
-                <Text type="secondary">{t('admin.courseManagement.viewModal.values.noStudentsEnrolled')}</Text>
+              <Descriptions.Item label={t("adminDashboard.users.role")}>
+                <Tag color={selectedUser.role === "teacher" ? "blue" : "green"}>
+                  {t(
+                    `adminDashboard.users.roleValues.${selectedUser.role?.toLowerCase()}`
+                  )}
+                </Tag>
+              </Descriptions.Item>
+              <Descriptions.Item label={t("adminDashboard.users.status")}>
+                {selectedUser.isApproved === true ? (
+                  <Tag color="green" icon={<CheckCircleOutlined />}>
+                    {t("adminDashboard.users.statusValues.approved")}
+                  </Tag>
+                ) : selectedUser.isApproved === false ? (
+                  <Tag color="red" icon={<CloseCircleOutlined />}>
+                    {t("adminDashboard.users.statusValues.rejected")}
+                  </Tag>
+                ) : (
+                  <Tag color="orange">
+                    {t("adminDashboard.users.statusValues.pending")}
+                  </Tag>
+                )}
+              </Descriptions.Item>
+              <Descriptions.Item label={t("adminDashboard.users.registered")}>
+                {moment(selectedUser.createdAt).format("MMMM DD, YYYY")}
+              </Descriptions.Item>
+              {selectedUser.phone && (
+                <Descriptions.Item
+                  label={t("adminDashboard.users.phone")}
+                  span={2}
+                >
+                  {selectedUser.phone}
+                </Descriptions.Item>
               )}
-            </Descriptions.Item>
-            <Descriptions.Item label={t('admin.courseManagement.viewModal.labels.created')} span={2}>
-              {moment(selectedCourse.createdAt).format('MMMM DD, YYYY')}
-            </Descriptions.Item>
-          </Descriptions>
-        )}
-      </Modal>
-
-      {/* Message Details Modal */}
-      <Modal
-        title={t('adminDashboard.contact.messageDetails')}
-        visible={messageModalVisible}
-        onCancel={() => setMessageModalVisible(false)}
-        width={700}
-        footer={[
-          <Button key="close" onClick={() => setMessageModalVisible(false)}>
-            {t('actions.close')}
-          </Button>,
-          <Button
-            key="reply"
-            type="primary"
-            icon={<MailOutlined />}
-            onClick={() => {
-              setReplyType('message');
-              setReplyTarget(selectedMessage);
-              setReplyModalVisible(true);
-            }}
-          >
-            {t('adminDashboard.contact.reply')}
-          </Button>
-        ]}
-      >
-        {selectedMessage && (
-          <Descriptions bordered column={1}>
-            <Descriptions.Item label={t('adminDashboard.contact.from')}>
-              {selectedMessage.name} ({selectedMessage.email})
-            </Descriptions.Item>
-            <Descriptions.Item label={t('adminDashboard.contact.phone')}>
-              {selectedMessage.phone || t('adminDashboard.contact.notProvided')}
-            </Descriptions.Item>
-            <Descriptions.Item label={t('adminDashboard.contact.subject')}>
-              {selectedMessage.subject}
-            </Descriptions.Item>
-            <Descriptions.Item label={t('adminDashboard.contact.message')}>
-              <Paragraph>{selectedMessage.message}</Paragraph>
-            </Descriptions.Item>
-            <Descriptions.Item label={t('adminDashboard.contact.received')}>
-              {moment(selectedMessage.createdAt).format('MMMM DD, YYYY HH:mm')}
-            </Descriptions.Item>
-            <Descriptions.Item label={t('adminDashboard.contact.status')}>
-              <Tag color={selectedMessage.status === 'pending' ? 'orange' : 'green'}>
-                {t(`adminDashboard.contact.statusValues.${selectedMessage.status?.toLowerCase()}`)}
-              </Tag>
-            </Descriptions.Item>
-          </Descriptions>
-        )}
-      </Modal>
-
-      {/* User Details Modal */}
-      <Modal
-        title={t('adminDashboard.users.userDetails')}
-        visible={userModalVisible}
-        onCancel={() => setUserModalVisible(false)}
-        width={700}
-        footer={[
-          <Button key="close" onClick={() => setUserModalVisible(false)}>
-            {t('actions.close')}
-          </Button>,
-          selectedUser?.isApproved !== true && (
-            <Button
-              key="approve"
-              type="primary"
-              onClick={() => updateUserStatus(selectedUser._id, true)}
-            >
-              {t('adminDashboard.users.approveUser')}
-            </Button>
-          ),
-          selectedUser?.isApproved !== false && (
-            <Button
-              key="reject"
-              danger
-              onClick={() => updateUserStatus(selectedUser._id, false)}
-            >
-              {t('adminDashboard.users.rejectUser')}
-            </Button>
-          )
-        ]}
-      >
-        {selectedUser && (
-          <Descriptions bordered column={2}>
-            <Descriptions.Item label={t('adminDashboard.users.name')} span={2}>
-              {selectedUser.firstName} {selectedUser.lastName}
-            </Descriptions.Item>
-            <Descriptions.Item label={t('adminDashboard.users.email')}>
-              {selectedUser.email}
-            </Descriptions.Item>
-            <Descriptions.Item label={t('adminDashboard.users.role')}>
-              <Tag color={selectedUser.role === 'teacher' ? 'blue' : 'green'}>
-                {t(`adminDashboard.users.roleValues.${selectedUser.role?.toLowerCase()}`)}
-              </Tag>
-            </Descriptions.Item>
-            <Descriptions.Item label={t('adminDashboard.users.status')}>
-              {selectedUser.isApproved === true ? (
-                <Tag color="green" icon={<CheckCircleOutlined />}>{t('adminDashboard.users.statusValues.approved')}</Tag>
-              ) : selectedUser.isApproved === false ? (
-                <Tag color="red" icon={<CloseCircleOutlined />}>{t('adminDashboard.users.statusValues.rejected')}</Tag>
-              ) : (
-                <Tag color="orange">{t('adminDashboard.users.statusValues.pending')}</Tag>
+              {selectedUser.bio && (
+                <Descriptions.Item
+                  label={t("adminDashboard.users.bio")}
+                  span={2}
+                >
+                  {selectedUser.bio}
+                </Descriptions.Item>
               )}
-            </Descriptions.Item>
-            <Descriptions.Item label={t('adminDashboard.users.registered')}>
-              {moment(selectedUser.createdAt).format('MMMM DD, YYYY')}
-            </Descriptions.Item>
-            {selectedUser.phone && (
-              <Descriptions.Item label={t('adminDashboard.users.phone')} span={2}>
-                {selectedUser.phone}
-              </Descriptions.Item>
-            )}
-            {selectedUser.bio && (
-              <Descriptions.Item label={t('adminDashboard.users.bio')} span={2}>
-                {selectedUser.bio}
-              </Descriptions.Item>
-            )}
-          </Descriptions>
-        )}
-      </Modal>
+            </Descriptions>
+          )}
+        </Modal>
 
-      {/* Create User Modal */}
-      <Modal
-        title={t('adminDashboard.users.createNewUser')}
-        visible={createUserModalVisible}
-        onCancel={() => {
-          setCreateUserModalVisible(false);
-          createUserForm.resetFields();
-        }}
-        footer={[
-          <Button key="cancel" onClick={() => {
+        {/* Create User Modal */}
+        <Modal
+          title={t("adminDashboard.users.createNewUser")}
+          visible={createUserModalVisible}
+          onCancel={() => {
             setCreateUserModalVisible(false);
             createUserForm.resetFields();
-          }}>
-            {t('actions.cancel')}
-          </Button>,
-          <Button 
-            key="create" 
-            type="primary" 
-            onClick={() => createUserForm.submit()}
-          >
-            {t('adminDashboard.users.createUser')}
-          </Button>
-        ]}
-        width={600}
-      >
-        <Form
-          form={createUserForm}
-          layout="vertical"
-          onFinish={createUser}
+          }}
+          footer={[
+            <Button
+              key="cancel"
+              onClick={() => {
+                setCreateUserModalVisible(false);
+                createUserForm.resetFields();
+              }}
+            >
+              {t("actions.cancel")}
+            </Button>,
+            <Button
+              key="create"
+              type="primary"
+              onClick={() => createUserForm.submit()}
+            >
+              {t("adminDashboard.users.createUser")}
+            </Button>,
+          ]}
+          width={600}
         >
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="firstName"
-                label={t('adminDashboard.users.firstName')}
-                rules={[{ required: true, message: t('adminDashboard.users.validation.firstNameRequired') }]}
-              >
-                <Input placeholder={t('adminDashboard.users.placeholders.firstName')} />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="lastName"
-                label={t('adminDashboard.users.lastName')}
-                rules={[{ required: true, message: t('adminDashboard.users.validation.lastNameRequired') }]}
-              >
-                <Input placeholder={t('adminDashboard.users.placeholders.lastName')} />
-              </Form.Item>
-            </Col>
-          </Row>
-          
-          <Form.Item
-            name="email"
-            label={t('adminDashboard.users.email')}
-            rules={[
-              { required: true, message: t('adminDashboard.users.validation.emailRequired') },
-              { type: 'email', message: t('adminDashboard.users.validation.emailValid') }
-            ]}
-          >
-            <Input placeholder={t('adminDashboard.users.placeholders.email')} />
-          </Form.Item>
-          
-          <Form.Item
-            name="password"
-            label={t('adminDashboard.users.password')}
-            rules={[
-              { required: true, message: t('adminDashboard.users.validation.passwordRequired') },
-              { min: 6, message: t('adminDashboard.users.validation.passwordLength') }
-            ]}
-          >
-            <Input.Password placeholder={t('adminDashboard.users.placeholders.password')} />
-          </Form.Item>
-          
-          <Form.Item
-            name="role"
-            label={t('adminDashboard.users.role')}
-            rules={[{ required: true, message: t('adminDashboard.users.validation.roleRequired') }]}
-          >
-            <Select placeholder={t('adminDashboard.users.placeholders.role')}>
-              <Option value="student">{t('adminDashboard.users.roleValues.student')}</Option>
-              <Option value="teacher">{t('adminDashboard.users.roleValues.teacher')}</Option>
-              <Option value="admin">{t('adminDashboard.users.roleValues.admin')}</Option>
-            </Select>
-          </Form.Item>
-          
-          <Form.Item
-            name="phone"
-            label={t('adminDashboard.users.phoneNumber')}
-          >
-            <Input placeholder={t('adminDashboard.users.placeholders.phone')} />
-          </Form.Item>
-          
-          <Form.Item
-            name="isApproved"
-            label={t('adminDashboard.users.approvalStatus')}
-            valuePropName="checked"
-          >
-            <Switch 
-              checkedChildren={t('adminDashboard.users.statusValues.approved')} 
-              unCheckedChildren={t('adminDashboard.users.statusValues.pending')} 
-            />
-          </Form.Item>
-        </Form>
-      </Modal>
+          <Form form={createUserForm} layout="vertical" onFinish={createUser}>
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  name="firstName"
+                  label={t("adminDashboard.users.firstName")}
+                  rules={[
+                    {
+                      required: true,
+                      message: t(
+                        "adminDashboard.users.validation.firstNameRequired"
+                      ),
+                    },
+                  ]}
+                >
+                  <Input
+                    placeholder={t(
+                      "adminDashboard.users.placeholders.firstName"
+                    )}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="lastName"
+                  label={t("adminDashboard.users.lastName")}
+                  rules={[
+                    {
+                      required: true,
+                      message: t(
+                        "adminDashboard.users.validation.lastNameRequired"
+                      ),
+                    },
+                  ]}
+                >
+                  <Input
+                    placeholder={t(
+                      "adminDashboard.users.placeholders.lastName"
+                    )}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
 
-      {/* Reply Modal */}
-      <Modal
-        title={`${t('adminDashboard.applications.replyTo')} ${replyTarget?.name || replyTarget?.fullName || 'User'}`}
-        visible={replyModalVisible}
-        onCancel={() => {
-          setReplyModalVisible(false);
-          replyForm.resetFields();
-          setReplyType('');
-          setReplyTarget(null);
-        }}
-        width={600}
-        footer={[
-          <Button key="cancel" onClick={() => {
+            <Form.Item
+              name="email"
+              label={t("adminDashboard.users.email")}
+              rules={[
+                {
+                  required: true,
+                  message: t("adminDashboard.users.validation.emailRequired"),
+                },
+                {
+                  type: "email",
+                  message: t("adminDashboard.users.validation.emailValid"),
+                },
+              ]}
+            >
+              <Input
+                placeholder={t("adminDashboard.users.placeholders.email")}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="password"
+              label={t("adminDashboard.users.password")}
+              rules={[
+                {
+                  required: true,
+                  message: t(
+                    "adminDashboard.users.validation.passwordRequired"
+                  ),
+                },
+                {
+                  min: 6,
+                  message: t("adminDashboard.users.validation.passwordLength"),
+                },
+              ]}
+            >
+              <Input.Password
+                placeholder={t("adminDashboard.users.placeholders.password")}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="role"
+              label={t("adminDashboard.users.role")}
+              rules={[
+                {
+                  required: true,
+                  message: t("adminDashboard.users.validation.roleRequired"),
+                },
+              ]}
+            >
+              <Select placeholder={t("adminDashboard.users.placeholders.role")}>
+                <Option value="student">
+                  {t("adminDashboard.users.roleValues.student")}
+                </Option>
+                <Option value="teacher">
+                  {t("adminDashboard.users.roleValues.teacher")}
+                </Option>
+                <Option value="admin">
+                  {t("adminDashboard.users.roleValues.admin")}
+                </Option>
+              </Select>
+            </Form.Item>
+
+            <Form.Item
+              name="phone"
+              label={t("adminDashboard.users.phoneNumber")}
+            >
+              <Input
+                placeholder={t("adminDashboard.users.placeholders.phone")}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="isApproved"
+              label={t("adminDashboard.users.approvalStatus")}
+              valuePropName="checked"
+            >
+              <Switch
+                checkedChildren={t(
+                  "adminDashboard.users.statusValues.approved"
+                )}
+                unCheckedChildren={t(
+                  "adminDashboard.users.statusValues.pending"
+                )}
+              />
+            </Form.Item>
+          </Form>
+        </Modal>
+
+        {/* Reply Modal */}
+        <Modal
+          title={`${t("adminDashboard.applications.replyTo")} ${
+            replyTarget?.name || replyTarget?.fullName || "User"
+          }`}
+          visible={replyModalVisible}
+          onCancel={() => {
             setReplyModalVisible(false);
             replyForm.resetFields();
-            setReplyType('');
+            setReplyType("");
             setReplyTarget(null);
-          }}>
-            {t('actions.cancel')}
-          </Button>,
-          <Button 
-            key="send" 
-            type="primary" 
-            onClick={() => replyForm.submit()}
-            icon={<MailOutlined />}
-          >
-            {t('actions.send')}
-          </Button>
-        ]}
-      >
-        <Form
-          form={replyForm}
-          layout="vertical"
-          onFinish={async (values) => {
-            try {
-              console.log('📧 Attempting to send reply...', {
-                replyType,
-                target: replyTarget?.email,
-                subject: values.subject
-              });
+          }}
+          width={600}
+          footer={[
+            <Button
+              key="cancel"
+              onClick={() => {
+                setReplyModalVisible(false);
+                replyForm.resetFields();
+                setReplyType("");
+                setReplyTarget(null);
+              }}
+            >
+              {t("actions.cancel")}
+            </Button>,
+            <Button
+              key="send"
+              type="primary"
+              onClick={() => replyForm.submit()}
+              icon={<MailOutlined />}
+            >
+              {t("actions.send")}
+            </Button>,
+          ]}
+        >
+          <Form
+            form={replyForm}
+            layout="vertical"
+            onFinish={async (values) => {
+              try {
+                console.log("📧 Attempting to send reply...", {
+                  replyType,
+                  target: replyTarget?.email,
+                  subject: values.subject,
+                });
 
-              // Prepare email data based on reply type
-              const emailData = {
-                to: replyTarget?.email,
-                subject: values.subject,
-                message: values.message,
-                type: replyType,
-                relatedId: replyTarget?._id
-              };
+                // Prepare email data based on reply type
+                const emailData = {
+                  to: replyTarget?.email,
+                  subject: values.subject,
+                  message: values.message,
+                  type: replyType,
+                  relatedId: replyTarget?._id,
+                };
 
-              console.log('✅ Email data prepared:', emailData);
+                console.log("✅ Email data prepared:", emailData);
 
-              // Send email via API
-              const response = await fetch(`${API_BASE_URL}/api/send-email`, {
-                method: 'POST',
-                headers: getAuthHeaders(),
-                body: JSON.stringify(emailData)
-              });
+                // Send email via API
+                const response = await fetch(`${API_BASE_URL}/api/send-email`, {
+                  method: "POST",
+                  headers: getAuthHeaders(),
+                  body: JSON.stringify(emailData),
+                });
 
-              console.log('✅ API Response Status:', response.status);
+                console.log("✅ API Response Status:", response.status);
 
-              if (response.ok) {
-                const responseData = await response.json();
-                console.log('API Response Data:', responseData);
-                
-                if (responseData.success) {
-                  if (responseData.details?.simulated || responseData.details?.queued) {
-                    message.success(
-                      responseData.details.simulated 
-                        ? 'Reply recorded successfully! (Email service not configured - simulated)' 
-                        : 'Reply queued successfully! (Will be sent when email service is available)'
-                    );
+                if (response.ok) {
+                  const responseData = await response.json();
+                  console.log("API Response Data:", responseData);
+
+                  if (responseData.success) {
+                    if (
+                      responseData.details?.simulated ||
+                      responseData.details?.queued
+                    ) {
+                      message.success(
+                        responseData.details.simulated
+                          ? "Reply recorded successfully! (Email service not configured - simulated)"
+                          : "Reply queued successfully! (Will be sent when email service is available)"
+                      );
+                    } else {
+                      message.success("Reply sent successfully!");
+                    }
+
+                    // Update status if it's an application reply
+                    if (
+                      replyType === "application" &&
+                      replyTarget?.status === "pending"
+                    ) {
+                      await updateApplicationStatus(
+                        replyTarget._id,
+                        "contacted"
+                      );
+                    }
+
+                    // Update status if it's a message reply
+                    if (
+                      replyType === "message" &&
+                      replyTarget?.status === "pending"
+                    ) {
+                      await updateContactStatus(replyTarget._id, "resolved");
+                    }
+
+                    setReplyModalVisible(false);
+                    replyForm.resetFields();
+                    setReplyType("");
+                    setReplyTarget(null);
+
+                    // Refresh data
+                    if (replyType === "application") {
+                      fetchApplications();
+                    } else if (replyType === "message") {
+                      fetchContactMessages();
+                    }
                   } else {
-                    message.success('Reply sent successfully!');
-                  }
-                  
-                  // Update status if it's an application reply
-                  if (replyType === 'application' && replyTarget?.status === 'pending') {
-                    await updateApplicationStatus(replyTarget._id, 'contacted');
-                  }
-                  
-                  // Update status if it's a message reply
-                  if (replyType === 'message' && replyTarget?.status === 'pending') {
-                    await updateContactStatus(replyTarget._id, 'resolved');
-                  }
-                  
-                  setReplyModalVisible(false);
-                  replyForm.resetFields();
-                  setReplyType('');
-                  setReplyTarget(null);
-                  
-                  // Refresh data
-                  if (replyType === 'application') {
-                    fetchApplications();
-                  } else if (replyType === 'message') {
-                    fetchContactMessages();
+                    throw new Error(
+                      responseData.message || "Failed to send reply"
+                    );
                   }
                 } else {
-                  throw new Error(responseData.message || 'Failed to send reply');
+                  const errorData = await response
+                    .json()
+                    .catch(() => ({ message: "Unknown error" }));
+                  console.error("API Error Response:", errorData);
+                  throw new Error(
+                    errorData.message ||
+                      `Server responded with ${response.status}`
+                  );
                 }
-              } else {
-                const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
-                console.error('API Error Response:', errorData);
-                throw new Error(errorData.message || `Server responded with ${response.status}`);
-              }
-            } catch (error) {
-              console.error('Error sending reply:', error);
-              
-              // Provide more specific error messages
-              if (error.message.includes('fetch')) {
-                message.error('Connection error. Please check if the server is running and try again.');
-              } else if (error.message.includes('401')) {
-                message.error('Authentication error. Please log in again.');
-              } else if (error.message.includes('403')) {
-                message.error('Permission denied. You may not have the required permissions.');
-              } else {
-                message.error(`Failed to send reply: ${error.message}`);
-              }
-            }
-          }}
-        >
-          {/* Display recipient information */}
-          <div style={{ 
-            background: '#f0f2f5', 
-            padding: '12px', 
-            borderRadius: '8px',
-            marginBottom: '16px' 
-          }}>
-            <Text strong>{t('adminDashboard.applications.replyingTo')}: </Text>
-            <Text>{replyTarget?.email}</Text>
-            {replyType === 'application' && (
-              <>
-                <br />
-                <Text type="secondary">
-                  {t('adminDashboard.applications.applicationFor')}: {replyTarget?.course || replyTarget?.program || 'General Application'}
-                </Text>
-              </>
-            )}
-            {replyType === 'message' && replyTarget?.subject && (
-              <>
-                <br />
-                <Text type="secondary">
-                  Original Subject: {replyTarget.subject}
-                </Text>
-              </>
-            )}
-          </div>
+              } catch (error) {
+                console.error("Error sending reply:", error);
 
-          <Form.Item
-            name="subject"
-            label={t('adminDashboard.applications.subject')}
-            rules={[{ required: true, message: 'Please enter subject' }]}
-            initialValue={
-              replyType === 'application' 
-                ? t('adminDashboard.applications.reApplication')
-                : replyTarget?.subject 
-                  ? `Re: ${replyTarget.subject}` 
-                  : ''
-            }
-          >
-            <Input placeholder="Enter email subject" />
-          </Form.Item>
-          
-          <Form.Item
-            name="message"
-            label={t('adminDashboard.applications.message')}
-            rules={[{ required: true, message: 'Please enter your message' }]}
-          >
-            <TextArea 
-              rows={8} 
-              placeholder={
-                replyType === 'application'
-                  ? t('adminDashboard.applications.templatePlaceholder')
-                  : t('adminDashboard.applications.typeReplyMessage')
-              }
-            />
-          </Form.Item>
-
-          {/* Quick Templates */}
-          <Form.Item label={t('adminDashboard.applications.quickTemplates')}>
-            <Space wrap>
-              {replyType === 'application' && (
-                <>
-                  <Button
-                    size="small"
-                    onClick={() => {
-                      replyForm.setFieldsValue({
-                        message: t('adminDashboard.applications.templateReceived', { name: replyTarget?.fullName || 'Applicant' })
-                      });
-                    }}
-                  >
-                    {t('adminDashboard.applications.applicationReceived')}
-                  </Button>
-                  <Button
-                    size="small"
-                    onClick={() => {
-                      replyForm.setFieldsValue({
-                        message: t('adminDashboard.applications.templateRequest', { name: replyTarget?.fullName || 'Applicant' })
-                      });
-                    }}
-                  >
-                    {t('adminDashboard.applications.requestInformation')}
-                  </Button>
-                  <Button
-                    size="small"
-                    onClick={() => {
-                      replyForm.setFieldsValue({
-                        message: t('adminDashboard.applications.templateAcceptance', { name: replyTarget?.fullName || 'Applicant' })
-                      });
-                    }}
-                  >
-                    {t('adminDashboard.applications.acceptanceLetter')}
-                  </Button>
-                </>
-              )}
-              {replyType === 'message' && (
-                <>
-                  <Button
-                    size="small"
-                    onClick={() => {
-                      replyForm.setFieldsValue({
-                        message: t('adminDashboard.contact.templates.acknowledgmentMessage', { name: replyTarget?.name || 'User' })
-                      });
-                    }}
-                  >
-                    {t('adminDashboard.contact.templates.acknowledgment')}
-                  </Button>
-                  <Button
-                    size="small"
-                    onClick={() => {
-                      replyForm.setFieldsValue({
-                        message: t('adminDashboard.contact.templates.generalResponseMessage', { name: replyTarget?.name || 'User' })
-                      });
-                    }}
-                  >
-                    {t('adminDashboard.contact.templates.generalResponse')}
-                  </Button>
-                </>
-              )}
-              {replyType === 'student' && (
-                <>
-                  <Button
-                    size="small"
-                    onClick={() => {
-                      replyForm.setFieldsValue({
-                        message: t('adminDashboard.enrollment.templates.student.welcomeMessageText', { name: replyTarget?.firstName || replyTarget?.name || 'Student' })
-                      });
-                    }}
-                  >
-                    {t('adminDashboard.enrollment.templates.student.welcomeMessage')}
-                  </Button>
-                  <Button
-                    size="small"
-                    onClick={() => {
-                      replyForm.setFieldsValue({
-                        message: t('adminDashboard.enrollment.templates.student.progressReminderText', { name: replyTarget?.firstName || replyTarget?.name || 'Student' })
-                      });
-                    }}
-                  >
-                    {t('adminDashboard.enrollment.templates.student.progressReminder')}
-                  </Button>
-                  <Button
-                    size="small"
-                    onClick={() => {
-                      replyForm.setFieldsValue({
-                        message: t('adminDashboard.enrollment.templates.student.supportCheckText', { name: replyTarget?.firstName || replyTarget?.name || 'Student' })
-                      });
-                    }}
-                  >
-                    {t('adminDashboard.enrollment.templates.student.supportCheck')}
-                  </Button>
-                </>
-              )}
-              {replyType === 'teacher' && (
-                <>
-                  <Button
-                    size="small"
-                    onClick={() => {
-                      replyForm.setFieldsValue({
-                        message: t('adminDashboard.enrollment.templates.teacher.welcomeMessageText', { name: replyTarget?.firstName || replyTarget?.name || 'Teacher' })
-                      });
-                    }}
-                  >
-                    {t('adminDashboard.enrollment.templates.teacher.welcomeMessage')}
-                  </Button>
-                  <Button
-                    size="small"
-                    onClick={() => {
-                      replyForm.setFieldsValue({
-                        message: t('adminDashboard.enrollment.templates.teacher.performanceUpdateText', { name: replyTarget?.firstName || replyTarget?.name || 'Teacher' })
-                      });
-                    }}
-                  >
-                    {t('adminDashboard.enrollment.templates.teacher.performanceUpdate')}
-                  </Button>
-                  <Button
-                    size="small"
-                    onClick={() => {
-                      replyForm.setFieldsValue({
-                        message: t('adminDashboard.enrollment.templates.teacher.supportOfferText', { name: replyTarget?.firstName || replyTarget?.name || 'Teacher' })
-                      });
-                    }}
-                  >
-                    {t('adminDashboard.enrollment.templates.teacher.supportOffer')}
-                  </Button>
-                </>
-              )}
-            </Space>
-          </Form.Item>
-          
-          <Form.Item
-            name="attachments"
-            label={`${t('adminDashboard.applications.attachments')} ${t('adminDashboard.applications.optional')}`}
-          >
-            <Upload beforeUpload={() => false}>
-              <Button icon={<UploadOutlined />}>{t('adminDashboard.applications.attachFiles')}</Button>
-            </Upload>
-          </Form.Item>
-
-          <Form.Item
-            name="sendCopy"
-            valuePropName="checked"
-          >
-            <Checkbox>{t('adminDashboard.applications.sendCopy')}</Checkbox>
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      {/* Course Modal */}
-      <Modal
-        title={editingCourse ? t('admin.courseManagement.modals.edit.title') : t('admin.courseManagement.modals.create.title')}
-        visible={courseModalVisible}
-        onCancel={() => {
-          setCourseModalVisible(false);
-          courseForm.resetFields();
-          setEditingCourse(null);
-        }}
-        onOk={() => courseForm.submit()}
-        width={800}
-      >
-        <Form
-          form={courseForm}
-          layout="vertical"
-          onFinish={handleCreateCourse}
-        >
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="title"
-                label={t('admin.courseManagement.form.fields.courseTitle')}
-                rules={[{ required: true, message: t('admin.courseManagement.form.validation.courseTitleRequired') }]}
-              >
-                <Input placeholder={t('admin.courseManagement.form.placeholders.courseTitle')} />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="code"
-                label={t('admin.courseManagement.form.fields.courseCode')}
-                rules={[{ required: true, message: t('admin.courseManagement.form.validation.courseCodeRequired') }]}
-              >
-                <Input placeholder={t('admin.courseManagement.form.placeholders.courseCode')} />
-              </Form.Item>
-            </Col>
-          </Row>
-          
-          <Form.Item
-            name="description"
-            label={t('admin.courseManagement.form.fields.description')}
-            rules={[{ required: true, message: t('admin.courseManagement.form.validation.descriptionRequired') }]}
-          >
-            <TextArea rows={4} placeholder={t('admin.courseManagement.form.placeholders.description')} />
-          </Form.Item>
-          
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="category"
-                label={t('admin.courseManagement.form.fields.category')}
-                rules={[{ required: true, message: t('admin.courseManagement.form.validation.categoryRequired') }]}
-              >
-                <Select placeholder={t('admin.courseManagement.form.placeholders.selectCategory')}>
-                  <Option value="language">{t('admin.courseManagement.filters.categories.language')}</Option>
-                  <Option value="business">{t('admin.courseManagement.filters.categories.business')}</Option>
-                  <Option value="technology">{t('admin.courseManagement.filters.categories.technology')}</Option>
-                  <Option value="arts">{t('admin.courseManagement.filters.categories.arts')}</Option>
-                  <Option value="science">{t('admin.courseManagement.filters.categories.science')}</Option>
-                  <Option value="other">{t('admin.courseManagement.filters.categories.other')}</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="level"
-                label={t('admin.courseManagement.form.fields.level')}
-                rules={[{ required: true, message: t('admin.courseManagement.form.validation.levelRequired') }]}
-              >
-                <Select placeholder={t('admin.courseManagement.form.placeholders.selectLevel')}>
-                  <Option value="beginner">{t('admin.courseManagement.form.levelOptions.beginner')}</Option>
-                  <Option value="intermediate">{t('admin.courseManagement.form.levelOptions.intermediate')}</Option>
-                  <Option value="advanced">{t('admin.courseManagement.form.levelOptions.advanced')}</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
-          
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="startDate"
-                label={t('admin.courseManagement.form.fields.startDate')}
-                rules={[{ required: true, message: t('admin.courseManagement.form.validation.startDateRequired') }]}
-              >
-                <DatePicker style={{ width: '100%' }} />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="endDate"
-                label={t('admin.courseManagement.form.fields.endDate')}
-                rules={[{ required: true, message: t('admin.courseManagement.form.validation.endDateRequired') }]}
-              >
-                <DatePicker style={{ width: '100%' }} />
-              </Form.Item>
-            </Col>
-          </Row>
-          
-          <Row gutter={16}>
-            <Col span={8}>
-              <Form.Item
-                name="duration"
-                label={t('admin.courseManagement.form.fields.duration')}
-                rules={[{ required: true, message: t('admin.courseManagement.form.validation.durationRequired') }]}
-                initialValue={12}
-              >
-                <InputNumber min={1} max={52} style={{ width: '100%' }} />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item
-                name="capacity"
-                label={t('admin.courseManagement.form.fields.maxStudents')}
-                rules={[{ required: true, message: t('admin.courseManagement.form.validation.capacityRequired') }]}
-                initialValue={30}
-              >
-                <InputNumber min={1} max={500} style={{ width: '100%' }} />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item
-                name="status"
-                label={t('admin.courseManagement.form.fields.status')}
-                initialValue="active"
-              >
-                <Select>
-                  <Option value="active">{t('admin.courseManagement.form.statusOptions.active')}</Option>
-                  <Option value="inactive">{t('admin.courseManagement.form.statusOptions.inactive')}</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
-        </Form>
-      </Modal>
-
-      {/* Material Upload Modal */}
-      <Modal
-        title={t('admin.materialManagement.upload.title')}
-        visible={materialModalVisible}
-        onCancel={() => {
-          setMaterialModalVisible(false);
-          materialForm.resetFields();
-          setFileList([]);
-        }}
-        onOk={() => materialForm.submit()}
-        width={700}
-      >
-        <Form
-          form={materialForm}
-          layout="vertical"
-          onFinish={handleUploadMaterial}
-        >
-          <Form.Item
-            name="title"
-            label={t('admin.materialManagement.upload.fields.title')}
-            rules={[{ required: true, message: t('admin.materialManagement.upload.validation.titleRequired') }]}
-          >
-            <Input placeholder={t('admin.materialManagement.upload.placeholders.title')} />
-          </Form.Item>
-          
-          <Form.Item
-            name="description"
-            label={t('admin.materialManagement.upload.fields.description')}
-          >
-            <TextArea rows={3} placeholder={t('admin.materialManagement.upload.placeholders.description')} />
-          </Form.Item>
-          
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="course"
-                label={t('admin.materialManagement.upload.fields.course')}
-                rules={[{ required: true, message: t('admin.materialManagement.upload.validation.courseRequired') }]}
-              >
-                <Select placeholder={t('admin.materialManagement.upload.placeholders.selectCourse')}>
-                  {courses.map(course => (
-                    <Option key={course._id} value={course._id}>
-                      {course.title}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="category"
-                label={t('admin.materialManagement.upload.fields.category')}
-                rules={[{ required: true, message: t('admin.materialManagement.upload.validation.categoryRequired') }]}
-              >
-                <Select placeholder={t('admin.materialManagement.upload.placeholders.selectCategory')}>
-                  <Option value="lecture">Lecture</Option>
-                  <Option value="assignment">{t('admin.materialManagement.upload.categories.assignment')}</Option>
-                  <Option value="resource">{t('admin.materialManagement.upload.categories.resource')}</Option>
-                  <Option value="video">{t('admin.materialManagement.upload.categories.video')}</Option>
-                  <Option value="document">{t('admin.materialManagement.upload.categories.document')}</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
-          
-          <Form.Item
-            label={t('admin.materialManagement.upload.fields.file')}
-            rules={[{ required: true, message: t('admin.materialManagement.upload.validation.fileRequired') }]}
-          >
-            <Dragger
-              fileList={fileList}
-              beforeUpload={(file) => {
-                setFileList([file]);
-                return false;
-              }}
-              onRemove={() => setFileList([])}
-              maxCount={1}
-            >
-              <p className="ant-upload-drag-icon">
-                <InboxOutlined />
-              </p>
-              <p className="ant-upload-text">{t('admin.materialManagement.upload.uploadText')}</p>
-              <p className="ant-upload-hint">
-                {t('admin.materialManagement.upload.uploadHint')}
-              </p>
-            </Dragger>
-          </Form.Item>
-          
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="week"
-                label={t('admin.materialManagement.upload.weekNumber')}
-              >
-                <InputNumber min={1} max={52} style={{ width: '100%' }} />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="accessLevel"
-                label={t('admin.materialManagement.upload.accessLevel')}
-              >
-                <Select defaultValue="course_students">
-                  <Option value="public">{t('admin.materialManagement.accessLevels.public')}</Option>
-                  <Option value="course_students">{t('admin.materialManagement.accessLevels.course_students')}</Option>
-                  <Option value="premium">{t('admin.materialManagement.accessLevels.premium')}</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
-        </Form>
-      </Modal>
-
-
-
-
-
-
-
-
-
-      {/* Submissions Modal */}
-      <Modal
-        title="View Submissions"
-        visible={submissionsModalVisible}
-        onCancel={() => setSubmissionsModalVisible(false)}
-        width={1000}
-        footer={[
-          <Button key="close" onClick={() => setSubmissionsModalVisible(false)}>
-            Close
-          </Button>
-        ]}
-      >
-        <Table
-          columns={[
-            {
-              title: 'Student',
-              key: 'student',
-              render: (_, record) => (
-                <div>
-                  <Text strong>{record.studentName || 'Unknown Student'}</Text>
-                  <br />
-                  <Text type="secondary" style={{ fontSize: '12px' }}>
-                    {record.studentEmail || 'No email'}
-                  </Text>
-                </div>
-              )
-            },
-            {
-              title: 'Score',
-              dataIndex: 'score',
-              key: 'score',
-              render: (score, record) => {
-                const percentage = record.totalPoints ? Math.round((score / record.totalPoints) * 100) : 0;
-                return (
-                  <div>
-                    <Text strong>{score || 0}/{record.totalPoints || 0}</Text>
-                    <br />
-                    <Progress
-                      percent={percentage}
-                      size="small"
-                      strokeColor={percentage >= 70 ? '#52c41a' : percentage >= 40 ? '#faad14' : '#f5222d'}
-                    />
-                  </div>
-                );
-              }
-            },
-            {
-              title: 'Submitted',
-              dataIndex: 'submittedAt',
-              key: 'submittedAt',
-              render: (date) => moment(date).format('MMM DD, YYYY HH:mm')
-            },
-            {
-              title: 'Status',
-              dataIndex: 'status',
-              key: 'status',
-              render: (status) => (
-                <Tag color={status === 'graded' ? 'green' : 'orange'}>
-                  {status?.toUpperCase() || 'PENDING'}
-                </Tag>
-              )
-            },
-            {
-              title: 'Actions',
-              key: 'actions',
-              render: (_, record) => (
-                <Space>
-                  <Button
-                    icon={<EyeOutlined />}
-                    size="small"
-                    onClick={() => {
-                      setSelectedSubmission(record);
-                      setViewModalVisible(true);
-                    }}
-                  >
-                    View
-                  </Button>
-                  <Button
-                    icon={<EditOutlined />}
-                    size="small"
-                    onClick={() => {
-                      setSelectedSubmission(record);
-                      setGradingModalVisible(true);
-                    }}
-                  >
-                    Grade
-                  </Button>
-                </Space>
-              )
-            }
-          ]}
-          dataSource={submissions}
-          rowKey="_id"
-          pagination={{
-            pageSize: 10,
-            showSizeChanger: true
-          }}
-        />
-      </Modal>
-
-      {/* Progress Modal */}
-      <Modal
-        title={t('adminDashboard.students.studentPerformance')}
-        visible={progressModalVisible}
-        onCancel={() => setProgressModalVisible(false)}
-        width={800}
-        footer={[
-          <Button key="close" onClick={() => setProgressModalVisible(false)}>
-            {t('actions.close')}
-          </Button>
-        ]}
-      >
-        {selectedProgress && (
-          <div>
-            <Descriptions bordered column={2} style={{ marginBottom: 24 }}>
-              <Descriptions.Item label={t('adminDashboard.students.student')} span={1}>
-                {selectedProgress.firstName} {selectedProgress.lastName}
-              </Descriptions.Item>
-              <Descriptions.Item label={t('adminDashboard.applications.email')}>
-                {selectedProgress.email}
-              </Descriptions.Item>
-              <Descriptions.Item label={t('adminDashboard.users.registrationDate')} span={2}>
-                {selectedProgress.email === 'mesheka@gmail.com' ? 'June 10, 2025' : 
-                 moment(selectedProgress.createdAt).format('MMMM DD, YYYY')}
-              </Descriptions.Item>
-            </Descriptions>
-            
-            <Card title={t('adminDashboard.students.progress')} style={{ marginBottom: 16 }}>
-              <Row gutter={[16, 16]}>
-                <Col span={8}>
-                  <Statistic
-                    title={t('adminDashboard.students.enrolledCourses')}
-                    value={selectedProgress.email === 'mesheka@gmail.com' ? 3 : 
-                           selectedProgress.email === 'gabby1@gmail.com' ? 1 : 
-                           selectedProgress.email === 'gabby25@gmail.com' ? 3 : 2}
-                    prefix={<BookOutlined />}
-                  />
-                </Col>
-                <Col span={8}>
-                  <Statistic
-                    title={t('adminDashboard.students.avgProgress')}
-                    value={selectedProgress.email === 'mesheka@gmail.com' ? 71 : 
-                           selectedProgress.email === 'gabby1@gmail.com' ? 15 : 
-                           selectedProgress.email === 'gabby25@gmail.com' ? 88 : 50}
-                    suffix="%"
-                    prefix={<TrophyOutlined />}
-                  />
-                </Col>
-                <Col span={8}>
-                  <Statistic
-                    title="Assignments Completed"
-                    value={selectedProgress.email === 'mesheka@gmail.com' ? 9 : 
-                           selectedProgress.email === 'gabby1@gmail.com' ? 2 : 
-                           selectedProgress.email === 'gabby25@gmail.com' ? 12 : 5}
-                    prefix={<CheckSquareOutlined />}
-                  />
-                </Col>
-              </Row>
-            </Card>
-            
-            <Card title="Recent Activity">
-              <Timeline>
-                {selectedProgress.email === 'mesheka@gmail.com' ? (
-                  <>
-                    <Timeline.Item color="green">
-                      <Text>Completed Quiz: JavaScript Basics</Text>
-                      <br />
-                      <Text type="secondary">2 days ago</Text>
-                    </Timeline.Item>
-                    <Timeline.Item color="blue">
-                      <Text>Submitted Homework: React Components</Text>
-                      <br />
-                      <Text type="secondary">5 days ago</Text>
-                    </Timeline.Item>
-                    <Timeline.Item color="orange">
-                      <Text>Downloaded Material: CSS Grid Guide</Text>
-                      <br />
-                      <Text type="secondary">1 week ago</Text>
-                    </Timeline.Item>
-                  </>
-                ) : selectedProgress.email === 'gabby1@gmail.com' ? (
-                  <>
-                    <Timeline.Item color="blue">
-                      <Text>Started Course: Web Development Basics</Text>
-                      <br />
-                      <Text type="secondary">Today</Text>
-                    </Timeline.Item>
-                    <Timeline.Item color="orange">
-                      <Text>Downloaded Material: HTML Introduction</Text>
-                      <br />
-                      <Text type="secondary">1 day ago</Text>
-                    </Timeline.Item>
-                  </>
-                ) : selectedProgress.email === 'gabby25@gmail.com' ? (
-                  <>
-                    <Timeline.Item color="green">
-                      <Text>Completed Quiz: Advanced CSS</Text>
-                      <br />
-                      <Text type="secondary">1 day ago</Text>
-                    </Timeline.Item>
-                    <Timeline.Item color="green">
-                      <Text>Submitted Homework: Portfolio Project</Text>
-                      <br />
-                      <Text type="secondary">2 days ago</Text>
-                    </Timeline.Item>
-                    <Timeline.Item color="blue">
-                      <Text>Downloaded Material: JavaScript ES6</Text>
-                      <br />
-                      <Text type="secondary">3 days ago</Text>
-                    </Timeline.Item>
-                  </>
-                ) : (
-                  <Timeline.Item color="blue">
-                    <Text>No recent activity</Text>
-                    <br />
-                    <Text type="secondary">Check back later</Text>
-                  </Timeline.Item>
-                )}
-              </Timeline>
-            </Card>
-          </div>
-        )}
-      </Modal>
-
-
-      {/* Profile Modal */}
-      <Modal
-        title={t('profile.title')}
-        visible={profileModalVisible}
-        onCancel={() => {
-          setProfileModalVisible(false);
-          profileForm.resetFields();
-          // Clean up preview states
-          if (profileImagePreview) {
-            URL.revokeObjectURL(profileImagePreview);
-          }
-          setProfileImagePreview(null);
-          setProfileImageFile(null);
-        }}
-        width={600}
-        footer={null}
-      >
-        <Form
-          form={profileForm}
-          layout="vertical"
-          onFinish={handleProfileUpdate}
-          initialValues={{
-            firstName: currentUser?.firstName || '',
-            lastName: currentUser?.lastName || '',
-            email: currentUser?.email || '',
-            phone: currentUser?.phone || '',
-            bio: currentUser?.bio || '',
-            profileImage: currentUser?.profileImage || ''
-          }}
-        >
-          <div style={{ textAlign: 'center', marginBottom: 24 }}>
-            <Upload
-              name="avatar"
-              listType="picture-circle"
-              className="avatar-uploader"
-              showUploadList={false}
-              beforeUpload={async (file) => {
-                const isImage = file.type.startsWith('image/');
-                if (!isImage) {
-                  message.error('You can only upload image files!');
-                  return false;
+                // Provide more specific error messages
+                if (error.message.includes("fetch")) {
+                  message.error(
+                    "Connection error. Please check if the server is running and try again."
+                  );
+                } else if (error.message.includes("401")) {
+                  message.error("Authentication error. Please log in again.");
+                } else if (error.message.includes("403")) {
+                  message.error(
+                    "Permission denied. You may not have the required permissions."
+                  );
+                } else {
+                  message.error(`Failed to send reply: ${error.message}`);
                 }
-                const url = await handleAvatarUpload(file);
-                return false; // prevent default upload
-              }}
-              accept="image/*"
-            >
-              <Avatar
-                size={100}
-                src={profileImagePreview || (currentUser?.profileImage ? `${API_BASE_URL}${currentUser.profileImage}` : undefined)}
-                icon={<UserOutlined />}
-                style={{ backgroundColor: '#1890ff' }}
-              />
-              <div style={{ marginTop: 8 }}>
-                <Button icon={<CameraOutlined />} size="small" loading={avatarUploading}>
-                  {t('profile.changePhoto')}
-                </Button>
-              </div>
-            </Upload>
-          </div>
-
-          <Row gutter={[16, 0]}>
-            <Col span={12}>
-              <Form.Item
-                label={t('adminDashboard.users.firstName')}
-                name="firstName"
-                rules={[{ required: true, message: t('adminDashboard.users.validation.firstNameRequired') }]}
-              >
-                <Input placeholder={t('adminDashboard.users.placeholders.firstName')} />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label={t('adminDashboard.users.lastName')}
-                name="lastName"
-                rules={[{ required: true, message: t('adminDashboard.users.validation.lastNameRequired') }]}
-              >
-                <Input placeholder={t('adminDashboard.users.placeholders.lastName')} />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Form.Item
-            label={t('adminDashboard.applications.email')}
-            name="email"
-            rules={[
-              { required: true, message: t('adminDashboard.users.validation.emailRequired') },
-              { type: 'email', message: t('adminDashboard.users.validation.emailValid') }
-            ]}
-          >
-            <Input disabled placeholder={t('adminDashboard.users.placeholders.email')} />
-          </Form.Item>
-
-          <Form.Item
-            label={t('adminDashboard.users.phoneNumber')}
-            name="phone"
-          >
-            <Input placeholder={t('adminDashboard.users.placeholders.phone')} />
-          </Form.Item>
-
-          <Form.Item
-            label={t('profile.bio')}
-            name="bio"
-          >
-            <TextArea 
-              rows={4} 
-              placeholder={t('profile.bioPlaceholder')}
-              maxLength={500}
-              showCount
-            />
-          </Form.Item>
-
-          <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
-            <Space>
-              <Button 
-                onClick={() => {
-                  setProfileModalVisible(false);
-                  profileForm.resetFields();
-                }}
-              >
-                {t('actions.cancel')}
-              </Button>
-              <Button type="primary" htmlType="submit" loading={loading}>
-                {t('profile.updateProfile')}
-              </Button>
-            </Space>
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      {/* Preview Modal */}
-      <Modal
-        title={t('admin.materialManagement.preview.title')}
-        visible={previewModalVisible}
-        onCancel={() => setPreviewModalVisible(false)}
-        width={800}
-        footer={[
-          <Button key="close" onClick={() => setPreviewModalVisible(false)}>
-            {t('actions.close')}
-          </Button>,
-          <Button
-            key="download"
-            type="primary"
-            icon={<DownloadOutlined />}
-            onClick={() => {
-              if (selectedMaterial) {
-                window.open(`${API_BASE_URL}/uploads/${selectedMaterial.filePath}`, '_blank');
               }
             }}
           >
-            {t('admin.materialManagement.actions.download')}
-          </Button>
-        ]}
-      >
-        {selectedMaterial && (
-          <div>
-            <Descriptions bordered column={2} style={{ marginBottom: 24 }}>
-              <Descriptions.Item label={t('admin.materialManagement.upload.fields.title')} span={2}>
-                {selectedMaterial.title}
-              </Descriptions.Item>
-              <Descriptions.Item label={t('admin.materialManagement.upload.fields.description')} span={2}>
-                {selectedMaterial.description || t('admin.materialManagement.preview.noDescription')}
-              </Descriptions.Item>
-              <Descriptions.Item label={t('admin.materialManagement.table.columns.category')}>
-                {t(`admin.materialManagement.upload.categories.${selectedMaterial.category}`) || selectedMaterial.category}
-              </Descriptions.Item>
-              <Descriptions.Item label={t('admin.materialManagement.table.columns.size')}>
-                {((selectedMaterial.fileSize || 0) / (1024 * 1024)).toFixed(2)} MB
-              </Descriptions.Item>
-              <Descriptions.Item label={t('admin.materialManagement.table.columns.uploaded')}>
-                {moment(selectedMaterial.createdAt).format('MMMM DD, YYYY')}
-              </Descriptions.Item>
-              <Descriptions.Item label="Access Level">
-                {selectedMaterial.accessLevel || 'course_students'}
-              </Descriptions.Item>
-            </Descriptions>
-            
-            <Card title="File Preview">
-              <div style={{ textAlign: 'center', padding: '40px' }}>
-                {selectedMaterial.fileType === 'pdf' ? (
-                  <div>
-                    <FileTextOutlined style={{ fontSize: 64, color: '#1890ff' }} />
-                    <br />
-                    <Text>PDF Document</Text>
-                  </div>
-                ) : selectedMaterial.fileType === 'video' ? (
-                  <div>
-                    <VideoCameraOutlined style={{ fontSize: 64, color: '#52c41a' }} />
-                    <br />
-                    <Text>Video File</Text>
-                  </div>
-                ) : (
-                  <div>
-                    <FileOutlined style={{ fontSize: 64, color: '#faad14' }} />
-                    <br />
-                    <Text>{t('admin.materialManagement.preview.noPreview')}</Text>
-                  </div>
-                )}
-              </div>
-            </Card>
-          </div>
-        )}
-      </Modal>
+            {/* Display recipient information */}
+            <div
+              style={{
+                background: "#f0f2f5",
+                padding: "12px",
+                borderRadius: "8px",
+                marginBottom: "16px",
+              }}
+            >
+              <Text strong>
+                {t("adminDashboard.applications.replyingTo")}:{" "}
+              </Text>
+              <Text>{replyTarget?.email}</Text>
+              {replyType === "application" && (
+                <>
+                  <br />
+                  <Text type="secondary">
+                    {t("adminDashboard.applications.applicationFor")}:{" "}
+                    {replyTarget?.course ||
+                      replyTarget?.program ||
+                      "General Application"}
+                  </Text>
+                </>
+              )}
+              {replyType === "message" && replyTarget?.subject && (
+                <>
+                  <br />
+                  <Text type="secondary">
+                    Original Subject: {replyTarget.subject}
+                  </Text>
+                </>
+              )}
+            </div>
 
-      {/* Grading Modal */}
-      <Modal
-        title="Grade Submission"
-        visible={gradingModalVisible}
-        onCancel={() => setGradingModalVisible(false)}
-        onOk={() => gradingForm.submit()}
-        width={700}
-      >
-        <Form
-          form={gradingForm}
-          layout="vertical"
-          onFinish={(values) => {
-            message.success('Grade submitted successfully!');
-            setGradingModalVisible(false);
-            gradingForm.resetFields();
+            <Form.Item
+              name="subject"
+              label={t("adminDashboard.applications.subject")}
+              rules={[{ required: true, message: "Please enter subject" }]}
+              initialValue={
+                replyType === "application"
+                  ? t("adminDashboard.applications.reApplication")
+                  : replyTarget?.subject
+                  ? `Re: ${replyTarget.subject}`
+                  : ""
+              }
+            >
+              <Input placeholder="Enter email subject" />
+            </Form.Item>
+
+            <Form.Item
+              name="message"
+              label={t("adminDashboard.applications.message")}
+              rules={[{ required: true, message: "Please enter your message" }]}
+            >
+              <TextArea
+                rows={8}
+                placeholder={
+                  replyType === "application"
+                    ? t("adminDashboard.applications.templatePlaceholder")
+                    : t("adminDashboard.applications.typeReplyMessage")
+                }
+              />
+            </Form.Item>
+
+            {/* Quick Templates */}
+            <Form.Item label={t("adminDashboard.applications.quickTemplates")}>
+              <Space wrap>
+                {replyType === "application" && (
+                  <>
+                    <Button
+                      size="small"
+                      onClick={() => {
+                        replyForm.setFieldsValue({
+                          message: t(
+                            "adminDashboard.applications.templateReceived",
+                            { name: replyTarget?.fullName || "Applicant" }
+                          ),
+                        });
+                      }}
+                    >
+                      {t("adminDashboard.applications.applicationReceived")}
+                    </Button>
+                    <Button
+                      size="small"
+                      onClick={() => {
+                        replyForm.setFieldsValue({
+                          message: t(
+                            "adminDashboard.applications.templateRequest",
+                            { name: replyTarget?.fullName || "Applicant" }
+                          ),
+                        });
+                      }}
+                    >
+                      {t("adminDashboard.applications.requestInformation")}
+                    </Button>
+                    <Button
+                      size="small"
+                      onClick={() => {
+                        replyForm.setFieldsValue({
+                          message: t(
+                            "adminDashboard.applications.templateAcceptance",
+                            { name: replyTarget?.fullName || "Applicant" }
+                          ),
+                        });
+                      }}
+                    >
+                      {t("adminDashboard.applications.acceptanceLetter")}
+                    </Button>
+                  </>
+                )}
+                {replyType === "message" && (
+                  <>
+                    <Button
+                      size="small"
+                      onClick={() => {
+                        replyForm.setFieldsValue({
+                          message: t(
+                            "adminDashboard.contact.templates.acknowledgmentMessage",
+                            { name: replyTarget?.name || "User" }
+                          ),
+                        });
+                      }}
+                    >
+                      {t("adminDashboard.contact.templates.acknowledgment")}
+                    </Button>
+                    <Button
+                      size="small"
+                      onClick={() => {
+                        replyForm.setFieldsValue({
+                          message: t(
+                            "adminDashboard.contact.templates.generalResponseMessage",
+                            { name: replyTarget?.name || "User" }
+                          ),
+                        });
+                      }}
+                    >
+                      {t("adminDashboard.contact.templates.generalResponse")}
+                    </Button>
+                  </>
+                )}
+                {replyType === "student" && (
+                  <>
+                    <Button
+                      size="small"
+                      onClick={() => {
+                        replyForm.setFieldsValue({
+                          message: t(
+                            "adminDashboard.enrollment.templates.student.welcomeMessageText",
+                            {
+                              name:
+                                replyTarget?.firstName ||
+                                replyTarget?.name ||
+                                "Student",
+                            }
+                          ),
+                        });
+                      }}
+                    >
+                      {t(
+                        "adminDashboard.enrollment.templates.student.welcomeMessage"
+                      )}
+                    </Button>
+                    <Button
+                      size="small"
+                      onClick={() => {
+                        replyForm.setFieldsValue({
+                          message: t(
+                            "adminDashboard.enrollment.templates.student.progressReminderText",
+                            {
+                              name:
+                                replyTarget?.firstName ||
+                                replyTarget?.name ||
+                                "Student",
+                            }
+                          ),
+                        });
+                      }}
+                    >
+                      {t(
+                        "adminDashboard.enrollment.templates.student.progressReminder"
+                      )}
+                    </Button>
+                    <Button
+                      size="small"
+                      onClick={() => {
+                        replyForm.setFieldsValue({
+                          message: t(
+                            "adminDashboard.enrollment.templates.student.supportCheckText",
+                            {
+                              name:
+                                replyTarget?.firstName ||
+                                replyTarget?.name ||
+                                "Student",
+                            }
+                          ),
+                        });
+                      }}
+                    >
+                      {t(
+                        "adminDashboard.enrollment.templates.student.supportCheck"
+                      )}
+                    </Button>
+                  </>
+                )}
+                {replyType === "teacher" && (
+                  <>
+                    <Button
+                      size="small"
+                      onClick={() => {
+                        replyForm.setFieldsValue({
+                          message: t(
+                            "adminDashboard.enrollment.templates.teacher.welcomeMessageText",
+                            {
+                              name:
+                                replyTarget?.firstName ||
+                                replyTarget?.name ||
+                                "Teacher",
+                            }
+                          ),
+                        });
+                      }}
+                    >
+                      {t(
+                        "adminDashboard.enrollment.templates.teacher.welcomeMessage"
+                      )}
+                    </Button>
+                    <Button
+                      size="small"
+                      onClick={() => {
+                        replyForm.setFieldsValue({
+                          message: t(
+                            "adminDashboard.enrollment.templates.teacher.performanceUpdateText",
+                            {
+                              name:
+                                replyTarget?.firstName ||
+                                replyTarget?.name ||
+                                "Teacher",
+                            }
+                          ),
+                        });
+                      }}
+                    >
+                      {t(
+                        "adminDashboard.enrollment.templates.teacher.performanceUpdate"
+                      )}
+                    </Button>
+                    <Button
+                      size="small"
+                      onClick={() => {
+                        replyForm.setFieldsValue({
+                          message: t(
+                            "adminDashboard.enrollment.templates.teacher.supportOfferText",
+                            {
+                              name:
+                                replyTarget?.firstName ||
+                                replyTarget?.name ||
+                                "Teacher",
+                            }
+                          ),
+                        });
+                      }}
+                    >
+                      {t(
+                        "adminDashboard.enrollment.templates.teacher.supportOffer"
+                      )}
+                    </Button>
+                  </>
+                )}
+              </Space>
+            </Form.Item>
+
+            <Form.Item
+              name="attachments"
+              label={`${t("adminDashboard.applications.attachments")} ${t(
+                "adminDashboard.applications.optional"
+              )}`}
+            >
+              <Upload beforeUpload={() => false}>
+                <Button icon={<UploadOutlined />}>
+                  {t("adminDashboard.applications.attachFiles")}
+                </Button>
+              </Upload>
+            </Form.Item>
+
+            <Form.Item name="sendCopy" valuePropName="checked">
+              <Checkbox>{t("adminDashboard.applications.sendCopy")}</Checkbox>
+            </Form.Item>
+          </Form>
+        </Modal>
+
+        {/* Course Modal */}
+        <Modal
+          title={
+            editingCourse
+              ? t("admin.courseManagement.modals.edit.title")
+              : t("admin.courseManagement.modals.create.title")
+          }
+          visible={courseModalVisible}
+          onCancel={() => {
+            setCourseModalVisible(false);
+            courseForm.resetFields();
+            setEditingCourse(null);
           }}
+          onOk={() => courseForm.submit()}
+          width={800}
+        >
+          <Form
+            form={courseForm}
+            layout="vertical"
+            onFinish={handleCreateCourse}
+          >
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  name="title"
+                  label={t("admin.courseManagement.form.fields.courseTitle")}
+                  rules={[
+                    {
+                      required: true,
+                      message: t(
+                        "admin.courseManagement.form.validation.courseTitleRequired"
+                      ),
+                    },
+                  ]}
+                >
+                  <Input
+                    placeholder={t(
+                      "admin.courseManagement.form.placeholders.courseTitle"
+                    )}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="code"
+                  label={t("admin.courseManagement.form.fields.courseCode")}
+                  rules={[
+                    {
+                      required: true,
+                      message: t(
+                        "admin.courseManagement.form.validation.courseCodeRequired"
+                      ),
+                    },
+                  ]}
+                >
+                  <Input
+                    placeholder={t(
+                      "admin.courseManagement.form.placeholders.courseCode"
+                    )}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Form.Item
+              name="description"
+              label={t("admin.courseManagement.form.fields.description")}
+              rules={[
+                {
+                  required: true,
+                  message: t(
+                    "admin.courseManagement.form.validation.descriptionRequired"
+                  ),
+                },
+              ]}
+            >
+              <TextArea
+                rows={4}
+                placeholder={t(
+                  "admin.courseManagement.form.placeholders.description"
+                )}
+              />
+            </Form.Item>
+
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  name="category"
+                  label={t("admin.courseManagement.form.fields.category")}
+                  rules={[
+                    {
+                      required: true,
+                      message: t(
+                        "admin.courseManagement.form.validation.categoryRequired"
+                      ),
+                    },
+                  ]}
+                >
+                  <Select
+                    placeholder={t(
+                      "admin.courseManagement.form.placeholders.selectCategory"
+                    )}
+                  >
+                    <Option value="language">
+                      {t("admin.courseManagement.filters.categories.language")}
+                    </Option>
+                    <Option value="business">
+                      {t("admin.courseManagement.filters.categories.business")}
+                    </Option>
+                    <Option value="technology">
+                      {t(
+                        "admin.courseManagement.filters.categories.technology"
+                      )}
+                    </Option>
+                    <Option value="arts">
+                      {t("admin.courseManagement.filters.categories.arts")}
+                    </Option>
+                    <Option value="science">
+                      {t("admin.courseManagement.filters.categories.science")}
+                    </Option>
+                    <Option value="other">
+                      {t("admin.courseManagement.filters.categories.other")}
+                    </Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="level"
+                  label={t("admin.courseManagement.form.fields.level")}
+                  rules={[
+                    {
+                      required: true,
+                      message: t(
+                        "admin.courseManagement.form.validation.levelRequired"
+                      ),
+                    },
+                  ]}
+                >
+                  <Select
+                    placeholder={t(
+                      "admin.courseManagement.form.placeholders.selectLevel"
+                    )}
+                  >
+                    <Option value="beginner">
+                      {t("admin.courseManagement.form.levelOptions.beginner")}
+                    </Option>
+                    <Option value="intermediate">
+                      {t(
+                        "admin.courseManagement.form.levelOptions.intermediate"
+                      )}
+                    </Option>
+                    <Option value="advanced">
+                      {t("admin.courseManagement.form.levelOptions.advanced")}
+                    </Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  name="startDate"
+                  label={t("admin.courseManagement.form.fields.startDate")}
+                  rules={[
+                    {
+                      required: true,
+                      message: t(
+                        "admin.courseManagement.form.validation.startDateRequired"
+                      ),
+                    },
+                  ]}
+                >
+                  <DatePicker style={{ width: "100%" }} />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="endDate"
+                  label={t("admin.courseManagement.form.fields.endDate")}
+                  rules={[
+                    {
+                      required: true,
+                      message: t(
+                        "admin.courseManagement.form.validation.endDateRequired"
+                      ),
+                    },
+                  ]}
+                >
+                  <DatePicker style={{ width: "100%" }} />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Row gutter={16}>
+              <Col span={8}>
+                <Form.Item
+                  name="duration"
+                  label={t("admin.courseManagement.form.fields.duration")}
+                  rules={[
+                    {
+                      required: true,
+                      message: t(
+                        "admin.courseManagement.form.validation.durationRequired"
+                      ),
+                    },
+                  ]}
+                  initialValue={12}
+                >
+                  <InputNumber min={1} max={52} style={{ width: "100%" }} />
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item
+                  name="capacity"
+                  label={t("admin.courseManagement.form.fields.maxStudents")}
+                  rules={[
+                    {
+                      required: true,
+                      message: t(
+                        "admin.courseManagement.form.validation.capacityRequired"
+                      ),
+                    },
+                  ]}
+                  initialValue={30}
+                >
+                  <InputNumber min={1} max={500} style={{ width: "100%" }} />
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item
+                  name="status"
+                  label={t("admin.courseManagement.form.fields.status")}
+                  initialValue="active"
+                >
+                  <Select>
+                    <Option value="active">
+                      {t("admin.courseManagement.form.statusOptions.active")}
+                    </Option>
+                    <Option value="inactive">
+                      {t("admin.courseManagement.form.statusOptions.inactive")}
+                    </Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+            </Row>
+          </Form>
+        </Modal>
+
+        {/* Material Upload Modal */}
+        <Modal
+          title={t("admin.materialManagement.upload.title")}
+          visible={materialModalVisible}
+          onCancel={() => {
+            setMaterialModalVisible(false);
+            materialForm.resetFields();
+            setFileList([]);
+          }}
+          onOk={() => materialForm.submit()}
+          width={700}
+        >
+          <Form
+            form={materialForm}
+            layout="vertical"
+            onFinish={handleUploadMaterial}
+          >
+            <Form.Item
+              name="title"
+              label={t("admin.materialManagement.upload.fields.title")}
+              rules={[
+                {
+                  required: true,
+                  message: t(
+                    "admin.materialManagement.upload.validation.titleRequired"
+                  ),
+                },
+              ]}
+            >
+              <Input
+                placeholder={t(
+                  "admin.materialManagement.upload.placeholders.title"
+                )}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="description"
+              label={t("admin.materialManagement.upload.fields.description")}
+            >
+              <TextArea
+                rows={3}
+                placeholder={t(
+                  "admin.materialManagement.upload.placeholders.description"
+                )}
+              />
+            </Form.Item>
+
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  name="course"
+                  label={t("admin.materialManagement.upload.fields.course")}
+                  rules={[
+                    {
+                      required: true,
+                      message: t(
+                        "admin.materialManagement.upload.validation.courseRequired"
+                      ),
+                    },
+                  ]}
+                >
+                  <Select
+                    placeholder={t(
+                      "admin.materialManagement.upload.placeholders.selectCourse"
+                    )}
+                  >
+                    {courses.map((course) => (
+                      <Option key={course._id} value={course._id}>
+                        {course.title}
+                      </Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="category"
+                  label={t("admin.materialManagement.upload.fields.category")}
+                  rules={[
+                    {
+                      required: true,
+                      message: t(
+                        "admin.materialManagement.upload.validation.categoryRequired"
+                      ),
+                    },
+                  ]}
+                >
+                  <Select
+                    placeholder={t(
+                      "admin.materialManagement.upload.placeholders.selectCategory"
+                    )}
+                  >
+                    <Option value="lecture">Lecture</Option>
+                    <Option value="assignment">
+                      {t(
+                        "admin.materialManagement.upload.categories.assignment"
+                      )}
+                    </Option>
+                    <Option value="resource">
+                      {t("admin.materialManagement.upload.categories.resource")}
+                    </Option>
+                    <Option value="video">
+                      {t("admin.materialManagement.upload.categories.video")}
+                    </Option>
+                    <Option value="document">
+                      {t("admin.materialManagement.upload.categories.document")}
+                    </Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Form.Item
+              label={t("admin.materialManagement.upload.fields.file")}
+              rules={[
+                {
+                  required: true,
+                  message: t(
+                    "admin.materialManagement.upload.validation.fileRequired"
+                  ),
+                },
+              ]}
+            >
+              <Dragger
+                fileList={fileList}
+                beforeUpload={(file) => {
+                  setFileList([file]);
+                  return false;
+                }}
+                onRemove={() => setFileList([])}
+                maxCount={1}
+              >
+                <p className="ant-upload-drag-icon">
+                  <InboxOutlined />
+                </p>
+                <p className="ant-upload-text">
+                  {t("admin.materialManagement.upload.uploadText")}
+                </p>
+                <p className="ant-upload-hint">
+                  {t("admin.materialManagement.upload.uploadHint")}
+                </p>
+              </Dragger>
+            </Form.Item>
+
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  name="week"
+                  label={t("admin.materialManagement.upload.weekNumber")}
+                >
+                  <InputNumber min={1} max={52} style={{ width: "100%" }} />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="accessLevel"
+                  label={t("admin.materialManagement.upload.accessLevel")}
+                >
+                  <Select defaultValue="course_students">
+                    <Option value="public">
+                      {t("admin.materialManagement.accessLevels.public")}
+                    </Option>
+                    <Option value="course_students">
+                      {t(
+                        "admin.materialManagement.accessLevels.course_students"
+                      )}
+                    </Option>
+                    <Option value="premium">
+                      {t("admin.materialManagement.accessLevels.premium")}
+                    </Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+            </Row>
+          </Form>
+        </Modal>
+
+        {/* Submissions Modal */}
+        <Modal
+          title="View Submissions"
+          visible={submissionsModalVisible}
+          onCancel={() => setSubmissionsModalVisible(false)}
+          width={1000}
+          footer={[
+            <Button
+              key="close"
+              onClick={() => setSubmissionsModalVisible(false)}
+            >
+              Close
+            </Button>,
+          ]}
+        >
+          <Table
+            columns={[
+              {
+                title: "Student",
+                key: "student",
+                render: (_, record) => (
+                  <div>
+                    <Text strong>
+                      {record.studentName || "Unknown Student"}
+                    </Text>
+                    <br />
+                    <Text type="secondary" style={{ fontSize: "12px" }}>
+                      {record.studentEmail || "No email"}
+                    </Text>
+                  </div>
+                ),
+              },
+              {
+                title: "Score",
+                dataIndex: "score",
+                key: "score",
+                render: (score, record) => {
+                  const percentage = record.totalPoints
+                    ? Math.round((score / record.totalPoints) * 100)
+                    : 0;
+                  return (
+                    <div>
+                      <Text strong>
+                        {score || 0}/{record.totalPoints || 0}
+                      </Text>
+                      <br />
+                      <Progress
+                        percent={percentage}
+                        size="small"
+                        strokeColor={
+                          percentage >= 70
+                            ? "#52c41a"
+                            : percentage >= 40
+                            ? "#faad14"
+                            : "#f5222d"
+                        }
+                      />
+                    </div>
+                  );
+                },
+              },
+              {
+                title: "Submitted",
+                dataIndex: "submittedAt",
+                key: "submittedAt",
+                render: (date) => moment(date).format("MMM DD, YYYY HH:mm"),
+              },
+              {
+                title: "Status",
+                dataIndex: "status",
+                key: "status",
+                render: (status) => (
+                  <Tag color={status === "graded" ? "green" : "orange"}>
+                    {status?.toUpperCase() || "PENDING"}
+                  </Tag>
+                ),
+              },
+              {
+                title: "Actions",
+                key: "actions",
+                render: (_, record) => (
+                  <Space>
+                    <Button
+                      icon={<EyeOutlined />}
+                      size="small"
+                      onClick={() => {
+                        setSelectedSubmission(record);
+                        setViewModalVisible(true);
+                      }}
+                    >
+                      View
+                    </Button>
+                    <Button
+                      icon={<EditOutlined />}
+                      size="small"
+                      onClick={() => {
+                        setSelectedSubmission(record);
+                        setGradingModalVisible(true);
+                      }}
+                    >
+                      Grade
+                    </Button>
+                  </Space>
+                ),
+              },
+            ]}
+            dataSource={submissions}
+            rowKey="_id"
+            pagination={{
+              pageSize: 10,
+              showSizeChanger: true,
+            }}
+          />
+        </Modal>
+
+        {/* Progress Modal */}
+        <Modal
+          title={t("adminDashboard.students.studentPerformance")}
+          visible={progressModalVisible}
+          onCancel={() => setProgressModalVisible(false)}
+          width={800}
+          footer={[
+            <Button key="close" onClick={() => setProgressModalVisible(false)}>
+              {t("actions.close")}
+            </Button>,
+          ]}
+        >
+          {selectedProgress && (
+            <div>
+              <Descriptions bordered column={2} style={{ marginBottom: 24 }}>
+                <Descriptions.Item
+                  label={t("adminDashboard.students.student")}
+                  span={1}
+                >
+                  {selectedProgress.firstName} {selectedProgress.lastName}
+                </Descriptions.Item>
+                <Descriptions.Item
+                  label={t("adminDashboard.applications.email")}
+                >
+                  {selectedProgress.email}
+                </Descriptions.Item>
+                <Descriptions.Item
+                  label={t("adminDashboard.users.registrationDate")}
+                  span={2}
+                >
+                  {selectedProgress.email === "mesheka@gmail.com"
+                    ? "June 10, 2025"
+                    : moment(selectedProgress.createdAt).format(
+                        "MMMM DD, YYYY"
+                      )}
+                </Descriptions.Item>
+              </Descriptions>
+
+              <Card
+                title={t("adminDashboard.students.progress")}
+                style={{ marginBottom: 16 }}
+              >
+                <Row gutter={[16, 16]}>
+                  <Col span={8}>
+                    <Statistic
+                      title={t("adminDashboard.students.enrolledCourses")}
+                      value={
+                        selectedProgress.email === "mesheka@gmail.com"
+                          ? 3
+                          : selectedProgress.email === "gabby1@gmail.com"
+                          ? 1
+                          : selectedProgress.email === "gabby25@gmail.com"
+                          ? 3
+                          : 2
+                      }
+                      prefix={<BookOutlined />}
+                    />
+                  </Col>
+                  <Col span={8}>
+                    <Statistic
+                      title={t("adminDashboard.students.avgProgress")}
+                      value={
+                        selectedProgress.email === "mesheka@gmail.com"
+                          ? 71
+                          : selectedProgress.email === "gabby1@gmail.com"
+                          ? 15
+                          : selectedProgress.email === "gabby25@gmail.com"
+                          ? 88
+                          : 50
+                      }
+                      suffix="%"
+                      prefix={<TrophyOutlined />}
+                    />
+                  </Col>
+                  <Col span={8}>
+                    <Statistic
+                      title="Assignments Completed"
+                      value={
+                        selectedProgress.email === "mesheka@gmail.com"
+                          ? 9
+                          : selectedProgress.email === "gabby1@gmail.com"
+                          ? 2
+                          : selectedProgress.email === "gabby25@gmail.com"
+                          ? 12
+                          : 5
+                      }
+                      prefix={<CheckSquareOutlined />}
+                    />
+                  </Col>
+                </Row>
+              </Card>
+
+              <Card title="Recent Activity">
+                <Timeline>
+                  {selectedProgress.email === "mesheka@gmail.com" ? (
+                    <>
+                      <Timeline.Item color="green">
+                        <Text>Completed Quiz: JavaScript Basics</Text>
+                        <br />
+                        <Text type="secondary">2 days ago</Text>
+                      </Timeline.Item>
+                      <Timeline.Item color="blue">
+                        <Text>Submitted Homework: React Components</Text>
+                        <br />
+                        <Text type="secondary">5 days ago</Text>
+                      </Timeline.Item>
+                      <Timeline.Item color="orange">
+                        <Text>Downloaded Material: CSS Grid Guide</Text>
+                        <br />
+                        <Text type="secondary">1 week ago</Text>
+                      </Timeline.Item>
+                    </>
+                  ) : selectedProgress.email === "gabby1@gmail.com" ? (
+                    <>
+                      <Timeline.Item color="blue">
+                        <Text>Started Course: Web Development Basics</Text>
+                        <br />
+                        <Text type="secondary">Today</Text>
+                      </Timeline.Item>
+                      <Timeline.Item color="orange">
+                        <Text>Downloaded Material: HTML Introduction</Text>
+                        <br />
+                        <Text type="secondary">1 day ago</Text>
+                      </Timeline.Item>
+                    </>
+                  ) : selectedProgress.email === "gabby25@gmail.com" ? (
+                    <>
+                      <Timeline.Item color="green">
+                        <Text>Completed Quiz: Advanced CSS</Text>
+                        <br />
+                        <Text type="secondary">1 day ago</Text>
+                      </Timeline.Item>
+                      <Timeline.Item color="green">
+                        <Text>Submitted Homework: Portfolio Project</Text>
+                        <br />
+                        <Text type="secondary">2 days ago</Text>
+                      </Timeline.Item>
+                      <Timeline.Item color="blue">
+                        <Text>Downloaded Material: JavaScript ES6</Text>
+                        <br />
+                        <Text type="secondary">3 days ago</Text>
+                      </Timeline.Item>
+                    </>
+                  ) : (
+                    <Timeline.Item color="blue">
+                      <Text>No recent activity</Text>
+                      <br />
+                      <Text type="secondary">Check back later</Text>
+                    </Timeline.Item>
+                  )}
+                </Timeline>
+              </Card>
+            </div>
+          )}
+        </Modal>
+
+        {/* Profile Modal */}
+        <Modal
+          title={t("profile.title")}
+          visible={profileModalVisible}
+          onCancel={() => {
+            setProfileModalVisible(false);
+            profileForm.resetFields();
+            // Clean up preview states
+            if (profileImagePreview) {
+              URL.revokeObjectURL(profileImagePreview);
+            }
+            setProfileImagePreview(null);
+            setProfileImageFile(null);
+          }}
+          width={600}
+          footer={null}
+        >
+          <Form
+            form={profileForm}
+            layout="vertical"
+            onFinish={handleProfileUpdate}
+            initialValues={{
+              firstName: currentUser?.firstName || "",
+              lastName: currentUser?.lastName || "",
+              email: currentUser?.email || "",
+              phone: currentUser?.phone || "",
+              bio: currentUser?.bio || "",
+              profileImage: currentUser?.profileImage || "",
+            }}
+          >
+            <div style={{ textAlign: "center", marginBottom: 24 }}>
+              <Upload
+                name="avatar"
+                listType="picture-circle"
+                className="avatar-uploader"
+                showUploadList={false}
+                beforeUpload={async (file) => {
+                  const isImage = file.type.startsWith("image/");
+                  if (!isImage) {
+                    message.error("You can only upload image files!");
+                    return false;
+                  }
+                  const url = await handleAvatarUpload(file);
+                  return false; // prevent default upload
+                }}
+                accept="image/*"
+              >
+                <Avatar
+                  size={100}
+                  src={
+                    profileImagePreview ||
+                    (currentUser?.profileImage
+                      ? `${API_BASE_URL}${currentUser.profileImage}`
+                      : undefined)
+                  }
+                  icon={<UserOutlined />}
+                  style={{ backgroundColor: "#1890ff" }}
+                />
+                <div style={{ marginTop: 8 }}>
+                  <Button
+                    icon={<CameraOutlined />}
+                    size="small"
+                    loading={avatarUploading}
+                  >
+                    {t("profile.changePhoto")}
+                  </Button>
+                </div>
+              </Upload>
+            </div>
+
+            <Row gutter={[16, 0]}>
+              <Col span={12}>
+                <Form.Item
+                  label={t("adminDashboard.users.firstName")}
+                  name="firstName"
+                  rules={[
+                    {
+                      required: true,
+                      message: t(
+                        "adminDashboard.users.validation.firstNameRequired"
+                      ),
+                    },
+                  ]}
+                >
+                  <Input
+                    placeholder={t(
+                      "adminDashboard.users.placeholders.firstName"
+                    )}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  label={t("adminDashboard.users.lastName")}
+                  name="lastName"
+                  rules={[
+                    {
+                      required: true,
+                      message: t(
+                        "adminDashboard.users.validation.lastNameRequired"
+                      ),
+                    },
+                  ]}
+                >
+                  <Input
+                    placeholder={t(
+                      "adminDashboard.users.placeholders.lastName"
+                    )}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Form.Item
+              label={t("adminDashboard.applications.email")}
+              name="email"
+              rules={[
+                {
+                  required: true,
+                  message: t("adminDashboard.users.validation.emailRequired"),
+                },
+                {
+                  type: "email",
+                  message: t("adminDashboard.users.validation.emailValid"),
+                },
+              ]}
+            >
+              <Input
+                disabled
+                placeholder={t("adminDashboard.users.placeholders.email")}
+              />
+            </Form.Item>
+
+            <Form.Item
+              label={t("adminDashboard.users.phoneNumber")}
+              name="phone"
+            >
+              <Input
+                placeholder={t("adminDashboard.users.placeholders.phone")}
+              />
+            </Form.Item>
+
+            <Form.Item label={t("profile.bio")} name="bio">
+              <TextArea
+                rows={4}
+                placeholder={t("profile.bioPlaceholder")}
+                maxLength={500}
+                showCount
+              />
+            </Form.Item>
+
+            <Form.Item style={{ marginBottom: 0, textAlign: "right" }}>
+              <Space>
+                <Button
+                  onClick={() => {
+                    setProfileModalVisible(false);
+                    profileForm.resetFields();
+                  }}
+                >
+                  {t("actions.cancel")}
+                </Button>
+                <Button type="primary" htmlType="submit" loading={loading}>
+                  {t("profile.updateProfile")}
+                </Button>
+              </Space>
+            </Form.Item>
+          </Form>
+        </Modal>
+
+        {/* Preview Modal */}
+        <Modal
+          title={t("admin.materialManagement.preview.title")}
+          visible={previewModalVisible}
+          onCancel={() => setPreviewModalVisible(false)}
+          width={800}
+          footer={[
+            <Button key="close" onClick={() => setPreviewModalVisible(false)}>
+              {t("actions.close")}
+            </Button>,
+            <Button
+              key="download"
+              type="primary"
+              icon={<DownloadOutlined />}
+              onClick={() => {
+                if (selectedMaterial) {
+                  window.open(
+                    `${API_BASE_URL}/uploads/${selectedMaterial.filePath}`,
+                    "_blank"
+                  );
+                }
+              }}
+            >
+              {t("admin.materialManagement.actions.download")}
+            </Button>,
+          ]}
+        >
+          {selectedMaterial && (
+            <div>
+              <Descriptions bordered column={2} style={{ marginBottom: 24 }}>
+                <Descriptions.Item
+                  label={t("admin.materialManagement.upload.fields.title")}
+                  span={2}
+                >
+                  {selectedMaterial.title}
+                </Descriptions.Item>
+                <Descriptions.Item
+                  label={t(
+                    "admin.materialManagement.upload.fields.description"
+                  )}
+                  span={2}
+                >
+                  {selectedMaterial.description ||
+                    t("admin.materialManagement.preview.noDescription")}
+                </Descriptions.Item>
+                <Descriptions.Item
+                  label={t("admin.materialManagement.table.columns.category")}
+                >
+                  {t(
+                    `admin.materialManagement.upload.categories.${selectedMaterial.category}`
+                  ) || selectedMaterial.category}
+                </Descriptions.Item>
+                <Descriptions.Item
+                  label={t("admin.materialManagement.table.columns.size")}
+                >
+                  {((selectedMaterial.fileSize || 0) / (1024 * 1024)).toFixed(
+                    2
+                  )}{" "}
+                  MB
+                </Descriptions.Item>
+                <Descriptions.Item
+                  label={t("admin.materialManagement.table.columns.uploaded")}
+                >
+                  {moment(selectedMaterial.createdAt).format("MMMM DD, YYYY")}
+                </Descriptions.Item>
+                <Descriptions.Item label="Access Level">
+                  {selectedMaterial.accessLevel || "course_students"}
+                </Descriptions.Item>
+              </Descriptions>
+
+              <Card title="File Preview">
+                <div style={{ textAlign: "center", padding: "40px" }}>
+                  {selectedMaterial.fileType === "pdf" ? (
+                    <div>
+                      <FileTextOutlined
+                        style={{ fontSize: 64, color: "#1890ff" }}
+                      />
+                      <br />
+                      <Text>PDF Document</Text>
+                    </div>
+                  ) : selectedMaterial.fileType === "video" ? (
+                    <div>
+                      <VideoCameraOutlined
+                        style={{ fontSize: 64, color: "#52c41a" }}
+                      />
+                      <br />
+                      <Text>Video File</Text>
+                    </div>
+                  ) : (
+                    <div>
+                      <FileOutlined
+                        style={{ fontSize: 64, color: "#faad14" }}
+                      />
+                      <br />
+                      <Text>
+                        {t("admin.materialManagement.preview.noPreview")}
+                      </Text>
+                    </div>
+                  )}
+                </div>
+              </Card>
+            </div>
+          )}
+        </Modal>
+
+        {/* Grading Modal */}
+        <Modal
+          title="Grade Submission"
+          visible={gradingModalVisible}
+          onCancel={() => setGradingModalVisible(false)}
+          onOk={() => gradingForm.submit()}
+          width={700}
+        >
+          <Form
+            form={gradingForm}
+            layout="vertical"
+            onFinish={(values) => {
+              message.success("Grade submitted successfully!");
+              setGradingModalVisible(false);
+              gradingForm.resetFields();
+            }}
+          >
+            {selectedSubmission && (
+              <div>
+                <Descriptions bordered column={2} style={{ marginBottom: 24 }}>
+                  <Descriptions.Item label="Student">
+                    {selectedSubmission.studentName || "Unknown Student"}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Assignment">
+                    {"Unknown"}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Submitted">
+                    {moment(selectedSubmission.submittedAt).format(
+                      "MMMM DD, YYYY HH:mm"
+                    )}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Current Score">
+                    {selectedSubmission.score || 0}/
+                    {selectedSubmission.totalPoints || 0}
+                  </Descriptions.Item>
+                </Descriptions>
+
+                <Form.Item
+                  name="score"
+                  label="Score"
+                  rules={[{ required: true, message: "Please enter score" }]}
+                >
+                  <InputNumber
+                    min={0}
+                    max={selectedSubmission.totalPoints || 100}
+                    style={{ width: "100%" }}
+                    placeholder="Enter score"
+                  />
+                </Form.Item>
+
+                <Form.Item name="feedback" label="Feedback">
+                  <TextArea
+                    rows={4}
+                    placeholder="Enter feedback for the student"
+                  />
+                </Form.Item>
+
+                <Form.Item name="status" label="Status">
+                  <Select defaultValue="graded">
+                    <Option value="graded">Graded</Option>
+                    <Option value="needs_revision">Needs Revision</Option>
+                    <Option value="excellent">Excellent</Option>
+                  </Select>
+                </Form.Item>
+              </div>
+            )}
+          </Form>
+        </Modal>
+
+        {/* View Submission Modal */}
+        <Modal
+          title="Submission Details"
+          visible={viewModalVisible}
+          onCancel={() => setViewModalVisible(false)}
+          width={800}
+          footer={[
+            <Button key="close" onClick={() => setViewModalVisible(false)}>
+              Close
+            </Button>,
+          ]}
         >
           {selectedSubmission && (
             <div>
-              <Descriptions bordered column={2} style={{ marginBottom: 24 }}>
-                <Descriptions.Item label="Student">
-                  {selectedSubmission.studentName || 'Unknown Student'}
+              <Descriptions bordered column={2}>
+                <Descriptions.Item label="Student" span={2}>
+                  {selectedSubmission.studentName || "Unknown Student"}
                 </Descriptions.Item>
                 <Descriptions.Item label="Assignment">
-                  {'Unknown'}
+                  {"Unknown"}
+                </Descriptions.Item>
+                <Descriptions.Item label="Score">
+                  {selectedSubmission.score || 0}/
+                  {selectedSubmission.totalPoints || 0}
                 </Descriptions.Item>
                 <Descriptions.Item label="Submitted">
-                  {moment(selectedSubmission.submittedAt).format('MMMM DD, YYYY HH:mm')}
+                  {moment(selectedSubmission.submittedAt).format(
+                    "MMMM DD, YYYY HH:mm"
+                  )}
                 </Descriptions.Item>
-                <Descriptions.Item label="Current Score">
-                  {selectedSubmission.score || 0}/{selectedSubmission.totalPoints || 0}
+                <Descriptions.Item label="Status">
+                  <Tag
+                    color={
+                      selectedSubmission.status === "graded"
+                        ? "green"
+                        : "orange"
+                    }
+                  >
+                    {selectedSubmission.status?.toUpperCase() || "PENDING"}
+                  </Tag>
+                </Descriptions.Item>
+                <Descriptions.Item label="Feedback" span={2}>
+                  {selectedSubmission.feedback || "No feedback provided"}
                 </Descriptions.Item>
               </Descriptions>
-              
-              <Form.Item
-                name="score"
-                label="Score"
-                rules={[{ required: true, message: 'Please enter score' }]}
-              >
-                <InputNumber
-                  min={0}
-                  max={selectedSubmission.totalPoints || 100}
-                  style={{ width: '100%' }}
-                  placeholder="Enter score"
-                />
-              </Form.Item>
-              
-              <Form.Item
-                name="feedback"
-                label="Feedback"
-              >
-                <TextArea
-                  rows={4}
-                  placeholder="Enter feedback for the student"
-                />
-              </Form.Item>
-              
-              <Form.Item
-                name="status"
-                label="Status"
-              >
-                <Select defaultValue="graded">
-                  <Option value="graded">Graded</Option>
-                  <Option value="needs_revision">Needs Revision</Option>
-                  <Option value="excellent">Excellent</Option>
-                </Select>
-              </Form.Item>
+
+              {selectedSubmission.answers && (
+                <Card title="Student Answers" style={{ marginTop: 16 }}>
+                  <List
+                    dataSource={selectedSubmission.answers}
+                    renderItem={(answer, index) => (
+                      <List.Item>
+                        <List.Item.Meta
+                          avatar={<Avatar>{index + 1}</Avatar>}
+                          title={`Question ${index + 1}`}
+                          description={
+                            <div>
+                              <Text strong>Answer: </Text>
+                              <Text>
+                                {answer.answer || "No answer provided"}
+                              </Text>
+                              <br />
+                              <Text strong>Correct: </Text>
+                              <Tag color={answer.isCorrect ? "green" : "red"}>
+                                {answer.isCorrect ? "Yes" : "No"}
+                              </Tag>
+                            </div>
+                          }
+                        />
+                      </List.Item>
+                    )}
+                  />
+                </Card>
+              )}
             </div>
           )}
-        </Form>
-      </Modal>
+        </Modal>
 
-      {/* View Submission Modal */}
-      <Modal
-        title="Submission Details"
-        visible={viewModalVisible}
-        onCancel={() => setViewModalVisible(false)}
-        width={800}
-        footer={[
-          <Button key="close" onClick={() => setViewModalVisible(false)}>
-            Close
-          </Button>
-        ]}
-      >
-        {selectedSubmission && (
-          <div>
-            <Descriptions bordered column={2}>
-              <Descriptions.Item label="Student" span={2}>
-                {selectedSubmission.studentName || 'Unknown Student'}
-              </Descriptions.Item>
-              <Descriptions.Item label="Assignment">
-                {'Unknown'}
-              </Descriptions.Item>
-              <Descriptions.Item label="Score">
-                {selectedSubmission.score || 0}/{selectedSubmission.totalPoints || 0}
-              </Descriptions.Item>
-              <Descriptions.Item label="Submitted">
-                {moment(selectedSubmission.submittedAt).format('MMMM DD, YYYY HH:mm')}
-              </Descriptions.Item>
-              <Descriptions.Item label="Status">
-                <Tag color={selectedSubmission.status === 'graded' ? 'green' : 'orange'}>
-                  {selectedSubmission.status?.toUpperCase() || 'PENDING'}
-                </Tag>
-              </Descriptions.Item>
-              <Descriptions.Item label="Feedback" span={2}>
-                {selectedSubmission.feedback || 'No feedback provided'}
-              </Descriptions.Item>
-            </Descriptions>
-            
-            {selectedSubmission.answers && (
-              <Card title="Student Answers" style={{ marginTop: 16 }}>
-                <List
-                  dataSource={selectedSubmission.answers}
-                  renderItem={(answer, index) => (
-                    <List.Item>
-                      <List.Item.Meta
-                        avatar={<Avatar>{index + 1}</Avatar>}
-                        title={`Question ${index + 1}`}
-                        description={
-                          <div>
-                            <Text strong>Answer: </Text>
-                            <Text>{answer.answer || 'No answer provided'}</Text>
-                            <br />
-                            <Text strong>Correct: </Text>
-                            <Tag color={answer.isCorrect ? 'green' : 'red'}>
-                              {answer.isCorrect ? 'Yes' : 'No'}
-                            </Tag>
-                          </div>
-                        }
-                      />
-                    </List.Item>
-                  )}
-                />
-              </Card>
-            )}
-          </div>
-        )}
-      </Modal>
-
-      {/* Video Call Modal */}
-      <Modal
-        title={
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <VideoCameraOutlined style={{ marginRight: 8, color: '#1890ff' }} />
-            {t('adminDashboard.enrollment.videoCall.title', { name: `${selectedCallUser?.firstName} ${selectedCallUser?.lastName}` })}
-          </div>
-        }
-        visible={videoCallModalVisible}
-        onCancel={() => setVideoCallModalVisible(false)}
-        width={800}
-        footer={null}
-        className="video-call-modal"
-      >
-        <div style={{ textAlign: 'center', padding: '20px 0' }}>
-          {!isCallActive ? (
-            <div>
-              <div style={{ marginBottom: 24 }}>
-                <Avatar 
-                  size={120} 
-                  style={{ 
-                    backgroundColor: callType === 'student' ? '#1890ff' : '#52c41a',
-                    fontSize: '48px'
-                  }}
-                >
-                  {selectedCallUser?.firstName?.[0]}{selectedCallUser?.lastName?.[0]}
-                </Avatar>
-                <div style={{ marginTop: 16 }}>
-                  <Title level={3} style={{ margin: 0 }}>
-                    {selectedCallUser?.firstName} {selectedCallUser?.lastName}
-                  </Title>
-                  <Text type="secondary" style={{ fontSize: '16px' }}>
-                    {callType === 'student' ? `�${t('adminDashboard.enrollment.videoCall.student')}` : `�${t('adminDashboard.enrollment.videoCall.teacher')}`} - {selectedCallUser?.email}
-                  </Text>
-                </div>
-              </div>
-              
-              <div style={{ marginBottom: 24 }}>
-                <Alert
-                  message={t('adminDashboard.enrollment.videoCall.readyToStart')}
-                  description={t('adminDashboard.enrollment.videoCall.aboutToStart', { name: `${selectedCallUser?.firstName} ${selectedCallUser?.lastName}` })}
-                  type="info"
-                  showIcon
-                  style={{ textAlign: 'left' }}
-                />
-              </div>
-
-              <Space size="large">
-                <Button 
-                  type="primary" 
-                  size="large"
-                  icon={<VideoCameraOutlined />}
-                  onClick={startVideoCall}
-                  style={{ 
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    border: 'none',
-                    borderRadius: '8px',
-                    height: '48px',
-                    fontSize: '16px',
-                    padding: '0 32px'
-                  }}
-                >
-                  {t('adminDashboard.enrollment.videoCall.startCall')}
-                </Button>
-                <Button 
-                  size="large" 
-                  onClick={() => setVideoCallModalVisible(false)}
-                  style={{ height: '48px', borderRadius: '8px', padding: '0 32px' }}
-                >
-                  {t('adminDashboard.enrollment.videoCall.cancel')}
-                </Button>
-              </Space>
+        {/* Video Call Modal */}
+        <Modal
+          title={
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <VideoCameraOutlined
+                style={{ marginRight: 8, color: "#1890ff" }}
+              />
+              {t("adminDashboard.enrollment.videoCall.title", {
+                name: `${selectedCallUser?.firstName} ${selectedCallUser?.lastName}`,
+              })}
             </div>
-          ) : (
-            <div>
-              <div style={{ 
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                borderRadius: '12px',
-                padding: '32px',
-                marginBottom: '24px',
-                color: 'white'
-              }}>
-                <div style={{ marginBottom: 16 }}>
-                  <Text style={{ color: 'white', fontSize: '18px' }}>
-                    �{t('adminDashboard.enrollment.videoCall.inProgress')}
-                  </Text>
-                </div>
-                
-                <Avatar 
-                  size={80} 
-                  style={{ 
-                    backgroundColor: 'rgba(255,255,255,0.2)',
-                    fontSize: '32px',
-                    color: 'white',
-                    marginBottom: 16
-                  }}
-                >
-                  {selectedCallUser?.firstName?.[0]}{selectedCallUser?.lastName?.[0]}
-                </Avatar>
-                
-                <div style={{ fontSize: '16px', marginBottom: 8 }}>
-                  {selectedCallUser?.firstName} {selectedCallUser?.lastName}
-                </div>
-                
-                <div style={{ 
-                  background: 'rgba(255,255,255,0.2)', 
-                  borderRadius: '8px', 
-                  padding: '8px 16px',
-                  display: 'inline-block',
-                  fontSize: '14px'
-                }}>
-                  {t('adminDashboard.enrollment.videoCall.duration', { duration: formatCallDuration(callDuration) })}
-                </div>
-              </div>
-
-              <div style={{ 
-                background: '#f5f5f5', 
-                borderRadius: '8px', 
-                padding: '16px',
-                marginBottom: '24px'
-              }}>
-                <Text type="secondary" style={{ fontSize: '14px' }}>
-                  �{t('adminDashboard.enrollment.videoCall.implementation')}
-                  <br />{t('adminDashboard.enrollment.videoCall.technologies')}
-                </Text>
-              </div>
-
-              <Space>
-                <Button 
-                  danger 
-                  type="primary"
-                  size="large"
-                  icon={<PhoneOutlined />}
-                  onClick={endVideoCall}
-                  style={{ 
-                    borderRadius: '8px',
-                    height: '48px',
-                    fontSize: '16px',
-                    padding: '0 32px'
-                  }}
-                >
-                  {t('adminDashboard.enrollment.videoCall.endCall')}
-                </Button>
-              </Space>
-            </div>
-          )}
-        </div>
-      </Modal>
-
-      {/* Announcement Modal */}
-      <Modal
-        title={selectedAnnouncement ? t('announcements.modal.editTitle') : t('announcements.modal.createTitle')}
-        visible={announcementModalVisible && !viewModalVisible && !announcementViewModalVisible}
-        onCancel={() => {
-          setAnnouncementModalVisible(false);
-          setAnnouncementViewModalVisible(false); // Ensure announcement view modal is closed
-          setSelectedAnnouncement(null);
-          announcementForm.resetFields();
-        }}
-        width={800}
-        footer={null}
-        zIndex={1000}
-        maskClosable={false}
-      >
-        <Form
-          form={announcementForm}
-          layout="vertical"
-          onFinish={handleCreateAnnouncement}
-        >
-          <Form.Item
-            label={t('announcements.modal.form.title')}
-            name="title"
-            rules={[{ required: true, message: t('announcements.modal.form.validation.title') }]}
-          >
-            <Input placeholder={t('announcements.modal.form.titlePlaceholder')} />
-          </Form.Item>
-
-          <Form.Item
-            label={t('announcements.modal.form.content')}
-            name="content"
-            rules={[{ required: true, message: t('announcements.modal.form.validation.content') }]}
-          >
-            <TextArea 
-              rows={4} 
-              placeholder={t('announcements.modal.form.contentPlaceholder')}
-            />
-          </Form.Item>
-
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                label={t('announcements.modal.form.targetAudience')}
-                name="targetAudience"
-                initialValue="all"
-              >
-                <Select>
-                  <Option value="all">👥 {t('announcements.modal.form.audienceOptions.all')}</Option>
-                  <Option value="students">🎓 {t('announcements.modal.form.audienceOptions.students')}</Option>
-                  <Option value="teachers">👨‍🏫 {t('announcements.modal.form.audienceOptions.teachers')}</Option>
-                  <Option value="admins">👑 {t('announcements.modal.form.audienceOptions.admins')}</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label={t('announcements.modal.form.priority')}
-                name="priority"
-                initialValue="medium"
-              >
-                <Select>
-                  <Option value="low">🟢 {t('announcements.modal.form.priorityOptions.low')}</Option>
-                  <Option value="medium">🟡 {t('announcements.modal.form.priorityOptions.medium')}</Option>
-                  <Option value="high">🔴 {t('announcements.modal.form.priorityOptions.high')}</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                label={t('announcements.modal.form.type')}
-                name="type"
-                initialValue="general"
-              >
-                <Select>
-                  <Option value="general">📢 {t('announcements.modal.form.typeOptions.general')}</Option>
-                  <Option value="academic">🎓 {t('announcements.modal.form.typeOptions.academic')}</Option>
-                  <Option value="event">🎉 {t('announcements.modal.form.typeOptions.event')}</Option>
-                  <Option value="maintenance">🔧 {t('announcements.modal.form.typeOptions.maintenance')}</Option>
-                  <Option value="urgent">🚨 {t('announcements.modal.form.typeOptions.urgent')}</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label={t('announcements.modal.form.pinAnnouncement')}
-                name="isSticky"
-                valuePropName="checked"
-              >
-                <Switch checkedChildren="📌 Pinned" unCheckedChildren="📌 Normal" />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                label={t('announcements.modal.form.publishDate')}
-                name="publishDate"
-              >
-                <DatePicker 
-                  showTime 
-                  style={{ width: '100%' }}
-                  placeholder={t('announcements.modal.form.publishDatePlaceholder')}
-                />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label={t('announcements.modal.form.expiryDate')}
-                name="expiryDate"
-              >
-                <DatePicker 
-                  showTime 
-                  style={{ width: '100%' }}
-                  placeholder={t('announcements.modal.form.expiryDatePlaceholder')}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Form.Item
-            label={t('announcements.modal.form.tags')}
-            name="tags"
-          >
-            <Select
-              mode="tags"
-              placeholder={t('announcements.modal.form.tagsPlaceholder')}
-              tokenSeparators={[',']}
-            />
-          </Form.Item>
-
-          <div style={{ 
-            textAlign: 'right', 
-            marginTop: 24,
-            padding: '16px 0',
-            borderTop: '1px solid #f0f0f0'
-          }}>
-            <Space>
-              <Button 
-                className="modern-btn"
-                onClick={() => {
-                  setAnnouncementModalVisible(false);
-                  setSelectedAnnouncement(null);
-                  announcementForm.resetFields();
-                }}
-              >
-                {t('announcements.modal.buttons.cancel')}
-              </Button>
-              <Button type="primary" htmlType="submit" icon={<SoundOutlined />} className="modern-btn modern-btn-primary">
-                {selectedAnnouncement ? t('announcements.modal.buttons.update') : t('announcements.modal.buttons.create')}
-              </Button>
-            </Space>
-          </div>
-
-          <div style={{ 
-            marginTop: 16, 
-            padding: '12px', 
-            backgroundColor: '#f6f8fc', 
-            borderRadius: '6px',
-            border: '1px solid #e1e8ed'
-          }}>
-            <Text type="secondary" style={{ fontSize: '12px' }}>
-              📢 <strong>{t('announcements.modal.form.note.title')}:</strong> {t('announcements.modal.form.note.content')}
-            </Text>
-          </div>
-        </Form>
-      </Modal>
-
-      {/* Announcement View Modal */}
-      <Modal
-        title={`📢 ${t('announcements.modal.viewTitle')}`}
-        visible={announcementViewModalVisible && !announcementModalVisible}
-        onCancel={() => {
-          setAnnouncementViewModalVisible(false);
-          setSelectedAnnouncement(null);
-        }}
-        width={700}
-        footer={[
-          <Button key="close" onClick={() => {
-            setAnnouncementViewModalVisible(false);
-            setSelectedAnnouncement(null);
-          }}>
-            {t('announcements.modal.buttons.close')}
-          </Button>
-        ]}
-        zIndex={1001}
-        maskClosable={true}
-      >
-        {selectedAnnouncement && (
-          <div>
-            <Title level={4}>{selectedAnnouncement.title}</Title>
-            <div style={{ marginBottom: 16 }}>
-              <Space wrap>
-                <Tag color="blue">{selectedAnnouncement.targetAudience}</Tag>
-                <Tag color={selectedAnnouncement.priority === 'high' ? 'red' : selectedAnnouncement.priority === 'medium' ? 'orange' : 'default'}>
-                  {selectedAnnouncement.priority} priority
-                </Tag>
-                <Tag>{selectedAnnouncement.type}</Tag>
-                {selectedAnnouncement.isSticky && <Tag color="orange">?? Pinned</Tag>}
-              </Space>
-            </div>
-            <Paragraph style={{ fontSize: '16px', lineHeight: '1.6' }}>
-              {selectedAnnouncement.content}
-            </Paragraph>
-            <div style={{ marginTop: 24, padding: '16px', backgroundColor: '#fafafa', borderRadius: '8px' }}>
-              <Text type="secondary">
-                <strong>Published:</strong> {moment(selectedAnnouncement.publishDate || selectedAnnouncement.createdAt).format('MMMM DD, YYYY [at] HH:mm')}
-              </Text>
-              <br />
-              {selectedAnnouncement.expiryDate && (
-                <>
-                  <Text type="secondary">
-                    <strong>Expires:</strong> {moment(selectedAnnouncement.expiryDate).format('MMMM DD, YYYY [at] HH:mm')}
-                  </Text>
-                  <br />
-                </>
-              )}
-              <Text type="secondary">
-                <strong>Author:</strong> {selectedAnnouncement.author?.firstName} {selectedAnnouncement.author?.lastName}
-              </Text>
-            </div>
-          </div>
-        )}
-      </Modal>
-
-      {/* Mobile Drawer */}
-      <Drawer
-        title={
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <div style={{
-              width: 36,
-              height: 36,
-              background: "#1890ff",
-              borderRadius: "10px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              boxShadow: "0 2px 8px rgba(24, 144, 255, 0.3)",
-            }}>
-              <RocketOutlined style={{ fontSize: 18, color: "#fff" }} />
-            </div>
-            <span style={{ fontWeight: 700, fontSize: "16px" }}>Admin Portal</span>
-          </div>
-        }
-        placement="left"
-        closable={true}
-        onClose={() => setMobileDrawerVisible(false)}
-        open={mobileDrawerVisible && isMobile}
-        width={isMobile ? Math.min(280, window.innerWidth * 0.8) : 280}
-        styles={{
-          body: {
-            padding: 0,
-            background: "#001529",
-          },
-          header: {
-            background: "#001529",
-            color: "#fff",
-            borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
-            padding: "20px",
-          },
-        }}
-        className="mobile-drawer"
-      >
-        <Menu
-          mode="inline"
-          selectedKeys={[activeKey]}
-          items={menuItems.map((item) => ({
-            ...item,
-            style: {
-              margin: "8px 16px",
-              borderRadius: "8px",
-              height: "48px",
-              display: "flex",
-              alignItems: "center",
-              fontSize: "14px",
-              fontWeight: 500,
-            },
-          }))}
-          onClick={(e) => {
-            setActiveKey(e.key);
-            setMobileDrawerVisible(false);
-          }}
-          style={{
-            border: "none",
-            background: "transparent",
-            padding: "16px 0",
-            height: "100%",
-            overflowY: "auto",
-          }}
-          theme="dark"
-        />
-      </Drawer>
-
-      {/* Notification Drawer */}
-      <Drawer
-        title={
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
-            <Space>
-              <BellOutlined style={{ fontSize: "20px", color: "#fff" }} />
-              <span style={{ color: "#fff", fontWeight: 600 }}>
-                {t('adminPortal.notifications.title') || 'Notifications'}
-              </span>
-              {unreadCount > 0 && (
-                <Badge count={unreadCount} style={{ backgroundColor: "#52c41a" }} />
-              )}
-            </Space>
-            {unreadCount > 0 && (
-              <Button
-                type="link"
-                size="small"
-                onClick={() => {
-                  setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-                  setUnreadCount(0);
-                  message.success(t('adminPortal.notifications.allMarkedRead') || 'All notifications marked as read');
-                }}
-                style={{ color: "#fff", fontWeight: 500 }}
-              >
-                {t('adminPortal.notifications.markAllRead') || 'Mark all as read'}
-              </Button>
-            )}
-          </div>
-        }
-        placement="right"
-        width={isMobile ? "100%" : 440}
-        open={notificationDrawerVisible}
-        onClose={() => setNotificationDrawerVisible(false)}
-        styles={{ 
-          body: { 
-            padding: 0,
-            background: "#fafafa"
-          },
-          header: {
-            background: "#1890ff",
-            color: "#fff",
-            borderBottom: "none",
-            padding: "20px 24px",
           }
-        }}
-        extra={
-          <Button
-            type="text"
-            icon={<ReloadOutlined />}
-            onClick={fetchNotifications}
-            title="Refresh notifications"
-            style={{ color: "#fff" }}
-          />
-        }
-      >
-        {notifications.length === 0 ? (
-          <Empty
-            description={t('adminPortal.notifications.noNotifications') || 'No notifications'}
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
-            style={{ padding: "40px" }}
-          />
-        ) : (
-          <List
-            dataSource={notifications}
-            renderItem={(notification) => (
-              <div
-                className={`notification-item ${!notification.read ? 'unread' : ''}`}
-                onClick={() => handleNotificationClick(notification)}
-                style={{
-                  cursor: "pointer",
-                  padding: "16px",
-                  borderBottom: "1px solid #f0f0f0",
-                  background: notification.read ? "#fff" : "#e6f7ff",
-                }}
-              >
-                <div style={{ display: "flex", gap: "12px" }}>
-                  <div
+          visible={videoCallModalVisible}
+          onCancel={() => setVideoCallModalVisible(false)}
+          width={800}
+          footer={null}
+          className="video-call-modal"
+        >
+          <div style={{ textAlign: "center", padding: "20px 0" }}>
+            {!isCallActive ? (
+              <div>
+                <div style={{ marginBottom: 24 }}>
+                  <Avatar
+                    size={120}
                     style={{
-                      width: "40px",
-                      height: "40px",
-                      borderRadius: "10px",
-                      background: `linear-gradient(135deg, ${notification.color || '#1890ff'} 0%, ${notification.color || '#1890ff'}dd 100%)`,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0,
+                      backgroundColor:
+                        callType === "student" ? "#1890ff" : "#52c41a",
+                      fontSize: "48px",
                     }}
                   >
-                    {notification.icon === 'bell' ? <BellOutlined style={{ color: "#fff", fontSize: "18px" }} /> :
-                     notification.icon === 'message' ? <MessageOutlined style={{ color: "#fff", fontSize: "18px" }} /> :
-                     notification.icon === 'user-add' ? <UserAddOutlined style={{ color: "#fff", fontSize: "18px" }} /> :
-                     notification.icon === 'file-text' ? <FileTextOutlined style={{ color: "#fff", fontSize: "18px" }} /> :
-                     <BellOutlined style={{ color: "#fff", fontSize: "18px" }} />}
+                    {selectedCallUser?.firstName?.[0]}
+                    {selectedCallUser?.lastName?.[0]}
+                  </Avatar>
+                  <div style={{ marginTop: 16 }}>
+                    <Title level={3} style={{ margin: 0 }}>
+                      {selectedCallUser?.firstName} {selectedCallUser?.lastName}
+                    </Title>
+                    <Text type="secondary" style={{ fontSize: "16px" }}>
+                      {callType === "student"
+                        ? `�${t("adminDashboard.enrollment.videoCall.student")}`
+                        : `�${t(
+                            "adminDashboard.enrollment.videoCall.teacher"
+                          )}`}{" "}
+                      - {selectedCallUser?.email}
+                    </Text>
                   </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: "4px" }}>
-                      <Text strong style={{ fontSize: "14px", color: "#262626" }}>
-                        {notification.title}
-                      </Text>
-                      {!notification.read && (
-                        <div
-                          style={{
-                            width: "8px",
-                            height: "8px",
-                            borderRadius: "50%",
-                            background: "#1890ff",
-                            flexShrink: 0,
-                            marginLeft: "8px",
-                          }}
+                </div>
+
+                <div style={{ marginBottom: 24 }}>
+                  <Alert
+                    message={t(
+                      "adminDashboard.enrollment.videoCall.readyToStart"
+                    )}
+                    description={t(
+                      "adminDashboard.enrollment.videoCall.aboutToStart",
+                      {
+                        name: `${selectedCallUser?.firstName} ${selectedCallUser?.lastName}`,
+                      }
+                    )}
+                    type="info"
+                    showIcon
+                    style={{ textAlign: "left" }}
+                  />
+                </div>
+
+                <Space size="large">
+                  <Button
+                    type="primary"
+                    size="large"
+                    icon={<VideoCameraOutlined />}
+                    onClick={startVideoCall}
+                    style={{
+                      background:
+                        "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                      border: "none",
+                      borderRadius: "8px",
+                      height: "48px",
+                      fontSize: "16px",
+                      padding: "0 32px",
+                    }}
+                  >
+                    {t("adminDashboard.enrollment.videoCall.startCall")}
+                  </Button>
+                  <Button
+                    size="large"
+                    onClick={() => setVideoCallModalVisible(false)}
+                    style={{
+                      height: "48px",
+                      borderRadius: "8px",
+                      padding: "0 32px",
+                    }}
+                  >
+                    {t("adminDashboard.enrollment.videoCall.cancel")}
+                  </Button>
+                </Space>
+              </div>
+            ) : (
+              <div>
+                <div
+                  style={{
+                    background:
+                      "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                    borderRadius: "12px",
+                    padding: "32px",
+                    marginBottom: "24px",
+                    color: "white",
+                  }}
+                >
+                  <div style={{ marginBottom: 16 }}>
+                    <Text style={{ color: "white", fontSize: "18px" }}>
+                      �{t("adminDashboard.enrollment.videoCall.inProgress")}
+                    </Text>
+                  </div>
+
+                  <Avatar
+                    size={80}
+                    style={{
+                      backgroundColor: "rgba(255,255,255,0.2)",
+                      fontSize: "32px",
+                      color: "white",
+                      marginBottom: 16,
+                    }}
+                  >
+                    {selectedCallUser?.firstName?.[0]}
+                    {selectedCallUser?.lastName?.[0]}
+                  </Avatar>
+
+                  <div style={{ fontSize: "16px", marginBottom: 8 }}>
+                    {selectedCallUser?.firstName} {selectedCallUser?.lastName}
+                  </div>
+
+                  <div
+                    style={{
+                      background: "rgba(255,255,255,0.2)",
+                      borderRadius: "8px",
+                      padding: "8px 16px",
+                      display: "inline-block",
+                      fontSize: "14px",
+                    }}
+                  >
+                    {t("adminDashboard.enrollment.videoCall.duration", {
+                      duration: formatCallDuration(callDuration),
+                    })}
+                  </div>
+                </div>
+
+                <div
+                  style={{
+                    background: "#f5f5f5",
+                    borderRadius: "8px",
+                    padding: "16px",
+                    marginBottom: "24px",
+                  }}
+                >
+                  <Text type="secondary" style={{ fontSize: "14px" }}>
+                    �{t("adminDashboard.enrollment.videoCall.implementation")}
+                    <br />
+                    {t("adminDashboard.enrollment.videoCall.technologies")}
+                  </Text>
+                </div>
+
+                <Space>
+                  <Button
+                    danger
+                    type="primary"
+                    size="large"
+                    icon={<PhoneOutlined />}
+                    onClick={endVideoCall}
+                    style={{
+                      borderRadius: "8px",
+                      height: "48px",
+                      fontSize: "16px",
+                      padding: "0 32px",
+                    }}
+                  >
+                    {t("adminDashboard.enrollment.videoCall.endCall")}
+                  </Button>
+                </Space>
+              </div>
+            )}
+          </div>
+        </Modal>
+
+        {/* Announcement Modal */}
+        <Modal
+          title={
+            selectedAnnouncement
+              ? t("announcements.modal.editTitle")
+              : t("announcements.modal.createTitle")
+          }
+          visible={
+            announcementModalVisible &&
+            !viewModalVisible &&
+            !announcementViewModalVisible
+          }
+          onCancel={() => {
+            setAnnouncementModalVisible(false);
+            setAnnouncementViewModalVisible(false); // Ensure announcement view modal is closed
+            setSelectedAnnouncement(null);
+            announcementForm.resetFields();
+          }}
+          width={800}
+          footer={null}
+          zIndex={1000}
+          maskClosable={false}
+        >
+          <Form
+            form={announcementForm}
+            layout="vertical"
+            onFinish={handleCreateAnnouncement}
+          >
+            <Form.Item
+              label={t("announcements.modal.form.title")}
+              name="title"
+              rules={[
+                {
+                  required: true,
+                  message: t("announcements.modal.form.validation.title"),
+                },
+              ]}
+            >
+              <Input
+                placeholder={t("announcements.modal.form.titlePlaceholder")}
+              />
+            </Form.Item>
+
+            <Form.Item
+              label={t("announcements.modal.form.content")}
+              name="content"
+              rules={[
+                {
+                  required: true,
+                  message: t("announcements.modal.form.validation.content"),
+                },
+              ]}
+            >
+              <TextArea
+                rows={4}
+                placeholder={t("announcements.modal.form.contentPlaceholder")}
+              />
+            </Form.Item>
+
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  label={t("announcements.modal.form.targetAudience")}
+                  name="targetAudience"
+                  initialValue="all"
+                >
+                  <Select>
+                    <Option value="all">
+                      👥 {t("announcements.modal.form.audienceOptions.all")}
+                    </Option>
+                    <Option value="students">
+                      🎓{" "}
+                      {t("announcements.modal.form.audienceOptions.students")}
+                    </Option>
+                    <Option value="teachers">
+                      👨‍🏫{" "}
+                      {t("announcements.modal.form.audienceOptions.teachers")}
+                    </Option>
+                    <Option value="admins">
+                      👑 {t("announcements.modal.form.audienceOptions.admins")}
+                    </Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  label={t("announcements.modal.form.priority")}
+                  name="priority"
+                  initialValue="medium"
+                >
+                  <Select>
+                    <Option value="low">
+                      🟢 {t("announcements.modal.form.priorityOptions.low")}
+                    </Option>
+                    <Option value="medium">
+                      🟡 {t("announcements.modal.form.priorityOptions.medium")}
+                    </Option>
+                    <Option value="high">
+                      🔴 {t("announcements.modal.form.priorityOptions.high")}
+                    </Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  label={t("announcements.modal.form.type")}
+                  name="type"
+                  initialValue="general"
+                >
+                  <Select>
+                    <Option value="general">
+                      📢 {t("announcements.modal.form.typeOptions.general")}
+                    </Option>
+                    <Option value="academic">
+                      🎓 {t("announcements.modal.form.typeOptions.academic")}
+                    </Option>
+                    <Option value="event">
+                      🎉 {t("announcements.modal.form.typeOptions.event")}
+                    </Option>
+                    <Option value="maintenance">
+                      🔧 {t("announcements.modal.form.typeOptions.maintenance")}
+                    </Option>
+                    <Option value="urgent">
+                      🚨 {t("announcements.modal.form.typeOptions.urgent")}
+                    </Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  label={t("announcements.modal.form.pinAnnouncement")}
+                  name="isSticky"
+                  valuePropName="checked"
+                >
+                  <Switch
+                    checkedChildren="📌 Pinned"
+                    unCheckedChildren="📌 Normal"
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  label={t("announcements.modal.form.publishDate")}
+                  name="publishDate"
+                >
+                  <DatePicker
+                    showTime
+                    style={{ width: "100%" }}
+                    placeholder={t(
+                      "announcements.modal.form.publishDatePlaceholder"
+                    )}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  label={t("announcements.modal.form.expiryDate")}
+                  name="expiryDate"
+                >
+                  <DatePicker
+                    showTime
+                    style={{ width: "100%" }}
+                    placeholder={t(
+                      "announcements.modal.form.expiryDatePlaceholder"
+                    )}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Form.Item label={t("announcements.modal.form.tags")} name="tags">
+              <Select
+                mode="tags"
+                placeholder={t("announcements.modal.form.tagsPlaceholder")}
+                tokenSeparators={[","]}
+              />
+            </Form.Item>
+
+            <div
+              style={{
+                textAlign: "right",
+                marginTop: 24,
+                padding: "16px 0",
+                borderTop: "1px solid #f0f0f0",
+              }}
+            >
+              <Space>
+                <Button
+                  className="modern-btn"
+                  onClick={() => {
+                    setAnnouncementModalVisible(false);
+                    setSelectedAnnouncement(null);
+                    announcementForm.resetFields();
+                  }}
+                >
+                  {t("announcements.modal.buttons.cancel")}
+                </Button>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  icon={<SoundOutlined />}
+                  className="modern-btn modern-btn-primary"
+                >
+                  {selectedAnnouncement
+                    ? t("announcements.modal.buttons.update")
+                    : t("announcements.modal.buttons.create")}
+                </Button>
+              </Space>
+            </div>
+
+            <div
+              style={{
+                marginTop: 16,
+                padding: "12px",
+                backgroundColor: "#f6f8fc",
+                borderRadius: "6px",
+                border: "1px solid #e1e8ed",
+              }}
+            >
+              <Text type="secondary" style={{ fontSize: "12px" }}>
+                📢 <strong>{t("announcements.modal.form.note.title")}:</strong>{" "}
+                {t("announcements.modal.form.note.content")}
+              </Text>
+            </div>
+          </Form>
+        </Modal>
+
+        {/* Announcement View Modal */}
+        <Modal
+          title={`📢 ${t("announcements.modal.viewTitle")}`}
+          visible={announcementViewModalVisible && !announcementModalVisible}
+          onCancel={() => {
+            setAnnouncementViewModalVisible(false);
+            setSelectedAnnouncement(null);
+          }}
+          width={700}
+          footer={[
+            <Button
+              key="close"
+              onClick={() => {
+                setAnnouncementViewModalVisible(false);
+                setSelectedAnnouncement(null);
+              }}
+            >
+              {t("announcements.modal.buttons.close")}
+            </Button>,
+          ]}
+          zIndex={1001}
+          maskClosable={true}
+        >
+          {selectedAnnouncement && (
+            <div>
+              <Title level={4}>{selectedAnnouncement.title}</Title>
+              <div style={{ marginBottom: 16 }}>
+                <Space wrap>
+                  <Tag color="blue">{selectedAnnouncement.targetAudience}</Tag>
+                  <Tag
+                    color={
+                      selectedAnnouncement.priority === "high"
+                        ? "red"
+                        : selectedAnnouncement.priority === "medium"
+                        ? "orange"
+                        : "default"
+                    }
+                  >
+                    {selectedAnnouncement.priority} priority
+                  </Tag>
+                  <Tag>{selectedAnnouncement.type}</Tag>
+                  {selectedAnnouncement.isSticky && (
+                    <Tag color="orange">?? Pinned</Tag>
+                  )}
+                </Space>
+              </div>
+              <Paragraph style={{ fontSize: "16px", lineHeight: "1.6" }}>
+                {selectedAnnouncement.content}
+              </Paragraph>
+              <div
+                style={{
+                  marginTop: 24,
+                  padding: "16px",
+                  backgroundColor: "#fafafa",
+                  borderRadius: "8px",
+                }}
+              >
+                <Text type="secondary">
+                  <strong>Published:</strong>{" "}
+                  {moment(
+                    selectedAnnouncement.publishDate ||
+                      selectedAnnouncement.createdAt
+                  ).format("MMMM DD, YYYY [at] HH:mm")}
+                </Text>
+                <br />
+                {selectedAnnouncement.expiryDate && (
+                  <>
+                    <Text type="secondary">
+                      <strong>Expires:</strong>{" "}
+                      {moment(selectedAnnouncement.expiryDate).format(
+                        "MMMM DD, YYYY [at] HH:mm"
+                      )}
+                    </Text>
+                    <br />
+                  </>
+                )}
+                <Text type="secondary">
+                  <strong>Author:</strong>{" "}
+                  {selectedAnnouncement.author?.firstName}{" "}
+                  {selectedAnnouncement.author?.lastName}
+                </Text>
+              </div>
+            </div>
+          )}
+        </Modal>
+
+        {/* Mobile Drawer */}
+        <Drawer
+          title={
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <div
+                style={{
+                  width: 36,
+                  height: 36,
+                  background: "#1890ff",
+                  borderRadius: "10px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  boxShadow: "0 2px 8px rgba(24, 144, 255, 0.3)",
+                }}
+              >
+                <RocketOutlined style={{ fontSize: 18, color: "#fff" }} />
+              </div>
+              <span style={{ fontWeight: 700, fontSize: "16px" }}>
+                Admin Portal
+              </span>
+            </div>
+          }
+          placement="left"
+          closable={true}
+          onClose={() => setMobileDrawerVisible(false)}
+          open={mobileDrawerVisible && isMobile}
+          width={isMobile ? Math.min(280, window.innerWidth * 0.8) : 280}
+          styles={{
+            body: {
+              padding: 0,
+              background: "#001529",
+            },
+            header: {
+              background: "#001529",
+              color: "#fff",
+              borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+              padding: "20px",
+            },
+          }}
+          className="mobile-drawer"
+        >
+          <Menu
+            mode="inline"
+            selectedKeys={[activeKey]}
+            items={menuItems.map((item) => ({
+              ...item,
+              style: {
+                margin: "8px 16px",
+                borderRadius: "8px",
+                height: "48px",
+                display: "flex",
+                alignItems: "center",
+                fontSize: "14px",
+                fontWeight: 500,
+              },
+            }))}
+            onClick={(e) => {
+              setActiveKey(e.key);
+              setMobileDrawerVisible(false);
+            }}
+            style={{
+              border: "none",
+              background: "transparent",
+              padding: "16px 0",
+              height: "100%",
+              overflowY: "auto",
+            }}
+            theme="dark"
+          />
+        </Drawer>
+
+        {/* Notification Drawer */}
+        <Drawer
+          title={
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "100%",
+              }}
+            >
+              <Space>
+                <BellOutlined style={{ fontSize: "20px", color: "#fff" }} />
+                <span style={{ color: "#fff", fontWeight: 600 }}>
+                  {t("adminPortal.notifications.title") || "Notifications"}
+                </span>
+                {unreadCount > 0 && (
+                  <Badge
+                    count={unreadCount}
+                    style={{ backgroundColor: "#52c41a" }}
+                  />
+                )}
+              </Space>
+              {unreadCount > 0 && (
+                <Button
+                  type="link"
+                  size="small"
+                  onClick={() => {
+                    setNotifications((prev) =>
+                      prev.map((n) => ({ ...n, read: true }))
+                    );
+                    setUnreadCount(0);
+                    message.success(
+                      t("adminPortal.notifications.allMarkedRead") ||
+                        "All notifications marked as read"
+                    );
+                  }}
+                  style={{ color: "#fff", fontWeight: 500 }}
+                >
+                  {t("adminPortal.notifications.markAllRead") ||
+                    "Mark all as read"}
+                </Button>
+              )}
+            </div>
+          }
+          placement="right"
+          width={isMobile ? "100%" : 440}
+          open={notificationDrawerVisible}
+          onClose={() => setNotificationDrawerVisible(false)}
+          styles={{
+            body: {
+              padding: 0,
+              background: "#fafafa",
+            },
+            header: {
+              background: "#1890ff",
+              color: "#fff",
+              borderBottom: "none",
+              padding: "20px 24px",
+            },
+          }}
+          extra={
+            <Button
+              type="text"
+              icon={<ReloadOutlined />}
+              onClick={fetchNotifications}
+              title="Refresh notifications"
+              style={{ color: "#fff" }}
+            />
+          }
+        >
+          {notifications.length === 0 ? (
+            <Empty
+              description={
+                t("adminPortal.notifications.noNotifications") ||
+                "No notifications"
+              }
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+              style={{ padding: "40px" }}
+            />
+          ) : (
+            <List
+              dataSource={notifications}
+              renderItem={(notification) => (
+                <div
+                  className={`notification-item ${
+                    !notification.read ? "unread" : ""
+                  }`}
+                  onClick={() => handleNotificationClick(notification)}
+                  style={{
+                    cursor: "pointer",
+                    padding: "16px",
+                    borderBottom: "1px solid #f0f0f0",
+                    background: notification.read ? "#fff" : "#e6f7ff",
+                  }}
+                >
+                  <div style={{ display: "flex", gap: "12px" }}>
+                    <div
+                      style={{
+                        width: "40px",
+                        height: "40px",
+                        borderRadius: "10px",
+                        background: `linear-gradient(135deg, ${
+                          notification.color || "#1890ff"
+                        } 0%, ${notification.color || "#1890ff"}dd 100%)`,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                      }}
+                    >
+                      {notification.icon === "bell" ? (
+                        <BellOutlined
+                          style={{ color: "#fff", fontSize: "18px" }}
+                        />
+                      ) : notification.icon === "message" ? (
+                        <MessageOutlined
+                          style={{ color: "#fff", fontSize: "18px" }}
+                        />
+                      ) : notification.icon === "user-add" ? (
+                        <UserAddOutlined
+                          style={{ color: "#fff", fontSize: "18px" }}
+                        />
+                      ) : notification.icon === "file-text" ? (
+                        <FileTextOutlined
+                          style={{ color: "#fff", fontSize: "18px" }}
+                        />
+                      ) : (
+                        <BellOutlined
+                          style={{ color: "#fff", fontSize: "18px" }}
                         />
                       )}
                     </div>
-                    <Text
-                      style={{
-                        fontSize: "13px",
-                        color: "#595959",
-                        display: "block",
-                        marginBottom: "6px",
-                      }}
-                    >
-                      {notification.message}
-                    </Text>
-                    <Text type="secondary" style={{ fontSize: "12px" }}>
-                      {moment(notification.timestamp).fromNow()}
-                    </Text>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "start",
+                          marginBottom: "4px",
+                        }}
+                      >
+                        <Text
+                          strong
+                          style={{ fontSize: "14px", color: "#262626" }}
+                        >
+                          {notification.title}
+                        </Text>
+                        {!notification.read && (
+                          <div
+                            style={{
+                              width: "8px",
+                              height: "8px",
+                              borderRadius: "50%",
+                              background: "#1890ff",
+                              flexShrink: 0,
+                              marginLeft: "8px",
+                            }}
+                          />
+                        )}
+                      </div>
+                      <Text
+                        style={{
+                          fontSize: "13px",
+                          color: "#595959",
+                          display: "block",
+                          marginBottom: "6px",
+                        }}
+                      >
+                        {notification.message}
+                      </Text>
+                      <Text type="secondary" style={{ fontSize: "12px" }}>
+                        {moment(notification.timestamp).fromNow()}
+                      </Text>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
-          />
-        )}
-      </Drawer>
-    </Layout>
+              )}
+            />
+          )}
+        </Drawer>
+      </Layout>
     </>
   );
 };
