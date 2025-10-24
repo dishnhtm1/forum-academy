@@ -1,6 +1,7 @@
 # 🚨 IMMEDIATE FIX - Deploy Backend to Azure NOW
 
 ## Current Situation
+
 - ✅ Your code is CORRECT and in GitHub
 - ❌ Azure is running OLD CODE (missing zoom/notifications routes)
 - ⏱️ This takes **2 minutes to fix**
@@ -10,13 +11,16 @@
 ## 🎯 FASTEST FIX: Azure Portal (DO THIS NOW)
 
 ### Step 1: Open Azure Portal
+
 **Click this link**: https://portal.azure.com
 
 ### Step 2: Login
+
 - Use your Azure account
 - Complete MFA if prompted
 
 ### Step 3: Find Your Backend App
+
 1. In the **search bar at the top**, type:
    ```
    forum-backend-cnfrb6eubggucqda
@@ -24,15 +28,18 @@
 2. Click on the **App Service** that appears
 
 ### Step 4: Deploy the Code
+
 You'll see one of these options:
 
 #### Option A: If "Deployment Center" shows GitHub connected
+
 1. Click **"Deployment Center"** in left sidebar
 2. Click **"Sync"** button at the top
 3. Wait 2-3 minutes
 4. ✅ Done!
 
 #### Option B: If NOT connected to GitHub
+
 1. Click **"Deployment Center"** in left sidebar
 2. Click **"Settings"** tab
 3. Under **Source**, select **"GitHub"**
@@ -47,6 +54,7 @@ You'll see one of these options:
 8. ✅ Done!
 
 #### Option C: Manual Upload (if above don't work)
+
 1. Go to **"Development Tools"** → **"Advanced Tools"**
 2. Click **"Go"** (opens Kudu)
 3. Click **"Tools"** → **"Zip Push Deploy"**
@@ -59,12 +67,15 @@ You'll see one of these options:
 ## 🧪 VERIFY IT WORKED
 
 ### Test 1: Check Available Routes
+
 Open in browser:
+
 ```
 https://forum-backend-cnfrb6eubggucqda.canadacentral-01.azurewebsites.net/api/health
 ```
 
 **Look for these lines** in the response:
+
 ```json
 {
   "routes": [
@@ -76,14 +87,17 @@ https://forum-backend-cnfrb6eubggucqda.canadacentral-01.azurewebsites.net/api/he
 ```
 
 ### Test 2: Test Zoom Endpoint
+
 Open in browser:
+
 ```
 https://forum-backend-cnfrb6eubggucqda.canadacentral-01.azurewebsites.net/api/zoom/meetings
 ```
 
 **Should return** (auth error, NOT 404):
+
 ```json
-{"message":"Access denied. Admin or teacher role required."}
+{ "message": "Access denied. Admin or teacher role required." }
 ```
 
 **If you get 404**, deployment didn't work yet - wait another minute and retry.
@@ -93,6 +107,7 @@ https://forum-backend-cnfrb6eubggucqda.canadacentral-01.azurewebsites.net/api/zo
 ## 📸 What to Click (Visual Guide)
 
 ### In Azure Portal:
+
 ```
 1. Search: "forum-backend-cnfrb6eubggucqda"
 2. Click the App Service
@@ -120,6 +135,7 @@ If Azure Portal doesn't work:
 ## 🔧 If Still Not Working
 
 ### Check Environment Variables
+
 1. In Azure Portal, go to your app
 2. Click **"Configuration"** (left sidebar)
 3. **Application settings** tab
@@ -134,6 +150,7 @@ If Azure Portal doesn't work:
 If any are missing, add them and restart the app.
 
 ### Check Logs
+
 1. Click **"Log stream"** (left sidebar)
 2. Look for errors during startup
 3. Should see: `✅ Zoom routes loaded`
@@ -143,6 +160,7 @@ If any are missing, add them and restart the app.
 ## ✅ Expected Result
 
 After deployment:
+
 - ✅ No more 404 errors
 - ✅ Zoom meetings creation works
 - ✅ Progress tracking works
@@ -152,6 +170,7 @@ After deployment:
 ---
 
 ## ⏱️ Time Required
+
 - **Sync deployment**: 2-3 minutes
 - **First-time GitHub setup**: 10 minutes
 - **Verification**: 30 seconds
@@ -163,6 +182,7 @@ After deployment:
 **Quick diagnostic**:
 
 Run this in browser:
+
 ```
 https://forum-backend-cnfrb6eubggucqda.canadacentral-01.azurewebsites.net/api/health
 ```
@@ -176,6 +196,7 @@ https://forum-backend-cnfrb6eubggucqda.canadacentral-01.azurewebsites.net/api/he
 ## 💡 Why This Happened
 
 Azure Web App does **NOT auto-deploy** when you push to GitHub unless:
+
 1. Deployment Center is connected to GitHub, OR
 2. GitHub Actions workflow is configured with proper secrets
 
