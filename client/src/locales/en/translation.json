@@ -594,6 +594,116 @@
     "news": {
       "title": "Latest Course Updates",
       "description": "Stay informed about new courses, curriculum updates, and exciting developments in our programs."
+    },
+    "courseDetails": {
+      "duration": "Duration",
+      "price": "Price",
+      "level": "Level",
+      "students": "Students",
+      "keyFeatures": "Key Features",
+      "nextStartDate": "Next Start Date",
+      "enrollNow": "Enroll Now",
+      "close": "Close",
+      "viewDetails": "View Details",
+      "enroll": "Enroll"
+    },
+    "courseData": {
+      "webDev": {
+        "title": "Full-Stack Web Development Bootcamp",
+        "description": "Master modern web development with our comprehensive bootcamp covering frontend, backend, and deployment. Learn industry-standard technologies and build real-world projects.",
+        "category": "Web Development",
+        "level": "Beginner to Intermediate",
+        "duration": "6 months",
+        "startDate": "March 15, 2024",
+        "features": [
+          "Hands-on project-based learning",
+          "Industry mentor support",
+          "Career placement assistance",
+          "Lifetime access to materials",
+          "Portfolio development",
+          "Interview preparation"
+        ]
+      },
+      "dataScience": {
+        "title": "Data Science & Machine Learning Mastery",
+        "description": "Transform data into insights with our comprehensive data science program. Learn Python, statistics, machine learning, and deep learning to become a data science professional.",
+        "category": "Data Science",
+        "level": "Intermediate to Advanced",
+        "duration": "8 months",
+        "startDate": "April 1, 2024",
+        "features": [
+          "Real-world datasets and case studies",
+          "Industry expert mentorship",
+          "Kaggle competition participation",
+          "Portfolio of 5+ projects",
+          "AWS/Google Cloud certification prep",
+          "Job placement guarantee"
+        ]
+      },
+      "cybersecurity": {
+        "title": "Cybersecurity Professional Certification",
+        "description": "Master cybersecurity fundamentals and advanced techniques. Learn ethical hacking, penetration testing, and security architecture to protect organizations from cyber threats.",
+        "category": "Cybersecurity",
+        "level": "Intermediate to Advanced",
+        "duration": "7 months",
+        "startDate": "May 10, 2024",
+        "features": [
+          "Hands-on lab environment",
+          "Industry certifications (CISSP, CEH)",
+          "Real-world attack simulations",
+          "Career placement assistance",
+          "Lifetime access to security tools",
+          "Industry mentor network"
+        ]
+      },
+      "cloudComputing": {
+        "title": "Cloud Computing & DevOps Mastery",
+        "description": "Master cloud platforms and DevOps practices. Learn AWS, Azure, Docker, Kubernetes, and automation to build scalable, reliable cloud infrastructure.",
+        "category": "Cloud Computing",
+        "level": "Intermediate",
+        "duration": "5 months",
+        "startDate": "June 5, 2024",
+        "features": [
+          "Multi-cloud platform training",
+          "Industry certifications (AWS, Azure)",
+          "Real-world project deployments",
+          "DevOps toolchain mastery",
+          "Cost optimization strategies",
+          "Career placement support"
+        ]
+      },
+      "aiMl": {
+        "title": "Artificial Intelligence & Machine Learning Expert",
+        "description": "Master cutting-edge AI and ML technologies. Learn deep learning, computer vision, NLP, and MLOps to become an AI professional in the rapidly growing field.",
+        "category": "AI & Machine Learning",
+        "level": "Advanced",
+        "duration": "9 months",
+        "startDate": "July 15, 2024",
+        "features": [
+          "Cutting-edge AI research projects",
+          "Industry expert mentorship",
+          "GPU cluster access for training",
+          "Kaggle competition participation",
+          "Research paper publication support",
+          "Startup incubation program"
+        ]
+      },
+      "mobileDev": {
+        "title": "Mobile App Development Mastery",
+        "description": "Master mobile app development for iOS and Android. Learn React Native, Flutter, native development, and app store optimization to build successful mobile applications.",
+        "category": "Mobile Development",
+        "level": "Beginner to Intermediate",
+        "duration": "6 months",
+        "startDate": "August 20, 2024",
+        "features": [
+          "Native iOS and Android development",
+          "Cross-platform framework mastery",
+          "App store optimization training",
+          "Real app publishing experience",
+          "UI/UX design principles",
+          "Career placement assistance"
+        ]
+      }
     }
   },
   "home": {
