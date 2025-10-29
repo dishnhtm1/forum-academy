@@ -3338,6 +3338,16 @@ const AdminFacultyDashboard = () => {
   const [profileImagePreview, setProfileImagePreview] = useState(null);
   const [profileImageFile, setProfileImageFile] = useState(null);
 
+  // Build absolute image URL safely for avatar display
+  const getImageSrc = (path) => {
+    if (!path) return undefined;
+    if (typeof path !== "string") return undefined;
+    if (path.startsWith("data:")) return path; // preview data/object URLs
+    if (path.startsWith("http://") || path.startsWith("https://")) return path;
+    const normalized = path.startsWith("/") ? path : `/${path}`;
+    return `${API_BASE_URL}${normalized}`;
+  };
+
   // System settings state
   const [systemSettings, setSystemSettings] = useState({
     systemName: "Forum Academy",
@@ -9470,11 +9480,7 @@ const AdminFacultyDashboard = () => {
                       marginRight: 8,
                       flexShrink: 0,
                     }}
-                    src={
-                      currentUser?.profileImage
-                        ? `${API_BASE_URL}${currentUser.profileImage}`
-                        : undefined
-                    }
+                    src={getImageSrc(currentUser?.profileImage)}
                     icon={<UserOutlined />}
                   />
                   <div style={{ minWidth: 0, flex: 1 }}>
@@ -11371,12 +11377,7 @@ const AdminFacultyDashboard = () => {
               >
                 <Avatar
                   size={100}
-                  src={
-                    profileImagePreview ||
-                    (currentUser?.profileImage
-                      ? `${API_BASE_URL}${currentUser.profileImage}`
-                      : undefined)
-                  }
+                  src={profileImagePreview || getImageSrc(currentUser?.profileImage)}
                   icon={<UserOutlined />}
                   style={{ backgroundColor: "#1890ff" }}
                 />
