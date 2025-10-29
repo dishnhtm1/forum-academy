@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useHistory } from 'react-router-dom';
 import CourseSection from '../components/CourseSection';
 import StatsSection from '../components/StatsSection';
 import NewsSection from '../components/NewsSection';
@@ -9,36 +10,41 @@ import '../styles/CoursesPage.css';
 
 const CoursesPage = () => {
     const { t } = useTranslation();
+    const history = useHistory();
     const [isVisible, setIsVisible] = useState(false);
     const [selectedCourse, setSelectedCourse] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [clickedCardPosition, setClickedCardPosition] = useState({ top: 0, left: 0, width: 0, height: 0 });
     const sectionRef = useRef(null);
+    
+    // Handle enrollment - redirect to application form
+    const handleEnroll = (courseId) => {
+        // Store the selected course ID in localStorage for the application form
+        localStorage.setItem('selectedCourseId', courseId);
+        // Close modal first
+        closeModal();
+        // Navigate to application form
+        history.push('/apply');
+    };
 
-    // Course data with detailed information
-    const coursesData = [
+    // Course data with detailed information - using useMemo to ensure translations are ready
+    const coursesData = React.useMemo(() => [
         {
             id: 'web-dev',
-            title: 'Full-Stack Web Development Bootcamp',
-            description: 'Master modern web development with our comprehensive bootcamp covering frontend, backend, and deployment. Learn industry-standard technologies and build real-world projects.',
+            title: t('courses.courseData.webDev.title'),
+            description: t('courses.courseData.webDev.description'),
             image: require('../assets/courses/web.jpg'),
-            duration: '6 months',
-            startDate: 'March 15, 2024',
+            duration: t('courses.courseData.webDev.duration'),
+            startDate: t('courses.courseData.webDev.startDate'),
             price: '¥350,000',
             originalPrice: '¥450,000',
-            category: 'Web Development',
+            category: t('courses.courseData.webDev.category'),
             badgeColor: 'blue',
-            level: 'Beginner to Intermediate',
+            level: t('courses.courseData.webDev.level'),
             rating: 4.9,
             students: 2847,
             instructor: 'Dr. Sarah Johnson',
-            features: [
-                'Hands-on project-based learning',
-                'Industry mentor support',
-                'Career placement assistance',
-                'Lifetime access to materials',
-                'Portfolio development',
-                'Interview preparation'
-            ],
+            features: t('courses.courseData.webDev.features', { returnObjects: true }),
             curriculum: [
                 'HTML5 & CSS3 Fundamentals (2 weeks)',
                 'JavaScript ES6+ Advanced (3 weeks)',
@@ -80,27 +86,20 @@ const CoursesPage = () => {
         },
         {
             id: 'data-science',
-            title: 'Data Science & Machine Learning Mastery',
-            description: 'Transform data into insights with our comprehensive data science program. Learn Python, statistics, machine learning, and deep learning to become a data science professional.',
+            title: t('courses.courseData.dataScience.title'),
+            description: t('courses.courseData.dataScience.description'),
             image: require('../assets/courses/data.jpg'),
-            duration: '8 months',
-            startDate: 'April 1, 2024',
+            duration: t('courses.courseData.dataScience.duration'),
+            startDate: t('courses.courseData.dataScience.startDate'),
             price: '¥420,000',
             originalPrice: '¥520,000',
-            category: 'Data Science',
+            category: t('courses.courseData.dataScience.category'),
             badgeColor: 'green',
-            level: 'Intermediate to Advanced',
+            level: t('courses.courseData.dataScience.level'),
             rating: 4.8,
             students: 1923,
             instructor: 'Prof. Michael Chen',
-            features: [
-                'Real-world datasets and case studies',
-                'Industry expert mentorship',
-                'Kaggle competition participation',
-                'Portfolio of 5+ projects',
-                'AWS/Google Cloud certification prep',
-                'Job placement guarantee'
-            ],
+            features: t('courses.courseData.dataScience.features', { returnObjects: true }),
             curriculum: [
                 'Python Programming for Data Science (3 weeks)',
                 'Statistics & Probability (4 weeks)',
@@ -142,27 +141,20 @@ const CoursesPage = () => {
         },
         {
             id: 'cybersecurity',
-            title: 'Cybersecurity Professional Certification',
-            description: 'Master cybersecurity fundamentals and advanced techniques. Learn ethical hacking, penetration testing, and security architecture to protect organizations from cyber threats.',
+            title: t('courses.courseData.cybersecurity.title'),
+            description: t('courses.courseData.cybersecurity.description'),
             image: require('../assets/courses/cyber.jpg'),
-            duration: '7 months',
-            startDate: 'May 10, 2024',
+            duration: t('courses.courseData.cybersecurity.duration'),
+            startDate: t('courses.courseData.cybersecurity.startDate'),
             price: '¥400,000',
             originalPrice: '¥500,000',
-            category: 'Cybersecurity',
+            category: t('courses.courseData.cybersecurity.category'),
             badgeColor: 'red',
-            level: 'Intermediate to Advanced',
+            level: t('courses.courseData.cybersecurity.level'),
             rating: 4.7,
             students: 1654,
             instructor: 'Alex Rodriguez',
-            features: [
-                'Hands-on lab environment',
-                'Industry certifications (CISSP, CEH)',
-                'Real-world attack simulations',
-                'Career placement assistance',
-                'Lifetime access to security tools',
-                'Industry mentor network'
-            ],
+            features: t('courses.courseData.cybersecurity.features', { returnObjects: true }),
             curriculum: [
                 'Network Security Fundamentals (3 weeks)',
                 'Ethical Hacking Techniques (4 weeks)',
@@ -204,27 +196,20 @@ const CoursesPage = () => {
         },
         {
             id: 'cloud-computing',
-            title: 'Cloud Computing & DevOps Mastery',
-            description: 'Master cloud platforms and DevOps practices. Learn AWS, Azure, Docker, Kubernetes, and automation to build scalable, reliable cloud infrastructure.',
+            title: t('courses.courseData.cloudComputing.title'),
+            description: t('courses.courseData.cloudComputing.description'),
             image: require('../assets/courses/cloud.jpg'),
-            duration: '5 months',
-            startDate: 'June 5, 2024',
+            duration: t('courses.courseData.cloudComputing.duration'),
+            startDate: t('courses.courseData.cloudComputing.startDate'),
             price: '¥380,000',
             originalPrice: '¥480,000',
-            category: 'Cloud Computing',
+            category: t('courses.courseData.cloudComputing.category'),
             badgeColor: 'cyan',
-            level: 'Intermediate',
+            level: t('courses.courseData.cloudComputing.level'),
             rating: 4.8,
             students: 2156,
             instructor: 'Emma Wilson',
-            features: [
-                'Multi-cloud platform training',
-                'Industry certifications (AWS, Azure)',
-                'Real-world project deployments',
-                'DevOps toolchain mastery',
-                'Cost optimization strategies',
-                'Career placement support'
-            ],
+            features: t('courses.courseData.cloudComputing.features', { returnObjects: true }),
             curriculum: [
                 'Cloud Computing Fundamentals (2 weeks)',
                 'AWS Services & Architecture (4 weeks)',
@@ -267,27 +252,20 @@ const CoursesPage = () => {
         },
         {
             id: 'ai-ml',
-            title: 'Artificial Intelligence & Machine Learning Expert',
-            description: 'Master cutting-edge AI and ML technologies. Learn deep learning, computer vision, NLP, and MLOps to become an AI professional in the rapidly growing field.',
+            title: t('courses.courseData.aiMl.title'),
+            description: t('courses.courseData.aiMl.description'),
             image: require('../assets/courses/ai.jpg'),
-            duration: '9 months',
-            startDate: 'July 15, 2024',
+            duration: t('courses.courseData.aiMl.duration'),
+            startDate: t('courses.courseData.aiMl.startDate'),
             price: '¥450,000',
             originalPrice: '¥550,000',
-            category: 'AI & Machine Learning',
+            category: t('courses.courseData.aiMl.category'),
             badgeColor: 'purple',
-            level: 'Advanced',
+            level: t('courses.courseData.aiMl.level'),
             rating: 4.9,
             students: 987,
             instructor: 'Dr. David Kim',
-            features: [
-                'Cutting-edge AI research projects',
-                'Industry expert mentorship',
-                'GPU cluster access for training',
-                'Kaggle competition participation',
-                'Research paper publication support',
-                'Startup incubation program'
-            ],
+            features: t('courses.courseData.aiMl.features', { returnObjects: true }),
             curriculum: [
                 'Machine Learning Fundamentals (4 weeks)',
                 'Deep Learning with Neural Networks (6 weeks)',
@@ -329,27 +307,20 @@ const CoursesPage = () => {
         },
         {
             id: 'mobile-dev',
-            title: 'Mobile App Development Mastery',
-            description: 'Master mobile app development for iOS and Android. Learn React Native, Flutter, native development, and app store optimization to build successful mobile applications.',
+            title: t('courses.courseData.mobileDev.title'),
+            description: t('courses.courseData.mobileDev.description'),
             image: require('../assets/courses/mobile.jpg'),
-            duration: '6 months',
-            startDate: 'August 20, 2024',
+            duration: t('courses.courseData.mobileDev.duration'),
+            startDate: t('courses.courseData.mobileDev.startDate'),
             price: '¥370,000',
             originalPrice: '¥470,000',
-            category: 'Mobile Development',
+            category: t('courses.courseData.mobileDev.category'),
             badgeColor: 'orange',
-            level: 'Beginner to Intermediate',
+            level: t('courses.courseData.mobileDev.level'),
             rating: 4.6,
             students: 1743,
             instructor: 'Lisa Thompson',
-            features: [
-                'Native iOS and Android development',
-                'Cross-platform framework mastery',
-                'App store optimization training',
-                'Real app publishing experience',
-                'UI/UX design principles',
-                'Career placement assistance'
-            ],
+            features: t('courses.courseData.mobileDev.features', { returnObjects: true }),
             curriculum: [
                 'React Native Development (4 weeks)',
                 'Flutter & Dart Programming (3 weeks)',
@@ -389,16 +360,34 @@ const CoursesPage = () => {
             averageSalary: '¥7.8M',
             companies: ['LINE', 'Mercari', 'CyberAgent', 'GREE', 'DeNA', 'Mixi']
         }
-    ];
+    ], [t]);
 
     // Modal handling functions
-    const openModal = (courseId) => {
-        console.log('Opening modal for course ID:', courseId);
+    const openModal = (courseId, event) => {
         const course = coursesData.find(c => c.id === courseId);
-        console.log('Found course:', course);
+        
+        // Get the position of the clicked course card
+        if (event && event.currentTarget) {
+            const rect = event.currentTarget.getBoundingClientRect();
+            const cardPosition = {
+                top: rect.top + window.scrollY,
+                left: rect.left + window.scrollX,
+                width: rect.width,
+                height: rect.height
+            };
+            setClickedCardPosition(cardPosition);
+            
+            // Scroll to the card position smoothly
+            setTimeout(() => {
+                window.scrollTo({
+                    top: Math.max(0, cardPosition.top - 100),
+                    behavior: 'smooth'
+                });
+            }, 100);
+        }
+        
         setSelectedCourse(course);
         setIsModalOpen(true);
-        console.log('Modal state set to open');
     };
 
     const closeModal = () => {
@@ -731,20 +720,123 @@ const CoursesPage = () => {
 
             {/* Course Information Modal */}
             {isModalOpen && selectedCourse && (
-                <TestModal 
-                    course={selectedCourse} 
-                    isOpen={isModalOpen} 
-                    onClose={closeModal} 
-                />
-            )}
-            
-            {/* Debug info */}
-            {process.env.NODE_ENV === 'development' && (
-                <div style={{ position: 'fixed', top: '10px', right: '10px', background: 'red', color: 'white', padding: '10px', zIndex: 9999 }}>
-                    Modal Open: {isModalOpen ? 'Yes' : 'No'}<br/>
-                    Selected Course: {selectedCourse ? selectedCourse.title : 'None'}
+                <div className="fixed inset-0 z-[9999]">
+                    <div className="fixed inset-0 bg-black bg-opacity-60" onClick={closeModal}></div>
+                    <div 
+                        className="fixed bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto transition-all duration-300"
+                        style={{
+                            top: window.innerWidth < 768 ? 
+                                Math.max(20, Math.min(clickedCardPosition.top - 20, window.innerHeight - 400)) : 
+                                Math.max(20, clickedCardPosition.top - 20),
+                            left: window.innerWidth < 768 ? 
+                                '20px' : 
+                                Math.max(20, Math.min(clickedCardPosition.left, window.innerWidth - 420)),
+                            width: window.innerWidth < 768 ? 
+                                'calc(100vw - 40px)' : 
+                                Math.min(400, window.innerWidth - 40),
+                            maxWidth: window.innerWidth < 768 ? 'calc(100vw - 40px)' : '400px',
+                            zIndex: 10000
+                        }}
+                    >
+                        <div className="p-4">
+                            {/* Header - Compact */}
+                            <div className="flex justify-between items-start mb-3">
+                                <h2 className="text-lg font-bold text-gray-900 leading-tight pr-2">
+                                    {selectedCourse.title}
+                                </h2>
+                                <button 
+                                    onClick={closeModal}
+                                    className="text-gray-500 hover:text-gray-700 text-xl hover:bg-gray-100 rounded-full p-1 transition-colors flex-shrink-0"
+                                >
+                                    ×
+                                </button>
+                            </div>
+                            
+                            <div className="space-y-3">
+                                {/* Description - Compact */}
+                                <p className="text-gray-600 text-sm leading-relaxed">
+                                    {selectedCourse.description}
+                                </p>
+                                
+                                {/* Course Info - Compact */}
+                                <div className="grid grid-cols-2 gap-2">
+                                        <div className="flex items-center gap-2 p-2 bg-blue-50 rounded-lg">
+                                            <span className="material-icons text-blue-600 text-sm">schedule</span>
+                                            <div>
+                                                <div className="font-semibold text-gray-900 text-xs">{t('courses.courseDetails.duration')}</div>
+                                                <div className="text-gray-600 text-xs">{selectedCourse.duration}</div>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2 p-2 bg-green-50 rounded-lg">
+                                            <span className="material-icons text-green-600 text-sm">attach_money</span>
+                                            <div>
+                                                <div className="font-semibold text-gray-900 text-xs">{t('courses.courseDetails.price')}</div>
+                                                <div className="text-gray-600 text-xs font-bold">{selectedCourse.price}</div>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2 p-2 bg-purple-50 rounded-lg">
+                                            <span className="material-icons text-purple-600 text-sm">trending_up</span>
+                                            <div>
+                                                <div className="font-semibold text-gray-900 text-xs">{t('courses.courseDetails.level')}</div>
+                                                <div className="text-gray-600 text-xs">{selectedCourse.level}</div>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2 p-2 bg-orange-50 rounded-lg">
+                                            <span className="material-icons text-orange-600 text-sm">people</span>
+                                            <div>
+                                                <div className="font-semibold text-gray-900 text-xs">{t('courses.courseDetails.students')}</div>
+                                                <div className="text-gray-600 text-xs">{selectedCourse.students.toLocaleString()}</div>
+                                            </div>
+                                        </div>
+                                </div>
+                                
+                                {/* Features - Compact */}
+                                <div className="bg-gray-50 rounded-lg p-3">
+                                    <h3 className="text-sm font-bold mb-2 text-gray-900">{t('courses.courseDetails.keyFeatures')}:</h3>
+                                    <div className="space-y-1">
+                                        {selectedCourse.features.slice(0, 4).map((feature, idx) => (
+                                            <div key={idx} className="flex items-start gap-2">
+                                                <div className="w-4 h-4 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                                    <span className="material-icons text-green-600 text-xs">check</span>
+                                                </div>
+                                                <span className="text-gray-700 text-xs leading-relaxed">{feature}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                
+                                {/* Start Date - Compact */}
+                                <div className="flex items-center gap-2 p-2 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg">
+                                    <span className="material-icons text-blue-600 text-sm">event</span>
+                                    <div>
+                                        <div className="font-semibold text-gray-900 text-xs">{t('courses.courseDetails.nextStartDate')}</div>
+                                        <div className="text-blue-600 font-medium text-xs">{selectedCourse.startDate}</div>
+                                    </div>
+                                </div>
+                                
+                                {/* Action Buttons - Compact */}
+                                <div className="flex gap-2 pt-2">
+                                    <button 
+                                        onClick={() => handleEnroll(selectedCourse.id)}
+                                        className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg font-medium text-center hover:bg-blue-700 transition-all duration-200 flex items-center justify-center gap-1"
+                                    >
+                                        <span className="material-icons text-xs">school</span>
+                                        <span className="text-xs">{t('courses.courseDetails.enrollNow')}</span>
+                                    </button>
+                                    <button 
+                                        onClick={closeModal}
+                                        className="flex-1 bg-gray-100 text-gray-700 py-2 px-4 rounded-lg font-medium text-center hover:bg-gray-200 transition-all duration-200 flex items-center justify-center gap-1"
+                                    >
+                                        <span className="material-icons text-xs">close</span>
+                                        <span className="text-xs">{t('courses.courseDetails.close')}</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             )}
+            
         </div>
     );
 };

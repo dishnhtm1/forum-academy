@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import webImage from '../assets/courses/web.jpg';
@@ -9,11 +9,22 @@ import cloudImage from '../assets/courses/cloud.jpg';
 import aiImage from '../assets/courses/ai.jpg';
 import mobileImage from '../assets/courses/mobile.jpg';
 
-const CourseSection = ({ limit, showFilters = false, title = "Our Featured Courses", coursesData, onViewCourse }) => {
+const CourseSection = ({ limit, showFilters = false, title = "Our Featured Courses", coursesData, onViewCourse, onCourseCardClick }) => {
     const { t } = useTranslation();
+    const history = useHistory();
     const [activeFilter, setActiveFilter] = useState('all');
     const [visibleCourses, setVisibleCourses] = useState(3);
     const sectionRef = useRef(null);
+    
+    // Handle enrollment - redirect to application form
+    const handleEnroll = (courseId, event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        // Store the selected course ID in localStorage for the application form
+        localStorage.setItem('selectedCourseId', courseId);
+        // Navigate to application form
+        history.push('/apply');
+    };
     
     // Use coursesData from props if available, otherwise use default courses
     const courses = coursesData || [
@@ -255,114 +266,113 @@ const CourseSection = ({ limit, showFilters = false, title = "Our Featured Cours
                 )}
                 
                 {/* Enhanced Course Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-12 sm:mb-16 auto-rows-fr">
                     {displayedCourses.map((course, index) => (
                         <div
                             key={course.id}
-                            className="group bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-4 hover:scale-105 overflow-hidden border border-gray-100 relative"
+                            className="group bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-6 hover:scale-105 overflow-hidden border border-gray-100 relative flex flex-col min-h-[500px] cursor-pointer"
                             style={{ animationDelay: `${index * 150}ms` }}
+                            onClick={(e) => onCourseCardClick && onCourseCardClick(course.id, e)}
                         >
-                            {/* Image Section with Overlay */}
-                            <div className="relative overflow-hidden h-56">
+                            {/* Image Section with Enhanced Design */}
+                            <div className="relative overflow-hidden h-48 sm:h-56 lg:h-64">
                                 <img 
                                     src={course.image} 
                                     alt={course.title}
                                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                                 />
                                 
-                                {/* Gradient Overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                {/* Dynamic Gradient Overlay */}
+                                <div className="absolute inset-0 bg-gradient-to-br from-black/20 via-transparent to-black/40 group-hover:from-black/40 group-hover:to-black/60 transition-all duration-500"></div>
                                 
-                                {/* Category Badge */}
-                                <div className={`absolute top-4 left-4 px-3 py-1 rounded-full text-sm font-bold shadow-lg ${getBadgeStyles(course.badgeColor)}`}>
+                                {/* Category Badge - Enhanced */}
+                                <div className={`absolute top-2 sm:top-4 left-2 sm:left-4 px-2 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-bold shadow-xl backdrop-blur-sm ${getBadgeStyles(course.badgeColor)} transform group-hover:scale-110 transition-transform duration-300`}>
                                     {course.category}
                                 </div>
                                 
-                                {/* Rating Badge */}
-                                <div className="absolute top-4 right-4 bg-white/95 px-3 py-1 rounded-full flex items-center gap-1 shadow-lg">
-                                    <span className="material-icons text-yellow-400 text-sm">star</span>
-                                    <span className="text-sm font-bold text-gray-800">{course.rating}</span>
+                                {/* Rating Badge - Enhanced */}
+                                <div className="absolute top-2 sm:top-4 right-2 sm:right-4 bg-white/95 backdrop-blur-sm px-2 sm:px-4 py-1 sm:py-2 rounded-full flex items-center gap-1 sm:gap-2 shadow-xl transform group-hover:scale-110 transition-transform duration-300">
+                                    <span className="material-icons text-yellow-500 text-xs sm:text-sm">star</span>
+                                    <span className="text-xs sm:text-sm font-bold text-gray-800">{course.rating}</span>
                                 </div>
                                 
-                                {/* Price Badge */}
-                                <div className="absolute bottom-4 right-4 bg-white/95 px-4 py-2 rounded-xl shadow-lg">
+                                {/* Price Badge - Enhanced */}
+                                <div className="absolute bottom-2 sm:bottom-4 right-2 sm:right-4 bg-white/95 backdrop-blur-sm px-2 sm:px-4 py-2 sm:py-3 rounded-xl shadow-xl transform group-hover:scale-105 transition-transform duration-300">
                                     <div className="text-right">
-                                        <div className="text-lg font-bold text-gray-900">{course.price}</div>
-                                        <div className="text-xs text-gray-500 line-through">{course.originalPrice}</div>
+                                        <div className="text-sm sm:text-xl font-bold text-gray-900">{course.price}</div>
+                                        <div className="text-xs sm:text-sm text-gray-500 line-through">{course.originalPrice}</div>
                                     </div>
                                 </div>
                                 
-                                {/* Hover Overlay with Quick Actions */}
-                                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
+                                {/* Floating Action Button - Simple */}
+                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
                                     <button 
-                                        onClick={() => onViewCourse && onViewCourse(course.id)}
-                                        className="bg-white text-gray-900 px-6 py-3 rounded-xl font-semibold flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 hover:bg-blue-50 hover:text-blue-700"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            onViewCourse && onViewCourse(course.id, e);
+                                        }}
+                                        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-lg hover:shadow-xl"
                                     >
                                         <span className="material-icons text-sm">visibility</span>
-                                        View Details
+                                        <span className="text-sm">{t('courses.courseDetails.viewDetails')}</span>
                                     </button>
                                 </div>
                             </div>
                             
-                            {/* Content Section */}
-                            <div className="p-8">
-                                {/* Course Meta Info */}
-                                <div className="flex items-center justify-between mb-4 text-sm text-gray-500">
-                                    <div className="flex items-center gap-1">
-                                        <span className="material-icons text-sm">schedule</span>
-                                        <span>{course.duration}</span>
+                            {/* Content Section - Enhanced */}
+                            <div className="p-4 sm:p-6 flex-1 flex flex-col">
+                                {/* Course Meta Info - Redesigned */}
+                                <div className="flex flex-wrap items-center justify-between mb-4 sm:mb-6 text-xs sm:text-sm gap-2">
+                                    <div className="flex items-center gap-1 sm:gap-2 bg-gray-100 px-2 sm:px-3 py-1 sm:py-2 rounded-full">
+                                        <span className="material-icons text-blue-600 text-xs sm:text-sm">schedule</span>
+                                        <span className="font-semibold text-gray-700 text-xs sm:text-sm">{course.duration}</span>
                                     </div>
-                                    <div className="flex items-center gap-1">
-                                        <span className="material-icons text-sm">people</span>
-                                        <span>{course.students.toLocaleString()}</span>
+                                    <div className="flex items-center gap-1 sm:gap-2 bg-gray-100 px-2 sm:px-3 py-1 sm:py-2 rounded-full">
+                                        <span className="material-icons text-green-600 text-xs sm:text-sm">people</span>
+                                        <span className="font-semibold text-gray-700 text-xs sm:text-sm">{course.students.toLocaleString()}</span>
                                     </div>
-                                    <div className="flex items-center gap-1">
-                                        <span className="material-icons text-sm">signal_cellular_alt</span>
-                                        <span>{course.level}</span>
+                                    <div className="flex items-center gap-1 sm:gap-2 bg-gray-100 px-2 sm:px-3 py-1 sm:py-2 rounded-full">
+                                        <span className="material-icons text-purple-600 text-xs sm:text-sm">trending_up</span>
+                                        <span className="font-semibold text-gray-700 text-xs sm:text-sm">{course.level}</span>
                                     </div>
                                 </div>
                                 
-                                {/* Course Title */}
-                                <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors duration-300">
+                                {/* Course Title - Enhanced */}
+                                <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 mb-3 sm:mb-4 group-hover:text-blue-600 transition-colors duration-300 leading-tight">
                                     {course.title}
                                 </h3>
                                 
-                                {/* Course Description */}
-                                <p className="text-gray-600 mb-6 leading-relaxed">
-                                    {course.description}
+                                {/* Course Description - Simple */}
+                                <p className="text-gray-600 mb-4 leading-relaxed text-xs sm:text-sm line-clamp-2 flex-1">
+                                    {course.description.length > 60 ? course.description.substring(0, 60) + '...' : course.description}
                                 </p>
-                                
-                                {/* Course Features */}
-                                <div className="space-y-3 mb-6">
-                                    {course.features.slice(0, 3).map((feature, idx) => (
-                                        <div key={idx} className="flex items-start gap-3">
-                                            <span className="material-icons text-green-500 text-sm mt-1">check_circle</span>
-                                            <span className="text-sm text-gray-700">{feature}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                                
-                                {/* Start Date */}
-                                <div className="flex items-center gap-2 mb-6 p-3 bg-blue-50 rounded-xl">
-                                    <span className="material-icons text-blue-600 text-sm">event</span>
-                                    <span className="text-sm text-blue-700">
-                                        <strong>Starts:</strong> {course.startDate}
-                                    </span>
-                                </div>
                             </div>
                             
-                            {/* Action Footer */}
-                            <div className="px-8 pb-8">
-                                <div className="flex gap-3">
+                            {/* Action Footer - Fully Responsive */}
+                            <div className="px-3 sm:px-4 lg:px-6 pb-3 sm:pb-4 lg:pb-6">
+                                <div className="flex gap-1.5 sm:gap-2 lg:gap-3">
+                                    {/* View Details Button - Responsive */}
                                     <button 
-                                        onClick={() => onViewCourse && onViewCourse(course.id)}
-                                        className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-6 rounded-xl font-bold text-center hover:from-blue-700 hover:to-purple-700 transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            onViewCourse && onViewCourse(course.id, e);
+                                        }}
+                                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 sm:py-2.5 px-2 sm:px-3 lg:px-4 rounded-lg font-medium text-center transition-all duration-200 flex items-center justify-center gap-1 sm:gap-2 shadow-md hover:shadow-lg min-w-0"
                                     >
-                                        <span className="material-icons text-sm">school</span>
-                                        {t('courseSection.buttons.enrollNow') || 'Enroll Now'}
+                                        <span className="material-icons text-xs sm:text-sm flex-shrink-0">visibility</span>
+                                        <span className="text-xs sm:text-sm truncate">{t('courses.courseDetails.viewDetails')}</span>
                                     </button>
-                                    <button className="px-4 py-4 border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all duration-300 group">
-                                        <span className="material-icons text-gray-500 group-hover:text-blue-500">favorite_border</span>
+                                    
+                                    {/* Enroll Button - Responsive */}
+                                    <button 
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleEnroll(course.id, e);
+                                        }}
+                                        className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 sm:py-2.5 px-2 sm:px-3 lg:px-4 rounded-lg font-medium text-center transition-all duration-200 flex items-center justify-center gap-1 sm:gap-2 shadow-md hover:shadow-lg min-w-0"
+                                    >
+                                        <span className="material-icons text-xs sm:text-sm flex-shrink-0">school</span>
+                                        <span className="text-xs sm:text-sm truncate">{t('courses.courseDetails.enroll')}</span>
                                     </button>
                                 </div>
                             </div>

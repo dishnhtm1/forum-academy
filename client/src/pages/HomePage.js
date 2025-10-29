@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import CourseSection from '../components/CourseSection';
 import AboutSection from '../components/AboutSection';
@@ -10,6 +10,23 @@ import Hero from '../components/Hero';
 
 const HomePage = () => {
     const { t } = useTranslation();
+    const history = useHistory();
+    
+    // Handle course navigation - redirect to courses page
+    const handleViewCourse = (courseId, event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        // Navigate to courses page
+        history.push('/courses');
+    };
+    
+    // Handle course card click - also navigate to courses page
+    const handleCourseCardClick = (courseId, event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        // Navigate to courses page
+        history.push('/courses');
+    };
 
     // Add animation effects when components enter viewport
     useEffect(() => {
@@ -247,7 +264,10 @@ const HomePage = () => {
                         </div>
                     </div>
                     
-                    <CourseSection />
+                    <CourseSection 
+                        onViewCourse={handleViewCourse}
+                        onCourseCardClick={handleCourseCardClick}
+                    />
                 </div>
             </section>
 
