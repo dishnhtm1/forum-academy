@@ -30,7 +30,6 @@ const CoursesPage = () => {
             rating: 4.9,
             students: 2847,
             instructor: 'Dr. Sarah Johnson',
-            instructorImage: require('../assets/instructors/sarah.jpg'),
             features: [
                 'Hands-on project-based learning',
                 'Industry mentor support',
@@ -93,7 +92,6 @@ const CoursesPage = () => {
             rating: 4.8,
             students: 1923,
             instructor: 'Prof. Michael Chen',
-            instructorImage: require('../assets/instructors/michael.jpg'),
             features: [
                 'Real-world datasets and case studies',
                 'Industry expert mentorship',
@@ -156,7 +154,6 @@ const CoursesPage = () => {
             rating: 4.7,
             students: 1654,
             instructor: 'Alex Rodriguez',
-            instructorImage: require('../assets/instructors/alex.jpg'),
             features: [
                 'Hands-on lab environment',
                 'Industry certifications (CISSP, CEH)',
@@ -219,7 +216,6 @@ const CoursesPage = () => {
             rating: 4.8,
             students: 2156,
             instructor: 'Emma Wilson',
-            instructorImage: require('../assets/instructors/emma.jpg'),
             features: [
                 'Multi-cloud platform training',
                 'Industry certifications (AWS, Azure)',
@@ -283,7 +279,6 @@ const CoursesPage = () => {
             rating: 4.9,
             students: 987,
             instructor: 'Dr. David Kim',
-            instructorImage: require('../assets/instructors/david.jpg'),
             features: [
                 'Cutting-edge AI research projects',
                 'Industry expert mentorship',
@@ -346,7 +341,6 @@ const CoursesPage = () => {
             rating: 4.6,
             students: 1743,
             instructor: 'Lisa Thompson',
-            instructorImage: require('../assets/instructors/lisa.jpg'),
             features: [
                 'Native iOS and Android development',
                 'Cross-platform framework mastery',
