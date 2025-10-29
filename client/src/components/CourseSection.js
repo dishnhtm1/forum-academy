@@ -9,13 +9,14 @@ import cloudImage from '../assets/courses/cloud.jpg';
 import aiImage from '../assets/courses/ai.jpg';
 import mobileImage from '../assets/courses/mobile.jpg';
 
-const CourseSection = ({ limit, showFilters = false, title = "Our Featured Courses" }) => {
+const CourseSection = ({ limit, showFilters = false, title = "Our Featured Courses", coursesData, onViewCourse }) => {
     const { t } = useTranslation();
     const [activeFilter, setActiveFilter] = useState('all');
     const [visibleCourses, setVisibleCourses] = useState(3);
     const sectionRef = useRef(null);
     
-    const courses = [
+    // Use coursesData from props if available, otherwise use default courses
+    const courses = coursesData || [
         {
             id: 'web-dev',
             title: t('courseSection.courses.webDev.title'),
@@ -293,13 +294,13 @@ const CourseSection = ({ limit, showFilters = false, title = "Our Featured Cours
                                 
                                 {/* Hover Overlay with Quick Actions */}
                                 <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
-                                    <Link 
-                                        to={`/courses/${course.id}`}
+                                    <button 
+                                        onClick={() => onViewCourse && onViewCourse(course.id)}
                                         className="bg-white text-gray-900 px-6 py-3 rounded-xl font-semibold flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 hover:bg-blue-50 hover:text-blue-700"
                                     >
                                         <span className="material-icons text-sm">visibility</span>
                                         View Details
-                                    </Link>
+                                    </button>
                                 </div>
                             </div>
                             
@@ -353,13 +354,13 @@ const CourseSection = ({ limit, showFilters = false, title = "Our Featured Cours
                             {/* Action Footer */}
                             <div className="px-8 pb-8">
                                 <div className="flex gap-3">
-                                    <Link 
-                                        to={`/courses/${course.id}`}
+                                    <button 
+                                        onClick={() => onViewCourse && onViewCourse(course.id)}
                                         className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-6 rounded-xl font-bold text-center hover:from-blue-700 hover:to-purple-700 transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105"
                                     >
                                         <span className="material-icons text-sm">school</span>
                                         {t('courseSection.buttons.enrollNow') || 'Enroll Now'}
-                                    </Link>
+                                    </button>
                                     <button className="px-4 py-4 border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all duration-300 group">
                                         <span className="material-icons text-gray-500 group-hover:text-blue-500">favorite_border</span>
                                     </button>

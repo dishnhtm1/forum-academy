@@ -1,14 +1,412 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useTranslation } from 'react-i18next'; // Add this import only
+import { useTranslation } from 'react-i18next';
 import CourseSection from '../components/CourseSection';
 import StatsSection from '../components/StatsSection';
 import NewsSection from '../components/NewsSection';
+import CourseModal from '../components/CourseModal';
 import '../styles/CoursesPage.css';
 
 const CoursesPage = () => {
-    const { t } = useTranslation(); // Add this line only
+    const { t } = useTranslation();
     const [isVisible, setIsVisible] = useState(false);
+    const [selectedCourse, setSelectedCourse] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const sectionRef = useRef(null);
+
+    // Course data with detailed information
+    const coursesData = [
+        {
+            id: 'web-dev',
+            title: 'Full-Stack Web Development Bootcamp',
+            description: 'Master modern web development with our comprehensive bootcamp covering frontend, backend, and deployment. Learn industry-standard technologies and build real-world projects.',
+            image: require('../assets/courses/web.jpg'),
+            duration: '6 months',
+            startDate: 'March 15, 2024',
+            price: '¥350,000',
+            originalPrice: '¥450,000',
+            category: 'Web Development',
+            badgeColor: 'blue',
+            level: 'Beginner to Intermediate',
+            rating: 4.9,
+            students: 2847,
+            instructor: 'Dr. Sarah Johnson',
+            instructorImage: require('../assets/instructors/sarah.jpg'),
+            features: [
+                'Hands-on project-based learning',
+                'Industry mentor support',
+                'Career placement assistance',
+                'Lifetime access to materials',
+                'Portfolio development',
+                'Interview preparation'
+            ],
+            curriculum: [
+                'HTML5 & CSS3 Fundamentals (2 weeks)',
+                'JavaScript ES6+ Advanced (3 weeks)',
+                'React.js & Redux (4 weeks)',
+                'Node.js & Express (3 weeks)',
+                'MongoDB & Database Design (2 weeks)',
+                'RESTful API Development (2 weeks)',
+                'Authentication & Security (2 weeks)',
+                'Deployment & DevOps (2 weeks)',
+                'Capstone Project (4 weeks)'
+            ],
+            requirements: [
+                'Basic computer literacy',
+                'High school diploma or equivalent',
+                'Commitment to 40+ hours per week',
+                'Access to a computer with internet',
+                'No prior programming experience required'
+            ],
+            whatYouWillLearn: [
+                'Build responsive, mobile-first web applications',
+                'Master modern JavaScript frameworks and libraries',
+                'Create secure RESTful APIs and microservices',
+                'Implement user authentication and authorization',
+                'Deploy applications to cloud platforms (AWS, Vercel)',
+                'Work with databases and data management systems',
+                'Use version control with Git and GitHub',
+                'Apply software engineering best practices'
+            ],
+            careerOutcomes: [
+                'Frontend Developer (¥4.5M - ¥7M annually)',
+                'Backend Developer (¥5M - ¥8M annually)',
+                'Full-Stack Developer (¥6M - ¥10M annually)',
+                'Web Application Developer (¥4M - ¥7M annually)',
+                'Software Engineer (¥5M - ¥9M annually)'
+            ],
+            jobPlacement: '95%',
+            averageSalary: '¥6.2M',
+            companies: ['Google', 'Microsoft', 'Amazon', 'Rakuten', 'Mercari', 'CyberAgent']
+        },
+        {
+            id: 'data-science',
+            title: 'Data Science & Machine Learning Mastery',
+            description: 'Transform data into insights with our comprehensive data science program. Learn Python, statistics, machine learning, and deep learning to become a data science professional.',
+            image: require('../assets/courses/data.jpg'),
+            duration: '8 months',
+            startDate: 'April 1, 2024',
+            price: '¥420,000',
+            originalPrice: '¥520,000',
+            category: 'Data Science',
+            badgeColor: 'green',
+            level: 'Intermediate to Advanced',
+            rating: 4.8,
+            students: 1923,
+            instructor: 'Prof. Michael Chen',
+            instructorImage: require('../assets/instructors/michael.jpg'),
+            features: [
+                'Real-world datasets and case studies',
+                'Industry expert mentorship',
+                'Kaggle competition participation',
+                'Portfolio of 5+ projects',
+                'AWS/Google Cloud certification prep',
+                'Job placement guarantee'
+            ],
+            curriculum: [
+                'Python Programming for Data Science (3 weeks)',
+                'Statistics & Probability (4 weeks)',
+                'Data Visualization with Matplotlib/Seaborn (2 weeks)',
+                'Machine Learning Algorithms (6 weeks)',
+                'Deep Learning with TensorFlow/PyTorch (4 weeks)',
+                'Big Data Processing with Spark (3 weeks)',
+                'SQL & Database Management (2 weeks)',
+                'Data Engineering & ETL (3 weeks)',
+                'Capstone Project (6 weeks)'
+            ],
+            requirements: [
+                'Bachelor\'s degree in STEM field preferred',
+                'Basic programming knowledge (Python recommended)',
+                'Strong mathematics background',
+                'Commitment to 35+ hours per week',
+                'Access to a computer with internet'
+            ],
+            whatYouWillLearn: [
+                'Analyze large datasets using Python and R',
+                'Build and deploy machine learning models',
+                'Create compelling data visualizations and dashboards',
+                'Implement deep learning algorithms for complex problems',
+                'Work with big data technologies (Spark, Hadoop)',
+                'Communicate data insights to business stakeholders',
+                'Use cloud platforms for data science workflows',
+                'Apply statistical methods to real-world problems'
+            ],
+            careerOutcomes: [
+                'Data Scientist (¥6M - ¥12M annually)',
+                'Machine Learning Engineer (¥7M - ¥15M annually)',
+                'Data Analyst (¥4M - ¥8M annually)',
+                'Business Intelligence Analyst (¥5M - ¥9M annually)',
+                'Research Scientist (¥8M - ¥18M annually)'
+            ],
+            jobPlacement: '92%',
+            averageSalary: '¥8.5M',
+            companies: ['Sony', 'SoftBank', 'LINE', 'DeNA', 'Preferred Networks', 'ABEJA']
+        },
+        {
+            id: 'cybersecurity',
+            title: 'Cybersecurity Professional Certification',
+            description: 'Master cybersecurity fundamentals and advanced techniques. Learn ethical hacking, penetration testing, and security architecture to protect organizations from cyber threats.',
+            image: require('../assets/courses/cyber.jpg'),
+            duration: '7 months',
+            startDate: 'May 10, 2024',
+            price: '¥400,000',
+            originalPrice: '¥500,000',
+            category: 'Cybersecurity',
+            badgeColor: 'red',
+            level: 'Intermediate to Advanced',
+            rating: 4.7,
+            students: 1654,
+            instructor: 'Alex Rodriguez',
+            instructorImage: require('../assets/instructors/alex.jpg'),
+            features: [
+                'Hands-on lab environment',
+                'Industry certifications (CISSP, CEH)',
+                'Real-world attack simulations',
+                'Career placement assistance',
+                'Lifetime access to security tools',
+                'Industry mentor network'
+            ],
+            curriculum: [
+                'Network Security Fundamentals (3 weeks)',
+                'Ethical Hacking Techniques (4 weeks)',
+                'Penetration Testing (4 weeks)',
+                'Cryptography & Encryption (3 weeks)',
+                'Incident Response & Forensics (3 weeks)',
+                'Security Architecture Design (3 weeks)',
+                'Risk Assessment & Management (2 weeks)',
+                'Compliance & Governance (2 weeks)',
+                'Capstone Security Project (4 weeks)'
+            ],
+            requirements: [
+                'Basic networking knowledge (CCNA level)',
+                'Understanding of operating systems',
+                'Strong analytical and problem-solving skills',
+                'Commitment to 30+ hours per week',
+                'Access to a computer with internet'
+            ],
+            whatYouWillLearn: [
+                'Identify and exploit security vulnerabilities',
+                'Conduct comprehensive penetration tests',
+                'Implement enterprise security solutions',
+                'Respond to and investigate security incidents',
+                'Design secure network and system architectures',
+                'Ensure compliance with security regulations',
+                'Use industry-standard security tools',
+                'Develop security policies and procedures'
+            ],
+            careerOutcomes: [
+                'Cybersecurity Analyst (¥5M - ¥9M annually)',
+                'Penetration Tester (¥6M - ¥11M annually)',
+                'Security Consultant (¥7M - ¥13M annually)',
+                'Incident Response Specialist (¥6M - ¥10M annually)',
+                'Security Architect (¥8M - ¥15M annually)'
+            ],
+            jobPlacement: '89%',
+            averageSalary: '¥8.2M',
+            companies: ['NTT Security', 'Trend Micro', 'Symantec', 'IBM Security', 'Accenture', 'Deloitte']
+        },
+        {
+            id: 'cloud-computing',
+            title: 'Cloud Computing & DevOps Mastery',
+            description: 'Master cloud platforms and DevOps practices. Learn AWS, Azure, Docker, Kubernetes, and automation to build scalable, reliable cloud infrastructure.',
+            image: require('../assets/courses/cloud.jpg'),
+            duration: '5 months',
+            startDate: 'June 5, 2024',
+            price: '¥380,000',
+            originalPrice: '¥480,000',
+            category: 'Cloud Computing',
+            badgeColor: 'cyan',
+            level: 'Intermediate',
+            rating: 4.8,
+            students: 2156,
+            instructor: 'Emma Wilson',
+            instructorImage: require('../assets/instructors/emma.jpg'),
+            features: [
+                'Multi-cloud platform training',
+                'Industry certifications (AWS, Azure)',
+                'Real-world project deployments',
+                'DevOps toolchain mastery',
+                'Cost optimization strategies',
+                'Career placement support'
+            ],
+            curriculum: [
+                'Cloud Computing Fundamentals (2 weeks)',
+                'AWS Services & Architecture (4 weeks)',
+                'Microsoft Azure Platform (3 weeks)',
+                'Google Cloud Platform (2 weeks)',
+                'Containerization with Docker (2 weeks)',
+                'Kubernetes Orchestration (3 weeks)',
+                'Serverless Computing (2 weeks)',
+                'Cloud Security & Compliance (2 weeks)',
+                'DevOps & CI/CD (3 weeks)',
+                'Capstone Project (4 weeks)'
+            ],
+            requirements: [
+                'Basic understanding of networking',
+                'Familiarity with Linux/Unix systems',
+                'Some programming experience (Python/JavaScript)',
+                'Commitment to 35+ hours per week',
+                'Access to a computer with internet'
+            ],
+            whatYouWillLearn: [
+                'Design and implement scalable cloud architectures',
+                'Deploy and manage applications on AWS, Azure, and GCP',
+                'Containerize applications with Docker and Kubernetes',
+                'Implement CI/CD pipelines and DevOps practices',
+                'Optimize cloud costs and performance',
+                'Ensure cloud security and compliance',
+                'Automate infrastructure with Infrastructure as Code',
+                'Monitor and troubleshoot cloud applications'
+            ],
+            careerOutcomes: [
+                'Cloud Solutions Architect (¥7M - ¥14M annually)',
+                'DevOps Engineer (¥6M - ¥12M annually)',
+                'Cloud Engineer (¥5M - ¥10M annually)',
+                'Systems Administrator (¥4M - ¥8M annually)',
+                'Cloud Consultant (¥6M - ¥13M annually)'
+            ],
+            jobPlacement: '94%',
+            averageSalary: '¥8.8M',
+            companies: ['AWS', 'Microsoft', 'Google Cloud', 'NTT Communications', 'Fujitsu', 'Hitachi']
+        },
+        {
+            id: 'ai-ml',
+            title: 'Artificial Intelligence & Machine Learning Expert',
+            description: 'Master cutting-edge AI and ML technologies. Learn deep learning, computer vision, NLP, and MLOps to become an AI professional in the rapidly growing field.',
+            image: require('../assets/courses/ai.jpg'),
+            duration: '9 months',
+            startDate: 'July 15, 2024',
+            price: '¥450,000',
+            originalPrice: '¥550,000',
+            category: 'AI & Machine Learning',
+            badgeColor: 'purple',
+            level: 'Advanced',
+            rating: 4.9,
+            students: 987,
+            instructor: 'Dr. David Kim',
+            instructorImage: require('../assets/instructors/david.jpg'),
+            features: [
+                'Cutting-edge AI research projects',
+                'Industry expert mentorship',
+                'GPU cluster access for training',
+                'Kaggle competition participation',
+                'Research paper publication support',
+                'Startup incubation program'
+            ],
+            curriculum: [
+                'Machine Learning Fundamentals (4 weeks)',
+                'Deep Learning with Neural Networks (6 weeks)',
+                'Natural Language Processing (4 weeks)',
+                'Computer Vision (4 weeks)',
+                'Reinforcement Learning (3 weeks)',
+                'AI Ethics & Responsible AI (2 weeks)',
+                'Model Deployment & MLOps (3 weeks)',
+                'Advanced AI Applications (3 weeks)',
+                'Research Project (6 weeks)'
+            ],
+            requirements: [
+                'Bachelor\'s degree in Computer Science, Math, or related field',
+                'Strong Python programming skills',
+                'Advanced mathematics background (Linear Algebra, Calculus)',
+                'Commitment to 40+ hours per week',
+                'Access to a computer with internet'
+            ],
+            whatYouWillLearn: [
+                'Build and train deep neural networks',
+                'Implement state-of-the-art ML algorithms',
+                'Process and analyze natural language with transformers',
+                'Develop computer vision applications',
+                'Deploy AI models in production environments',
+                'Apply ethical AI principles and bias mitigation',
+                'Use cloud AI services (AWS SageMaker, Google AI)',
+                'Conduct AI research and publish findings'
+            ],
+            careerOutcomes: [
+                'AI Research Scientist (¥10M - ¥20M annually)',
+                'Machine Learning Engineer (¥8M - ¥16M annually)',
+                'AI Product Manager (¥9M - ¥18M annually)',
+                'Computer Vision Engineer (¥7M - ¥14M annually)',
+                'NLP Engineer (¥8M - ¥15M annually)'
+            ],
+            jobPlacement: '91%',
+            averageSalary: '¥12.5M',
+            companies: ['Preferred Networks', 'ABEJA', 'Sony AI', 'SoftBank AI', 'LINE AI', 'CyberAgent AI']
+        },
+        {
+            id: 'mobile-dev',
+            title: 'Mobile App Development Mastery',
+            description: 'Master mobile app development for iOS and Android. Learn React Native, Flutter, native development, and app store optimization to build successful mobile applications.',
+            image: require('../assets/courses/mobile.jpg'),
+            duration: '6 months',
+            startDate: 'August 20, 2024',
+            price: '¥370,000',
+            originalPrice: '¥470,000',
+            category: 'Mobile Development',
+            badgeColor: 'orange',
+            level: 'Beginner to Intermediate',
+            rating: 4.6,
+            students: 1743,
+            instructor: 'Lisa Thompson',
+            instructorImage: require('../assets/instructors/lisa.jpg'),
+            features: [
+                'Native iOS and Android development',
+                'Cross-platform framework mastery',
+                'App store optimization training',
+                'Real app publishing experience',
+                'UI/UX design principles',
+                'Career placement assistance'
+            ],
+            curriculum: [
+                'React Native Development (4 weeks)',
+                'Flutter & Dart Programming (3 weeks)',
+                'iOS Development with Swift (4 weeks)',
+                'Android Development with Kotlin (4 weeks)',
+                'Mobile UI/UX Design (2 weeks)',
+                'App Store Optimization (2 weeks)',
+                'Mobile Testing & QA (2 weeks)',
+                'Cross-Platform Deployment (2 weeks)',
+                'Capstone App Project (4 weeks)'
+            ],
+            requirements: [
+                'Basic programming knowledge (JavaScript/Java/Swift)',
+                'Understanding of mobile app concepts',
+                'Design thinking and creativity',
+                'Commitment to 35+ hours per week',
+                'Access to a computer with internet'
+            ],
+            whatYouWillLearn: [
+                'Build native iOS and Android applications',
+                'Create cross-platform apps with React Native and Flutter',
+                'Design intuitive and responsive mobile interfaces',
+                'Implement mobile-specific features (camera, GPS, notifications)',
+                'Test and debug mobile applications effectively',
+                'Publish apps to Apple App Store and Google Play Store',
+                'Optimize app performance and user experience',
+                'Monetize mobile applications'
+            ],
+            careerOutcomes: [
+                'Mobile App Developer (¥5M - ¥10M annually)',
+                'iOS Developer (¥6M - ¥12M annually)',
+                'Android Developer (¥5M - ¥11M annually)',
+                'Cross-Platform Developer (¥5M - ¥10M annually)',
+                'Mobile UI/UX Designer (¥4M - ¥8M annually)'
+            ],
+            jobPlacement: '93%',
+            averageSalary: '¥7.8M',
+            companies: ['LINE', 'Mercari', 'CyberAgent', 'GREE', 'DeNA', 'Mixi']
+        }
+    ];
+
+    // Modal handling functions
+    const openModal = (courseId) => {
+        const course = coursesData.find(c => c.id === courseId);
+        setSelectedCourse(course);
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setSelectedCourse(null);
+    };
 
     // Keep ALL your existing useEffect code exactly as is
     useEffect(() => {
@@ -312,7 +710,7 @@ const CoursesPage = () => {
             {/* Keep ALL your existing sections exactly as they are */}
             <section className="courses-section">
                 <div className="container">
-                    <CourseSection />
+                    <CourseSection coursesData={coursesData} onViewCourse={openModal} />
                     
                 </div>
             </section>
@@ -332,6 +730,15 @@ const CoursesPage = () => {
                     <NewsSection />
                 </div>
             </section>
+
+            {/* Course Information Modal */}
+            {isModalOpen && selectedCourse && (
+                <CourseModal 
+                    course={selectedCourse} 
+                    isOpen={isModalOpen} 
+                    onClose={closeModal} 
+                />
+            )}
         </div>
     );
 };
