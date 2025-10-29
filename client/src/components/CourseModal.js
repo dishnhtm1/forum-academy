@@ -46,10 +46,10 @@ const CourseModal = ({ course, isOpen, onClose }) => {
             ></div>
 
             {/* Modal */}
-            <div className="flex min-h-screen items-center justify-center p-2 sm:p-4">
+            <div className="flex min-h-screen items-center justify-center p-2 sm:p-4 relative z-10">
                 <div className="relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl transform transition-all mx-auto">
                     {/* Header */}
-                    <div className="sticky top-0 bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-8 py-4 sm:py-6 rounded-t-2xl">
+                    <div className="bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-8 py-4 sm:py-6 rounded-t-2xl">
                         <div className="flex items-center justify-between">
                             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
                                 <div className={`px-3 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-bold ${getBadgeStyles(course.badgeColor)}`}>
@@ -71,11 +71,11 @@ const CourseModal = ({ course, isOpen, onClose }) => {
                     </div>
 
                     {/* Content */}
-                    <div className="max-h-[85vh] overflow-y-auto">
+                    <div className="max-h-[80vh] overflow-y-auto">
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 p-4 sm:p-6 lg:p-8">
                             {/* Left Column - Course Image and Basic Info */}
                             <div className="lg:col-span-1">
-                                <div className="sticky top-24">
+                                <div className="space-y-4 sm:space-y-6">
                                     {/* Course Image */}
                                     <div className="relative overflow-hidden rounded-xl mb-4 sm:mb-6">
                                         <img 
