@@ -50,14 +50,52 @@ const HomePage = () => {
             {/* Course Catalog Section - Key Feature 1 */}
             <section className="section opacity-0 transform translate-y-5 transition-all duration-600 ease-out py-8 sm:py-12 md:py-16 lg:py-20" id="courses">
                 <div className="container max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="section-header text-center mb-8 sm:mb-10 md:mb-12 lg:mb-16">
-                        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-slate-800 mb-3 sm:mb-4 relative">
-                            {t('home.courses.title')}
-                            <div className="absolute -bottom-2 sm:-bottom-3 left-1/2 transform -translate-x-1/2 w-12 sm:w-16 h-1 bg-gradient-to-r from-slate-300 to-slate-400 rounded-full"></div>
-                        </h2>
-                        <p className="text-base sm:text-lg text-slate-600 leading-relaxed mt-4 sm:mt-6 max-w-2xl mx-auto px-4">
-                            {t('home.courses.description')}
-                        </p>
+                    {/* Modern Gradient Header Design */}
+                    <div className="mb-8 sm:mb-10 md:mb-12 lg:mb-16 relative overflow-hidden">
+                        {/* Gradient Background with Animated Elements */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 rounded-3xl opacity-90"></div>
+                        <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent"></div>
+                        
+                        {/* Animated Background Orbs */}
+                        <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-400/30 rounded-full blur-3xl animate-pulse"></div>
+                        <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-purple-400/30 rounded-full blur-3xl animate-pulse delay-1000"></div>
+                        
+                        {/* Content */}
+                        <div className="relative z-10 p-8 sm:p-10 md:p-12 lg:p-16">
+                            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8 lg:gap-12">
+                                {/* Title Section */}
+                                <div className="flex-1">
+                                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full mb-6">
+                                        <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+                                        <span className="text-white/90 text-sm font-medium">{t('home.courses.title')}</span>
+                                    </div>
+                                    <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-4 leading-tight">
+                                        {t('home.courses.title')}
+                                    </h2>
+                                    {/* Decorative Line */}
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-16 h-1 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full"></div>
+                                        <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                                    </div>
+                                </div>
+                                
+                                {/* Description Section */}
+                                <div className="flex-1 lg:max-w-lg lg:pt-4">
+                                    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
+                                        <div className="flex items-start gap-3 mb-3">
+                                            <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                            </div>
+                                            <p className="text-white/95 text-base sm:text-lg leading-relaxed pt-1">
+                                                {t('home.courses.description')}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Course filters - Enhanced Design with Mobile Responsiveness */}
@@ -221,17 +259,65 @@ const HomePage = () => {
             </section>
 
             {/* Stats Section */}
-            <section className="section opacity-0 transform translate-y-5 transition-all duration-600 ease-out py-8 sm:py-12 md:py-16 lg:py-20" id="stats">
-                <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="section-header text-center mb-8 sm:mb-10 md:mb-12 lg:mb-16">
-                        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-slate-800 mb-3 sm:mb-4 relative">
-                            {t('home.stats.title')}
-                            <div className="absolute -bottom-2 sm:-bottom-3 left-1/2 transform -translate-x-1/2 w-12 sm:w-16 h-1 bg-gradient-to-r from-slate-300 to-slate-400 rounded-full"></div>
-                        </h2>
-                        <p className="text-base sm:text-lg text-slate-600 leading-relaxed mt-4 sm:mt-6 max-w-2xl mx-auto px-4">
-                            {t('home.stats.description')}
-                        </p>
+            <section className="section opacity-0 transform translate-y-5 transition-all duration-600 ease-out py-8 sm:py-12 md:py-16 lg:py-20 relative overflow-hidden" id="stats">
+                {/* Background Decorative Elements */}
+                <div className="absolute inset-0 pointer-events-none">
+                    <div className="absolute top-10 left-10 w-20 h-20 bg-blue-200 rounded-full opacity-30 animate-pulse"></div>
+                    <div className="absolute bottom-10 right-10 w-16 h-16 bg-purple-200 rounded-full opacity-30 animate-pulse delay-300"></div>
+                    <div className="absolute top-1/2 left-1/4 w-12 h-12 bg-pink-200 rounded-full opacity-20 animate-pulse delay-700"></div>
+                    <div className="absolute bottom-1/4 right-1/4 w-14 h-14 bg-cyan-200 rounded-full opacity-25 animate-pulse delay-1000"></div>
+                </div>
+                
+                <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    {/* Modern Gradient Header Design for Stats */}
+                    <div className="mb-8 sm:mb-10 md:mb-12 lg:mb-16 relative overflow-hidden">
+                        {/* Gradient Background with Animated Elements */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-3xl opacity-90"></div>
+                        <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent"></div>
+                        
+                        {/* Animated Background Orbs */}
+                        <div className="absolute -top-10 -right-10 w-32 h-32 bg-purple-400/30 rounded-full blur-3xl animate-pulse"></div>
+                        <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-pink-400/30 rounded-full blur-3xl animate-pulse delay-1000"></div>
+                        
+                        {/* Content */}
+                        <div className="relative z-10 p-8 sm:p-10 md:p-12 lg:p-16">
+                            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8 lg:gap-12">
+                                {/* Title Section */}
+                                <div className="flex-1">
+                                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full mb-6">
+                                        <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+                                        <span className="text-white/90 text-sm font-medium">{t('home.stats.title')}</span>
+                                    </div>
+                                    <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-4 leading-tight">
+                                        <span className="block">{t('home.stats.title').split(' ')[0]}</span>
+                                        <span className="block">{t('home.stats.title').split(' ').slice(1).join(' ')}</span>
+                                    </h2>
+                                    {/* Decorative Line */}
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-16 h-1 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full"></div>
+                                        <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                                    </div>
+                                </div>
+                                
+                                {/* Description Section */}
+                                <div className="flex-1 lg:max-w-lg lg:pt-4">
+                                    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
+                                        <div className="flex items-start gap-3 mb-3">
+                                            <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                                </svg>
+                                            </div>
+                                            <p className="text-white/95 text-base sm:text-lg leading-relaxed pt-1">
+                                                {t('home.stats.description')}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                    
                     <StatsSection />
                 </div>
             </section>

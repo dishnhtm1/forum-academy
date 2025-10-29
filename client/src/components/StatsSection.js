@@ -236,7 +236,7 @@ function StatsSection() {
                     <div className="relative inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white rounded-full text-sm font-bold mb-8 shadow-2xl transform hover:scale-105 transition-all duration-300">
                         <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-full blur opacity-30 animate-pulse"></div>
                         <span className="material-icons text-lg relative z-10">analytics</span>
-                        <span className="relative z-10">Our Success Metrics</span>
+                        <span className="relative z-10">{t('statsSection.header.badge')}</span>
                     </div>
                     
                     <h2 className="text-5xl md:text-6xl font-black text-gray-900 mb-6 leading-tight">

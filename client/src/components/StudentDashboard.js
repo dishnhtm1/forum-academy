@@ -522,121 +522,119 @@ const StudentDashboard = () => {
   const fetchNotifications = async () => {
     setNotificationLoading(true);
     try {
+      let transformedNotifications = [];
+      
       // Get authentication token
       const token = localStorage.getItem("authToken") || localStorage.getItem("token");
       
       // First try to fetch real notifications from the authenticated endpoint
-      let response;
       if (token) {
-        response = await fetch(`${process.env.REACT_APP_API_URL}/api/notifications`, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-      }
-
-      if (response && response.ok) {
-        const data = await response.json();
-
-        if (data.success && data.notifications) {
-          // Transform backend notifications to match frontend format
-          const transformedNotifications = data.notifications.map((notification) => ({
-            id: notification._id,
-            type: notification.type,
-            title: notification.title,
-            message: notification.message,
-            timestamp: notification.createdAt,
-            read: notification.read || false,
-            priority: notification.priority || "medium",
-            icon: getNotificationIcon(notification.type),
-            color: getNotificationColor(notification.type),
-            sender: notification.sender,
-          }));
-
-          setNotifications(transformedNotifications);
-
-          // Calculate stats
-          const stats = {
-            total: transformedNotifications.length,
-            unread: data.pagination?.unreadCount || transformedNotifications.filter((n) => !n.read).length,
-            byType: {
-              grade_update: transformedNotifications.filter((n) => n.type === "grade_update").length,
-              assignment_new: transformedNotifications.filter((n) => n.type === "assignment_new").length,
-              teacher_message: transformedNotifications.filter((n) => n.type === "teacher_message").length,
-              quiz_available: transformedNotifications.filter((n) => n.type === "quiz_available").length,
-              homework_due: transformedNotifications.filter((n) => n.type === "homework_due").length,
-              announcement: transformedNotifications.filter((n) => n.type === "announcement").length,
-              admin_announcement: transformedNotifications.filter((n) => n.type === "admin_announcement").length,
-              live_class_started: transformedNotifications.filter((n) => n.type === "live_class_started").length,
-              live_class_ended: transformedNotifications.filter((n) => n.type === "live_class_ended").length,
-              zoom_class: transformedNotifications.filter((n) => n.type === "zoom_class").length,
+        try {
+          const response = await fetch(`${process.env.REACT_APP_API_URL}/api/notifications`, {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
             },
-          };
+          });
 
-          setNotificationStats(stats);
-          setUnreadCount(stats.unread);
+          if (response && response.ok) {
+            const data = await response.json();
 
-          console.log("✅ Fetched notifications:", transformedNotifications.length);
-          console.log("📊 Notification stats:", stats);
-          return;
+            if (data.success && data.notifications) {
+              // Transform backend notifications to match frontend format
+              transformedNotifications = data.notifications.map((notification) => ({
+                id: notification._id,
+                type: notification.type,
+                title: notification.title,
+                message: notification.message,
+                timestamp: notification.createdAt,
+                read: notification.read || false,
+                priority: notification.priority || "medium",
+                icon: getNotificationIcon(notification.type),
+                color: getNotificationColor(notification.type),
+                sender: notification.sender,
+              }));
+            }
+          }
+        } catch (apiError) {
+          console.log("API notifications not available, checking local notifications");
         }
       }
 
-      // Fall back to test endpoint if authenticated endpoint fails
-      const testResponse = await fetch(`${process.env.REACT_APP_API_URL}/api/notifications/test`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (testResponse.ok) {
-        const data = await testResponse.json();
-
-        // Transform backend notifications to match frontend format
-        const transformedNotifications = data.notifications.map((notification) => ({
-          id: notification._id,
+      // Check for local notifications as fallback
+      try {
+        const localNotifications = JSON.parse(localStorage.getItem('localNotifications') || '[]');
+        const localTransformed = localNotifications.map(notification => ({
+          id: notification.id,
           type: notification.type,
           title: notification.title,
           message: notification.message,
-          timestamp: notification.createdAt,
+          timestamp: notification.timestamp,
           read: notification.read || false,
           priority: notification.priority || "medium",
           icon: getNotificationIcon(notification.type),
           color: getNotificationColor(notification.type),
           sender: notification.sender,
+          source: 'local',
         }));
-
-        setNotifications(transformedNotifications);
-
-        // Calculate stats
-        const stats = {
-          total: transformedNotifications.length,
-          unread: data.unreadCount || transformedNotifications.filter((n) => !n.read).length,
-          byType: {
-            grade_update: transformedNotifications.filter((n) => n.type === "grade_update").length,
-            assignment_new: transformedNotifications.filter((n) => n.type === "assignment_new").length,
-            teacher_message: transformedNotifications.filter((n) => n.type === "teacher_message").length,
-            quiz_available: transformedNotifications.filter((n) => n.type === "quiz_available").length,
-            homework_due: transformedNotifications.filter((n) => n.type === "homework_due").length,
-            announcement: transformedNotifications.filter((n) => n.type === "announcement").length,
-            admin_announcement: transformedNotifications.filter((n) => n.type === "admin_announcement").length,
-            live_class_started: transformedNotifications.filter((n) => n.type === "live_class_started").length,
-            live_class_ended: transformedNotifications.filter((n) => n.type === "live_class_ended").length,
-            zoom_class: transformedNotifications.filter((n) => n.type === "zoom_class").length,
-          },
-        };
-
-        setNotificationStats(stats);
-        setUnreadCount(stats.unread);
-
-        console.log("✅ Fetched test notifications:", transformedNotifications.length);
-        console.log("📊 Notification stats:", stats);
-      } else {
-        console.error("❌ Failed to fetch notifications:", testResponse?.status);
+        
+        // Merge API and local notifications, removing duplicates
+        const allNotifications = [...transformedNotifications, ...localTransformed];
+        const uniqueNotifications = allNotifications.filter((notification, index, self) => 
+          index === self.findIndex(n => n.id === notification.id)
+        );
+        
+        transformedNotifications = uniqueNotifications;
+      } catch (localError) {
+        console.log("Local notifications not available");
       }
+
+      setNotifications(transformedNotifications);
+
+      // Calculate stats from transformed notifications
+      const unreadCount = transformedNotifications.filter(n => !n.read).length;
+      const stats = {
+        total: transformedNotifications.length,
+        unread: unreadCount,
+        byType: {
+          grade_update: transformedNotifications.filter((n) => n.type === "grade_update").length,
+          assignment_new: transformedNotifications.filter((n) => n.type === "assignment_new").length,
+          teacher_message: transformedNotifications.filter((n) => n.type === "teacher_message").length,
+          quiz_available: transformedNotifications.filter((n) => n.type === "quiz_available").length,
+          homework_due: transformedNotifications.filter((n) => n.type === "homework_due").length,
+          announcement: transformedNotifications.filter((n) => n.type === "announcement").length,
+          admin_announcement: transformedNotifications.filter((n) => n.type === "admin_announcement").length,
+          live_class_started: transformedNotifications.filter((n) => n.type === "live_class_started").length,
+          live_class_ended: transformedNotifications.filter((n) => n.type === "live_class_ended").length,
+          zoom_class: transformedNotifications.filter((n) => n.type === "zoom_class").length,
+        },
+      };
+
+      setNotificationStats(stats);
+      setUnreadCount(stats.unread);
+
+      console.log("✅ Fetched notifications:", transformedNotifications.length);
+      console.log("📊 Notification stats:", stats);
     } catch (error) {
-      console.error("❌ Error fetching notifications:", error);
+      console.error("Error fetching notifications:", error);
+      setNotifications([]);
+      setNotificationStats({
+        total: 0,
+        unread: 0,
+        byType: {
+          grade_update: 0,
+          assignment_new: 0,
+          teacher_message: 0,
+          quiz_available: 0,
+          homework_due: 0,
+          announcement: 0,
+          admin_announcement: 0,
+          live_class_started: 0,
+          live_class_ended: 0,
+          zoom_class: 0,
+        },
+      });
+      setUnreadCount(0);
     } finally {
       setNotificationLoading(false);
     }

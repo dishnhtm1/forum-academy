@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { useHistory } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import i18n from "../i18n";
-import * as XLSX from 'xlsx';
-import ExcelJS from 'exceljs';
+import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
 import "../styles/AdminSidebar.css";
 import "../styles/DashboardStats.css";
 import "../styles/EnhancedStudentProgress.css";
@@ -294,7 +294,9 @@ const { SubMenu } = Menu;
 const { confirm } = Modal;
 
 // API Configuration
-const API_BASE_URL = process.env.REACT_APP_API_URL || "https://forum-backend-cnfrb6eubggucqda.canadacentral-01.azurewebsites.net";
+const API_BASE_URL =
+  process.env.REACT_APP_API_URL ||
+  "https://forum-backend-cnfrb6eubggucqda.canadacentral-01.azurewebsites.net";
 
 // Helper function to get auth headers
 const getAuthHeaders = () => {
@@ -690,8 +692,9 @@ const AdminFacultyDashboard = () => {
       const userId = localStorage.getItem("userId");
 
       // Skip auth checks if we're in offline mode
-      const skipAuthRedirects = localStorage.getItem('skipAuthRedirects') === 'true';
-      
+      const skipAuthRedirects =
+        localStorage.getItem("skipAuthRedirects") === "true";
+
       if (!skipAuthRedirects) {
         if (!token || !userRole) {
           history.push("/login");
@@ -730,7 +733,16 @@ const AdminFacultyDashboard = () => {
 
   // Recalculate dashboard stats when key data changes
   useEffect(() => {
-    if (students.length > 0 || courses.length > 0 || materials.length > 0 || applications.length > 0) {
+    if (
+      students.length > 0 ||
+      courses.length > 0 ||
+      materials.length > 0 ||
+      applications.length > 0 ||
+      contactMessages.length > 0
+    ) {
+      console.log(
+        `🔄 Recalculating dashboard stats due to data change: ${applications.length} applications, ${contactMessages.length} messages`
+      );
       fetchDashboardStats();
     }
   }, [
@@ -739,6 +751,7 @@ const AdminFacultyDashboard = () => {
     teachers.length,
     materials.length,
     applications.length,
+    contactMessages.length,
   ]);
 
   // Fetch initial data
@@ -1180,7 +1193,6 @@ const AdminFacultyDashboard = () => {
     try {
       const authHeaders = getAuthHeaders();
 
-
       // Fetch various stats (suppress errors for 404s as they're expected)
       const [
         coursesRes,
@@ -1295,13 +1307,25 @@ const AdminFacultyDashboard = () => {
       const homeworkArray = getArrayFromData(homeworkData, "homework");
       const listeningArray = getArrayFromData(listeningData, "exercises");
 
+      // ✅ FIX: Use state data (students, courses, teachers, materials, applications) if available
+      // This ensures we use the merged data from fetchApplications which includes localStorage and confirmed data
+      const realApplications =
+        applications.length > 0 ? applications : applicationsArray;
+      const realMessages =
+        contactMessages.length > 0 ? contactMessages : messagesArray;
+      const realStudents = students.length > 0 ? students : studentsArray;
+      const realCourses = courses.length > 0 ? courses : coursesArray;
+      const realTeachers = teachers.length > 0 ? teachers : teachersArray;
+      const realMaterials = materials.length > 0 ? materials : materialsArray;
 
-      // Calculate stats - use real applications data if available
-      const realApplications = applications.length > 0 ? applications : applicationsArray;
+      console.log(
+        `📊 Dashboard Stats - Using: ${realApplications.length} applications, ${realMessages.length} messages, ${realStudents.length} students`
+      );
+
       const stats = {
-        totalCourses: coursesArray.length,
-        totalStudents: studentsArray.length,
-        totalTeachers: teachersArray.length,
+        totalCourses: realCourses.length,
+        totalStudents: realStudents.length,
+        totalTeachers: realTeachers.length,
         totalApplications: realApplications.length,
         pendingApplications: realApplications.filter(
           (a) => a.status === "pending"
@@ -1312,10 +1336,10 @@ const AdminFacultyDashboard = () => {
         rejectedApplications: realApplications.filter(
           (a) => a.status === "rejected"
         ).length,
-        totalMessages: messagesArray.length,
-        unreadMessages: messagesArray.filter((m) => m.status === "pending")
+        totalMessages: realMessages.length,
+        unreadMessages: realMessages.filter((m) => m.status === "pending")
           .length,
-        totalMaterials: materialsArray.length,
+        totalMaterials: realMaterials.length,
         totalHomework: homeworkArray.length,
         totalQuizzes: quizzesArray.length,
         totalListeningExercises: listeningArray.length,
@@ -1337,6 +1361,7 @@ const AdminFacultyDashboard = () => {
       };
 
       setDashboardStats(stats);
+      console.log(`✅ Dashboard stats updated:`, stats);
     } catch (error) {
       console.error("❌ Error fetching dashboard stats:", error);
       if (
@@ -1405,16 +1430,19 @@ const AdminFacultyDashboard = () => {
 
   const fetchApplications = async () => {
     let apiApplications = [];
-    
-  // Skip API testing if we know endpoints don't exist (to reduce error spam)
-  const skipApiTesting = localStorage.getItem('skipApiTesting') === 'true';
-  
-  // Also skip authentication redirects when APIs are not working
-  const skipAuthRedirects = localStorage.getItem('skipAuthRedirects') === 'true';
-  
-  console.log(`🔍 API Testing: ${skipApiTesting ? 'SKIPPED' : 'ENABLED'}`);
-  console.log(`🔍 Auth Redirects: ${skipAuthRedirects ? 'SKIPPED' : 'ENABLED'}`);
-    
+
+    // Skip API testing if we know endpoints don't exist (to reduce error spam)
+    const skipApiTesting = localStorage.getItem("skipApiTesting") === "true";
+
+    // Also skip authentication redirects when APIs are not working
+    const skipAuthRedirects =
+      localStorage.getItem("skipAuthRedirects") === "true";
+
+    console.log(`🔍 API Testing: ${skipApiTesting ? "SKIPPED" : "ENABLED"}`);
+    console.log(
+      `🔍 Auth Redirects: ${skipAuthRedirects ? "SKIPPED" : "ENABLED"}`
+    );
+
     if (!skipApiTesting) {
       // Try only the most likely endpoints to reduce error spam
       const endpoints = [
@@ -1423,72 +1451,80 @@ const AdminFacultyDashboard = () => {
       ];
 
       for (const endpoint of endpoints) {
-      try {
-        // Try with JWT authentication first
-        let headers = getAuthHeaders();
-        console.log(`🔍 Trying endpoint: ${endpoint}`);
+        try {
+          // Try with JWT authentication first
+          let headers = getAuthHeaders();
+          console.log(`🔍 Trying endpoint: ${endpoint}`);
 
-        let response = await fetch(endpoint, {
-          method: "GET",
-          mode: "cors",
-          credentials: "omit",
-          headers: headers,
-        });
-
-        console.log(`📡 Response status: ${response.status} for ${endpoint}`);
-
-        // If JWT fails, try with fallback headers
-        if (response.status === 401) {
-          console.log(`🔐 401 Unauthorized for ${endpoint}, trying fallback auth...`);
-          headers = getFallbackHeaders();
-          response = await fetch(endpoint, {
+          let response = await fetch(endpoint, {
             method: "GET",
             mode: "cors",
             credentials: "omit",
             headers: headers,
           });
-          console.log(`📡 Fallback response status: ${response.status} for ${endpoint}`);
-        }
 
-        if (response.status === 401) {
-          console.log(`🔐 Still 401 for ${endpoint}, trying next...`);
+          console.log(`📡 Response status: ${response.status} for ${endpoint}`);
+
+          // If JWT fails, try with fallback headers
+          if (response.status === 401) {
+            console.log(
+              `🔐 401 Unauthorized for ${endpoint}, trying fallback auth...`
+            );
+            headers = getFallbackHeaders();
+            response = await fetch(endpoint, {
+              method: "GET",
+              mode: "cors",
+              credentials: "omit",
+              headers: headers,
+            });
+            console.log(
+              `📡 Fallback response status: ${response.status} for ${endpoint}`
+            );
+          }
+
+          if (response.status === 401) {
+            console.log(`🔐 Still 401 for ${endpoint}, trying next...`);
+            continue;
+          }
+
+          if (response.ok) {
+            const data = await response.json();
+            console.log(`✅ Successfully fetched from ${endpoint}:`, data);
+
+            // Handle different MongoDB response formats
+            if (Array.isArray(data)) {
+              // Direct array response
+              apiApplications = data;
+            } else if (data.applications && Array.isArray(data.applications)) {
+              // Wrapped in applications property
+              apiApplications = data.applications;
+            } else if (data.data && Array.isArray(data.data)) {
+              // Wrapped in data property
+              apiApplications = data.data;
+            } else if (data.results && Array.isArray(data.results)) {
+              // Wrapped in results property
+              apiApplications = data.results;
+            } else {
+              // Try to use the data as is
+              apiApplications = data || [];
+            }
+
+            console.log(
+              `📊 Parsed ${apiApplications.length} applications from MongoDB`
+            );
+            break; // Success, exit loop
+          } else {
+            console.log(`❌ ${response.status} error for ${endpoint}`);
+          }
+        } catch (error) {
+          console.log(`💥 Error fetching from ${endpoint}:`, error.message);
           continue;
         }
-
-        if (response.ok) {
-          const data = await response.json();
-          console.log(`✅ Successfully fetched from ${endpoint}:`, data);
-          
-          // Handle different MongoDB response formats
-          if (Array.isArray(data)) {
-            // Direct array response
-            apiApplications = data;
-          } else if (data.applications && Array.isArray(data.applications)) {
-            // Wrapped in applications property
-            apiApplications = data.applications;
-          } else if (data.data && Array.isArray(data.data)) {
-            // Wrapped in data property
-            apiApplications = data.data;
-          } else if (data.results && Array.isArray(data.results)) {
-            // Wrapped in results property
-            apiApplications = data.results;
-          } else {
-            // Try to use the data as is
-            apiApplications = data || [];
-          }
-          
-          console.log(`📊 Parsed ${apiApplications.length} applications from MongoDB`);
-          break; // Success, exit loop
-        } else {
-          console.log(`❌ ${response.status} error for ${endpoint}`);
-        }
-      } catch (error) {
-        console.log(`💥 Error fetching from ${endpoint}:`, error.message);
-        continue;
       }
-    }
     } else {
-      console.log("⏭️ Skipping API testing (endpoints known to be unavailable)");
+      console.log(
+        "⏭️ Skipping API testing (endpoints known to be unavailable)"
+      );
       console.log("🔄 Will load confirmed real data automatically...");
     }
 
@@ -1497,8 +1533,9 @@ const AdminFacultyDashboard = () => {
       return {
         _id: app._id,
         createdAt: app.createdAt || app.submittedAt || new Date().toISOString(),
-        status: app.status || 'pending',
-        fullName: app.fullName || `${app.firstName || ''} ${app.lastName || ''}`.trim(),
+        status: app.status || "pending",
+        fullName:
+          app.fullName || `${app.firstName || ""} ${app.lastName || ""}`.trim(),
         email: app.email,
         course: app.course || app.program,
         phone: app.phone,
@@ -1520,7 +1557,7 @@ const AdminFacultyDashboard = () => {
         howDidYouHear: app.howDidYouHear,
         agreeToTerms: app.agreeToTerms,
         isLocal: false, // This is real MongoDB data
-        ...app // Include all original MongoDB fields
+        ...app, // Include all original MongoDB fields
       };
     });
 
@@ -1528,19 +1565,29 @@ const AdminFacultyDashboard = () => {
     let localApplications = [];
     if (processedApplications.length === 0) {
       try {
-        const pendingApplications = JSON.parse(localStorage.getItem('pendingApplications') || '[]');
-        
+        const pendingApplications = JSON.parse(
+          localStorage.getItem("pendingApplications") || "[]"
+        );
+
         // Process each application to ensure proper format
         localApplications = pendingApplications.map((app, index) => {
           const processedApp = {
             _id: app._id || `local_${Date.now()}_${index}`,
-            createdAt: app.submittedAt || app.createdAt || new Date().toISOString(),
-            status: app.status || 'pending',
-            fullName: app.fullName || `${app.firstName || ''} ${app.lastName || ''}`.trim() || 'Unknown Applicant',
-            email: app.email || 'unknown@example.com',
-            course: app.course || app.program || app.courseSelection || 'Unknown Course',
+            createdAt:
+              app.submittedAt || app.createdAt || new Date().toISOString(),
+            status: app.status || "pending",
+            fullName:
+              app.fullName ||
+              `${app.firstName || ""} ${app.lastName || ""}`.trim() ||
+              "Unknown Applicant",
+            email: app.email || "unknown@example.com",
+            course:
+              app.course ||
+              app.program ||
+              app.courseSelection ||
+              "Unknown Course",
             isLocal: true, // This is localStorage data
-            ...app
+            ...app,
           };
           return processedApp;
         });
@@ -1552,17 +1599,21 @@ const AdminFacultyDashboard = () => {
     // ✅ FIXED: No longer using hardcoded dummy data
     // Now properly fetching real data from MongoDB via API endpoints
     let finalApplications = processedApplications;
-    
+
     // If no API data is available, use localStorage as fallback
     if (finalApplications.length === 0 && localApplications.length > 0) {
-      console.log(`🔄 Using localStorage fallback: ${localApplications.length} applications...`);
+      console.log(
+        `🔄 Using localStorage fallback: ${localApplications.length} applications...`
+      );
       finalApplications = localApplications;
     }
 
     // If insufficient data, merge API data with confirmed real data
     if (finalApplications.length < 7) {
-      console.log(`⚠️ Insufficient applications found (${finalApplications.length}/7). Merging with confirmed real data...`);
-      
+      console.log(
+        `⚠️ Insufficient applications found (${finalApplications.length}/7). Merging with confirmed real data...`
+      );
+
       // Load the 7 confirmed applications from our database test
       const confirmedApplications = [
         {
@@ -1593,7 +1644,7 @@ const AdminFacultyDashboard = () => {
           agreeToTerms: true,
           createdAt: "2025-10-26T00:00:00.000Z",
           status: "pending",
-          isLocal: false
+          isLocal: false,
         },
         {
           _id: "68fe40b762a21f0d82bf718a",
@@ -1623,7 +1674,7 @@ const AdminFacultyDashboard = () => {
           agreeToTerms: true,
           createdAt: "2025-10-26T00:00:00.000Z",
           status: "pending",
-          isLocal: false
+          isLocal: false,
         },
         {
           _id: "68fe3eea62a21f0d82bf7187",
@@ -1653,7 +1704,7 @@ const AdminFacultyDashboard = () => {
           agreeToTerms: true,
           createdAt: "2025-10-26T00:00:00.000Z",
           status: "pending",
-          isLocal: false
+          isLocal: false,
         },
         {
           _id: "68fe3ce062a21f0d82bf7184",
@@ -1683,7 +1734,7 @@ const AdminFacultyDashboard = () => {
           agreeToTerms: true,
           createdAt: "2025-10-26T00:00:00.000Z",
           status: "pending",
-          isLocal: false
+          isLocal: false,
         },
         {
           _id: "68d7fd849b38f764bcd75c85",
@@ -1713,7 +1764,7 @@ const AdminFacultyDashboard = () => {
           agreeToTerms: true,
           createdAt: "2025-09-30T00:00:00.000Z",
           status: "approved",
-          isLocal: false
+          isLocal: false,
         },
         {
           _id: "68d77aa5d701cd4ff33e395c",
@@ -1743,7 +1794,7 @@ const AdminFacultyDashboard = () => {
           agreeToTerms: true,
           createdAt: "2025-09-27T00:00:00.000Z",
           status: "approved",
-          isLocal: false
+          isLocal: false,
         },
         {
           _id: "6848204f406c08f22fa028bd",
@@ -1773,41 +1824,51 @@ const AdminFacultyDashboard = () => {
           agreeToTerms: true,
           createdAt: "2025-06-10T00:00:00.000Z",
           status: "approved",
-          isLocal: false
-        }
+          isLocal: false,
+        },
       ];
-      
+
       // Merge API data with confirmed data (avoid duplicates)
-      const existingIds = new Set(finalApplications.map(app => app._id));
-      const newApplications = confirmedApplications.filter(app => !existingIds.has(app._id));
+      const existingIds = new Set(finalApplications.map((app) => app._id));
+      const newApplications = confirmedApplications.filter(
+        (app) => !existingIds.has(app._id)
+      );
       finalApplications = [...finalApplications, ...newApplications];
-      
-      console.log(`✅ Merged data: ${finalApplications.length} total applications (${processedApplications.length} from API + ${newApplications.length} from confirmed data)`);
+
+      console.log(
+        `✅ Merged data: ${finalApplications.length} total applications (${processedApplications.length} from API + ${newApplications.length} from confirmed data)`
+      );
     }
 
     // ✅ CRITICAL FIX: Apply localStorage status updates to ALL applications
-    const updatedStatuses = JSON.parse(localStorage.getItem('applicationStatuses') || '{}');
+    const updatedStatuses = JSON.parse(
+      localStorage.getItem("applicationStatuses") || "{}"
+    );
     if (Object.keys(updatedStatuses).length > 0) {
-      console.log(`🔄 Applying ${Object.keys(updatedStatuses).length} localStorage status updates to all applications...`);
-      finalApplications = finalApplications.map(app => ({
+      console.log(
+        `🔄 Applying ${
+          Object.keys(updatedStatuses).length
+        } localStorage status updates to all applications...`
+      );
+      finalApplications = finalApplications.map((app) => ({
         ...app,
-        status: updatedStatuses[app._id] || app.status
+        status: updatedStatuses[app._id] || app.status,
       }));
       console.log(`✅ Applied localStorage status updates to all applications`);
     }
 
     // ✅ CRITICAL FIX: Set the applications state
     setApplications(finalApplications);
-    console.log(`📊 Final applications loaded: ${finalApplications.length} (${processedApplications.length} from API, ${localApplications.length} from localStorage)`);
+    console.log(
+      `📊 Final applications loaded: ${finalApplications.length} (${processedApplications.length} from API, ${localApplications.length} from localStorage)`
+    );
   };
 
   const fetchContactMessages = async () => {
     let apiMessages = [];
-    
+
     // Try multiple endpoints
-    const endpoints = [
-      `${API_BASE_URL}/api/contact`,
-    ];
+    const endpoints = [`${API_BASE_URL}/api/contact`];
 
     for (const endpoint of endpoints) {
       try {
@@ -1836,20 +1897,22 @@ const AdminFacultyDashboard = () => {
     // Check for local contact messages (from ContactPage submissions)
     let localMessages = [];
     try {
-      const localNotifications = JSON.parse(localStorage.getItem('localNotifications') || '[]');
-      const contactNotifications = localNotifications.filter(notif => 
-        notif.type === 'contact' || notif.type === 'contact_message'
+      const localNotifications = JSON.parse(
+        localStorage.getItem("localNotifications") || "[]"
       );
-      
-      localMessages = contactNotifications.map(notif => ({
+      const contactNotifications = localNotifications.filter(
+        (notif) => notif.type === "contact" || notif.type === "contact_message"
+      );
+
+      localMessages = contactNotifications.map((notif) => ({
         _id: notif.contactId || `contact_${Date.now()}`,
-        name: notif.senderName || 'Unknown',
-        email: notif.email || 'unknown@example.com',
-        subject: notif.subject || 'Contact Message',
-        message: notif.message || 'No message content',
-        status: 'pending',
+        name: notif.senderName || "Unknown",
+        email: notif.email || "unknown@example.com",
+        subject: notif.subject || "Contact Message",
+        message: notif.message || "No message content",
+        status: "pending",
         createdAt: notif.timestamp || new Date().toISOString(),
-        isLocal: true
+        isLocal: true,
       }));
     } catch (error) {
       console.log("No local contact messages found");
@@ -1857,11 +1920,14 @@ const AdminFacultyDashboard = () => {
 
     // Merge API and local messages, removing duplicates
     const allMessages = [...apiMessages, ...localMessages];
-    const uniqueMessages = allMessages.filter((message, index, self) => 
-      index === self.findIndex(msg => 
-        msg._id === message._id || 
-        (msg.email === message.email && msg.subject === message.subject)
-      )
+    const uniqueMessages = allMessages.filter(
+      (message, index, self) =>
+        index ===
+        self.findIndex(
+          (msg) =>
+            msg._id === message._id ||
+            (msg.email === message.email && msg.subject === message.subject)
+        )
     );
 
     setContactMessages(uniqueMessages);
@@ -1976,7 +2042,9 @@ const AdminFacultyDashboard = () => {
       }
 
       if (response.ok) {
-        message.success(`Application ${status} successfully! (Status saved locally)`);
+        message.success(
+          `Application ${status} successfully! (Status saved locally)`
+        );
         fetchApplications();
         setApplicationModalVisible(false);
         return;
@@ -1991,32 +2059,36 @@ const AdminFacultyDashboard = () => {
     // If API fails, update the local MongoDB data directly
     try {
       // Update the applications state directly
-      setApplications(prevApplications => 
-        prevApplications.map(app => 
-          app._id === applicationId 
-            ? { ...app, status: status }
-            : app
+      setApplications((prevApplications) =>
+        prevApplications.map((app) =>
+          app._id === applicationId ? { ...app, status: status } : app
         )
       );
 
       // Store updated status in localStorage for persistence
-      const updatedStatuses = JSON.parse(localStorage.getItem('applicationStatuses') || '{}');
+      const updatedStatuses = JSON.parse(
+        localStorage.getItem("applicationStatuses") || "{}"
+      );
       updatedStatuses[applicationId] = status;
-      localStorage.setItem('applicationStatuses', JSON.stringify(updatedStatuses));
+      localStorage.setItem(
+        "applicationStatuses",
+        JSON.stringify(updatedStatuses)
+      );
 
       // Refresh dashboard stats to update the counts
       fetchDashboardStats();
 
       message.success(`Application ${status} successfully! (Updated locally)`);
       setApplicationModalVisible(false);
-      
+
       // Show success notification
       notification.success({
-        message: `Application ${status.charAt(0).toUpperCase() + status.slice(1)}`,
+        message: `Application ${
+          status.charAt(0).toUpperCase() + status.slice(1)
+        }`,
         description: `The application has been ${status} successfully.`,
         duration: 3,
       });
-
     } catch (error) {
       console.error(`Error ${status} application locally:`, error);
       message.error(`Failed to ${status} application`);
@@ -2627,7 +2699,7 @@ const AdminFacultyDashboard = () => {
   const fetchNotifications = async () => {
     try {
       let transformedNotifications = [];
-      
+
       // Try to fetch from API first
       try {
         const response = await fetch(
@@ -2648,49 +2720,67 @@ const AdminFacultyDashboard = () => {
           const data = await response.json();
 
           // Transform backend notifications to match frontend format
-          transformedNotifications = data.notifications.map(
-            (notification) => ({
-              id: notification._id,
-              type: notification.type,
-              title: notification.title,
-              message: notification.message,
-              timestamp: notification.createdAt,
-              read: notification.read,
-              sender: notification.sender,
-              priority: notification.priority,
-              icon: getNotificationIcon(notification.type),
-              color: getNotificationColor(notification.type),
-              actionUrl: notification.actionUrl,
-            })
-          );
+          transformedNotifications = data.notifications.map((notification) => ({
+            id: notification._id,
+            type: notification.type,
+            title: notification.title,
+            message: notification.message,
+            timestamp: notification.createdAt,
+            read: notification.read,
+            sender: notification.sender,
+            priority: notification.priority,
+            icon: getNotificationIcon(notification.type),
+            color: getNotificationColor(notification.type),
+            actionUrl: notification.actionUrl,
+          }));
 
           // Apply localStorage read status backup for API notifications
           try {
-            const readNotifications = JSON.parse(localStorage.getItem('readNotifications') || '[]');
-            transformedNotifications = transformedNotifications.map(notification => ({
-              ...notification,
-              read: notification.read || readNotifications.includes(notification.id)
-            }));
-            console.log(`✅ Applied localStorage read status backup to ${transformedNotifications.length} API notifications`);
-            
+            const readNotifications = JSON.parse(
+              localStorage.getItem("readNotifications") || "[]"
+            );
+            transformedNotifications = transformedNotifications.map(
+              (notification) => ({
+                ...notification,
+                read:
+                  notification.read ||
+                  readNotifications.includes(notification.id),
+              })
+            );
+            console.log(
+              `✅ Applied localStorage read status backup to ${transformedNotifications.length} API notifications`
+            );
+
             // Cleanup old read notifications (keep only last 100)
             if (readNotifications.length > 100) {
               const cleanedReadNotifications = readNotifications.slice(-100);
-              localStorage.setItem('readNotifications', JSON.stringify(cleanedReadNotifications));
-              console.log(`🧹 Cleaned up read notifications list (kept last 100)`);
+              localStorage.setItem(
+                "readNotifications",
+                JSON.stringify(cleanedReadNotifications)
+              );
+              console.log(
+                `🧹 Cleaned up read notifications list (kept last 100)`
+              );
             }
           } catch (readError) {
-            console.log(`⚠️ Failed to apply read status backup:`, readError.message);
+            console.log(
+              `⚠️ Failed to apply read status backup:`,
+              readError.message
+            );
           }
         }
       } catch (apiError) {
-        console.log("API notifications not available, checking local notifications");
+        console.log(
+          "API notifications not available, checking local notifications"
+        );
       }
 
       // Check for local notifications (from applications and contact messages)
       try {
-        const localNotifications = JSON.parse(localStorage.getItem('localNotifications') || '[]');
-        const localTransformed = localNotifications.map(notification => ({
+        const localNotifications = JSON.parse(
+          localStorage.getItem("localNotifications") || "[]"
+        );
+        const localTransformed = localNotifications.map((notification) => ({
           id: notification.id,
           type: notification.type,
           title: notification.title,
@@ -2702,26 +2792,31 @@ const AdminFacultyDashboard = () => {
           icon: getNotificationIcon(notification.type),
           color: getNotificationColor(notification.type),
           actionUrl: notification.actionUrl,
-          source: 'local',
+          source: "local",
         }));
-        
+
         // Merge API and local notifications, removing duplicates
-        const allNotifications = [...transformedNotifications, ...localTransformed];
-        const uniqueNotifications = allNotifications.filter((notification, index, self) => 
-          index === self.findIndex(n => n.id === notification.id)
+        const allNotifications = [
+          ...transformedNotifications,
+          ...localTransformed,
+        ];
+        const uniqueNotifications = allNotifications.filter(
+          (notification, index, self) =>
+            index === self.findIndex((n) => n.id === notification.id)
         );
-        
+
         transformedNotifications = uniqueNotifications;
       } catch (localError) {
         console.log("Local notifications not available");
       }
 
       setNotifications(transformedNotifications);
-      
+
       // Calculate unread count from merged notifications
-      const unreadCount = transformedNotifications.filter(n => !n.read).length;
+      const unreadCount = transformedNotifications.filter(
+        (n) => !n.read
+      ).length;
       setUnreadCount(unreadCount);
-      
     } catch (error) {
       console.error("Error fetching notifications:", error);
       setNotifications([]);
@@ -2772,36 +2867,54 @@ const AdminFacultyDashboard = () => {
 
   const markAllNotificationsAsRead = async () => {
     if (markingAsRead) return; // Prevent multiple clicks
-    
+
     setMarkingAsRead(true);
     try {
       // First, update local state immediately for better UX
-      setNotifications((prev) =>
-        prev.map((n) => ({ ...n, read: true }))
-      );
+      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
       setUnreadCount(0);
 
       // Also update localStorage for local notifications
       try {
-        const localNotifications = JSON.parse(localStorage.getItem('localNotifications') || '[]');
-        const updatedLocalNotifications = localNotifications.map(notification => 
-          ({ ...notification, read: true })
+        const localNotifications = JSON.parse(
+          localStorage.getItem("localNotifications") || "[]"
         );
-        localStorage.setItem('localNotifications', JSON.stringify(updatedLocalNotifications));
+        const updatedLocalNotifications = localNotifications.map(
+          (notification) => ({ ...notification, read: true })
+        );
+        localStorage.setItem(
+          "localNotifications",
+          JSON.stringify(updatedLocalNotifications)
+        );
         console.log(`✅ Updated localStorage for all notifications`);
       } catch (localError) {
-        console.log(`⚠️ Failed to update localStorage for all notifications:`, localError.message);
+        console.log(
+          `⚠️ Failed to update localStorage for all notifications:`,
+          localError.message
+        );
       }
 
       // Also add all current notification IDs to the read list
       try {
-        const currentNotificationIds = notifications.map(n => n.id);
-        const readNotifications = JSON.parse(localStorage.getItem('readNotifications') || '[]');
-        const updatedReadNotifications = [...new Set([...readNotifications, ...currentNotificationIds])];
-        localStorage.setItem('readNotifications', JSON.stringify(updatedReadNotifications));
-        console.log(`✅ Added ${currentNotificationIds.length} notifications to read list`);
+        const currentNotificationIds = notifications.map((n) => n.id);
+        const readNotifications = JSON.parse(
+          localStorage.getItem("readNotifications") || "[]"
+        );
+        const updatedReadNotifications = [
+          ...new Set([...readNotifications, ...currentNotificationIds]),
+        ];
+        localStorage.setItem(
+          "readNotifications",
+          JSON.stringify(updatedReadNotifications)
+        );
+        console.log(
+          `✅ Added ${currentNotificationIds.length} notifications to read list`
+        );
       } catch (readError) {
-        console.log(`⚠️ Failed to update read notifications list:`, readError.message);
+        console.log(
+          `⚠️ Failed to update read notifications list:`,
+          readError.message
+        );
       }
 
       // Then try to update on the server
@@ -2821,14 +2934,19 @@ const AdminFacultyDashboard = () => {
               "All notifications marked as read"
           );
         } else {
-          console.log(`⚠️ Failed to mark all notifications as read on server, but updated locally`);
+          console.log(
+            `⚠️ Failed to mark all notifications as read on server, but updated locally`
+          );
           message.success(
             t("adminPortal.notifications.allMarkedRead") ||
               "All notifications marked as read (local only)"
           );
         }
       } catch (apiError) {
-        console.log(`⚠️ API call failed for marking all notifications as read, but updated locally:`, apiError.message);
+        console.log(
+          `⚠️ API call failed for marking all notifications as read, but updated locally:`,
+          apiError.message
+        );
         message.success(
           t("adminPortal.notifications.allMarkedRead") ||
             "All notifications marked as read (local only)"
@@ -2855,28 +2973,47 @@ const AdminFacultyDashboard = () => {
 
       // Also update localStorage for local notifications
       try {
-        const localNotifications = JSON.parse(localStorage.getItem('localNotifications') || '[]');
-        const updatedLocalNotifications = localNotifications.map(notification => 
-          notification.id === notificationId 
-            ? { ...notification, read: true }
-            : notification
+        const localNotifications = JSON.parse(
+          localStorage.getItem("localNotifications") || "[]"
         );
-        localStorage.setItem('localNotifications', JSON.stringify(updatedLocalNotifications));
-        console.log(`✅ Updated localStorage for notification ${notificationId}`);
+        const updatedLocalNotifications = localNotifications.map(
+          (notification) =>
+            notification.id === notificationId
+              ? { ...notification, read: true }
+              : notification
+        );
+        localStorage.setItem(
+          "localNotifications",
+          JSON.stringify(updatedLocalNotifications)
+        );
+        console.log(
+          `✅ Updated localStorage for notification ${notificationId}`
+        );
       } catch (localError) {
-        console.log(`⚠️ Failed to update localStorage for notification ${notificationId}:`, localError.message);
+        console.log(
+          `⚠️ Failed to update localStorage for notification ${notificationId}:`,
+          localError.message
+        );
       }
 
       // Also store read status in a separate localStorage key for API notifications
       try {
-        const readNotifications = JSON.parse(localStorage.getItem('readNotifications') || '[]');
+        const readNotifications = JSON.parse(
+          localStorage.getItem("readNotifications") || "[]"
+        );
         if (!readNotifications.includes(notificationId)) {
           readNotifications.push(notificationId);
-          localStorage.setItem('readNotifications', JSON.stringify(readNotifications));
+          localStorage.setItem(
+            "readNotifications",
+            JSON.stringify(readNotifications)
+          );
           console.log(`✅ Added notification ${notificationId} to read list`);
         }
       } catch (readError) {
-        console.log(`⚠️ Failed to update read notifications list:`, readError.message);
+        console.log(
+          `⚠️ Failed to update read notifications list:`,
+          readError.message
+        );
       }
 
       // Then try to update on the server
@@ -2890,12 +3027,19 @@ const AdminFacultyDashboard = () => {
         );
 
         if (response.ok) {
-          console.log(`✅ Notification ${notificationId} marked as read on server`);
+          console.log(
+            `✅ Notification ${notificationId} marked as read on server`
+          );
         } else {
-          console.log(`⚠️ Failed to mark notification as read on server, but updated locally`);
+          console.log(
+            `⚠️ Failed to mark notification as read on server, but updated locally`
+          );
         }
       } catch (apiError) {
-        console.log(`⚠️ API call failed for marking notification as read, but updated locally:`, apiError.message);
+        console.log(
+          `⚠️ API call failed for marking notification as read, but updated locally:`,
+          apiError.message
+        );
       }
     } catch (error) {
       console.error("Error marking notification as read:", error);
@@ -2905,30 +3049,54 @@ const AdminFacultyDashboard = () => {
   const deleteNotification = async (notificationId) => {
     try {
       // First, remove from local state immediately for better UX
-      setNotifications((prev) => prev.filter(n => n.id !== notificationId));
+      setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
       setUnreadCount((prev) => {
-        const notification = notifications.find(n => n.id === notificationId);
-        return notification && !notification.read ? Math.max(0, prev - 1) : prev;
+        const notification = notifications.find((n) => n.id === notificationId);
+        return notification && !notification.read
+          ? Math.max(0, prev - 1)
+          : prev;
       });
 
       // Also remove from localStorage for local notifications
       try {
-        const localNotifications = JSON.parse(localStorage.getItem('localNotifications') || '[]');
-        const updatedLocalNotifications = localNotifications.filter(notification => notification.id !== notificationId);
-        localStorage.setItem('localNotifications', JSON.stringify(updatedLocalNotifications));
-        console.log(`✅ Removed notification ${notificationId} from localStorage`);
+        const localNotifications = JSON.parse(
+          localStorage.getItem("localNotifications") || "[]"
+        );
+        const updatedLocalNotifications = localNotifications.filter(
+          (notification) => notification.id !== notificationId
+        );
+        localStorage.setItem(
+          "localNotifications",
+          JSON.stringify(updatedLocalNotifications)
+        );
+        console.log(
+          `✅ Removed notification ${notificationId} from localStorage`
+        );
       } catch (localError) {
-        console.log(`⚠️ Failed to remove notification from localStorage:`, localError.message);
+        console.log(
+          `⚠️ Failed to remove notification from localStorage:`,
+          localError.message
+        );
       }
 
       // Also remove from read notifications list
       try {
-        const readNotifications = JSON.parse(localStorage.getItem('readNotifications') || '[]');
-        const updatedReadNotifications = readNotifications.filter(id => id !== notificationId);
-        localStorage.setItem('readNotifications', JSON.stringify(updatedReadNotifications));
+        const readNotifications = JSON.parse(
+          localStorage.getItem("readNotifications") || "[]"
+        );
+        const updatedReadNotifications = readNotifications.filter(
+          (id) => id !== notificationId
+        );
+        localStorage.setItem(
+          "readNotifications",
+          JSON.stringify(updatedReadNotifications)
+        );
         console.log(`✅ Removed notification ${notificationId} from read list`);
       } catch (readError) {
-        console.log(`⚠️ Failed to remove notification from read list:`, readError.message);
+        console.log(
+          `⚠️ Failed to remove notification from read list:`,
+          readError.message
+        );
       }
 
       // Then try to delete on the server
@@ -2945,11 +3113,16 @@ const AdminFacultyDashboard = () => {
           console.log(`✅ Notification ${notificationId} deleted from server`);
           message.success("Notification deleted successfully!");
         } else {
-          console.log(`⚠️ Failed to delete notification from server, but removed locally`);
+          console.log(
+            `⚠️ Failed to delete notification from server, but removed locally`
+          );
           message.success("Notification deleted (local only)!");
         }
       } catch (apiError) {
-        console.log(`⚠️ API call failed for deleting notification, but removed locally:`, apiError.message);
+        console.log(
+          `⚠️ API call failed for deleting notification, but removed locally:`,
+          apiError.message
+        );
         message.success("Notification deleted (local only)!");
       }
     } catch (error) {
@@ -2972,7 +3145,10 @@ const AdminFacultyDashboard = () => {
 
     // Set a small delay to ensure the page loads before trying to switch tabs
     setTimeout(() => {
-      if (notification.type === "application" || notification.type === "application_update") {
+      if (
+        notification.type === "application" ||
+        notification.type === "application_update"
+      ) {
         // Switch to applications tab - find the tab by its key
         const applicationsTab = document.querySelector(
           '[data-node-key="applications"]'
@@ -2981,15 +3157,21 @@ const AdminFacultyDashboard = () => {
           applicationsTab.click();
         } else {
           // Fallback: try to find the tab by its label
-          const tabElements = document.querySelectorAll('.ant-tabs-tab');
+          const tabElements = document.querySelectorAll(".ant-tabs-tab");
           for (let tab of tabElements) {
-            if (tab.textContent.includes('Applications') || tab.textContent.includes('申請')) {
+            if (
+              tab.textContent.includes("Applications") ||
+              tab.textContent.includes("申請")
+            ) {
               tab.click();
               break;
             }
           }
         }
-      } else if (notification.type === "contact" || notification.type === "contact_message") {
+      } else if (
+        notification.type === "contact" ||
+        notification.type === "contact_message"
+      ) {
         // Switch to contacts tab - find the tab by its key
         const contactsTab = document.querySelector(
           '[data-node-key="contacts"]'
@@ -2998,9 +3180,12 @@ const AdminFacultyDashboard = () => {
           contactsTab.click();
         } else {
           // Fallback: try to find the tab by its label
-          const tabElements = document.querySelectorAll('.ant-tabs-tab');
+          const tabElements = document.querySelectorAll(".ant-tabs-tab");
           for (let tab of tabElements) {
-            if (tab.textContent.includes('Messages') || tab.textContent.includes('メッセージ')) {
+            if (
+              tab.textContent.includes("Messages") ||
+              tab.textContent.includes("メッセージ")
+            ) {
               tab.click();
               break;
             }
@@ -3013,12 +3198,14 @@ const AdminFacultyDashboard = () => {
 
     // Show success message
     message.success(
-      notification.type === "application" || notification.type === "application_update"
+      notification.type === "application" ||
+        notification.type === "application_update"
         ? t("adminPortal.notifications.navigatedToApplication") ||
             "Navigated to Applications"
-        : notification.type === "contact" || notification.type === "contact_message"
+        : notification.type === "contact" ||
+          notification.type === "contact_message"
         ? t("adminPortal.notifications.navigatedToContact") ||
-            "Navigated to Contact Messages"
+          "Navigated to Contact Messages"
         : "Notification clicked"
     );
   };
@@ -3334,10 +3521,10 @@ const AdminFacultyDashboard = () => {
   };
 
   // Create backup functionality with multiple formats
-  const handleCreateBackup = async (format = 'json') => {
+  const handleCreateBackup = async (format = "json") => {
     setBackupLoading(true);
     try {
-      const timestamp = moment().format('YYYY-MM-DD-HH-mm-ss');
+      const timestamp = moment().format("YYYY-MM-DD-HH-mm-ss");
       const backupData = {
         timestamp: new Date().toISOString(),
         applications: applications,
@@ -3346,45 +3533,46 @@ const AdminFacultyDashboard = () => {
         courses: courses,
         systemSettings: systemSettings,
         notifications: notifications,
-        version: "2.1.0"
+        version: "2.1.0",
       };
-      
-      console.log('Backup Data Debug:', {
+
+      console.log("Backup Data Debug:", {
         applicationsLength: applications?.length || 0,
         contactMessagesLength: contactMessages?.length || 0,
         usersLength: users?.length || 0,
-        coursesLength: courses?.length || 0
+        coursesLength: courses?.length || 0,
       });
 
       let fileName, mimeType, fileContent;
 
       switch (format) {
-        case 'excel':
+        case "excel":
           fileName = `forum-academy-backup-${timestamp}.xlsx`;
-          mimeType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+          mimeType =
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
           fileContent = await generateExcelBackup(backupData);
           break;
-        case 'html':
+        case "html":
           fileName = `forum-academy-report-${timestamp}.html`;
-          mimeType = 'text/html';
+          mimeType = "text/html";
           fileContent = generateHTMLBackup(backupData);
           break;
-        case 'json':
+        case "json":
         default:
           fileName = `forum-academy-backup-${timestamp}.json`;
-          mimeType = 'application/json';
+          mimeType = "application/json";
           fileContent = JSON.stringify(backupData, null, 2);
           break;
       }
 
       // Create downloadable file with proper encoding
-      const blob = new Blob([fileContent], { 
-        type: mimeType 
+      const blob = new Blob([fileContent], {
+        type: mimeType,
       });
       const url = URL.createObjectURL(blob);
-      
+
       // Create download link
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
       link.download = fileName;
       document.body.appendChild(link);
@@ -3395,7 +3583,7 @@ const AdminFacultyDashboard = () => {
       // Update last backup time in settings
       const updatedSettings = {
         ...systemSettings,
-        lastBackup: moment().format("MMM DD, YYYY HH:mm")
+        lastBackup: moment().format("MMM DD, YYYY HH:mm"),
       };
       setSystemSettings(updatedSettings);
       localStorage.setItem("systemSettings", JSON.stringify(updatedSettings));
@@ -3413,262 +3601,405 @@ const AdminFacultyDashboard = () => {
   const generateExcelBackup = async (data) => {
     try {
       // Detect current language
-      const currentLanguage = localStorage.getItem('i18nextLng') || 'en';
-      const isJapanese = currentLanguage === 'ja';
-      
+      const currentLanguage = localStorage.getItem("i18nextLng") || "en";
+      const isJapanese = currentLanguage === "ja";
+
       // Create a new workbook with ExcelJS
       const workbook = new ExcelJS.Workbook();
-    
-    // Helper function to create worksheet with professional formatting using ExcelJS
-    const createWorksheet = async (name, headers, rows) => {
-      const worksheet = workbook.addWorksheet(name);
-      
-      // Add title row
-      const titleRow = worksheet.addRow([name.toUpperCase()]);
-      titleRow.height = 30;
-      
-      // Merge title cells across all columns
-      worksheet.mergeCells(1, 1, 1, headers.length);
-      
-      // Style title row
-      const titleCell = worksheet.getCell(1, 1);
-      titleCell.font = { bold: true, size: 16, color: { argb: "FFFFFFFF" } };
-      titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: "FF1E5F8C" } };
-      titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
-      titleCell.border = {
-        top: { style: 'medium', color: { argb: "FF1E5F8C" } },
-        bottom: { style: 'medium', color: { argb: "FF1E5F8C" } },
-        left: { style: 'medium', color: { argb: "FF1E5F8C" } },
-        right: { style: 'medium', color: { argb: "FF1E5F8C" } }
-      };
-      
-      // Add empty row
-      worksheet.addRow([]);
-      
-      // Add header row
-      const headerRow = worksheet.addRow(headers);
-      headerRow.height = 25;
-      
-      // Style header row
-      headerRow.eachCell((cell, colNumber) => {
-        cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
-        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: "FF2E86AB" } };
-        cell.alignment = { horizontal: 'center', vertical: 'middle' };
-        cell.border = {
-          top: { style: 'thin', color: { argb: "FF1E5F8C" } },
-          bottom: { style: 'thin', color: { argb: "FF1E5F8C" } },
-          left: { style: 'thin', color: { argb: "FF1E5F8C" } },
-          right: { style: 'thin', color: { argb: "FF1E5F8C" } }
+
+      // Helper function to create worksheet with professional formatting using ExcelJS
+      const createWorksheet = async (name, headers, rows) => {
+        const worksheet = workbook.addWorksheet(name);
+
+        // Add title row
+        const titleRow = worksheet.addRow([name.toUpperCase()]);
+        titleRow.height = 30;
+
+        // Merge title cells across all columns
+        worksheet.mergeCells(1, 1, 1, headers.length);
+
+        // Style title row
+        const titleCell = worksheet.getCell(1, 1);
+        titleCell.font = { bold: true, size: 16, color: { argb: "FFFFFFFF" } };
+        titleCell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FF1E5F8C" },
         };
-      });
-      
-      // Add data rows
-      rows.forEach((rowData, rowIndex) => {
-        const dataRow = worksheet.addRow(rowData);
-        dataRow.height = 20;
-        
-        // Style data rows with alternating colors
-        const isEvenRow = rowIndex % 2 === 0;
-        dataRow.eachCell((cell, colNumber) => {
-          cell.fill = { 
-            type: 'pattern', 
-            pattern: 'solid', 
-            fgColor: { argb: isEvenRow ? "FFF8F9FA" : "FFFFFFFF" } 
+        titleCell.alignment = { horizontal: "center", vertical: "middle" };
+        titleCell.border = {
+          top: { style: "medium", color: { argb: "FF1E5F8C" } },
+          bottom: { style: "medium", color: { argb: "FF1E5F8C" } },
+          left: { style: "medium", color: { argb: "FF1E5F8C" } },
+          right: { style: "medium", color: { argb: "FF1E5F8C" } },
+        };
+
+        // Add empty row
+        worksheet.addRow([]);
+
+        // Add header row
+        const headerRow = worksheet.addRow(headers);
+        headerRow.height = 25;
+
+        // Style header row
+        headerRow.eachCell((cell, colNumber) => {
+          cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
+          cell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FF2E86AB" },
           };
-          cell.alignment = { horizontal: 'left', vertical: 'middle' };
+          cell.alignment = { horizontal: "center", vertical: "middle" };
           cell.border = {
-            top: { style: 'thin', color: { argb: "FFE9ECEF" } },
-            bottom: { style: 'thin', color: { argb: "FFE9ECEF" } },
-            left: { style: 'thin', color: { argb: "FFE9ECEF" } },
-            right: { style: 'thin', color: { argb: "FFE9ECEF" } }
+            top: { style: "thin", color: { argb: "FF1E5F8C" } },
+            bottom: { style: "thin", color: { argb: "FF1E5F8C" } },
+            left: { style: "thin", color: { argb: "FF1E5F8C" } },
+            right: { style: "thin", color: { argb: "FF1E5F8C" } },
           };
-          
-          // Special formatting for status column (column 4)
-          if (colNumber === 4) {
-            const status = cell.value;
-            // Check for both English and Japanese status values
-            if (status === 'approved' || status === '承認済み') {
-              cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: "FFD4EDDA" } };
-              cell.font = { color: { argb: "FF155724" } };
-            } else if (status === 'rejected' || status === '拒否済み') {
-              cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: "FFF8D7DA" } };
-              cell.font = { color: { argb: "FF721C24" } };
-            } else if (status === 'pending' || status === '保留中') {
-              cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: "FFFFF3CD" } };
-              cell.font = { color: { argb: "FF856404" } };
-            } else if (status === 'resolved' || status === '解決済み') {
-              cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: "FFD1ECF1" } };
-              cell.font = { color: { argb: "FF0C5460" } };
-            } else if (status === 'active' || status === 'アクティブ') {
-              cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: "FFD4EDDA" } };
-              cell.font = { color: { argb: "FF155724" } };
-            }
-          }
         });
+
+        // Add data rows
+        rows.forEach((rowData, rowIndex) => {
+          const dataRow = worksheet.addRow(rowData);
+          dataRow.height = 20;
+
+          // Style data rows with alternating colors
+          const isEvenRow = rowIndex % 2 === 0;
+          dataRow.eachCell((cell, colNumber) => {
+            cell.fill = {
+              type: "pattern",
+              pattern: "solid",
+              fgColor: { argb: isEvenRow ? "FFF8F9FA" : "FFFFFFFF" },
+            };
+            cell.alignment = { horizontal: "left", vertical: "middle" };
+            cell.border = {
+              top: { style: "thin", color: { argb: "FFE9ECEF" } },
+              bottom: { style: "thin", color: { argb: "FFE9ECEF" } },
+              left: { style: "thin", color: { argb: "FFE9ECEF" } },
+              right: { style: "thin", color: { argb: "FFE9ECEF" } },
+            };
+
+            // Special formatting for status column (column 4)
+            if (colNumber === 4) {
+              const status = cell.value;
+              // Check for both English and Japanese status values
+              if (status === "approved" || status === "承認済み") {
+                cell.fill = {
+                  type: "pattern",
+                  pattern: "solid",
+                  fgColor: { argb: "FFD4EDDA" },
+                };
+                cell.font = { color: { argb: "FF155724" } };
+              } else if (status === "rejected" || status === "拒否済み") {
+                cell.fill = {
+                  type: "pattern",
+                  pattern: "solid",
+                  fgColor: { argb: "FFF8D7DA" },
+                };
+                cell.font = { color: { argb: "FF721C24" } };
+              } else if (status === "pending" || status === "保留中") {
+                cell.fill = {
+                  type: "pattern",
+                  pattern: "solid",
+                  fgColor: { argb: "FFFFF3CD" },
+                };
+                cell.font = { color: { argb: "FF856404" } };
+              } else if (status === "resolved" || status === "解決済み") {
+                cell.fill = {
+                  type: "pattern",
+                  pattern: "solid",
+                  fgColor: { argb: "FFD1ECF1" },
+                };
+                cell.font = { color: { argb: "FF0C5460" } };
+              } else if (status === "active" || status === "アクティブ") {
+                cell.fill = {
+                  type: "pattern",
+                  pattern: "solid",
+                  fgColor: { argb: "FFD4EDDA" },
+                };
+                cell.font = { color: { argb: "FF155724" } };
+              }
+            }
+          });
+        });
+
+        // Set column widths
+        headers.forEach((header, index) => {
+          const maxLength = Math.max(
+            header.length,
+            ...rows.map((row) => (row[index] || "").toString().length)
+          );
+          worksheet.getColumn(index + 1).width = Math.min(
+            Math.max(maxLength + 2, 12),
+            50
+          );
+        });
+
+        return worksheet;
+      };
+
+      // Prepare Applications data with Japanese support
+      const applicationsHeaders = isJapanese
+        ? [
+            "名前",
+            "メールアドレス",
+            "プログラム",
+            "ステータス",
+            "申請日",
+            "電話番号",
+            "住所",
+          ]
+        : [
+            "Name",
+            "Email",
+            "Program",
+            "Status",
+            "Application Date",
+            "Phone",
+            "Address",
+          ];
+
+      const applicationsRows = (data.applications || []).map((app) => {
+        const status = app.status || "pending";
+        const statusText = isJapanese
+          ? status === "approved"
+            ? "承認済み"
+            : status === "rejected"
+            ? "拒否済み"
+            : "保留中"
+          : status;
+
+        return [
+          app.fullName || `${app.firstName || ""} ${app.lastName || ""}`.trim(),
+          app.email || "",
+          app.course || app.program || "",
+          statusText,
+          moment(app.createdAt).format("YYYY-MM-DD"),
+          app.phone || "",
+          app.address || "",
+        ];
       });
-      
-      // Set column widths
-      headers.forEach((header, index) => {
-        const maxLength = Math.max(
-          header.length,
-          ...rows.map(row => (row[index] || '').toString().length)
-        );
-        worksheet.getColumn(index + 1).width = Math.min(Math.max(maxLength + 2, 12), 50);
+
+      // Prepare Contact Messages data with Japanese support
+      const messagesHeaders = isJapanese
+        ? ["名前", "メールアドレス", "件名", "ステータス", "日付"]
+        : ["Name", "Email", "Subject", "Status", "Date"];
+
+      const messagesRows = (data.contactMessages || []).map((msg) => {
+        const status = msg.status || "pending";
+        const statusText = isJapanese
+          ? status === "resolved"
+            ? "解決済み"
+            : "保留中"
+          : status;
+
+        return [
+          msg.name || "",
+          msg.email || "",
+          msg.subject || "",
+          statusText,
+          moment(msg.createdAt).format("YYYY-MM-DD"),
+        ];
       });
-      
-      return worksheet;
-    };
-    
-    // Prepare Applications data with Japanese support
-    const applicationsHeaders = isJapanese 
-      ? ['名前', 'メールアドレス', 'プログラム', 'ステータス', '申請日', '電話番号', '住所']
-      : ['Name', 'Email', 'Program', 'Status', 'Application Date', 'Phone', 'Address'];
-    
-    const applicationsRows = (data.applications || []).map(app => {
-      const status = app.status || 'pending';
-      const statusText = isJapanese 
-        ? (status === 'approved' ? '承認済み' : status === 'rejected' ? '拒否済み' : '保留中')
-        : status;
-      
-      return [
-        app.fullName || `${app.firstName || ''} ${app.lastName || ''}`.trim(),
-        app.email || '',
-        app.course || app.program || '',
-        statusText,
-        moment(app.createdAt).format('YYYY-MM-DD'),
-        app.phone || '',
-        app.address || ''
-      ];
-    });
-    
-    // Prepare Contact Messages data with Japanese support
-    const messagesHeaders = isJapanese 
-      ? ['名前', 'メールアドレス', '件名', 'ステータス', '日付']
-      : ['Name', 'Email', 'Subject', 'Status', 'Date'];
-    
-    const messagesRows = (data.contactMessages || []).map(msg => {
-      const status = msg.status || 'pending';
-      const statusText = isJapanese 
-        ? (status === 'resolved' ? '解決済み' : '保留中')
-        : status;
-      
-      return [
-        msg.name || '',
-        msg.email || '',
-        msg.subject || '',
-        statusText,
-        moment(msg.createdAt).format('YYYY-MM-DD')
-      ];
-    });
-    
-    // Prepare Users data with Japanese support
-    const usersHeaders = isJapanese 
-      ? ['名前', 'メールアドレス', '役割', 'ステータス', '登録日']
-      : ['Name', 'Email', 'Role', 'Status', 'Registration Date'];
-    
-    const usersRows = (data.users || []).map(user => {
-      const status = user.status || 'active';
-      const statusText = isJapanese 
-        ? (status === 'approved' ? '承認済み' : 'アクティブ')
-        : status;
-      
-      return [
-        `${user.firstName || ''} ${user.lastName || ''}`.trim(),
-        user.email || '',
-        user.role || '',
-        statusText,
-        moment(user.createdAt).format('YYYY-MM-DD')
-      ];
-    });
-    
-    // Prepare Courses data with Japanese support
-    const coursesHeaders = isJapanese 
-      ? ['コース名', '説明', 'ステータス', '作成日']
-      : ['Course Name', 'Description', 'Status', 'Created Date'];
-    
-    const coursesRows = (data.courses || []).map(course => {
-      const statusText = isJapanese ? 'アクティブ' : 'Active';
-      
-      return [
-        course.title || course.name || '',
-        course.description || (isJapanese ? '説明なし' : 'No description'),
-        statusText,
-        moment(course.createdAt).format('YYYY-MM-DD')
-      ];
-    });
-    
-    // Add debug logging
-    console.log('Excel Generation Debug:', {
-      applicationsCount: applicationsRows.length,
-      messagesCount: messagesRows.length,
-      usersCount: usersRows.length,
-      coursesCount: coursesRows.length,
-      rawData: {
-        applications: data.applications,
-        contactMessages: data.contactMessages,
-        users: data.users,
-        courses: data.courses
-      }
-    });
-    
-    // Create worksheets with fallback data if arrays are empty
-    const applicationsSheet = await createWorksheet(
-      isJapanese ? '申請書' : 'Applications', 
-      applicationsHeaders, 
-      applicationsRows.length > 0 ? applicationsRows : [
-        isJapanese ? ['申請書が見つかりません', '', '', '', '', '', ''] : ['No applications found', '', '', '', '', '', '']
-      ]
-    );
-    
-    const messagesSheet = await createWorksheet(
-      isJapanese ? 'メッセージ' : 'Messages', 
-      messagesHeaders, 
-      messagesRows.length > 0 ? messagesRows : [
-        isJapanese 
-          ? ['サンプルメッセージ1', 'test1@example.com', '一般的なお問い合わせ', '保留中', '2025-10-27']
-          : ['Sample Message 1', 'test1@example.com', 'General Inquiry', 'pending', '2025-10-27'],
-        isJapanese 
-          ? ['サンプルメッセージ2', 'test2@example.com', 'コースに関する質問', '解決済み', '2025-10-26']
-          : ['Sample Message 2', 'test2@example.com', 'Course Question', 'resolved', '2025-10-26']
-      ]
-    );
-    
-    const usersSheet = await createWorksheet(
-      isJapanese ? 'ユーザー' : 'Users', 
-      usersHeaders, 
-      usersRows.length > 0 ? usersRows : [
-        isJapanese 
-          ? ['管理者ユーザー', 'admin@forum.edu', 'admin', 'アクティブ', '2025-10-27']
-          : ['Admin User', 'admin@forum.edu', 'admin', 'active', '2025-10-27'],
-        isJapanese 
-          ? ['教師ユーザー', 'teacher@forum.edu', 'teacher', 'アクティブ', '2025-10-26']
-          : ['Teacher User', 'teacher@forum.edu', 'teacher', 'active', '2025-10-26']
-      ]
-    );
-    
-    const coursesSheet = await createWorksheet(
-      isJapanese ? 'コース' : 'Courses', 
-      coursesHeaders, 
-      coursesRows.length > 0 ? coursesRows : [
-        isJapanese 
-          ? ['ウェブ開発', 'モダンなウェブ技術を学ぶ', 'アクティブ', '2025-10-27']
-          : ['Web Development', 'Learn modern web technologies', 'Active', '2025-10-27'],
-        isJapanese 
-          ? ['データサイエンス', 'データ分析の基礎', 'アクティブ', '2025-10-26']
-          : ['Data Science', 'Introduction to data analysis', 'Active', '2025-10-26'],
-        isJapanese 
-          ? ['サイバーセキュリティ', 'セキュリティの基礎', 'アクティブ', '2025-10-25']
-          : ['Cybersecurity', 'Security fundamentals', 'Active', '2025-10-25']
-      ]
-    );
-    
-    // Generate Excel file buffer
-    const excelBuffer = await workbook.xlsx.writeBuffer();
-    
-    console.log('Excel file generated successfully with ExcelJS');
-    return excelBuffer;
+
+      // Prepare Users data with Japanese support
+      const usersHeaders = isJapanese
+        ? ["名前", "メールアドレス", "役割", "ステータス", "登録日"]
+        : ["Name", "Email", "Role", "Status", "Registration Date"];
+
+      const usersRows = (data.users || []).map((user) => {
+        const status = user.status || "active";
+        const statusText = isJapanese
+          ? status === "approved"
+            ? "承認済み"
+            : "アクティブ"
+          : status;
+
+        return [
+          `${user.firstName || ""} ${user.lastName || ""}`.trim(),
+          user.email || "",
+          user.role || "",
+          statusText,
+          moment(user.createdAt).format("YYYY-MM-DD"),
+        ];
+      });
+
+      // Prepare Courses data with Japanese support
+      const coursesHeaders = isJapanese
+        ? ["コース名", "説明", "ステータス", "作成日"]
+        : ["Course Name", "Description", "Status", "Created Date"];
+
+      const coursesRows = (data.courses || []).map((course) => {
+        const statusText = isJapanese ? "アクティブ" : "Active";
+
+        return [
+          course.title || course.name || "",
+          course.description || (isJapanese ? "説明なし" : "No description"),
+          statusText,
+          moment(course.createdAt).format("YYYY-MM-DD"),
+        ];
+      });
+
+      // Add debug logging
+      console.log("Excel Generation Debug:", {
+        applicationsCount: applicationsRows.length,
+        messagesCount: messagesRows.length,
+        usersCount: usersRows.length,
+        coursesCount: coursesRows.length,
+        rawData: {
+          applications: data.applications,
+          contactMessages: data.contactMessages,
+          users: data.users,
+          courses: data.courses,
+        },
+      });
+
+      // Create worksheets with fallback data if arrays are empty
+      const applicationsSheet = await createWorksheet(
+        isJapanese ? "申請書" : "Applications",
+        applicationsHeaders,
+        applicationsRows.length > 0
+          ? applicationsRows
+          : [
+              isJapanese
+                ? ["申請書が見つかりません", "", "", "", "", "", ""]
+                : ["No applications found", "", "", "", "", "", ""],
+            ]
+      );
+
+      const messagesSheet = await createWorksheet(
+        isJapanese ? "メッセージ" : "Messages",
+        messagesHeaders,
+        messagesRows.length > 0
+          ? messagesRows
+          : [
+              isJapanese
+                ? [
+                    "サンプルメッセージ1",
+                    "test1@example.com",
+                    "一般的なお問い合わせ",
+                    "保留中",
+                    "2025-10-27",
+                  ]
+                : [
+                    "Sample Message 1",
+                    "test1@example.com",
+                    "General Inquiry",
+                    "pending",
+                    "2025-10-27",
+                  ],
+              isJapanese
+                ? [
+                    "サンプルメッセージ2",
+                    "test2@example.com",
+                    "コースに関する質問",
+                    "解決済み",
+                    "2025-10-26",
+                  ]
+                : [
+                    "Sample Message 2",
+                    "test2@example.com",
+                    "Course Question",
+                    "resolved",
+                    "2025-10-26",
+                  ],
+            ]
+      );
+
+      const usersSheet = await createWorksheet(
+        isJapanese ? "ユーザー" : "Users",
+        usersHeaders,
+        usersRows.length > 0
+          ? usersRows
+          : [
+              isJapanese
+                ? [
+                    "管理者ユーザー",
+                    "admin@forum.edu",
+                    "admin",
+                    "アクティブ",
+                    "2025-10-27",
+                  ]
+                : [
+                    "Admin User",
+                    "admin@forum.edu",
+                    "admin",
+                    "active",
+                    "2025-10-27",
+                  ],
+              isJapanese
+                ? [
+                    "教師ユーザー",
+                    "teacher@forum.edu",
+                    "teacher",
+                    "アクティブ",
+                    "2025-10-26",
+                  ]
+                : [
+                    "Teacher User",
+                    "teacher@forum.edu",
+                    "teacher",
+                    "active",
+                    "2025-10-26",
+                  ],
+            ]
+      );
+
+      const coursesSheet = await createWorksheet(
+        isJapanese ? "コース" : "Courses",
+        coursesHeaders,
+        coursesRows.length > 0
+          ? coursesRows
+          : [
+              isJapanese
+                ? [
+                    "ウェブ開発",
+                    "モダンなウェブ技術を学ぶ",
+                    "アクティブ",
+                    "2025-10-27",
+                  ]
+                : [
+                    "Web Development",
+                    "Learn modern web technologies",
+                    "Active",
+                    "2025-10-27",
+                  ],
+              isJapanese
+                ? [
+                    "データサイエンス",
+                    "データ分析の基礎",
+                    "アクティブ",
+                    "2025-10-26",
+                  ]
+                : [
+                    "Data Science",
+                    "Introduction to data analysis",
+                    "Active",
+                    "2025-10-26",
+                  ],
+              isJapanese
+                ? [
+                    "サイバーセキュリティ",
+                    "セキュリティの基礎",
+                    "アクティブ",
+                    "2025-10-25",
+                  ]
+                : [
+                    "Cybersecurity",
+                    "Security fundamentals",
+                    "Active",
+                    "2025-10-25",
+                  ],
+            ]
+      );
+
+      // Generate Excel file buffer
+      const excelBuffer = await workbook.xlsx.writeBuffer();
+
+      console.log("Excel file generated successfully with ExcelJS");
+      return excelBuffer;
     } catch (error) {
-      console.error('Error generating Excel backup:', error);
+      console.error("Error generating Excel backup:", error);
       throw error;
     }
   };
@@ -3676,26 +4007,31 @@ const AdminFacultyDashboard = () => {
   // Generate HTML backup
   const generateHTMLBackup = (data) => {
     // Detect current language
-    const currentLanguage = localStorage.getItem('i18nextLng') || 'en';
-    const isJapanese = currentLanguage === 'ja';
-    
+    const currentLanguage = localStorage.getItem("i18nextLng") || "en";
+    const isJapanese = currentLanguage === "ja";
+
     // Escape HTML characters to prevent XSS
     const escapeHtml = (text) => {
-      if (!text) return '';
-      return text.toString()
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
+      if (!text) return "";
+      return text
+        .toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
     };
 
     const html = `<!DOCTYPE html>
-<html lang="${isJapanese ? 'ja' : 'en'}">
+<html lang="${isJapanese ? "ja" : "en"}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${isJapanese ? 'フォーラムアカデミー - システムレポート' : 'Forum Academy - System Report'}</title>
+    <title>${
+      isJapanese
+        ? "フォーラムアカデミー - システムレポート"
+        : "Forum Academy - System Report"
+    }</title>
     <style>
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
@@ -3890,165 +4226,236 @@ const AdminFacultyDashboard = () => {
 <body>
     <div class="container">
         <div class="header">
-            <h1>${isJapanese ? 'フォーラムアカデミー' : 'Forum Academy'}</h1>
-            <h2>${isJapanese ? 'システムレポート & バックアップ' : 'System Report & Backup'}</h2>
-            <p>${isJapanese ? '生成日時:' : 'Generated on:'} ${escapeHtml(moment().format(isJapanese ? 'YYYY年MM月DD日 HH:mm:ss' : 'MMMM DD, YYYY [at] HH:mm:ss'))}</p>
+            <h1>${isJapanese ? "フォーラムアカデミー" : "Forum Academy"}</h1>
+            <h2>${
+              isJapanese
+                ? "システムレポート & バックアップ"
+                : "System Report & Backup"
+            }</h2>
+            <p>${isJapanese ? "生成日時:" : "Generated on:"} ${escapeHtml(
+      moment().format(
+        isJapanese ? "YYYY年MM月DD日 HH:mm:ss" : "MMMM DD, YYYY [at] HH:mm:ss"
+      )
+    )}</p>
         </div>
 
         <div class="stats">
             <div class="stat-box">
                 <div class="stat-number">${data.applications.length}</div>
-                <div class="stat-label">${isJapanese ? '申請書' : 'Applications'}</div>
+                <div class="stat-label">${
+                  isJapanese ? "申請書" : "Applications"
+                }</div>
             </div>
             <div class="stat-box">
                 <div class="stat-number">${data.contactMessages.length}</div>
-                <div class="stat-label">${isJapanese ? 'メッセージ' : 'Messages'}</div>
+                <div class="stat-label">${
+                  isJapanese ? "メッセージ" : "Messages"
+                }</div>
             </div>
             <div class="stat-box">
                 <div class="stat-number">${data.users.length}</div>
-                <div class="stat-label">${isJapanese ? 'ユーザー' : 'Users'}</div>
+                <div class="stat-label">${
+                  isJapanese ? "ユーザー" : "Users"
+                }</div>
             </div>
             <div class="stat-box">
                 <div class="stat-number">${data.courses.length}</div>
-                <div class="stat-label">${isJapanese ? 'コース' : 'Courses'}</div>
+                <div class="stat-label">${
+                  isJapanese ? "コース" : "Courses"
+                }</div>
             </div>
         </div>
 
         <div class="section">
-            <h2><span class="section-icon">📄</span> ${isJapanese ? '学生申請書' : 'Student Applications'}</h2>
+            <h2><span class="section-icon">📄</span> ${
+              isJapanese ? "学生申請書" : "Student Applications"
+            }</h2>
             <table>
                 <thead>
                     <tr>
-                        <th>${isJapanese ? '名前' : 'Name'}</th>
-                        <th>${isJapanese ? 'メールアドレス' : 'Email'}</th>
-                        <th>${isJapanese ? 'プログラム' : 'Program'}</th>
-                        <th>${isJapanese ? 'ステータス' : 'Status'}</th>
-                        <th>${isJapanese ? '申請日' : 'Application Date'}</th>
+                        <th>${isJapanese ? "名前" : "Name"}</th>
+                        <th>${isJapanese ? "メールアドレス" : "Email"}</th>
+                        <th>${isJapanese ? "プログラム" : "Program"}</th>
+                        <th>${isJapanese ? "ステータス" : "Status"}</th>
+                        <th>${isJapanese ? "申請日" : "Application Date"}</th>
                     </tr>
                 </thead>
                 <tbody>
-                    ${data.applications.map(app => {
-                      const name = escapeHtml(app.fullName || `${app.firstName || ''} ${app.lastName || ''}`.trim());
-                      const email = escapeHtml(app.email || '');
-                      const program = escapeHtml(app.course || app.program || '');
-                      const status = app.status || 'pending';
-                      const date = escapeHtml(moment(app.createdAt).format('MMM DD, YYYY'));
-                      const statusClass = `status-${status}`;
-                      
-                      return `<tr>
+                    ${data.applications
+                      .map((app) => {
+                        const name = escapeHtml(
+                          app.fullName ||
+                            `${app.firstName || ""} ${
+                              app.lastName || ""
+                            }`.trim()
+                        );
+                        const email = escapeHtml(app.email || "");
+                        const program = escapeHtml(
+                          app.course || app.program || ""
+                        );
+                        const status = app.status || "pending";
+                        const date = escapeHtml(
+                          moment(app.createdAt).format("MMM DD, YYYY")
+                        );
+                        const statusClass = `status-${status}`;
+
+                        return `<tr>
                         <td>${name}</td>
                         <td>${email}</td>
                         <td>${program}</td>
                         <td><span class="${statusClass}">${status.toUpperCase()}</span></td>
                         <td>${date}</td>
                     </tr>`;
-                    }).join('')}
+                      })
+                      .join("")}
                 </tbody>
             </table>
         </div>
 
         <div class="section">
-            <h2><span class="section-icon">💌</span> ${isJapanese ? 'お問い合わせメッセージ' : 'Contact Messages'}</h2>
+            <h2><span class="section-icon">💌</span> ${
+              isJapanese ? "お問い合わせメッセージ" : "Contact Messages"
+            }</h2>
             <table>
                 <thead>
                     <tr>
-                        <th>${isJapanese ? '名前' : 'Name'}</th>
-                        <th>${isJapanese ? 'メールアドレス' : 'Email'}</th>
-                        <th>${isJapanese ? '件名' : 'Subject'}</th>
-                        <th>${isJapanese ? 'ステータス' : 'Status'}</th>
-                        <th>${isJapanese ? '日付' : 'Date'}</th>
+                        <th>${isJapanese ? "名前" : "Name"}</th>
+                        <th>${isJapanese ? "メールアドレス" : "Email"}</th>
+                        <th>${isJapanese ? "件名" : "Subject"}</th>
+                        <th>${isJapanese ? "ステータス" : "Status"}</th>
+                        <th>${isJapanese ? "日付" : "Date"}</th>
                     </tr>
                 </thead>
                 <tbody>
-                    ${data.contactMessages.map(msg => {
-                      const name = escapeHtml(msg.name || '');
-                      const email = escapeHtml(msg.email || '');
-                      const subject = escapeHtml(msg.subject || '');
-                      const status = msg.status || 'pending';
-                      const date = escapeHtml(moment(msg.createdAt).format('MMM DD, YYYY'));
-                      const statusClass = status === 'resolved' ? 'status-resolved' : 'status-pending';
-                      
-                      return `<tr>
+                    ${data.contactMessages
+                      .map((msg) => {
+                        const name = escapeHtml(msg.name || "");
+                        const email = escapeHtml(msg.email || "");
+                        const subject = escapeHtml(msg.subject || "");
+                        const status = msg.status || "pending";
+                        const date = escapeHtml(
+                          moment(msg.createdAt).format("MMM DD, YYYY")
+                        );
+                        const statusClass =
+                          status === "resolved"
+                            ? "status-resolved"
+                            : "status-pending";
+
+                        return `<tr>
                         <td>${name}</td>
                         <td>${email}</td>
                         <td>${subject}</td>
                         <td><span class="${statusClass}">${status.toUpperCase()}</span></td>
                         <td>${date}</td>
                     </tr>`;
-                    }).join('')}
+                      })
+                      .join("")}
                 </tbody>
             </table>
         </div>
 
         <div class="section">
-            <h2><span class="section-icon">👤</span> ${isJapanese ? 'ユーザー' : 'Users'}</h2>
+            <h2><span class="section-icon">👤</span> ${
+              isJapanese ? "ユーザー" : "Users"
+            }</h2>
             <table>
                 <thead>
                     <tr>
-                        <th>${isJapanese ? '名前' : 'Name'}</th>
-                        <th>${isJapanese ? 'メールアドレス' : 'Email'}</th>
-                        <th>${isJapanese ? '役割' : 'Role'}</th>
-                        <th>${isJapanese ? 'ステータス' : 'Status'}</th>
-                        <th>${isJapanese ? '登録日' : 'Registration Date'}</th>
+                        <th>${isJapanese ? "名前" : "Name"}</th>
+                        <th>${isJapanese ? "メールアドレス" : "Email"}</th>
+                        <th>${isJapanese ? "役割" : "Role"}</th>
+                        <th>${isJapanese ? "ステータス" : "Status"}</th>
+                        <th>${isJapanese ? "登録日" : "Registration Date"}</th>
                     </tr>
                 </thead>
                 <tbody>
-                    ${data.users.map(user => {
-                      const name = escapeHtml(`${user.firstName || ''} ${user.lastName || ''}`.trim());
-                      const email = escapeHtml(user.email || '');
-                      const role = escapeHtml(user.role || '');
-                      const status = user.status || 'active';
-                      const date = escapeHtml(moment(user.createdAt).format('MMM DD, YYYY'));
-                      const statusClass = status === 'approved' ? 'status-approved' : 'status-active';
-                      
-                      return `<tr>
+                    ${data.users
+                      .map((user) => {
+                        const name = escapeHtml(
+                          `${user.firstName || ""} ${
+                            user.lastName || ""
+                          }`.trim()
+                        );
+                        const email = escapeHtml(user.email || "");
+                        const role = escapeHtml(user.role || "");
+                        const status = user.status || "active";
+                        const date = escapeHtml(
+                          moment(user.createdAt).format("MMM DD, YYYY")
+                        );
+                        const statusClass =
+                          status === "approved"
+                            ? "status-approved"
+                            : "status-active";
+
+                        return `<tr>
                         <td>${name}</td>
                         <td>${email}</td>
                         <td>${role}</td>
                         <td><span class="${statusClass}">${status.toUpperCase()}</span></td>
                         <td>${date}</td>
                     </tr>`;
-                    }).join('')}
+                      })
+                      .join("")}
                 </tbody>
             </table>
         </div>
 
         <div class="section">
-            <h2><span class="section-icon">🎓</span> ${isJapanese ? 'コース' : 'Courses'}</h2>
+            <h2><span class="section-icon">🎓</span> ${
+              isJapanese ? "コース" : "Courses"
+            }</h2>
             <table>
                 <thead>
                     <tr>
-                        <th>${isJapanese ? 'コース名' : 'Course Name'}</th>
-                        <th>${isJapanese ? '説明' : 'Description'}</th>
-                        <th>${isJapanese ? 'ステータス' : 'Status'}</th>
-                        <th>${isJapanese ? '作成日' : 'Created Date'}</th>
+                        <th>${isJapanese ? "コース名" : "Course Name"}</th>
+                        <th>${isJapanese ? "説明" : "Description"}</th>
+                        <th>${isJapanese ? "ステータス" : "Status"}</th>
+                        <th>${isJapanese ? "作成日" : "Created Date"}</th>
                     </tr>
                 </thead>
                 <tbody>
-                    ${data.courses.map(course => {
-                      const name = escapeHtml(course.title || course.name || '');
-                      const description = escapeHtml(course.description || 'No description');
-                      const date = escapeHtml(moment(course.createdAt).format('MMM DD, YYYY'));
-                      
-                      return `<tr>
+                    ${data.courses
+                      .map((course) => {
+                        const name = escapeHtml(
+                          course.title || course.name || ""
+                        );
+                        const description = escapeHtml(
+                          course.description || "No description"
+                        );
+                        const date = escapeHtml(
+                          moment(course.createdAt).format("MMM DD, YYYY")
+                        );
+
+                        return `<tr>
                         <td>${name}</td>
                         <td>${description}</td>
                         <td><span class="status-active">ACTIVE</span></td>
                         <td>${date}</td>
                     </tr>`;
-                    }).join('')}
+                      })
+                      .join("")}
                 </tbody>
             </table>
         </div>
 
         <div class="footer">
-            <p>${isJapanese ? 'フォーラムアカデミー システムレポート | 管理ダッシュボードで生成' : 'Forum Academy System Report | Generated by Admin Dashboard'}</p>
-            <p>${isJapanese ? 'バージョン:' : 'Version:'} ${escapeHtml(data.version)} | ${isJapanese ? 'バックアップ日時:' : 'Backup Date:'} ${escapeHtml(moment(data.timestamp).format(isJapanese ? 'YYYY年MM月DD日 HH:mm:ss' : 'MMMM DD, YYYY [at] HH:mm:ss'))}</p>
+            <p>${
+              isJapanese
+                ? "フォーラムアカデミー システムレポート | 管理ダッシュボードで生成"
+                : "Forum Academy System Report | Generated by Admin Dashboard"
+            }</p>
+            <p>${isJapanese ? "バージョン:" : "Version:"} ${escapeHtml(
+      data.version
+    )} | ${isJapanese ? "バックアップ日時:" : "Backup Date:"} ${escapeHtml(
+      moment(data.timestamp).format(
+        isJapanese ? "YYYY年MM月DD日 HH:mm:ss" : "MMMM DD, YYYY [at] HH:mm:ss"
+      )
+    )}</p>
         </div>
     </div>
 </body>
 </html>`;
-    
+
     return html;
   };
 
@@ -4058,26 +4465,26 @@ const AdminFacultyDashboard = () => {
     try {
       // Clear various cache items
       const cacheKeys = [
-        'localNotifications',
-        'readNotifications',
-        'applicationStatuses',
-        'skipApiTesting',
-        'skipAuthRedirects',
-        'cachedApplications',
-        'cachedContactMessages',
-        'cachedUsers',
-        'cachedCourses'
+        "localNotifications",
+        "readNotifications",
+        "applicationStatuses",
+        "skipApiTesting",
+        "skipAuthRedirects",
+        "cachedApplications",
+        "cachedContactMessages",
+        "cachedUsers",
+        "cachedCourses",
       ];
 
-      cacheKeys.forEach(key => {
+      cacheKeys.forEach((key) => {
         localStorage.removeItem(key);
       });
 
       // Clear browser cache (if possible)
-      if ('caches' in window) {
+      if ("caches" in window) {
         const cacheNames = await caches.keys();
         await Promise.all(
-          cacheNames.map(cacheName => caches.delete(cacheName))
+          cacheNames.map((cacheName) => caches.delete(cacheName))
         );
       }
 
@@ -4087,10 +4494,15 @@ const AdminFacultyDashboard = () => {
       fetchDashboardStats();
       fetchNotifications();
 
-      message.success(t("adminDashboard.settings.cacheCleared") || "Cache cleared successfully!");
+      message.success(
+        t("adminDashboard.settings.cacheCleared") ||
+          "Cache cleared successfully!"
+      );
     } catch (error) {
       console.error("Error clearing cache:", error);
-      message.error(t("adminDashboard.settings.cacheError") || "Failed to clear cache");
+      message.error(
+        t("adminDashboard.settings.cacheError") || "Failed to clear cache"
+      );
     } finally {
       setCacheLoading(false);
     }
@@ -4744,22 +5156,34 @@ const AdminFacultyDashboard = () => {
         key: "status",
         render: (status) => {
           const statusConfig = {
-            pending: { color: "orange", icon: <ClockCircleOutlined />, text: t("status.pending") || "PENDING" },
-            approved: { color: "green", icon: <CheckCircleOutlined />, text: t("status.approved") || "APPROVED" },
-            rejected: { color: "red", icon: <CloseCircleOutlined />, text: t("status.rejected") || "REJECTED" },
+            pending: {
+              color: "orange",
+              icon: <ClockCircleOutlined />,
+              text: t("status.pending") || "PENDING",
+            },
+            approved: {
+              color: "green",
+              icon: <CheckCircleOutlined />,
+              text: t("status.approved") || "APPROVED",
+            },
+            rejected: {
+              color: "red",
+              icon: <CloseCircleOutlined />,
+              text: t("status.rejected") || "REJECTED",
+            },
           };
-          
+
           const config = statusConfig[status] || statusConfig.pending;
-          
+
           return (
-            <Tag 
-              color={config.color} 
+            <Tag
+              color={config.color}
               icon={config.icon}
-              style={{ 
-                fontSize: '12px', 
-                fontWeight: 'bold',
-                padding: '4px 8px',
-                borderRadius: '4px'
+              style={{
+                fontSize: "12px",
+                fontWeight: "bold",
+                padding: "4px 8px",
+                borderRadius: "4px",
               }}
             >
               {config.text}
@@ -7216,7 +7640,7 @@ const AdminFacultyDashboard = () => {
                   onChange={(value) => {
                     translationInstance.changeLanguage(value);
                     // Update the form value
-                    settingsForm.setFieldValue('language', value);
+                    settingsForm.setFieldValue("language", value);
                   }}
                 >
                   <Option value="en">🇺🇸 English</Option>
@@ -7233,12 +7657,16 @@ const AdminFacultyDashboard = () => {
                 name="emailNotifications"
                 valuePropName="checked"
               >
-                <Switch 
+                <Switch
                   onChange={(checked) => {
                     message.success(
-                      checked 
-                        ? (t("adminDashboard.settings.emailNotificationsEnabled") || "Email notifications enabled!")
-                        : (t("adminDashboard.settings.emailNotificationsDisabled") || "Email notifications disabled!")
+                      checked
+                        ? t(
+                            "adminDashboard.settings.emailNotificationsEnabled"
+                          ) || "Email notifications enabled!"
+                        : t(
+                            "adminDashboard.settings.emailNotificationsDisabled"
+                          ) || "Email notifications disabled!"
                     );
                   }}
                 />
@@ -7249,18 +7677,26 @@ const AdminFacultyDashboard = () => {
                 name="smsNotifications"
                 valuePropName="checked"
               >
-                <Switch 
+                <Switch
                   onChange={(checked) => {
                     if (checked) {
                       Modal.info({
-                        title: t("adminDashboard.settings.smsInfo") || "SMS Notifications",
-                        content: t("adminDashboard.settings.smsInfoText") || "SMS notifications require additional setup and may incur charges.",
+                        title:
+                          t("adminDashboard.settings.smsInfo") ||
+                          "SMS Notifications",
+                        content:
+                          t("adminDashboard.settings.smsInfoText") ||
+                          "SMS notifications require additional setup and may incur charges.",
                       });
                     }
                     message.success(
-                      checked 
-                        ? (t("adminDashboard.settings.smsNotificationsEnabled") || "SMS notifications enabled!")
-                        : (t("adminDashboard.settings.smsNotificationsDisabled") || "SMS notifications disabled!")
+                      checked
+                        ? t(
+                            "adminDashboard.settings.smsNotificationsEnabled"
+                          ) || "SMS notifications enabled!"
+                        : t(
+                            "adminDashboard.settings.smsNotificationsDisabled"
+                          ) || "SMS notifications disabled!"
                     );
                   }}
                 />
@@ -7271,20 +7707,36 @@ const AdminFacultyDashboard = () => {
                 name="pushNotifications"
                 valuePropName="checked"
               >
-                <Switch 
+                <Switch
                   onChange={(checked) => {
-                    if (checked && 'Notification' in window) {
-                      Notification.requestPermission().then(permission => {
-                        if (permission === 'granted') {
-                          message.success(t("adminDashboard.settings.pushNotificationsEnabled") || "Push notifications enabled!");
+                    if (checked && "Notification" in window) {
+                      Notification.requestPermission().then((permission) => {
+                        if (permission === "granted") {
+                          message.success(
+                            t(
+                              "adminDashboard.settings.pushNotificationsEnabled"
+                            ) || "Push notifications enabled!"
+                          );
                         } else {
-                          message.warning(t("adminDashboard.settings.pushNotificationsDenied") || "Push notifications permission denied!");
+                          message.warning(
+                            t(
+                              "adminDashboard.settings.pushNotificationsDenied"
+                            ) || "Push notifications permission denied!"
+                          );
                         }
                       });
                     } else if (checked) {
-                      message.warning(t("adminDashboard.settings.pushNotificationsNotSupported") || "Push notifications not supported in this browser!");
+                      message.warning(
+                        t(
+                          "adminDashboard.settings.pushNotificationsNotSupported"
+                        ) || "Push notifications not supported in this browser!"
+                      );
                     } else {
-                      message.success(t("adminDashboard.settings.pushNotificationsDisabled") || "Push notifications disabled!");
+                      message.success(
+                        t(
+                          "adminDashboard.settings.pushNotificationsDisabled"
+                        ) || "Push notifications disabled!"
+                      );
                     }
                   }}
                 />
@@ -7295,12 +7747,14 @@ const AdminFacultyDashboard = () => {
                 name="weeklyReports"
                 valuePropName="checked"
               >
-                <Switch 
+                <Switch
                   onChange={(checked) => {
                     message.success(
-                      checked 
-                        ? (t("adminDashboard.settings.weeklyReportsEnabled") || "Weekly reports enabled!")
-                        : (t("adminDashboard.settings.weeklyReportsDisabled") || "Weekly reports disabled!")
+                      checked
+                        ? t("adminDashboard.settings.weeklyReportsEnabled") ||
+                            "Weekly reports enabled!"
+                        : t("adminDashboard.settings.weeklyReportsDisabled") ||
+                            "Weekly reports disabled!"
                     );
                   }}
                 />
@@ -7337,18 +7791,29 @@ const AdminFacultyDashboard = () => {
                 name="maintenanceMode"
                 valuePropName="checked"
               >
-                <Switch 
+                <Switch
                   onChange={(checked) => {
                     if (checked) {
                       Modal.confirm({
-                        title: t("adminDashboard.settings.maintenanceModeConfirm") || "Enable Maintenance Mode?",
-                        content: t("adminDashboard.settings.maintenanceModeWarning") || "This will put the system in maintenance mode. Users will see a maintenance page.",
+                        title:
+                          t("adminDashboard.settings.maintenanceModeConfirm") ||
+                          "Enable Maintenance Mode?",
+                        content:
+                          t("adminDashboard.settings.maintenanceModeWarning") ||
+                          "This will put the system in maintenance mode. Users will see a maintenance page.",
                         onOk: () => {
-                          message.warning(t("adminDashboard.settings.maintenanceModeEnabled") || "Maintenance mode enabled!");
-                        }
+                          message.warning(
+                            t(
+                              "adminDashboard.settings.maintenanceModeEnabled"
+                            ) || "Maintenance mode enabled!"
+                          );
+                        },
                       });
                     } else {
-                      message.success(t("adminDashboard.settings.maintenanceModeDisabled") || "Maintenance mode disabled!");
+                      message.success(
+                        t("adminDashboard.settings.maintenanceModeDisabled") ||
+                          "Maintenance mode disabled!"
+                      );
                     }
                   }}
                 />
@@ -7402,13 +7867,19 @@ const AdminFacultyDashboard = () => {
                 <Descriptions.Item
                   label={t("adminDashboard.settings.storageUsed")}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Progress 
-                      percent={Math.floor(Math.random() * 30) + 60} 
-                      size="small" 
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                    }}
+                  >
+                    <Progress
+                      percent={Math.floor(Math.random() * 30) + 60}
+                      size="small"
                       style={{ flex: 1 }}
                     />
-                    <Text style={{ fontSize: '12px', minWidth: '35px' }}>
+                    <Text style={{ fontSize: "12px", minWidth: "35px" }}>
                       {Math.floor(Math.random() * 30) + 60}%
                     </Text>
                   </div>
@@ -7416,7 +7887,8 @@ const AdminFacultyDashboard = () => {
                 <Descriptions.Item
                   label={t("adminDashboard.settings.lastBackup")}
                 >
-                  {systemSettings.lastBackup || moment().subtract(1, "day").format("MMM DD, YYYY HH:mm")}
+                  {systemSettings.lastBackup ||
+                    moment().subtract(1, "day").format("MMM DD, YYYY HH:mm")}
                 </Descriptions.Item>
               </Descriptions>
 
@@ -7426,26 +7898,26 @@ const AdminFacultyDashboard = () => {
                     menu={{
                       items: [
                         {
-                          key: 'excel',
-                          label: '📊 Excel (.xlsx)',
+                          key: "excel",
+                          label: "📊 Excel (.xlsx)",
                           icon: <FileExcelOutlined />,
-                          onClick: () => handleCreateBackup('excel')
+                          onClick: () => handleCreateBackup("excel"),
                         },
                         {
-                          key: 'html',
-                          label: '🌐 HTML Report',
+                          key: "html",
+                          label: "🌐 HTML Report",
                           icon: <FileTextOutlined />,
-                          onClick: () => handleCreateBackup('html')
+                          onClick: () => handleCreateBackup("html"),
                         },
                         {
-                          key: 'json',
-                          label: '📄 JSON Backup',
+                          key: "json",
+                          label: "📄 JSON Backup",
                           icon: <FileOutlined />,
-                          onClick: () => handleCreateBackup('json')
-                        }
-                      ]
+                          onClick: () => handleCreateBackup("json"),
+                        },
+                      ],
                     }}
-                    trigger={['click']}
+                    trigger={["click"]}
                   >
                     <Button
                       type="dashed"
@@ -10569,7 +11041,9 @@ const AdminFacultyDashboard = () => {
                 key: "status",
                 render: (status) => (
                   <Tag color={status === "graded" ? "green" : "orange"}>
-                    {status === "graded" ? (t("status.graded") || "GRADED") : (t("status.pending") || "PENDING")}
+                    {status === "graded"
+                      ? t("status.graded") || "GRADED"
+                      : t("status.pending") || "PENDING"}
                   </Tag>
                 ),
               },
@@ -11462,7 +11936,9 @@ const AdminFacultyDashboard = () => {
                         : "orange"
                     }
                   >
-                    {selectedSubmission.status === "graded" ? (t("status.graded") || "GRADED") : (t("status.pending") || "PENDING")}
+                    {selectedSubmission.status === "graded"
+                      ? t("status.graded") || "GRADED"
+                      : t("status.pending") || "PENDING"}
                   </Tag>
                 </Descriptions.Item>
                 <Descriptions.Item label="Feedback" span={2}>
@@ -12190,17 +12666,25 @@ const AdminFacultyDashboard = () => {
                       marginBottom: "4px",
                       background: notification.read ? "#fff" : "#f0f8ff",
                       borderRadius: "6px",
-                      border: notification.read ? "1px solid #e8e8e8" : "1px solid #1890ff",
-                      borderLeft: notification.read ? "1px solid #e8e8e8" : "3px solid #1890ff",
+                      border: notification.read
+                        ? "1px solid #e8e8e8"
+                        : "1px solid #1890ff",
+                      borderLeft: notification.read
+                        ? "1px solid #e8e8e8"
+                        : "3px solid #1890ff",
                       transition: "all 0.2s ease",
                       cursor: "pointer",
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background = notification.read ? "#f9f9f9" : "#e6f7ff";
+                      e.currentTarget.style.background = notification.read
+                        ? "#f9f9f9"
+                        : "#e6f7ff";
                       e.currentTarget.style.transform = "translateX(2px)";
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.background = notification.read ? "#fff" : "#f0f8ff";
+                      e.currentTarget.style.background = notification.read
+                        ? "#fff"
+                        : "#f0f8ff";
                       e.currentTarget.style.transform = "translateX(0)";
                     }}
                     onClick={() => handleNotificationClick(notification)}
@@ -12211,7 +12695,9 @@ const AdminFacultyDashboard = () => {
                         width: "24px",
                         height: "24px",
                         borderRadius: "6px",
-                        background: `linear-gradient(135deg, ${notification.color || "#1890ff"} 0%, ${notification.color || "#1890ff"}dd 100%)`,
+                        background: `linear-gradient(135deg, ${
+                          notification.color || "#1890ff"
+                        } 0%, ${notification.color || "#1890ff"}dd 100%)`,
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -12220,17 +12706,29 @@ const AdminFacultyDashboard = () => {
                       }}
                     >
                       {notification.icon === "bell" ? (
-                        <BellOutlined style={{ color: "#fff", fontSize: "12px" }} />
+                        <BellOutlined
+                          style={{ color: "#fff", fontSize: "12px" }}
+                        />
                       ) : notification.icon === "message" ? (
-                        <MessageOutlined style={{ color: "#fff", fontSize: "12px" }} />
+                        <MessageOutlined
+                          style={{ color: "#fff", fontSize: "12px" }}
+                        />
                       ) : notification.icon === "user-add" ? (
-                        <UserAddOutlined style={{ color: "#fff", fontSize: "12px" }} />
+                        <UserAddOutlined
+                          style={{ color: "#fff", fontSize: "12px" }}
+                        />
                       ) : notification.icon === "file-text" ? (
-                        <FileTextOutlined style={{ color: "#fff", fontSize: "12px" }} />
+                        <FileTextOutlined
+                          style={{ color: "#fff", fontSize: "12px" }}
+                        />
                       ) : notification.icon === "solution" ? (
-                        <SolutionOutlined style={{ color: "#fff", fontSize: "12px" }} />
+                        <SolutionOutlined
+                          style={{ color: "#fff", fontSize: "12px" }}
+                        />
                       ) : (
-                        <BellOutlined style={{ color: "#fff", fontSize: "12px" }} />
+                        <BellOutlined
+                          style={{ color: "#fff", fontSize: "12px" }}
+                        />
                       )}
                     </div>
 
@@ -12294,11 +12792,23 @@ const AdminFacultyDashboard = () => {
                     </div>
 
                     {/* Read Button */}
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
                       <Button
                         type={notification.read ? "default" : "primary"}
                         size="small"
-                        icon={notification.read ? <EyeOutlined /> : <EyeInvisibleOutlined />}
+                        icon={
+                          notification.read ? (
+                            <EyeOutlined />
+                          ) : (
+                            <EyeInvisibleOutlined />
+                          )
+                        }
                         onClick={(e) => {
                           e.stopPropagation();
                           if (!notification.read) {
@@ -12317,7 +12827,13 @@ const AdminFacultyDashboard = () => {
                     </div>
 
                     {/* Delete Button */}
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
                       <Button
                         type="text"
                         danger
