@@ -969,45 +969,85 @@ const AdminFacultyDashboard = () => {
   };
 
   // Generate trends data from existing courses and enrollment data
+  // Translation helper: if key missing, use fallback
+  const tt = (key, fallback) => {
+    const val = t(key);
+    return val === key ? fallback : val;
+  };
+
   const generateTrendsFromData = () => {
-    const months = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-    ];
+    // Build last 6 month labels
+    const months = [];
+    for (let i = 5; i >= 0; i--) {
+      months.push(moment().subtract(i, "months").format("MMM"));
+    }
+
+    // Helper to get date from enrollment object robustly
+    const getDate = (item) =>
+      item?.enrolledAt || item?.createdAt || item?.updatedAt || item?.date;
+
+    // Count new enrollments and completions per month from real arrays
+    const newPerMonth = months.map((m, idx) => {
+      const monthStart = moment().subtract(5 - idx, "months").startOf("month");
+      const monthEnd = moment(monthStart).endOf("month");
+      return enrollments.filter((e) => {
+        const d = getDate(e);
+        if (!d) return false;
+        const md = moment(d);
+        return md.isSameOrAfter(monthStart) && md.isSameOrBefore(monthEnd);
+      }).length;
+    });
+
+    const completedPerMonth = months.map((m, idx) => {
+      const monthStart = moment().subtract(5 - idx, "months").startOf("month");
+      const monthEnd = moment(monthStart).endOf("month");
+      return enrollments.filter((e) => {
+        if (e?.status !== "completed") return false;
+        const d = e?.completedAt || e?.updatedAt || e?.createdAt;
+        if (!d) return false;
+        const md = moment(d);
+        return md.isSameOrAfter(monthStart) && md.isSameOrBefore(monthEnd);
+      }).length;
+    });
+
+    const droppedPerMonth = months.map((m, idx) => {
+      const monthStart = moment().subtract(5 - idx, "months").startOf("month");
+      const monthEnd = moment(monthStart).endOf("month");
+      return enrollments.filter((e) => {
+        if (e?.status !== "dropped") return false;
+        const d = e?.updatedAt || e?.createdAt;
+        if (!d) return false;
+        const md = moment(d);
+        return md.isSameOrAfter(monthStart) && md.isSameOrBefore(monthEnd);
+      }).length;
+    });
 
     return {
       labels: months,
       datasets: [
         {
-          label: "New Enrollments",
-          data: months.map(() => Math.floor(Math.random() * 30) + 20), // 20-50 per month
+          label: tt("adminDashboard.analytics.newEnrollments", "New Enrollments"),
+          data: newPerMonth,
           borderColor: "#1890ff",
-          backgroundColor: "rgba(24, 144, 255, 0.1)",
+          backgroundColor: "rgba(24, 144, 255, 0.15)",
           fill: true,
-          tension: 0.4,
+          tension: 0.35,
         },
         {
-          label: "Completed Courses",
-          data: months.map(() => Math.floor(Math.random() * 25) + 15), // 15-40 per month
+          label: tt("adminDashboard.analytics.completed", "Completed"),
+          data: completedPerMonth,
           borderColor: "#52c41a",
-          backgroundColor: "rgba(82, 196, 26, 0.1)",
+          backgroundColor: "rgba(82, 196, 26, 0.15)",
           fill: true,
-          tension: 0.4,
+          tension: 0.35,
         },
         {
-          label: "Dropped Out",
-          data: months.map(() => Math.floor(Math.random() * 8) + 2), // 2-10 per month
+          label: tt("adminDashboard.analytics.dropped", "Dropped"),
+          data: droppedPerMonth,
           borderColor: "#f5222d",
-          backgroundColor: "rgba(245, 34, 45, 0.1)",
+          backgroundColor: "rgba(245, 34, 45, 0.12)",
           fill: true,
-          tension: 0.4,
+          tension: 0.35,
         },
       ],
     };
@@ -1015,34 +1055,31 @@ const AdminFacultyDashboard = () => {
 
   // Generate course popularity from real course data
   const generateCoursePopularityFromData = () => {
-    const topCourses = courses.slice(0, 5);
-    const courseNames =
-      topCourses.length > 0
-        ? topCourses.map((course) => course.title || course.name)
-        : [
-            "English Conversation",
-            "Business English",
-            "TOEIC Prep",
-            "Grammar Focus",
-            "Writing Skills",
-          ];
-
-    const courseCounts = courseNames.map(
-      () => Math.floor(Math.random() * 40) + 10
+    // Count enrollments per course from real enrollments
+    const courseIdToTitle = new Map(
+      courses.map((c) => [c._id || c.id, c.title || c.name || "Untitled"])
     );
 
+    const counts = enrollments.reduce((acc, e) => {
+      const id = e?.course?._id || e?.courseId || e?.course;
+      if (!id) return acc;
+      acc[id] = (acc[id] || 0) + 1;
+      return acc;
+    }, {});
+
+    const entries = Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5);
+
+    const labels = entries.map(([id]) => courseIdToTitle.get(id) || "Course");
+    const values = entries.map(([, v]) => v);
+
     return {
-      labels: courseNames,
+      labels,
       datasets: [
         {
-          data: courseCounts,
-          backgroundColor: [
-            "#1890ff",
-            "#52c41a",
-            "#faad14",
-            "#722ed1",
-            "#f5222d",
-          ],
+          data: values,
+          backgroundColor: ["#1890ff", "#52c41a", "#faad14", "#722ed1", "#f5222d"],
           borderWidth: 2,
           borderColor: "#fff",
         },
@@ -1052,19 +1089,22 @@ const AdminFacultyDashboard = () => {
 
   // Generate course engagement data from real courses
   const generateCourseEngagementFromData = () => {
-    return courses.slice(0, 5).map((course) => {
-      const enrolled = Math.floor(Math.random() * 80) + 20;
-      const active = Math.floor(enrolled * (0.7 + Math.random() * 0.25)); // 70-95% of enrolled
-      const completion = Math.floor(active * (0.6 + Math.random() * 0.3)); // 60-90% of active
-
-      return {
-        course: course.title || course.name || "Unknown Course",
-        enrolled,
-        active,
-        completion,
-        rating: (4.0 + Math.random() * 1.0).toFixed(1), // 4.0-5.0 rating
-      };
+    // Build metrics from real enrollments by course
+    const map = new Map();
+    enrollments.forEach((e) => {
+      const id = e?.course?._id || e?.courseId || e?.course;
+      const title =
+        (e?.course && (e.course.title || e.course.name)) ||
+        courses.find((c) => (c._id || c.id) === id)?.title ||
+        courses.find((c) => (c._id || c.id) === id)?.name ||
+        "Unknown";
+      if (!map.has(id)) map.set(id, { course: title, enrolled: 0, active: 0, completion: 0 });
+      const obj = map.get(id);
+      obj.enrolled += 1;
+      if (e?.status === "active") obj.active += 1;
+      if (e?.status === "completed") obj.completion += 1;
     });
+    return Array.from(map.values()).slice(0, 5);
   };
 
   // Generate recent activities from real data
@@ -7067,8 +7107,8 @@ const AdminFacultyDashboard = () => {
             {/* Advanced Custom Pagination */}
             {totalFilteredStudents > 0 && (
               <div className="unique-pagination-container">
-                <div className="pagination-info">
-                  <span className="pagination-text">
+                <div className="pagination-info" style={{ gap: 12, flexWrap: "wrap" }}>
+                  <span className="pagination-text" style={{ whiteSpace: "nowrap" }}>
                     {t("adminDashboard.students.showing")}{" "}
                     {(currentPage - 1) * pageSize + 1}-
                     {Math.min(currentPage * pageSize, totalFilteredStudents)}{" "}
@@ -7106,43 +7146,35 @@ const AdminFacultyDashboard = () => {
                 <div className="pagination-controls">
                   <Button
                     size="small"
-                    icon={<LeftOutlined />}
                     disabled={currentPage === 1}
                     onClick={() => setCurrentPage(currentPage - 1)}
                     className="pagination-btn prev-btn"
-                  />
+                    title={t("actions.previous")}
+                    aria-label={t("actions.previous")}
+                  >
+                    <LeftOutlined />
+                  </Button>
 
                   <div className="page-numbers">
                     {(() => {
-                      const totalPages = Math.ceil(
-                        totalFilteredStudents / pageSize
-                      );
+                      const totalPages = Math.ceil(totalFilteredStudents / pageSize);
+                      if (totalPages === 0) return null;
+
                       const pages = [];
-                      const maxVisible = 5;
+                      // Always show up to 3 simple page buttons centered around current
+                      let start = Math.max(1, currentPage - 1);
+                      let end = Math.min(totalPages, start + 2);
+                      // Re-adjust start if we hit the end
+                      start = Math.max(1, end - 2);
 
-                      let startPage = Math.max(
-                        1,
-                        currentPage - Math.floor(maxVisible / 2)
-                      );
-                      let endPage = Math.min(
-                        totalPages,
-                        startPage + maxVisible - 1
-                      );
-
-                      if (endPage - startPage + 1 < maxVisible) {
-                        startPage = Math.max(1, endPage - maxVisible + 1);
-                      }
-
-                      for (let i = startPage; i <= endPage; i++) {
+                      for (let i = start; i <= end; i++) {
                         pages.push(
                           <Button
                             key={i}
                             size="small"
                             type={currentPage === i ? "primary" : "default"}
                             onClick={() => setCurrentPage(i)}
-                            className={`pagination-btn page-number ${
-                              currentPage === i ? "active" : ""
-                            }`}
+                            className={`pagination-btn page-number ${currentPage === i ? "active" : ""}`}
                           >
                             {i}
                           </Button>
@@ -7155,13 +7187,14 @@ const AdminFacultyDashboard = () => {
 
                   <Button
                     size="small"
-                    icon={<RightOutlined />}
-                    disabled={
-                      currentPage >= Math.ceil(totalFilteredStudents / pageSize)
-                    }
+                    disabled={currentPage >= Math.ceil(totalFilteredStudents / pageSize)}
                     onClick={() => setCurrentPage(currentPage + 1)}
                     className="pagination-btn next-btn"
-                  />
+                    title={t("actions.next")}
+                    aria-label={t("actions.next")}
+                  >
+                    <RightOutlined />
+                  </Button>
                 </div>
               </div>
             )}
@@ -7448,125 +7481,118 @@ const AdminFacultyDashboard = () => {
   );
 
   // Render Analytics & Reports
-  const renderAnalytics = () => (
-    <div>
-      <Title level={2}>📊 {t("adminDashboard.analytics.title")}</Title>
-      <Text type="secondary">{t("adminDashboard.analytics.subtitle")}</Text>
+  const renderAnalytics = () => {
+    // Build datasets from real arrays already loaded in state
+    const trends = generateTrendsFromData();
 
-      <Row gutter={[24, 24]} style={{ marginTop: 24 }}>
-        <Col xs={24} lg={12}>
-          <Card title={t("adminDashboard.analytics.courseEnrollmentTrends")}>
-            <Bar
-              data={{
-                labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-                datasets: [
-                  {
-                    label: t("adminDashboard.analytics.newEnrollments"),
-                    data: [12, 19, 15, 25, 22, 30],
-                    backgroundColor: "rgba(24, 144, 255, 0.6)",
-                    borderColor: "#1890ff",
-                    borderWidth: 1,
-                  },
-                ],
-              }}
-              options={{
-                responsive: true,
-                plugins: {
-                  legend: {
-                    position: "top",
-                  },
-                },
-              }}
-            />
-          </Card>
-        </Col>
+    // Performance distribution based on enrollment statuses and progress if present
+    const distributionCounts = { excellent: 0, good: 0, average: 0, below: 0 };
+    enrollments.forEach((e) => {
+      const p = typeof e?.progress === "number" ? e.progress : 0;
+      if (p >= 90) distributionCounts.excellent += 1;
+      else if (p >= 70) distributionCounts.good += 1;
+      else if (p >= 40) distributionCounts.average += 1;
+      else distributionCounts.below += 1;
+    });
 
-        <Col xs={24} lg={12}>
-          <Card
-            title={t("adminDashboard.analytics.studentPerformanceDistribution")}
-          >
-            <Pie
-              data={{
-                labels: [
-                  t("adminDashboard.analytics.excellent"),
-                  t("adminDashboard.analytics.good"),
-                  t("adminDashboard.analytics.average"),
-                  t("adminDashboard.analytics.belowAverage"),
-                ],
-                datasets: [
-                  {
-                    data: [25, 35, 30, 10],
-                    backgroundColor: [
-                      "#52c41a",
-                      "#1890ff",
-                      "#faad14",
-                      "#f5222d",
-                    ],
-                  },
-                ],
-              }}
-              options={{
-                responsive: true,
-                plugins: {
-                  legend: {
-                    position: "bottom",
-                  },
-                },
-              }}
-            />
-          </Card>
-        </Col>
-      </Row>
+    // Weekly activity: last 4 weeks, count enroll and completed events from logs
+    const weekLabels = ["Week 1", "Week 2", "Week 3", "Week 4"];
+    const enrollCounts = [0, 0, 0, 0];
+    const completeCounts = [0, 0, 0, 0];
+    for (let i = 0; i < 4; i++) {
+      const start = moment().startOf("week").subtract(3 - i, "weeks");
+      const end = moment(start).endOf("week");
+      const items = enrollmentLogs.filter((l) => {
+        const d = l?.timestamp || l?.createdAt || l?.date;
+        if (!d) return false;
+        const md = moment(d);
+        return md.isSameOrAfter(start) && md.isSameOrBefore(end);
+      });
+      enrollCounts[i] = items.filter((l) => (l.action || l.status) === "enrolled").length;
+      completeCounts[i] = items.filter((l) => (l.action || l.status) === "completed").length;
+    }
 
-      <Row gutter={[24, 24]} style={{ marginTop: 24 }}>
-        <Col xs={24}>
-          <Card title={t("adminDashboard.analytics.monthlyActivityReport")}>
-            <Line
-              data={{
-                labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
-                datasets: [
-                  {
-                    label: t("adminDashboard.analytics.quizSubmissions"),
-                    data: [45, 52, 48, 61],
-                    borderColor: "#1890ff",
-                    backgroundColor: "rgba(24, 144, 255, 0.1)",
-                    tension: 0.4,
-                  },
-                  {
-                    label: t("adminDashboard.analytics.homeworkSubmissions"),
-                    data: [38, 42, 35, 48],
-                    borderColor: "#52c41a",
-                    backgroundColor: "rgba(82, 196, 26, 0.1)",
-                    tension: 0.4,
-                  },
-                  {
-                    label: t("adminDashboard.analytics.materialDownloads"),
-                    data: [65, 78, 72, 85],
-                    borderColor: "#faad14",
-                    backgroundColor: "rgba(250, 173, 20, 0.1)",
-                    tension: 0.4,
-                  },
-                ],
-              }}
-              options={{
-                responsive: true,
-                plugins: {
-                  legend: {
-                    position: "top",
-                  },
-                },
-                scales: {
-                  y: {
-                    beginAtZero: true,
-                  },
-                },
-              }}
-            />
-          </Card>
-        </Col>
-      </Row>
-    </div>
-  );
+    return (
+      <div>
+        <Title level={2}>📊 {t("adminDashboard.analytics.title")}</Title>
+        <Text type="secondary">{t("adminDashboard.analytics.subtitle")}</Text>
+
+        <Row gutter={[24, 24]} style={{ marginTop: 24 }}>
+          <Col xs={24} lg={12}>
+          <Card title={tt("adminDashboard.analytics.courseEnrollmentTrends", "Course Enrollment Trends")}>
+              <Bar
+                data={{ labels: trends.labels, datasets: trends.datasets }}
+                options={{
+                  responsive: true,
+                  plugins: { legend: { position: "top" } },
+                }}
+              />
+            </Card>
+          </Col>
+
+          <Col xs={24} lg={12}>
+            <Card title={tt("adminDashboard.analytics.studentPerformanceDistribution", "Student Performance Distribution")}>
+              <Pie
+                data={{
+                  labels: [
+                    tt("adminDashboard.analytics.excellent", "Excellent (90-100%)"),
+                    tt("adminDashboard.analytics.good", "Good (70-89%)"),
+                    tt("adminDashboard.analytics.average", "Average (40-69%)"),
+                    tt("adminDashboard.analytics.belowAverage", "Below Average (<40%)"),
+                  ],
+                  datasets: [
+                    {
+                      data: [
+                        distributionCounts.excellent,
+                        distributionCounts.good,
+                        distributionCounts.average,
+                        distributionCounts.below,
+                      ],
+                      backgroundColor: ["#52c41a", "#1890ff", "#faad14", "#f5222d"],
+                    },
+                  ],
+                }}
+                options={{ responsive: true, plugins: { legend: { position: "bottom" } } }}
+              />
+            </Card>
+          </Col>
+        </Row>
+
+        <Row gutter={[24, 24]} style={{ marginTop: 24 }}>
+          <Col xs={24}>
+            <Card title={tt("adminDashboard.analytics.monthlyActivityReport", "Monthly Activity Report")}>
+              <Line
+                data={{
+                  labels: weekLabels,
+                  datasets: [
+                    {
+                      label: tt("adminDashboard.analytics.newEnrollments", "New Enrollments"),
+                      data: enrollCounts,
+                      borderColor: "#1890ff",
+                      backgroundColor: "rgba(24, 144, 255, 0.1)",
+                      tension: 0.35,
+                    },
+                    {
+                      label: tt("adminDashboard.analytics.completed", "Completed"),
+                      data: completeCounts,
+                      borderColor: "#52c41a",
+                      backgroundColor: "rgba(82, 196, 26, 0.1)",
+                      tension: 0.35,
+                    },
+                  ],
+                }}
+                options={{
+                  responsive: true,
+                  plugins: { legend: { position: "top" } },
+                  scales: { y: { beginAtZero: true } },
+                }}
+              />
+            </Card>
+          </Col>
+        </Row>
+      </div>
+    );
+  };
 
   // Render Settings
   const renderSettings = () => (

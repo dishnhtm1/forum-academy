@@ -167,3 +167,44 @@
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
 /* End of UniqueTable styles */
+
+/* Pagination - compact, horizontal, responsive */
+.unique-pagination-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px 16px 16px 16px;
+}
+
+.pagination-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.page-numbers {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.pagination-btn {
+    border-radius: 8px !important;
+}
+
+.pagination-btn.page-number.active,
+.pagination-btn.page-number.ant-btn-primary {
+    background: #4f46e5;
+    border-color: #4f46e5;
+}
+
+@media (max-width: 640px) {
+    .pagination-info { flex-direction: column; align-items: flex-start; gap: 8px; }
+}
