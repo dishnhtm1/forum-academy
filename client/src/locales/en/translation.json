@@ -604,7 +604,8 @@
     },
     "stats": {
       "title": "Our Achievements",
-      "description": "Numbers that showcase our commitment to excellence and the success of our students in the technology industry."
+      "description": "Numbers that showcase our commitment to excellence and the success of our students in the technology industry.",
+      "cta": "Our Success Metrics"
     },
     "news": {
       "title": "Latest News & Updates",
@@ -1317,6 +1318,19 @@
     "buttons": {
       "explorePrograms": "Explore Programs",
       "applyNow": "Apply Now"
+    },
+    "linePopup": {
+      "step1Title": "LINE Official Account",
+      "step1Description": "Register with us on LINE to receive updates, news, and exclusive content about our programs and events.",
+      "proceedButton": "Proceed to QR Code",
+      "step2Title": "Scan QR Code to Connect",
+      "step2Instructions": "Scan the QR code to add as a friend on LINE",
+      "step2Additional": "Open your LINE app and use the in-app QR code reader",
+      "clickHere": "Click here"
+    },
+    "badge": {
+      "clickHere": "Click here",
+      "contactUs": "Please feel free to contact us!"
     },
     "stats": {
       "jobPlacement": "Job Placement",

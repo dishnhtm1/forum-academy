@@ -611,7 +611,8 @@
     },
     "stats": {
       "title": "私たちの実績",
-      "description": "卓越性への取り組みとテクノロジー業界における学生の成功を示す数字です。"
+      "description": "卓越性への取り組みとテクノロジー業界における学生の成功を示す数字です。",
+      "cta": "私たちの成功指標"
     },
     "news": {
       "title": "最新ニュース・アップデート",
@@ -1310,6 +1311,19 @@
     "buttons": {
       "explorePrograms": "プログラムを探索",
       "applyNow": "今すぐ応募"
+    },
+    "linePopup": {
+      "step1Title": "LINE公式アカウント",
+      "step1Description": "LINEで登録して、プログラムやイベントに関する最新情報、ニュース、限定コンテンツを受け取りましょう。",
+      "proceedButton": "QRコードに進む",
+      "step2Title": "QRコードをスキャンして接続",
+      "step2Instructions": "QRコードをスキャンして、LINEで友だちに追加",
+      "step2Additional": "LINEアプリを開き、アプリ内のQRコードリーダーを使用してください",
+      "clickHere": "こちらをクリック"
+    },
+    "badge": {
+      "clickHere": "こちらをクリック",
+      "contactUs": "お気軽にお問い合わせください！"
     },
     "stats": {
       "jobPlacement": "就職率",

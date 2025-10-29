@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LoginModal from './LoginModal';
 import logoWhiteImage from '../assets/images/logo1.png';
-import { Menu, X, ChevronDown, Globe, User, ArrowRight, Code, BarChart3, Shield, Cloud, Brain, List, Info, Users, Handshake, Star, Sparkles, Zap } from 'lucide-react';
+import { Menu, X, ChevronDown, Globe, User, ArrowRight, GraduationCap, BookOpen, Shield, Cloud, Cpu, List, Info, Users, Handshake, Star, Sparkles, Zap, School, Award, BookMarked, Laptop, Database, Lock, Server, Bot, Target, Briefcase, MessageCircle, Phone } from 'lucide-react';
 
 const Header = ({ onLoginClick }) => {
     const { t, i18n } = useTranslation();
@@ -127,66 +127,57 @@ const Header = ({ onLoginClick }) => {
 
     const coursesData = [
         {
-            icon: Code,
+            icon: Laptop,
             title: t('courses.webDevelopment') || 'Web Development',
             path: '/courses/web-development',
-            gradient: 'from-blue-500 to-purple-600',
-            emoji: '💻'
+            gradient: 'from-blue-500 to-cyan-500'
         },
         {
-            icon: BarChart3,
+            icon: Database,
             title: t('courses.dataScience') || 'Data Science',
             path: '/courses/data-science',
-            gradient: 'from-green-500 to-teal-600',
-            emoji: '📊'
+            gradient: 'from-emerald-500 to-teal-500'
         },
         {
-            icon: Shield,
+            icon: Lock,
             title: t('courses.cybersecurity') || 'Cybersecurity',
             path: '/courses/cybersecurity',
-            gradient: 'from-red-500 to-pink-600',
-            emoji: '🛡️'
+            gradient: 'from-red-500 to-orange-500'
         },
         {
-            icon: Cloud,
+            icon: Server,
             title: t('courses.cloudComputing') || 'Cloud Computing',
             path: '/courses/cloud-computing',
-            gradient: 'from-indigo-500 to-blue-600',
-            emoji: '☁️'
+            gradient: 'from-indigo-500 to-blue-500'
         },
         {
-            icon: Brain,
+            icon: Bot,
             title: t('courses.aiMl') || 'AI & Machine Learning',
             path: '/courses/ai-ml',
-            gradient: 'from-purple-500 to-pink-600',
-            emoji: '🤖'
+            gradient: 'from-purple-500 to-pink-500'
         }
     ];
 
     const aboutLinks = [
         {
-            icon: Info,
+            icon: School,
             title: t('navigation.aboutUs') || 'About Us',
-            path: '/about',
-            emoji: '🏛️'
+            path: '/about'
         },
         {
             icon: Users,
             title: t('navigation.ourTeam') || 'Our Team',
-            path: '/team#team-members',
-            emoji: '👥'
+            path: '/team#team-members'
         },
         {
             icon: Handshake,
             title: t('navigation.industryPartners') || 'Industry Partners',
-            path: '/team#industry-partners',
-            emoji: '🤝'
+            path: '/team#industry-partners'
         },
         {
-            icon: Star,
+            icon: Award,
             title: t('navigation.studentSuccess') || 'Student Success',
-            path: '/team#student-testimonials',
-            emoji: '⭐'
+            path: '/team#student-testimonials'
         }
     ];
 
@@ -194,193 +185,217 @@ const Header = ({ onLoginClick }) => {
         {
             path: '/news',
             label: t('navigation.newsEvents') || 'News & Events',
-            emoji: '📰'
+            icon: BookOpen
         },
         {
             path: '/career-services',
             label: t('navigation.careerServices') || 'Career Services',
-            emoji: '💼'
+            icon: Briefcase
         },
         {
             path: '/contact',
             label: t('navigation.contact') || 'Contact',
-            emoji: '📧'
+            icon: MessageCircle
         }
     ];
 
     return (
         <>
-            {/* Compact Enhanced Header */}
+            {/* Clean School Header */}
             <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
                 scrolled
-                    ? 'bg-white/90 backdrop-blur-xl shadow-xl border-b border-gray-200/30'
-                    : 'bg-gradient-to-r from-slate-900/90 via-blue-900/90 to-purple-900/90 backdrop-blur-md'
+                    ? 'bg-white/95 backdrop-blur-lg shadow-lg border-b border-blue-100'
+                    : 'bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 backdrop-blur-sm'
             }`}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between h-16 lg:h-18">
 
-                        {/* Compact Logo */}
-                        <Link
-                            to="/"
-                            className="flex items-center space-x-2 group transition-all duration-300 hover:scale-105"
-                        >
-                            <div className="relative">
-                                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500 rounded-xl flex items-center justify-center transform group-hover:rotate-12 transition-all duration-300 shadow-lg">
-                                    <img src={logoWhiteImage} alt="Forum Academy" className="w-6 h-6 text-white" />
+                                                 {/* FIA Logo with Forum and Information Academy */}
+                         <Link
+                             to="/"
+                             className="flex items-center space-x-3 group transition-all duration-300 hover:scale-105 flex-shrink-0"
+                         >
+                             <div className="relative flex-shrink-0">
+                                 {/* FIA Badge with gradient like Apply Now button */}
+                                 <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:from-blue-700 group-hover:to-indigo-700 transition-all duration-300 relative">
+                                     {/* FIA Initials */}
+                                     <span className="text-lg font-bold text-white">
+                                         FIA
+                                     </span>
+                                 </div>
+                                 {/* Graduation Cap Icon */}
+                                 <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                                     <GraduationCap className="w-3 h-3 text-white" />
+                                 </div>
+                             </div>
+                             {/* Full Name - All text visible on desktop */}
+                             <div className="hidden md:block flex-shrink-0 min-w-0">
+                                 <h1 className={`font-bold text-sm md:text-base leading-tight transition-colors duration-300 whitespace-nowrap ${
+                                     scrolled
+                                         ? 'text-blue-700'
+                                         : 'text-white'
+                                 }`}>
+                                     Forum Information Academy
+                                 </h1>
+                                 <p className={`text-xs transition-colors duration-300 mt-0.5 ${
+                                     scrolled
+                                         ? 'text-blue-500'
+                                         : 'text-blue-100'
+                                 }`}>
+                                     Technology Education
+                                 </p>
+                             </div>
+                            {/* Mobile: Show "Forum" and "Information Academy" */}
+                            <div className="md:hidden">
+                                <div className="flex flex-col">
+                                    <span className={`font-bold text-sm transition-colors duration-300 ${
+                                        scrolled
+                                            ? 'text-blue-700'
+                                            : 'text-white'
+                                    }`}>
+                                        Forum
+                                    </span>
+                                    <span className={`font-semibold text-xs transition-colors duration-300 ${
+                                        scrolled
+                                            ? 'text-blue-600'
+                                            : 'text-blue-100'
+                                    }`}>
+                                        Information<br />Academy
+                                    </span>
                                 </div>
-                                <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full opacity-80 group-hover:scale-125 transition-transform duration-300">
-                                    <Sparkles className="w-2 h-2 text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
-                                </div>
-                            </div>
-                            <div className="hidden sm:block">
-                                <h1 className={`font-bold text-lg transition-colors duration-300 ${
-                                    scrolled
-                                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent'
-                                        : 'text-white'
-                                }`}>
-                                    {t('header.academy')}
-                                </h1>
                             </div>
                         </Link>
 
                         
                         <nav className="hidden lg:flex items-center space-x-6">
-                            
+                            {/* Show horizontal links when Japanese, dropdown when English */}
+                            {i18n.language === 'ja' ? (
+                                <>
+                                    {/* Japanese Horizontal Navigation */}
+                                    <Link
+                                        to="/courses"
+                                        className={`flex flex-col items-center justify-center px-3 py-2.5 rounded-lg transition-all duration-300 group min-w-[60px] ${
+                                            scrolled
+                                                ? 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
+                                                : 'text-white hover:text-blue-100 hover:bg-white/10'
+                                        } ${isActiveLink('/courses') ? (scrolled ? 'text-blue-600 bg-blue-50' : 'text-blue-100 bg-white/10') : ''} hover:scale-105`}
+                                    >
+                                        <BookOpen className="w-4 h-4 mb-1" />
+                                        <span className="font-medium text-xs leading-tight text-center">
+                                            {t('header.programs.title')}
+                                        </span>
+                                    </Link>
+                                    
+                                    <Link
+                                        to="/about"
+                                        className={`flex flex-col items-center justify-center px-3 py-2.5 rounded-lg transition-all duration-300 group min-w-[60px] ${
+                                            scrolled
+                                                ? 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
+                                                : 'text-white hover:text-blue-100 hover:bg-white/10'
+                                        } ${isActiveLink('/about') ? (scrolled ? 'text-blue-600 bg-blue-50' : 'text-blue-100 bg-white/10') : ''} hover:scale-105`}
+                                    >
+                                        <School className="w-4 h-4 mb-1" />
+                                        <span className="font-medium text-xs leading-tight text-center">
+                                            {t('navigation.about') || 'About'}
+                                        </span>
+                                    </Link>
+                                    
+                                    {navigationLinks.map((item) => {
+                                        const IconComponent = item.icon;
+                                        return (
+                                            <Link
+                                                key={item.path}
+                                                to={item.path}
+                                                className={`flex flex-col items-center justify-center px-3 py-2.5 rounded-lg transition-all duration-300 group min-w-[60px] ${
+                                                    scrolled
+                                                        ? 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
+                                                        : 'text-white hover:text-blue-100 hover:bg-white/10'
+                                                } ${isActiveLink(item.path) ? (scrolled ? 'text-blue-600 bg-blue-50' : 'text-blue-100 bg-white/10') : ''} hover:scale-105`}
+                                            >
+                                                <IconComponent className="w-4 h-4 mb-1" />
+                                                <span className="font-medium text-xs leading-tight text-center">{item.label}</span>
+                                            </Link>
+                                        );
+                                    })}
+                                </>
+                            ) : (
+                                <>
+                                    {/* English Dropdown Navigation */}
                             <div
                                 className="relative"
                                 onMouseEnter={() => handleMouseEnter('courses')}
                                 onMouseLeave={handleMouseLeave}
                             >
                                 <button
-                                    className={`flex items-center space-x-2 px-5 py-2.5 rounded-xl transition-all duration-500 group relative overflow-hidden ${
+                                            className={`flex items-center space-x-2 px-4 py-2.5 rounded-lg transition-all duration-300 group ${
                                         scrolled
                                             ? 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
-                                            : 'text-white hover:text-blue-200 hover:bg-white/10'
-                                    } ${isActiveLink('/courses') ? (scrolled ? 'text-blue-600 bg-blue-50' : 'text-blue-200 bg-white/10') : ''} hover:scale-105 hover:shadow-lg`}
-                                >
-                                    {/* Button background effect */}
-                                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 rounded-xl"></div>
-                                    
-                                    <span className="font-semibold text-sm relative z-10">
+                                                    : 'text-white hover:text-blue-100 hover:bg-white/10'
+                                            } ${isActiveLink('/courses') ? (scrolled ? 'text-blue-600 bg-blue-50' : 'text-blue-100 bg-white/10') : ''} hover:scale-105`}
+                                        >
+                                            <BookOpen className="w-4 h-4" />
+                                            <span className="font-medium text-sm">
                                         {t('header.programs.title')}
                                     </span>
-                                    <ChevronDown className={`w-4 h-4 transition-all duration-500 relative z-10 ${
-                                        dropdownOpen === 'courses' ? 'rotate-180 text-blue-500' : ''
-                                    } group-hover:scale-110`} />
-                                    
-                                    {/* Animated underline */}
-                                    <div className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-300 group-hover:w-full group-hover:left-0 rounded-full"></div>
+                                            <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${
+                                                dropdownOpen === 'courses' ? 'rotate-180' : ''
+                                            }`} />
                                 </button>
                             
-                                {/* Rectangular Dropdown Box */}
-                                <div className={`absolute top-full left-1/2 transform -translate-x-1/2 transition-all duration-700 z-50 ${
+                                {/* Clean Dropdown Box */}
+                                <div className={`absolute top-full left-1/2 transform -translate-x-1/2 transition-all duration-300 z-50 ${
                                     dropdownOpen === 'courses'
-                                        ? 'opacity-100 translate-y-0 pointer-events-auto scale-100'
-                                        : 'opacity-0 -translate-y-6 pointer-events-none scale-95'
+                                        ? 'opacity-100 translate-y-0 pointer-events-auto'
+                                        : 'opacity-0 -translate-y-2 pointer-events-none'
                                 }`}>
-                                    <div className="w-96 max-w-[85vw] bg-white/95 backdrop-blur-2xl rounded-2xl shadow-2xl border border-gray-200/50 mt-4 overflow-hidden relative">
-                                        {/* Decorative top border */}
-                                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
-                                        
-                                        {/* Enhanced Header */}
-                                        <div className="bg-gradient-to-r from-blue-50/80 to-purple-50/80 px-6 py-4 border-b border-gray-200/50 relative">
-                                            <div className="flex items-center justify-between">
+                                    <div className="w-80 max-w-[85vw] bg-white rounded-xl shadow-xl border border-gray-200 mt-2 overflow-hidden">
+                                        {/* Simple Header */}
+                                        <div className="bg-blue-50 px-4 py-3 border-b border-gray-200">
                                                 <div className="flex items-center">
-                                                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center mr-3 animate-pulse">
-                                                        <Zap className="w-4 h-4 text-white" />
-                                                    </div>
-                                                    <div>
-                                                        <h3 className="text-lg font-bold text-gray-900">
+                                                <GraduationCap className="w-5 h-5 text-blue-600 mr-2" />
+                                                <h3 className="font-semibold text-gray-900">
                                                             {t('header.programs.subtitle')}
                                                         </h3>
-                                                        <p className="text-xs text-gray-600 mt-0.5">
-                                                            {t('header.programs.subtitle')}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                                <div className="text-2xl animate-bounce">🎓</div>
                                             </div>
                                         </div>
                             
-                                        {/* Programs Grid */}
-                                        <div className="p-5">
-                                            <div className="grid grid-cols-1 gap-3 max-h-80 overflow-y-auto">
+                                        {/* Programs List */}
+                                        <div className="p-4">
+                                            <div className="space-y-2">
                                                 {coursesData.map((course, index) => {
                                                     const IconComponent = course.icon;
                                                     return (
                                                         <Link
                                                             key={index}
                                                             to={course.path}
-                                                            className="group relative p-4 rounded-xl bg-gradient-to-r from-white/70 to-gray-50/70 border border-gray-200/50 hover:border-transparent hover:shadow-lg transition-all duration-500 hover:-translate-y-1 hover:scale-[1.02] transform overflow-hidden"
+                                                            className="group flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 transition-all duration-200"
                                                         >
-                                                            {/* Background effects */}
-                                                            <div className={`absolute inset-0 bg-gradient-to-r ${course.gradient} opacity-0 group-hover:opacity-10 transition-all duration-500 rounded-xl`}></div>
-                                                            <div className="absolute inset-0 bg-gradient-to-r from-blue-50/50 to-purple-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl"></div>
-                                                            
-                                                            {/* Shimmer effect */}
-                                                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700 transform -skew-x-12 translate-x-full group-hover:-translate-x-full"></div>
-                                                            
-                                                            <div className="relative z-10 flex items-center space-x-4">
-                                                                {/* Icon container */}
-                                                                <div className="relative flex-shrink-0">
-                                                                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-r ${course.gradient} flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-lg group-hover:shadow-xl`}>
-                                                                        <IconComponent className="w-6 h-6 text-white" />
+                                                            <div className={`w-10 h-10 rounded-lg bg-gradient-to-r ${course.gradient} flex items-center justify-center group-hover:scale-105 transition-transform duration-200`}>
+                                                                <IconComponent className="w-5 h-5 text-white" />
                                                                     </div>
-                                                                    {/* Floating indicator */}
-                                                                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 animate-bounce"></div>
-                                                                </div>
-                                                                
-                                                                {/* Content */}
-                                                                <div className="flex-1 min-w-0">
-                                                                    <div className="flex items-center space-x-2 mb-1">
-                                                                        <h5 className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300 text-sm">
+                                                            <div className="flex-1">
+                                                                <h5 className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors duration-200">
                                                                             {course.title}
                                                                         </h5>
-                                                                        <span className="text-lg transform group-hover:scale-125 transition-transform duration-300">{course.emoji}</span>
-                                                                    </div>
-                                                                    <p className="text-xs text-gray-500 group-hover:text-gray-700 transition-colors duration-300">
+                                                                <p className="text-xs text-gray-500">
                                                                         {t('header.programs.certifiedTrack')}
                                                                     </p>
-                                                                    
-                                                                    {/* Progress indicator */}
-                                                                    <div className="mt-2 w-full bg-gray-200 rounded-full h-1 overflow-hidden">
-                                                                        <div className={`h-full bg-gradient-to-r ${course.gradient} w-0 group-hover:w-full transition-all duration-700 delay-200`}></div>
-                                                                    </div>
-                                                                </div>
-                                                                
-                                                                {/* Arrow */}
-                                                                <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-blue-500 opacity-0 group-hover:opacity-100 transition-all duration-500 transform group-hover:translate-x-1 flex-shrink-0" />
                                                             </div>
-                                                            
-                                                            {/* Corner sparkle */}
-                                                            <div className="absolute top-2 right-2 w-2 h-2 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 animate-ping"></div>
+                                                            <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-blue-500 group-hover:translate-x-1 transition-all duration-200" />
                                                         </Link>
                                                     );
                                                 })}
                                             </div>
                             
-                                            {/* Enhanced Bottom Action */}
-                                            <div className="border-t border-gray-200/50 pt-4 mt-4">
+                                            {/* Simple Bottom Action */}
+                                            <div className="border-t border-gray-200 pt-4 mt-4">
                                                 <Link
                                                     to="/courses"
-                                                    className="group relative flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-500 hover:scale-105 hover:shadow-xl text-sm font-bold overflow-hidden transform hover:-translate-y-0.5"
+                                                    className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm font-medium"
                                                 >
-                                                    {/* Button effects */}
-                                                    <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 opacity-0 group-hover:opacity-100 transition-all duration-500 rounded-xl"></div>
-                                                    <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                                                    
-                                                    {/* Shine effect */}
-                                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700 transform -skew-x-12 translate-x-full group-hover:-translate-x-full"></div>
-                                                    
-                                                    <List className="w-5 h-5 mr-3 group-hover:rotate-180 transition-transform duration-500 relative z-10" />
-                                                    <span className="relative z-10 group-hover:text-yellow-100 transition-colors duration-300">
-                                                        {t('navigation.viewAllPrograms') || 'Explore All Programs'}
-                                                    </span>
-                                                    <ArrowRight className="w-5 h-5 ml-3 group-hover:translate-x-2 group-hover:scale-110 transition-all duration-500 relative z-10" />
-                                                    
-                                                    {/* Floating particles */}
-                                                    <div className="absolute top-1 left-4 w-1 h-1 bg-yellow-300 rounded-full opacity-0 group-hover:opacity-100 animate-ping transition-opacity duration-500 delay-100"></div>
-                                                    <div className="absolute bottom-2 right-6 w-1 h-1 bg-cyan-300 rounded-full opacity-0 group-hover:opacity-100 animate-bounce transition-opacity duration-500 delay-200"></div>
+                                                    <List className="w-4 h-4 mr-2" />
+                                                    <span>{t('navigation.viewAllPrograms') || 'Explore All Programs'}</span>
+                                                    <ArrowRight className="w-4 h-4 ml-2" />
                                                 </Link>
                                             </div>
                                         </div>
@@ -388,143 +403,82 @@ const Header = ({ onLoginClick }) => {
                                 </div>
                             </div>
 
-                            {/* Compact About Dropdown */}
-                            
+                            {/* English About Dropdown */}
                             <div
                                 className="relative"
                                 onMouseEnter={() => handleMouseEnter('about')}
                                 onMouseLeave={handleMouseLeave}
                             >
                                 <button
-                                    className={`flex items-center space-x-2 px-5 py-2.5 rounded-xl transition-all duration-500 group relative overflow-hidden ${
+                                    className={`flex items-center space-x-2 px-4 py-2.5 rounded-lg transition-all duration-300 group ${
                                         scrolled
                                             ? 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
-                                            : 'text-white hover:text-blue-200 hover:bg-white/10'
-                                    } ${isActiveLink('/about') ? (scrolled ? 'text-blue-600 bg-blue-50' : 'text-blue-200 bg-white/10') : ''} hover:scale-105 hover:shadow-lg`}
+                                            : 'text-white hover:text-blue-100 hover:bg-white/10'
+                                    } ${isActiveLink('/about') ? (scrolled ? 'text-blue-600 bg-blue-50' : 'text-blue-100 bg-white/10') : ''} hover:scale-105`}
                                 >
-                                    {/* Button background effect */}
-                                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 rounded-xl"></div>
-                                    
-                                    <span className="font-semibold text-sm relative z-10">
+                                    <School className="w-4 h-4" />
+                                    <span className="font-medium text-sm">
                                         {t('navigation.about') || 'About'}
                                     </span>
-                                    <ChevronDown className={`w-4 h-4 transition-all duration-500 relative z-10 ${
-                                        dropdownOpen === 'about' ? 'rotate-180 text-blue-500' : ''
-                                    } group-hover:scale-110`} />
-                                    
-                                    {/* Animated underline */}
-                                    <div className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-300 group-hover:w-full group-hover:left-0 rounded-full"></div>
+                                    <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${
+                                        dropdownOpen === 'about' ? 'rotate-180' : ''
+                                    }`} />
                                 </button>
                             
-                                {/* Rectangular Dropdown Box - Same Style as Programs */}
-                                <div className={`absolute top-full left-0 w-96 max-w-[85vw] transition-all duration-700 z-50 ${
+                                {/* Clean About Dropdown */}
+                                <div className={`absolute top-full left-0 w-80 max-w-[85vw] transition-all duration-300 z-50 ${
                                     dropdownOpen === 'about'
-                                        ? 'opacity-100 translate-y-0 pointer-events-auto scale-100'
-                                        : 'opacity-0 -translate-y-6 pointer-events-none scale-95'
+                                        ? 'opacity-100 translate-y-0 pointer-events-auto'
+                                        : 'opacity-0 -translate-y-2 pointer-events-none'
                                 }`}>
-                                    <div className="bg-white/95 backdrop-blur-2xl rounded-2xl shadow-2xl border border-gray-200/50 mt-4 overflow-hidden relative">
-                                        {/* Decorative top border - Same as Programs */}
-                                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
-                                        
-                                        {/* Enhanced Header - Same Style as Programs */}
-                                        <div className="bg-gradient-to-r from-blue-50/80 to-purple-50/80 px-6 py-4 border-b border-gray-200/50 relative">
-                                            <div className="flex items-center justify-between">
+                                    <div className="bg-white rounded-xl shadow-xl border border-gray-200 mt-2 overflow-hidden">
+                                        {/* Simple Header */}
+                                        <div className="bg-blue-50 px-4 py-3 border-b border-gray-200">
                                                 <div className="flex items-center">
-                                                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center mr-3 animate-pulse">
-                                                        <Info className="w-4 h-4 text-white" />
-                                                    </div>
-                                                    <div>
-                                                        <h3 className="text-lg font-bold text-gray-900">
+                                                <School className="w-5 h-5 text-blue-600 mr-2" />
+                                                <h3 className="font-semibold text-gray-900">
                                                             {t('header.about.title')}
                                                         </h3>
-                                                        <p className="text-xs text-gray-600 mt-0.5">
-                                                            {t('header.about.subtitle')}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                                <div className="text-2xl animate-bounce">🏢</div>
                                             </div>
                                         </div>
                             
-                                        {/* About Links Grid - Same Style as Programs */}
-                                        <div className="p-5">
-                                            <div className="grid grid-cols-1 gap-3 max-h-80 overflow-y-auto">
+                                        {/* About Links List */}
+                                        <div className="p-4">
+                                            <div className="space-y-2">
                                                 {aboutLinks.map((link, index) => {
                                                     const IconComponent = link.icon;
                                                     return (
                                                         <Link
                                                             key={index}
                                                             to={link.path}
-                                                            className="group relative p-4 rounded-xl bg-gradient-to-r from-white/70 to-gray-50/70 border border-gray-200/50 hover:border-transparent hover:shadow-lg transition-all duration-500 hover:-translate-y-1 hover:scale-[1.02] transform overflow-hidden"
+                                                            className="group flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 transition-all duration-200"
                                                         >
-                                                            {/* Background effects - Same as Programs */}
-                                                            <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 opacity-0 group-hover:opacity-10 transition-all duration-500 rounded-xl"></div>
-                                                            <div className="absolute inset-0 bg-gradient-to-r from-blue-50/50 to-purple-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl"></div>
-                                                            
-                                                            {/* Shimmer effect - Same as Programs */}
-                                                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700 transform -skew-x-12 translate-x-full group-hover:-translate-x-full"></div>
-                                                            
-                                                            <div className="relative z-10 flex items-center space-x-4">
-                                                                {/* Icon container - Same style as Programs */}
-                                                                <div className="relative flex-shrink-0">
-                                                                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center group-hover:bg-gradient-to-br group-hover:from-blue-100 group-hover:to-purple-100 transition-all duration-500 group-hover:rotate-6 group-hover:scale-110 shadow-lg group-hover:shadow-xl">
-                                                                        <IconComponent className="w-6 h-6 text-gray-600 group-hover:text-blue-600 transition-colors duration-300" />
+                                                            <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-blue-100 transition-colors duration-200">
+                                                                <IconComponent className="w-5 h-5 text-gray-600 group-hover:text-blue-600" />
                                                                     </div>
-                                                                    {/* Floating indicator - Same as Programs */}
-                                                                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 animate-bounce"></div>
-                                                                </div>
-                                                                
-                                                                {/* Content - Same layout as Programs */}
-                                                                <div className="flex-1 min-w-0">
-                                                                    <div className="flex items-center space-x-2 mb-1">
-                                                                        <h5 className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300 text-sm">
+                                                            <div className="flex-1">
+                                                                <h5 className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors duration-200">
                                                                             {link.title}
                                                                         </h5>
-                                                                        <span className="text-lg transform group-hover:scale-125 transition-transform duration-300">{link.emoji}</span>
-                                                                    </div>
-                                                                    <p className="text-xs text-gray-500 group-hover:text-gray-700 transition-colors duration-300">
+                                                                <p className="text-xs text-gray-500">
                                                                         {t('header.about.description')}
                                                                     </p>
-                                                                    
-                                                                    {/* Progress indicator - Same as Programs */}
-                                                                    <div className="mt-2 w-full bg-gray-200 rounded-full h-1 overflow-hidden">
-                                                                        <div className="h-full bg-gradient-to-r from-blue-500 to-purple-600 w-0 group-hover:w-full transition-all duration-700 delay-200"></div>
-                                                                    </div>
-                                                                </div>
-                                                                
-                                                                {/* Arrow - Same as Programs */}
-                                                                <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-blue-500 opacity-0 group-hover:opacity-100 transition-all duration-500 transform group-hover:translate-x-1 flex-shrink-0" />
                                                             </div>
-                                                            
-                                                            {/* Corner sparkle - Same as Programs */}
-                                                            <div className="absolute top-2 right-2 w-2 h-2 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 animate-ping"></div>
+                                                            <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-blue-500 group-hover:translate-x-1 transition-all duration-200" />
                                                         </Link>
                                                     );
                                                 })}
                                             </div>
                             
-                                            {/* Enhanced Bottom Action - Same Style as Programs */}
-                                            <div className="border-t border-gray-200/50 pt-4 mt-4">
+                                            {/* Simple Bottom Action */}
+                                            <div className="border-t border-gray-200 pt-4 mt-4">
                                                 <Link
                                                     to="/about"
-                                                    className="group relative flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-500 hover:scale-105 hover:shadow-xl text-sm font-bold overflow-hidden transform hover:-translate-y-0.5"
+                                                    className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm font-medium"
                                                 >
-                                                    {/* Button effects - Same as Programs */}
-                                                    <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 opacity-0 group-hover:opacity-100 transition-all duration-500 rounded-xl"></div>
-                                                    <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                                                    
-                                                    {/* Shine effect - Same as Programs */}
-                                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700 transform -skew-x-12 translate-x-full group-hover:-translate-x-full"></div>
-                                                    
-                                                    <Info className="w-5 h-5 mr-3 group-hover:rotate-180 transition-transform duration-500 relative z-10" />
-                                                    <span className="relative z-10 group-hover:text-yellow-100 transition-colors duration-300">
-                                                        {t('header.about.learnMore')}
-                                                    </span>
-                                                    <ArrowRight className="w-5 h-5 ml-3 group-hover:translate-x-2 group-hover:scale-110 transition-all duration-500 relative z-10" />
-                                                    
-                                                    {/* Floating particles - Same as Programs */}
-                                                    <div className="absolute top-1 left-4 w-1 h-1 bg-yellow-300 rounded-full opacity-0 group-hover:opacity-100 animate-ping transition-opacity duration-500 delay-100"></div>
-                                                    <div className="absolute bottom-2 right-6 w-1 h-1 bg-cyan-300 rounded-full opacity-0 group-hover:opacity-100 animate-bounce transition-opacity duration-500 delay-200"></div>
+                                                    <Info className="w-4 h-4 mr-2" />
+                                                    <span>{t('header.about.learnMore')}</span>
+                                                    <ArrowRight className="w-4 h-4 ml-2" />
                                                 </Link>
                                             </div>
                                         </div>
@@ -532,23 +486,26 @@ const Header = ({ onLoginClick }) => {
                                 </div>
                             </div>
 
-                            {/* Compact Navigation Links */}
-                            {navigationLinks.map((item) => (
+                            {/* English Navigation Links */}
+                            {navigationLinks.map((item) => {
+                                const IconComponent = item.icon;
+                                return (
                                 <Link
                                     key={item.path}
                                     to={item.path}
-                                    className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 relative group text-sm ${
+                                        className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-300 group text-sm ${
                                         scrolled
                                             ? 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
                                             : 'text-white hover:text-blue-200 hover:bg-white/10'
-                                    } ${isActiveLink(item.path) ? (scrolled ? 'text-blue-600 bg-blue-50' : 'text-blue-200 bg-white/10') : ''} transform hover:scale-105`}
+                                        } ${isActiveLink(item.path) ? (scrolled ? 'text-blue-600 bg-blue-50' : 'text-blue-200 bg-white/10') : ''} hover:scale-105`}
                                 >
-                                    <span className="flex items-center space-x-1">
+                                        <IconComponent className="w-4 h-4" />
                                         <span>{item.label}</span>
-                                        <span className="text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300">{item.emoji}</span>
-                                    </span>
                                 </Link>
-                            ))}
+                                );
+                            })}
+                                </>
+                            )}
                         </nav>
 
                         {/* Compact Actions */}
@@ -584,77 +541,14 @@ const Header = ({ onLoginClick }) => {
                                 <User className="w-4 h-4 group-hover:scale-125 transition-transform duration-300" />
                             </button>
 
-                            {/* Enhanced Apply Button with Magical Sparkle Effect */}
+                            {/* Clean Apply Button */}
                             <Link
                                 to="/apply"
-                                className="hidden sm:flex items-center space-x-3 px-6 py-3 bg-gradient-to-r from-blue-500 via-purple-600 to-pink-500 text-white rounded-xl hover:from-blue-600 hover:via-purple-700 hover:to-pink-600 transition-all duration-500 hover:scale-110 hover:shadow-2xl group text-sm font-bold relative overflow-hidden transform hover:-translate-y-0.5 mt-2 mb-2"
+                                className="hidden sm:flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 hover:scale-105 hover:shadow-lg group text-sm font-semibold"
                             >
-                                {/* Enhanced Sparkle Effects */}
-                                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-700">
-                                    {/* Large Star Sparkles */}
-                                    <div className="absolute top-2 left-4 w-3 h-3 opacity-0 group-hover:opacity-100 transition-all duration-700 delay-100 group-hover:animate-spin">
-                                        <div className="absolute inset-0 bg-gradient-to-r from-yellow-300 to-yellow-100 rotate-45 transform scale-x-50 rounded-sm"></div>
-                                        <div className="absolute inset-0 bg-gradient-to-r from-yellow-300 to-yellow-100 transform scale-y-50 rounded-sm"></div>
-                                    </div>
-                                    
-                                    <div className="absolute top-1 right-5 w-2.5 h-2.5 opacity-0 group-hover:opacity-100 transition-all duration-700 delay-200 group-hover:animate-pulse">
-                                        <div className="absolute inset-0 bg-gradient-to-r from-white to-cyan-200 rotate-45 transform scale-x-50 rounded-sm"></div>
-                                        <div className="absolute inset-0 bg-gradient-to-r from-white to-cyan-200 transform scale-y-50 rounded-sm"></div>
-                                    </div>
-                                    
-                                    <div className="absolute bottom-2 left-6 w-2 h-2 opacity-0 group-hover:opacity-100 transition-all duration-700 delay-300 group-hover:animate-bounce">
-                                        <div className="absolute inset-0 bg-gradient-to-r from-pink-300 to-pink-100 rotate-45 transform scale-x-50 rounded-sm"></div>
-                                        <div className="absolute inset-0 bg-gradient-to-r from-pink-300 to-pink-100 transform scale-y-50 rounded-sm"></div>
-                                    </div>
-                                    
-                                    <div className="absolute bottom-1 right-3 w-2.5 h-2.5 opacity-0 group-hover:opacity-100 transition-all duration-700 delay-150 group-hover:animate-spin">
-                                        <div className="absolute inset-0 bg-gradient-to-r from-green-300 to-green-100 rotate-45 transform scale-x-50 rounded-sm"></div>
-                                        <div className="absolute inset-0 bg-gradient-to-r from-green-300 to-green-100 transform scale-y-50 rounded-sm"></div>
-                                    </div>
-                                    
-                                    <div className="absolute top-1/2 left-2 w-2 h-2 opacity-0 group-hover:opacity-100 transition-all duration-700 delay-250 group-hover:animate-pulse">
-                                        <div className="absolute inset-0 bg-gradient-to-r from-orange-300 to-orange-100 rotate-45 transform scale-x-50 rounded-sm"></div>
-                                        <div className="absolute inset-0 bg-gradient-to-r from-orange-300 to-orange-100 transform scale-y-50 rounded-sm"></div>
-                                    </div>
-                                    
-                                    <div className="absolute top-3 right-2 w-1.5 h-1.5 opacity-0 group-hover:opacity-100 transition-all duration-700 delay-400 group-hover:animate-bounce">
-                                        <div className="absolute inset-0 bg-gradient-to-r from-purple-300 to-purple-100 rotate-45 transform scale-x-50 rounded-sm"></div>
-                                        <div className="absolute inset-0 bg-gradient-to-r from-purple-300 to-purple-100 transform scale-y-50 rounded-sm"></div>
-                                    </div>
-                                    
-                                    {/* Floating Dot Sparkles */}
-                                    <div className="absolute top-2 left-8 w-1.5 h-1.5 bg-gradient-to-r from-yellow-400 to-yellow-200 rounded-full opacity-0 group-hover:opacity-100 animate-ping transition-opacity duration-700 delay-200"></div>
-                                    <div className="absolute top-4 right-6 w-1 h-1 bg-gradient-to-r from-white to-cyan-200 rounded-full opacity-0 group-hover:opacity-100 animate-pulse transition-opacity duration-700 delay-300"></div>
-                                    <div className="absolute bottom-3 left-3 w-1.5 h-1.5 bg-gradient-to-r from-pink-400 to-pink-200 rounded-full opacity-0 group-hover:opacity-100 animate-bounce transition-opacity duration-700 delay-100"></div>
-                                    <div className="absolute bottom-4 right-7 w-1 h-1 bg-gradient-to-r from-green-400 to-green-200 rounded-full opacity-0 group-hover:opacity-100 animate-ping transition-opacity duration-700 delay-400"></div>
-                                    <div className="absolute top-1/2 right-1 w-1 h-1 bg-gradient-to-r from-orange-400 to-orange-200 rounded-full opacity-0 group-hover:opacity-100 animate-pulse transition-opacity duration-700 delay-150"></div>
-                                    
-                                    {/* Magic Dust Effect */}
-                                    <div className="absolute top-0 left-0 w-full h-full">
-                                        <div className="absolute top-1 left-5 w-0.5 h-0.5 bg-yellow-300 rounded-full opacity-0 group-hover:opacity-100 animate-ping transition-opacity duration-700 delay-500"></div>
-                                        <div className="absolute top-3 left-9 w-0.5 h-0.5 bg-white rounded-full opacity-0 group-hover:opacity-100 animate-pulse transition-opacity duration-700 delay-600"></div>
-                                        <div className="absolute bottom-1 left-7 w-0.5 h-0.5 bg-cyan-300 rounded-full opacity-0 group-hover:opacity-100 animate-bounce transition-opacity duration-700 delay-700"></div>
-                                        <div className="absolute bottom-3 right-4 w-0.5 h-0.5 bg-pink-300 rounded-full opacity-0 group-hover:opacity-100 animate-ping transition-opacity duration-700 delay-550"></div>
-                                        <div className="absolute top-2 right-8 w-0.5 h-0.5 bg-green-300 rounded-full opacity-0 group-hover:opacity-100 animate-pulse transition-opacity duration-700 delay-650"></div>
-                                    </div>
-                                </div>
-                                
-                                {/* Enhanced Shimmer Wave */}
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-1000 transform -skew-x-12 translate-x-full group-hover:-translate-x-full"></div>
-                                
-                                {/* Glow Effect - Adjusted to stay within bounds */}
-                                <div className="absolute inset-0 bg-gradient-to-r from-blue-400/50 via-purple-400/50 to-pink-400/50 rounded-xl opacity-0 group-hover:opacity-100 blur-md transition-all duration-500 -z-10 group-hover:animate-pulse"></div>
-                                
-                                {/* Enhanced Background Shimmer */}
-                                <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 via-pink-400/20 to-cyan-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-pulse"></div>
-                                
-                                <span className="whitespace-nowrap relative z-10 group-hover:text-yellow-100 transition-colors duration-500">
-                                    {t('buttons.applyNow') || 'Apply Now'}
-                                </span>
-                                <ArrowRight className="w-5 h-5 group-hover:translate-x-2 group-hover:scale-125 transition-all duration-500 relative z-10 group-hover:text-yellow-100" />
-                                
-                                {/* Floating Sparkle Ring - Positioned to stay within button bounds */}
-                                <div className="absolute -top-1 -right-1 w-4 h-4 border-2 border-yellow-300 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-spin transition-all duration-700 delay-200"></div>
+                                <Target className="w-4 h-4" />
+                                <span className="whitespace-nowrap">{t('buttons.applyNow') || 'Apply Now'}</span>
+                                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                             </Link>
 
                             {/* Compact Mobile Menu Toggle */}
@@ -691,10 +585,10 @@ const Header = ({ onLoginClick }) => {
                                     className="flex items-center justify-between w-full px-4 py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-300 group"
                                 >
                                     <div className="flex items-center space-x-2">
+                                        <BookOpen className="w-4 h-4" />
                                         <span className="font-medium text-sm">
                                             {t('navigation.programs') || 'Programs'}
                                         </span>
-                                        <span className="text-sm">🎓</span>
                                     </div>
                                     <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${
                                         dropdownOpen === 'courses' ? 'rotate-180' : ''
@@ -727,10 +621,10 @@ const Header = ({ onLoginClick }) => {
                                     className="flex items-center justify-between w-full px-4 py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-300"
                                 >
                                     <div className="flex items-center space-x-2">
+                                        <School className="w-4 h-4" />
                                         <span className="font-medium text-sm">
                                             {t('navigation.about') || 'About'}
                                         </span>
-                                        <span className="text-sm">🏛️</span>
                                     </div>
                                     <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${
                                         dropdownOpen === 'about' ? 'rotate-180' : ''
@@ -758,16 +652,19 @@ const Header = ({ onLoginClick }) => {
                             </div>
 
                             {/* Other mobile links */}
-                            {navigationLinks.map((item) => (
+                            {navigationLinks.map((item) => {
+                                const IconComponent = item.icon;
+                                return (
                                 <Link
                                     key={item.path}
                                     to={item.path}
-                                    className="flex items-center space-x-2 w-full text-left px-4 py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-300 font-medium text-sm"
+                                        className="flex items-center space-x-3 w-full text-left px-4 py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-300 font-medium text-sm"
                                 >
-                                    <span className="text-sm">{item.emoji}</span>
+                                        <IconComponent className="w-4 h-4" />
                                     <span>{item.label}</span>
                                 </Link>
-                            ))}
+                                );
+                            })}
 
                             {/* Mobile Actions */}
                             <div className="pt-4 border-t border-gray-200/50 space-y-3">
@@ -781,79 +678,11 @@ const Header = ({ onLoginClick }) => {
 
                                 <Link
                                     to="/apply"
-                                    className="flex items-center justify-center space-x-2 w-full px-4 py-3 bg-gradient-to-r from-blue-500 via-purple-600 to-pink-500 text-white rounded-lg hover:from-blue-600 hover:via-purple-700 hover:to-pink-600 transition-all duration-500 font-medium text-sm relative overflow-hidden group hover:scale-[1.02] hover:shadow-xl transform hover:-translate-y-0.5 my-2"
+                                    className="flex items-center justify-center space-x-2 w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 font-medium text-sm group hover:scale-105 hover:shadow-lg my-2"
                                 >
-                                    {/* Enhanced Sparkle Effects for Mobile Apply */}
-                                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-700">
-                                        {/* Large Star Sparkles - Adjusted for mobile */}
-                                        <div className="absolute top-2 left-4 w-2.5 h-2.5 opacity-0 group-hover:opacity-100 transition-all duration-700 delay-100 group-hover:animate-spin">
-                                            <div className="absolute inset-0 bg-gradient-to-r from-yellow-300 to-yellow-100 rotate-45 transform scale-x-50 rounded-sm"></div>
-                                            <div className="absolute inset-0 bg-gradient-to-r from-yellow-300 to-yellow-100 transform scale-y-50 rounded-sm"></div>
-                                        </div>
-                                        
-                                        <div className="absolute top-1 right-5 w-2 h-2 opacity-0 group-hover:opacity-100 transition-all duration-700 delay-200 group-hover:animate-pulse">
-                                            <div className="absolute inset-0 bg-gradient-to-r from-white to-cyan-200 rotate-45 transform scale-x-50 rounded-sm"></div>
-                                            <div className="absolute inset-0 bg-gradient-to-r from-white to-cyan-200 transform scale-y-50 rounded-sm"></div>
-                                        </div>
-                                        
-                                        <div className="absolute bottom-2 left-6 w-1.5 h-1.5 opacity-0 group-hover:opacity-100 transition-all duration-700 delay-300 group-hover:animate-bounce">
-                                            <div className="absolute inset-0 bg-gradient-to-r from-pink-300 to-pink-100 rotate-45 transform scale-x-50 rounded-sm"></div>
-                                            <div className="absolute inset-0 bg-gradient-to-r from-pink-300 to-pink-100 transform scale-y-50 rounded-sm"></div>
-                                        </div>
-                                        
-                                        <div className="absolute bottom-1 right-3 w-2 h-2 opacity-0 group-hover:opacity-100 transition-all duration-700 delay-150 group-hover:animate-spin">
-                                            <div className="absolute inset-0 bg-gradient-to-r from-green-300 to-green-100 rotate-45 transform scale-x-50 rounded-sm"></div>
-                                            <div className="absolute inset-0 bg-gradient-to-r from-green-300 to-green-100 transform scale-y-50 rounded-sm"></div>
-                                        </div>
-                                        
-                                        <div className="absolute top-1/2 left-2 w-1.5 h-1.5 opacity-0 group-hover:opacity-100 transition-all duration-700 delay-250 group-hover:animate-pulse">
-                                            <div className="absolute inset-0 bg-gradient-to-r from-orange-300 to-orange-100 rotate-45 transform scale-x-50 rounded-sm"></div>
-                                            <div className="absolute inset-0 bg-gradient-to-r from-orange-300 to-orange-100 transform scale-y-50 rounded-sm"></div>
-                                        </div>
-                                        
-                                        <div className="absolute top-3 right-2 w-1 h-1 opacity-0 group-hover:opacity-100 transition-all duration-700 delay-400 group-hover:animate-bounce">
-                                            <div className="absolute inset-0 bg-gradient-to-r from-purple-300 to-purple-100 rotate-45 transform scale-x-50 rounded-sm"></div>
-                                            <div className="absolute inset-0 bg-gradient-to-r from-purple-300 to-purple-100 transform scale-y-50 rounded-sm"></div>
-                                        </div>
-                                        
-                                        {/* Floating Dot Sparkles - Reduced size for mobile */}
-                                        <div className="absolute top-2 left-8 w-1 h-1 bg-gradient-to-r from-yellow-400 to-yellow-200 rounded-full opacity-0 group-hover:opacity-100 animate-ping transition-opacity duration-700 delay-200"></div>
-                                        <div className="absolute top-4 right-6 w-0.5 h-0.5 bg-gradient-to-r from-white to-cyan-200 rounded-full opacity-0 group-hover:opacity-100 animate-pulse transition-opacity duration-700 delay-300"></div>
-                                        <div className="absolute bottom-3 left-3 w-1 h-1 bg-gradient-to-r from-pink-400 to-pink-200 rounded-full opacity-0 group-hover:opacity-100 animate-bounce transition-opacity duration-700 delay-100"></div>
-                                        <div className="absolute bottom-4 right-7 w-0.5 h-0.5 bg-gradient-to-r from-green-400 to-green-200 rounded-full opacity-0 group-hover:opacity-100 animate-ping transition-opacity duration-700 delay-400"></div>
-                                        <div className="absolute top-1/2 right-1 w-0.5 h-0.5 bg-gradient-to-r from-orange-400 to-orange-200 rounded-full opacity-0 group-hover:opacity-100 animate-pulse transition-opacity duration-700 delay-150"></div>
-                                        
-                                        {/* Magic Dust Effect - Simplified for mobile */}
-                                        <div className="absolute top-0 left-0 w-full h-full">
-                                            <div className="absolute top-1 left-5 w-0.5 h-0.5 bg-yellow-300 rounded-full opacity-0 group-hover:opacity-100 animate-ping transition-opacity duration-700 delay-500"></div>
-                                            <div className="absolute top-3 left-9 w-0.5 h-0.5 bg-white rounded-full opacity-0 group-hover:opacity-100 animate-pulse transition-opacity duration-700 delay-600"></div>
-                                            <div className="absolute bottom-1 left-7 w-0.5 h-0.5 bg-cyan-300 rounded-full opacity-0 group-hover:opacity-100 animate-bounce transition-opacity duration-700 delay-700"></div>
-                                            <div className="absolute bottom-3 right-4 w-0.5 h-0.5 bg-pink-300 rounded-full opacity-0 group-hover:opacity-100 animate-ping transition-opacity duration-700 delay-550"></div>
-                                            <div className="absolute top-2 right-8 w-0.5 h-0.5 bg-green-300 rounded-full opacity-0 group-hover:opacity-100 animate-pulse transition-opacity duration-700 delay-650"></div>
-                                        </div>
-                                    </div>
-                                    
-                                    {/* Enhanced Shimmer Wave */}
-                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-1000 transform -skew-x-12 translate-x-full group-hover:-translate-x-full"></div>
-                                    
-                                    {/* Glow Effect - Reduced for mobile */}
-                                    <div className="absolute inset-0 bg-gradient-to-r from-blue-400/50 via-purple-400/50 to-pink-400/50 rounded-lg opacity-0 group-hover:opacity-100 blur-sm transition-all duration-500 -z-10 group-hover:animate-pulse"></div>
-                                    
-                                    {/* Enhanced Background Shimmer */}
-                                    <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 via-pink-400/20 to-cyan-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-pulse"></div>
-                                    
-                                    <span className="whitespace-nowrap relative z-10 group-hover:text-yellow-100 transition-colors duration-500">
-                                        {t('buttons.applyNow') || 'Apply Now'}
-                                    </span>
-                                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 group-hover:scale-110 transition-all duration-500 relative z-10 group-hover:text-yellow-100" />
-                                    
-                                    {/* Floating Sparkle Ring - Adjusted for mobile */}
-                                    <div className="absolute -top-1 -right-1 w-4 h-4 border-2 border-yellow-300 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-spin transition-all duration-700 delay-200"></div>
-                                    
-                                    {/* Mobile Rocket Effect - Positioned better */}
-                                    <div className="absolute bottom-0 left-0 text-sm opacity-0 group-hover:opacity-100 transition-all duration-500 delay-300 group-hover:animate-bounce">
-                                        🚀
-                                    </div>
+                                    <Target className="w-4 h-4" />
+                                    <span className="whitespace-nowrap">{t('buttons.applyNow') || 'Apply Now'}</span>
+                                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                                 </Link>
                             </div>
                         </div>

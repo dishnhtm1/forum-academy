@@ -1,4 +1,246 @@
+<<<<<<< HEAD
+/* Enhanced Student Progress Styles */
+
+.modern-stat-card {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    background-color: #ffffff;
+    border: 1px solid #f0f0f0;
+}
+
+.modern-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    border-color: #d9d9d9;
+}
+
+/* Simple Statistics Cards */
+.simple-stat-card {
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+    background-color: #ffffff;
+    border: 1px solid #e8e8e8;
+}
+
+.simple-stat-card:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-color: #d9d9d9;
+    transform: translateY(-1px);
+}
+
+.modern-table-card {
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    background-color: #ffffff;
+    border: 1px solid #f0f0f0;
+}
+
+.modern-table .ant-table-thead>tr>th {
+    background-color: #fafafa;
+    color: #262626;
+    border: 1px solid #f0f0f0;
+    font-weight: 600;
+    text-align: center;
+}
+
+.modern-table .ant-table-tbody>tr>td {
+    border-bottom: 1px solid #f0f0f0;
+    padding: 16px 8px;
+}
+
+.modern-table .ant-table-tbody>tr:hover>td {
+    background-color: #f8f9ff;
+}
+
+.table-row-warning {
+    background-color: #fff2f0 !important;
+}
+
+.table-row-warning:hover {
+    background-color: #ffe7e6 !important;
+}
+
+/* Progress bar enhancements */
+.ant-progress-inner {
+    border-radius: 10px;
+}
+
+.ant-progress-bg {
+    border-radius: 10px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .modern-stat-card {
+        margin-bottom: 16px;
+    }
+
+    .modern-table .ant-table-thead>tr>th {
+        font-size: 12px;
+        padding: 8px 4px;
+    }
+
+    .modern-table .ant-table-tbody>tr>td {
+        padding: 12px 4px;
+    }
+}
+
+/* Animation for statistics cards */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modern-stat-card {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.modern-stat-card:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.modern-stat-card:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.modern-stat-card:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.modern-stat-card:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+/* Enhanced avatar styles */
+.ant-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Tag enhancements */
+.ant-tag {
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 10px;
+    font-weight: 500;
+    border: none;
+}
+
+/* Button group enhancements */
+.ant-btn-group>.ant-btn {
+    border-radius: 6px;
+    margin-right: 4px;
+}
+
+.ant-btn-group>.ant-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Table Actions Column Visibility Fix */
+.modern-table .ant-table-scroll .ant-table-body {
+    overflow-x: auto;
+}
+
+.modern-table .ant-table-fixed-right {
+    right: 0 !important;
+    background: white;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.05);
+    z-index: 10;
+}
+
+.modern-table .ant-table-thead th.ant-table-column-has-actions {
+    position: sticky;
+    right: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    z-index: 11;
+}
+
+.modern-table .ant-table-tbody td.ant-table-column-has-actions {
+    position: sticky;
+    right: 0;
+    background: white;
+    z-index: 9;
+    border-left: 1px solid #f0f0f0;
+}
+
+/* Action buttons styling */
+.modern-table .ant-btn {
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.modern-table .ant-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    opacity: 0.9;
+}
+
+.modern-table .ant-space {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+/* Actions column specific styling */
+.modern-table .actions-column {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.modern-table th.actions-column {
+    position: sticky;
+    right: 0;
+    background-color: #fafafa !important;
+    color: #262626 !important;
+    z-index: 15 !important;
+    border-left: 1px solid #d9d9d9;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.05);
+}
+
+.modern-table td.actions-column {
+    position: sticky;
+    right: 0;
+    background: white !important;
+    z-index: 14 !important;
+    border-left: 1px solid #f0f0f0;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Ensure action buttons are always visible */
+.modern-table .actions-column .ant-space {
+    min-width: 160px;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+.modern-table .actions-column .ant-btn {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+=======
 /* EnhancedStudentProgress.css */
 .progress-container {
   padding: 20px;
 }
+>>>>>>> 8c84aaf452ac11fa2df705fe9589c3dfcf19906b

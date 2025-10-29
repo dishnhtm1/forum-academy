@@ -2576,52 +2576,91 @@ const TeacherDashboard = () => {
   const fetchNotifications = async () => {
     setNotificationLoading(true);
     try {
-      // Use test route for now to bypass authentication
-      const response = await fetch("/api/notifications/test", {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      let transformedNotifications = [];
+      
+      // Try to fetch from API first
+      try {
+        const response = await fetch("/api/notifications/test", {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
-      if (response.ok) {
-        const data = await response.json();
+        if (response.ok) {
+          const data = await response.json();
 
-        // Transform backend notifications to match frontend format
-        const transformedNotifications = data.notifications.map(
-          (notification) => ({
-            id: notification._id,
-            type: notification.type,
-            title: notification.title,
-            message: notification.message,
-            timestamp: notification.createdAt,
-            read: notification.read,
-            sender: notification.sender,
-            priority: notification.priority,
-            icon: notification.icon || getNotificationIcon(notification.type),
-            color:
-              notification.color || getNotificationColor(notification.type),
-            actionUrl: notification.actionUrl,
-          })
+          // Transform backend notifications to match frontend format
+          transformedNotifications = data.notifications.map(
+            (notification) => ({
+              id: notification._id,
+              type: notification.type,
+              title: notification.title,
+              message: notification.message,
+              timestamp: notification.createdAt,
+              read: notification.read,
+              sender: notification.sender,
+              priority: notification.priority,
+              icon: notification.icon || getNotificationIcon(notification.type),
+              color:
+                notification.color || getNotificationColor(notification.type),
+              actionUrl: notification.actionUrl,
+            })
+          );
+        }
+      } catch (apiError) {
+        console.log("API notifications not available, checking local notifications");
+      }
+
+      // Check for local notifications as fallback
+      try {
+        const localNotifications = JSON.parse(localStorage.getItem('localNotifications') || '[]');
+        const localTransformed = localNotifications.map(notification => ({
+          id: notification.id,
+          type: notification.type,
+          title: notification.title,
+          message: notification.message,
+          timestamp: notification.timestamp,
+          read: notification.read,
+          sender: notification.sender,
+          priority: notification.priority,
+          icon: notification.icon || getNotificationIcon(notification.type),
+          color: notification.color || getNotificationColor(notification.type),
+          actionUrl: notification.actionUrl,
+          source: 'local',
+        }));
+        
+        // Merge API and local notifications, removing duplicates
+        const allNotifications = [...transformedNotifications, ...localTransformed];
+        const uniqueNotifications = allNotifications.filter((notification, index, self) => 
+          index === self.findIndex(n => n.id === notification.id)
         );
+        
+        transformedNotifications = uniqueNotifications;
+      } catch (localError) {
+        console.log("Local notifications not available");
+      }
 
-        setNotifications(transformedNotifications);
-        setNotificationStats({
-          total: data.pagination.totalCount,
-          unread: data.pagination.unreadCount,
-          byType: {
-            student_message: transformedNotifications.filter(
-              (n) => n.type === "student_message"
-            ).length,
-            assignment_submission: transformedNotifications.filter(
-              (n) => n.type === "assignment_submission"
-            ).length,
-            admin_announcement: transformedNotifications.filter(
-              (n) => n.type === "admin_announcement"
-            ).length,
-            quiz_submission: transformedNotifications.filter(
-              (n) => n.type === "quiz_submission"
-            ).length,
-            grade_request: transformedNotifications.filter(
+      setNotifications(transformedNotifications);
+      
+      // Calculate notification stats from transformed notifications
+      const unreadCount = transformedNotifications.filter(n => !n.read).length;
+      setNotificationStats({
+        total: transformedNotifications.length,
+        unread: unreadCount,
+        byType: {
+          student_message: transformedNotifications.filter(
+            (n) => n.type === "student_message"
+          ).length,
+          assignment_submission: transformedNotifications.filter(
+            (n) => n.type === "assignment_submission"
+          ).length,
+          admin_announcement: transformedNotifications.filter(
+            (n) => n.type === "admin_announcement" || n.type === "announcement"
+          ).length,
+          quiz_submission: transformedNotifications.filter(
+            (n) => n.type === "quiz_submission"
+          ).length,
+          grade_request: transformedNotifications.filter(
               (n) => n.type === "grade_request"
             ).length,
             enrollment: transformedNotifications.filter(
@@ -2629,26 +2668,8 @@ const TeacherDashboard = () => {
             ).length,
           },
         });
-      } else {
-        console.error("Failed to fetch notifications:", response.statusText);
-        // Fallback to empty state
-        setNotifications([]);
-        setNotificationStats({
-          total: 0,
-          unread: 0,
-          byType: {
-            student_message: 0,
-            assignment_submission: 0,
-            admin_announcement: 0,
-            quiz_submission: 0,
-            grade_request: 0,
-            enrollment: 0,
-          },
-        });
-      }
     } catch (error) {
       console.error("Error fetching notifications:", error);
-      // Fallback to empty state
       setNotifications([]);
       setNotificationStats({
         total: 0,
