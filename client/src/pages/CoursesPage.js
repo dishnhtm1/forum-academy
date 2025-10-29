@@ -419,8 +419,8 @@ const CoursesPage = () => {
                             console.log('Image failed to load:', e.target.src);
                         }}
                     />
-                    {/* Dark Overlay for better text contrast */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-900/60 via-purple-900/50 to-indigo-900/60"></div>
+                    {/* Dark Overlay for better text contrast (balanced opacity) */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-900/30 via-purple-900/20 to-indigo-900/30"></div>
                 </div>
             
                 {/* Background Pattern */}

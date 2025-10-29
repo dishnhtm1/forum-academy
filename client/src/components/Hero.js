@@ -138,8 +138,8 @@ const Hero = () => {
                             alt="Background"
                             className="w-full h-full object-cover"
                         />
-                        {/* Dark Overlay for better text contrast */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-cyan-900/50 via-blue-900/40 to-teal-900/50"></div>
+                        {/* Dark Overlay for better text contrast (balanced opacity) */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-cyan-900/30 via-blue-900/20 to-teal-900/30"></div>
                     </div>
             
             {/* Background Pattern */}
