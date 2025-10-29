@@ -3,6 +3,13 @@ import { useTranslation } from 'react-i18next';
 
 const CourseModal = ({ course, isOpen, onClose }) => {
     const { t } = useTranslation();
+    
+    console.log('CourseModal render:', { isOpen, course: course?.title });
+    
+    if (!isOpen || !course) {
+        console.log('CourseModal not rendering - isOpen:', isOpen, 'course:', course);
+        return null;
+    }
 
     // Close modal on escape key
     useEffect(() => {

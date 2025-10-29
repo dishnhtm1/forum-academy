@@ -392,9 +392,12 @@ const CoursesPage = () => {
 
     // Modal handling functions
     const openModal = (courseId) => {
+        console.log('Opening modal for course ID:', courseId);
         const course = coursesData.find(c => c.id === courseId);
+        console.log('Found course:', course);
         setSelectedCourse(course);
         setIsModalOpen(true);
+        console.log('Modal state set to open');
     };
 
     const closeModal = () => {
@@ -732,6 +735,14 @@ const CoursesPage = () => {
                     isOpen={isModalOpen} 
                     onClose={closeModal} 
                 />
+            )}
+            
+            {/* Debug info */}
+            {process.env.NODE_ENV === 'development' && (
+                <div style={{ position: 'fixed', top: '10px', right: '10px', background: 'red', color: 'white', padding: '10px', zIndex: 9999 }}>
+                    Modal Open: {isModalOpen ? 'Yes' : 'No'}<br/>
+                    Selected Course: {selectedCourse ? selectedCourse.title : 'None'}
+                </div>
             )}
         </div>
     );
