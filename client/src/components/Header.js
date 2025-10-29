@@ -208,7 +208,7 @@ const Header = ({ onLoginClick }) => {
                     : 'bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 backdrop-blur-sm'
             }`}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center justify-between h-16 lg:h-18">
+                    <div className="flex items-center justify-between h-16 lg:h-18 min-w-0">
 
                                                  {/* FIA Logo with Forum and Information Academy */}
                          <Link
@@ -267,53 +267,185 @@ const Header = ({ onLoginClick }) => {
                         </Link>
 
                         
-                        <nav className="hidden lg:flex items-center space-x-6">
-                            {/* Show horizontal links when Japanese, dropdown when English */}
+                        <nav className="hidden lg:flex items-center space-x-1 flex-1 justify-center">
+                            {/* Show dropdowns for Programs and About, simple links for others in Japanese */}
                             {i18n.language === 'ja' ? (
                                 <>
-                                    {/* Japanese Horizontal Navigation */}
-                                    <Link
-                                        to="/courses"
-                                        className={`flex flex-col items-center justify-center px-3 py-2.5 rounded-lg transition-all duration-300 group min-w-[60px] ${
-                                            scrolled
-                                                ? 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
-                                                : 'text-white hover:text-blue-100 hover:bg-white/10'
-                                        } ${isActiveLink('/courses') ? (scrolled ? 'text-blue-600 bg-blue-50' : 'text-blue-100 bg-white/10') : ''} hover:scale-105`}
+                                    {/* Japanese Programs Dropdown */}
+                                    <div
+                                        className="relative"
+                                        onMouseEnter={() => handleMouseEnter('courses')}
+                                        onMouseLeave={handleMouseLeave}
                                     >
-                                        <BookOpen className="w-4 h-4 mb-1" />
-                                        <span className="font-medium text-xs leading-tight text-center">
-                                            {t('header.programs.title')}
-                                        </span>
-                                    </Link>
+                                        <button
+                                            className={`flex flex-col items-center justify-center px-1 py-2 rounded-lg transition-all duration-300 group min-w-[40px] ${
+                                                scrolled
+                                                    ? 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
+                                                    : 'text-white hover:text-blue-100 hover:bg-white/10'
+                                            } ${isActiveLink('/courses') ? (scrolled ? 'text-blue-600 bg-blue-50' : 'text-blue-100 bg-white/10') : ''} hover:scale-105`}
+                                        >
+                                            <BookOpen className="w-3.5 h-3.5 mb-0.5" />
+                                            <span className="font-medium text-[10px] leading-tight text-center">
+                                                {t('header.programs.title')}
+                                            </span>
+                                            <ChevronDown className={`w-2 h-2 transition-transform duration-300 ${
+                                                dropdownOpen === 'courses' ? 'rotate-180' : ''
+                                            }`} />
+                                        </button>
                                     
-                                    <Link
-                                        to="/about"
-                                        className={`flex flex-col items-center justify-center px-3 py-2.5 rounded-lg transition-all duration-300 group min-w-[60px] ${
-                                            scrolled
-                                                ? 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
-                                                : 'text-white hover:text-blue-100 hover:bg-white/10'
-                                        } ${isActiveLink('/about') ? (scrolled ? 'text-blue-600 bg-blue-50' : 'text-blue-100 bg-white/10') : ''} hover:scale-105`}
+                                        {/* Japanese Programs Dropdown */}
+                                        <div className={`absolute top-full left-1/2 transform -translate-x-1/2 transition-all duration-300 z-50 ${
+                                            dropdownOpen === 'courses'
+                                                ? 'opacity-100 translate-y-0 pointer-events-auto'
+                                                : 'opacity-0 -translate-y-2 pointer-events-none'
+                                        }`}>
+                                            <div className="w-80 max-w-[85vw] bg-white rounded-xl shadow-xl border border-gray-200 mt-2 overflow-hidden">
+                                                <div className="bg-blue-50 px-4 py-3 border-b border-gray-200">
+                                                    <div className="flex items-center">
+                                                        <GraduationCap className="w-5 h-5 text-blue-600 mr-2" />
+                                                        <h3 className="font-semibold text-gray-900">
+                                                            {t('header.programs.subtitle')}
+                                                        </h3>
+                                                    </div>
+                                                </div>
+                                        
+                                                <div className="p-4">
+                                                    <div className="space-y-2">
+                                                        {coursesData.map((course, index) => {
+                                                            const IconComponent = course.icon;
+                                                            return (
+                                                                <Link
+                                                                    key={index}
+                                                                    to={course.path}
+                                                                    className="group flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 transition-all duration-200"
+                                                                >
+                                                                    <div className={`w-10 h-10 rounded-lg bg-gradient-to-r ${course.gradient} flex items-center justify-center group-hover:scale-105 transition-transform duration-200`}>
+                                                                        <IconComponent className="w-5 h-5 text-white" />
+                                                                    </div>
+                                                                    <div className="flex-1">
+                                                                        <h5 className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors duration-200">
+                                                                            {course.title}
+                                                                        </h5>
+                                                                        <p className="text-xs text-gray-500">
+                                                                            {t('header.programs.certifiedTrack')}
+                                                                        </p>
+                                                                    </div>
+                                                                    <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-blue-500 group-hover:translate-x-1 transition-all duration-200" />
+                                                                </Link>
+                                                            );
+                                                        })}
+                                                    </div>
+                                        
+                                                    <div className="border-t border-gray-200 pt-4 mt-4">
+                                                        <Link
+                                                            to="/courses"
+                                                            className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm font-medium"
+                                                        >
+                                                            <List className="w-4 h-4 mr-2" />
+                                                            <span>{t('navigation.viewAllPrograms') || 'Explore All Programs'}</span>
+                                                            <ArrowRight className="w-4 h-4 ml-2" />
+                                                        </Link>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Japanese About Dropdown */}
+                                    <div
+                                        className="relative"
+                                        onMouseEnter={() => handleMouseEnter('about')}
+                                        onMouseLeave={handleMouseLeave}
                                     >
-                                        <School className="w-4 h-4 mb-1" />
-                                        <span className="font-medium text-xs leading-tight text-center">
-                                            {t('navigation.about') || 'About'}
-                                        </span>
-                                    </Link>
+                                        <button
+                                            className={`flex flex-col items-center justify-center px-1 py-2 rounded-lg transition-all duration-300 group min-w-[40px] ${
+                                                scrolled
+                                                    ? 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
+                                                    : 'text-white hover:text-blue-100 hover:bg-white/10'
+                                            } ${isActiveLink('/about') ? (scrolled ? 'text-blue-600 bg-blue-50' : 'text-blue-100 bg-white/10') : ''} hover:scale-105`}
+                                        >
+                                            <School className="w-3.5 h-3.5 mb-0.5" />
+                                            <span className="font-medium text-[10px] leading-tight text-center">
+                                                {t('navigation.about') || 'About'}
+                                            </span>
+                                            <ChevronDown className={`w-2 h-2 transition-transform duration-300 ${
+                                                dropdownOpen === 'about' ? 'rotate-180' : ''
+                                            }`} />
+                                        </button>
                                     
+                                        {/* Japanese About Dropdown */}
+                                        <div className={`absolute top-full left-0 w-80 max-w-[85vw] transition-all duration-300 z-50 ${
+                                            dropdownOpen === 'about'
+                                                ? 'opacity-100 translate-y-0 pointer-events-auto'
+                                                : 'opacity-0 -translate-y-2 pointer-events-none'
+                                        }`}>
+                                            <div className="bg-white rounded-xl shadow-xl border border-gray-200 mt-2 overflow-hidden">
+                                                <div className="bg-blue-50 px-4 py-3 border-b border-gray-200">
+                                                    <div className="flex items-center">
+                                                        <School className="w-5 h-5 text-blue-600 mr-2" />
+                                                        <h3 className="font-semibold text-gray-900">
+                                                            {t('header.about.title')}
+                                                        </h3>
+                                                    </div>
+                                                </div>
+                                        
+                                                <div className="p-4">
+                                                    <div className="space-y-2">
+                                                        {aboutLinks.map((link, index) => {
+                                                            const IconComponent = link.icon;
+                                                            return (
+                                                                <Link
+                                                                    key={index}
+                                                                    to={link.path}
+                                                                    className="group flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 transition-all duration-200"
+                                                                >
+                                                                    <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-blue-100 transition-colors duration-200">
+                                                                        <IconComponent className="w-5 h-5 text-gray-600 group-hover:text-blue-600" />
+                                                                    </div>
+                                                                    <div className="flex-1">
+                                                                        <h5 className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors duration-200">
+                                                                            {link.title}
+                                                                        </h5>
+                                                                        <p className="text-xs text-gray-500">
+                                                                            {t('header.about.description')}
+                                                                        </p>
+                                                                    </div>
+                                                                    <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-blue-500 group-hover:translate-x-1 transition-all duration-200" />
+                                                                </Link>
+                                                            );
+                                                        })}
+                                                    </div>
+                                        
+                                                    <div className="border-t border-gray-200 pt-4 mt-4">
+                                                        <Link
+                                                            to="/about"
+                                                            className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm font-medium"
+                                                        >
+                                                            <Info className="w-4 h-4 mr-2" />
+                                                            <span>{t('header.about.learnMore')}</span>
+                                                            <ArrowRight className="w-4 h-4 ml-2" />
+                                                        </Link>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Japanese Simple Navigation Links */}
                                     {navigationLinks.map((item) => {
                                         const IconComponent = item.icon;
                                         return (
                                             <Link
                                                 key={item.path}
                                                 to={item.path}
-                                                className={`flex flex-col items-center justify-center px-3 py-2.5 rounded-lg transition-all duration-300 group min-w-[60px] ${
+                                                className={`flex flex-col items-center justify-center px-1 py-2 rounded-lg transition-all duration-300 group min-w-[40px] ${
                                                     scrolled
                                                         ? 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
                                                         : 'text-white hover:text-blue-100 hover:bg-white/10'
                                                 } ${isActiveLink(item.path) ? (scrolled ? 'text-blue-600 bg-blue-50' : 'text-blue-100 bg-white/10') : ''} hover:scale-105`}
                                             >
-                                                <IconComponent className="w-4 h-4 mb-1" />
-                                                <span className="font-medium text-xs leading-tight text-center">{item.label}</span>
+                                                <IconComponent className="w-3.5 h-3.5 mb-0.5" />
+                                                <span className="font-medium text-[10px] leading-tight text-center">{item.label}</span>
                                             </Link>
                                         );
                                     })}
