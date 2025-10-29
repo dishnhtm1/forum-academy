@@ -4,6 +4,7 @@ import CourseSection from '../components/CourseSection';
 import StatsSection from '../components/StatsSection';
 import NewsSection from '../components/NewsSection';
 import CourseModal from '../components/CourseModal';
+import TestModal from '../components/TestModal';
 import '../styles/CoursesPage.css';
 
 const CoursesPage = () => {
@@ -730,7 +731,7 @@ const CoursesPage = () => {
 
             {/* Course Information Modal */}
             {isModalOpen && selectedCourse && (
-                <CourseModal 
+                <TestModal 
                     course={selectedCourse} 
                     isOpen={isModalOpen} 
                     onClose={closeModal} 
