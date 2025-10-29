@@ -395,128 +395,116 @@ const CoursesPage = () => {
         setSelectedCourse(null);
     };
 
-    // Keep ALL your existing useEffect code exactly as is
+    // Simple visibility effect for hero animation
     useEffect(() => {
         setIsVisible(true);
-        
-        // Optional: Add 3D animation for cubes
-        const createCubes = () => {
-            const world = document.querySelector('.world');
-            if (!world) return;
-            
-            for (let i = 0; i < 15; i++) {
-                const cube = document.createElement('div');
-                cube.className = 'cube';
-                
-                // Random position
-                const x = (Math.random() - 0.5) * 1000;
-                const y = (Math.random() - 0.5) * 1000;
-                const z = (Math.random() - 0.5) * 1000;
-                
-                // Random size
-                const size = Math.random() * 50 + 20;
-                
-                cube.style.width = `${size}px`;
-                cube.style.height = `${size}px`;
-                cube.style.transform = `translate3d(${x}px, ${y}px, ${z}px)`;
-                
-                // Add faces
-                ['front', 'back', 'right', 'left', 'top', 'bottom'].forEach(face => {
-                    const el = document.createElement('div');
-                    el.className = `cube-face ${face}`;
-                    cube.appendChild(el);
-                });
-                
-                world.appendChild(cube);
-            }
-        };
-        
-        createCubes();
-        
-        // Clean up function
-        return () => {
-            const world = document.querySelector('.world');
-            if (world) {
-                while (world.firstChild) {
-                    world.removeChild(world.firstChild);
-                }
-            }
-        };
     }, []);
 
     return (
         <div className="courses-page">
-            {/* Keep ALL your existing 3D hero structure - only replace text */}
-            <section ref={sectionRef} className={`courses-hero ${isVisible ? 'visible' : ''}`}>
-                {/* Keep ALL your 3D Scene code exactly as is */}
-                <div className="scene">
-                    <div className="world">
-                        <div className="floor"></div>
-                        {/* Cubes will be added by JavaScript */}
-                    </div>
-                    
-                    {/* Glowing effects */}
-                    <div className="glow glow-1"></div>
-                    <div className="glow glow-2"></div>
+            {/* Modern Hero Section - Homepage Style */}
+            <section ref={sectionRef} className={`relative min-h-screen overflow-hidden ${isVisible ? 'visible' : ''}`}>
+                {/* Background Image */}
+                <div className="absolute inset-0">
+                    <img 
+                        src={require('../assets/images/hero2.jpg')} 
+                        alt={t('courses.hero.imageAlt')}
+                        className="w-full h-full object-cover object-center"
+                        style={{ 
+                            minHeight: '100vh',
+                            width: '100%',
+                            height: '100%'
+                        }}
+                        onError={(e) => {
+                            console.log('Image failed to load:', e.target.src);
+                        }}
+                    />
+                    {/* Dark Overlay for better text contrast */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-900/60 via-purple-900/50 to-indigo-900/60"></div>
+                </div>
+            
+                {/* Background Pattern */}
+                <div className="absolute inset-0 opacity-10">
+                    <div className="absolute top-0 left-0 w-full h-full" style={{
+                        backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,.1) 10px, rgba(255,255,255,.1) 20px)`,
+                    }}></div>
                 </div>
                 
-                <div className="container">
-                    <div className="hero-content">
-                        <div className="hero-text">
-                            <div className="hero-badge">
-                                <span className="badge-icon material-icons">school</span>
-                                {t('courses.hero.badge')}
-                            </div>
-                            <h1 className="hero-title">{t('courses.hero.title')} <span className="highlight-text">{t('courses.hero.highlight')}</span></h1>
-                            <p className="hero-description">{t('courses.hero.description')}</p>
+                {/* Main Content Container */}
+                <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="pt-32 sm:pt-40 md:pt-48 pb-20 md:pb-32">
+                        <div className="relative">
                             
-                            <div className="hero-cta-group">
-                                <button className="btn btn-primary">
-                                    <span className="material-icons">search</span>
-                                    {t('courses.hero.findCourse')}
-                                </button>
-                                <button className="btn btn-outline">
-                                    <span className="material-icons">info</span>
-                                    {t('courses.hero.programGuide')}
-                                </button>
-                            </div>
-                            
-                            <div className="hero-stats">
-                                <div className="stat-item">
-                                    <div className="stat-number">30+</div>
-                                    <div className="stat-label">{t('courses.stats.courses')}</div>
-                                </div>
-                                <div className="stat-item">
-                                    <div className="stat-number">95%</div>
-                                    <div className="stat-label">{t('courses.stats.jobPlacement')}</div>
-                                </div>
-                                <div className="stat-item">
-                                    <div className="stat-number">4.9</div>
-                                    <div className="stat-label">{t('courses.stats.studentRating')}</div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div className="hero-image-wrapper">
-                            <div className="relative group max-w-3xl mx-auto lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl">
+                            {/* Centered Content */}
+                            <div className="relative z-30 pt-32 sm:pt-40 md:pt-48">
                                 
-                                {/* Main Image Container - Clean, no shadows */}
-                                <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-transparent transition-all duration-500">
-                                    
-                                    {/* Image Container - Clean PNG display */}
-                                    <div className="relative">
-                                        <img 
-                                            src={require('../assets/student/hero1.png')} 
-                                            alt={t('courses.hero.imageAlt')} 
-                                            className="w-full h-auto min-h-[500px] sm:min-h-[600px] lg:min-h-[700px] xl:min-h-[800px] object-contain transform group-hover:scale-105 transition-transform duration-500"
-                                        />
+                                {/* Main Content - Centered */}
+                                <div className="max-w-4xl mx-auto text-center">
+                                    <div className={`space-y-8 transition-all duration-1000 delay-300 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
+                                        
+                                        {/* Hero Badge */}
+                                        <div className="inline-flex items-center gap-2 px-6 py-3 bg-white/20 backdrop-blur-sm rounded-full mb-6">
+                                            <span className="material-icons text-white">school</span>
+                                            <span className="text-white/90 text-sm font-medium">{t('courses.hero.badge')}</span>
+                                        </div>
+                                        
+                                        {/* Main Heading */}
+                                        <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white leading-tight">
+                                            <span className="block">
+                                                {t('courses.hero.title')}
+                                            </span>
+                                            <span className="block mt-2 bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+                                                {t('courses.hero.highlight')}
+                                            </span>
+                                        </h1>
+                                        
+                                        {/* Description */}
+                                        <p className="text-xl md:text-2xl text-white/90 leading-relaxed max-w-2xl mx-auto">
+                                            {t('courses.hero.description')}
+                                        </p>
+                                        
+                                        {/* CTA Buttons */}
+                                        <div className="flex flex-col sm:flex-row gap-4 pt-4 justify-center items-center">
+                                            <button className="group inline-flex items-center justify-center gap-3 px-8 py-4 bg-white text-blue-600 rounded-lg font-bold text-lg shadow-xl hover:shadow-2xl hover:shadow-white/50 transform hover:-translate-y-1 transition-all duration-300">
+                                                <span className="material-icons">search</span>
+                                                <span>{t('courses.hero.findCourse')}</span>
+                                                <span className="material-icons group-hover:translate-x-1 transition-transform duration-300">arrow_forward</span>
+                                            </button>
+                                            
+                                            <button className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-transparent border-3 border-white text-white rounded-lg font-bold text-lg hover:bg-white/20 transform hover:-translate-y-1 transition-all duration-300">
+                                                <span className="material-icons">info</span>
+                                                <span>{t('courses.hero.programGuide')}</span>
+                                                <span className="material-icons">arrow_forward</span>
+                                            </button>
+                                        </div>
+                                        
+                                        {/* Quick Stats */}
+                                        <div className="grid grid-cols-3 gap-4 pt-8">
+                                            <div className="text-center">
+                                                <div className="text-4xl font-black text-white">30+</div>
+                                                <div className="text-white/80 text-sm mt-1">{t('courses.stats.courses')}</div>
+                                            </div>
+                                            <div className="text-center border-x-2 border-white/30">
+                                                <div className="text-4xl font-black text-white">95%</div>
+                                                <div className="text-white/80 text-sm mt-1">{t('courses.stats.jobPlacement')}</div>
+                                            </div>
+                                            <div className="text-center">
+                                                <div className="text-4xl font-black text-white">4.9</div>
+                                                <div className="text-white/80 text-sm mt-1">{t('courses.stats.studentRating')}</div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-                        
                     </div>
+                </div>
+                
+                {/* Bottom Wave */}
+                <div className="absolute bottom-0 left-0 right-0">
+                    <svg className="w-full h-24 fill-white" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                        <path d="M0,0 C300,100 600,0 900,60 C1050,90 1150,60 1200,30 L1200,120 L0,120 Z"></path>
+                    </svg>
                 </div>
             </section>
             
