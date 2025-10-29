@@ -279,7 +279,11 @@ const CourseSection = ({ limit, showFilters = false, title = "Our Featured Cours
                                 <img 
                                     src={course.image} 
                                     alt={course.title}
-                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                    className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-700"
+                                    style={{ minHeight: '100%' }}
+                                    onError={(e) => {
+                                        console.log('Course image failed to load:', course.title, e.target.src);
+                                    }}
                                 />
                                 
                                 {/* Dynamic Gradient Overlay */}
