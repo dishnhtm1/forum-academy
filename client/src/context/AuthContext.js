@@ -45,21 +45,20 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
-        setError("");
-        const response = await axios.post(`${API_URL}/auth/login`, {
-            email,
-            password,
-        });
+            setError("");
+            const response = await axios.post(`${API_URL}/auth/login`, { email, password });
 
-        const { token, user } = response.data;
-        localStorage.setItem("token", token);
-        setCurrentUser(user);
-        return user;
+            const { token, user } = response.data;
+            localStorage.setItem("token", token);
+            localStorage.setItem("currentUser", JSON.stringify(user)); // ✅ ADD THIS
+            setCurrentUser(user);
+            return user;
         } catch (err) {
-        setError(err.response?.data?.message || "Login failed");
-        throw err;
+            setError(err.response?.data?.message || "Login failed");
+            throw err;
         }
     };
+
 
     const register = async (userData) => {
         try {
