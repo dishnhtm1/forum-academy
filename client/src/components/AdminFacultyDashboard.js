@@ -94,7 +94,10 @@ const AdminFacultyDashboard = () => {
           localStorage.getItem("token") ||
           sessionStorage.getItem("token");
 
+        console.log("🔐 AdminFacultyDashboard Auth Check - Token:", !!token);
+
         if (!token) {
+          console.log("❌ No token found, redirecting to login");
           history.push("/login");
           return;
         }
@@ -104,20 +107,31 @@ const AdminFacultyDashboard = () => {
           localStorage.getItem("currentUser") ||
           sessionStorage.getItem("currentUser");
         const userData = userDataStr ? JSON.parse(userDataStr) : null;
+        
+        console.log("👤 User Data:", userData);
+        console.log("🎭 User Role:", userData?.role);
+
+        // Also check userRole from localStorage as fallback
+        const roleFromStorage = localStorage.getItem("userRole");
+        const actualRole = userData?.role || roleFromStorage;
+
+        console.log("📋 Actual Role:", actualRole);
 
         if (
-          userData?.role !== "admin" &&
-          userData?.role !== "superadmin" &&
-          userData?.role !== "faculty"
+          actualRole !== "admin" &&
+          actualRole !== "superadmin" &&
+          actualRole !== "faculty"
         ) {
+          console.log("⛔ Invalid role:", actualRole, "- redirecting to login");
           history.push("/login");
           return;
         }
 
-        setCurrentUser(userData);
+        console.log("✅ Auth successful, setting user and loading content");
+        setCurrentUser(userData || { role: actualRole });
         setLoading(false);
       } catch (error) {
-        console.error("Authentication check failed:", error);
+        console.error("❌ Authentication check failed:", error);
         history.push("/login");
       }
     };
