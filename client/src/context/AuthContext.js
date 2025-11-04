@@ -9,85 +9,86 @@ const API_URL =
 const AuthContext = createContext();
 
 export function useAuth() {
-    return useContext(AuthContext);
+  return useContext(AuthContext);
 }
 
 export const AuthProvider = ({ children }) => {
-    const [currentUser, setCurrentUser] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
+  const [currentUser, setCurrentUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-    useEffect(() => {
-        // Check if user is already logged in
-        const token = localStorage.getItem("token");
-        if (token) {
-        fetchCurrentUser(token);
-        } else {
-        setLoading(false);
-        }
-    }, []);
+  useEffect(() => {
+    const token =
+      localStorage.getItem("token") ||
+      localStorage.getItem("authToken");
 
-    const fetchCurrentUser = async (token) => {
-        try {
-        const response = await axios.get(`${API_URL}/auth/me`, {
-            headers: {
-            Authorization: `Bearer ${token}`,
-            },
-        });
-        setCurrentUser(response.data);
-        } catch (err) {
-        console.error("Error fetching user:", err);
-        localStorage.removeItem("token");
-        } finally {
-        setLoading(false);
-        }
-    };
+    const savedUser = localStorage.getItem("currentUser");
 
-    const login = async (email, password) => {
-        try {
-            setError("");
-            const response = await axios.post(`${API_URL}/auth/login`, { email, password });
+    if (token && savedUser) {
+      setCurrentUser(JSON.parse(savedUser));
+      setLoading(false);
+    } else {
+      setLoading(false);
+    }
+  }, []);
 
-            const { token, user } = response.data;
-            localStorage.setItem("token", token);
-            localStorage.setItem("currentUser", JSON.stringify(user)); // ✅ ADD THIS
-            setCurrentUser(user);
-            return user;
-        } catch (err) {
-            setError(err.response?.data?.message || "Login failed");
-            throw err;
-        }
-    };
+  const saveAuthData = (token, user) => {
+    localStorage.setItem("token", token);
+    localStorage.setItem("authToken", token); // ✅ Compatibility for admin page
+    localStorage.setItem("currentUser", JSON.stringify(user));
+    localStorage.setItem("role", user.role); // ✅ Used in admin redirect checks
+    setCurrentUser(user);
+  };
 
+  const login = async (email, password) => {
+    try {
+      setError("");
+      const response = await axios.post(`${API_URL}/auth/login`, {
+        email,
+        password,
+      });
 
-    const register = async (userData) => {
-        try {
-        setError("");
-        const response = await axios.post(`${API_URL}/auth/register`, userData);
+      const { token, user } = response.data;
+      saveAuthData(token, user);
+      return user;
+    } catch (err) {
+      setError(err.response?.data?.message || "Login failed");
+      throw err;
+    }
+  };
 
-        const { token, user } = response.data;
-        localStorage.setItem("token", token);
-        setCurrentUser(user);
-        return user;
-        } catch (err) {
-        setError(err.response?.data?.message || "Registration failed");
-        throw err;
-        }
-    };
+  const register = async (userData) => {
+    try {
+      setError("");
+      const response = await axios.post(`${API_URL}/auth/register`, userData);
 
-    const logout = () => {
-        localStorage.removeItem("token");
-        setCurrentUser(null);
-    };
+      const { token, user } = response.data;
+      saveAuthData(token, user); // ✅ Now register also saves user
+      return user;
+    } catch (err) {
+      setError(err.response?.data?.message || "Registration failed");
+      throw err;
+    }
+  };
 
-    const value = {
-        currentUser,
-        login,
-        register,
-        logout,
-        loading,
-        error,
-    };
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("currentUser");
+    localStorage.removeItem("role");
+    setCurrentUser(null);
+  };
 
-    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  const value = {
+    currentUser,
+    login,
+    register,
+    logout,
+    loading,
+    error,
+  };
+
+  return (
+    <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+  );
 };
