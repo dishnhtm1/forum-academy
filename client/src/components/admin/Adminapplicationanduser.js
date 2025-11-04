@@ -98,12 +98,17 @@ const Adminapplicationanduser = ({ t }) => {
   });
 
   // Unified translator ensures we always use active locale
+  // Return undefined when the key is missing so JSX fallbacks (|| "...") work in prod
   const tr = (key) => {
     try {
       const primary = typeof t === "function" ? t(key) : undefined;
-      return primary !== undefined ? primary : tHook(key);
+      const value = primary !== undefined ? primary : tHook(key);
+      if (!value || value === key || (typeof value === "string" && value.includes("."))) {
+        return undefined;
+      }
+      return value;
     } catch (e) {
-      return tHook ? tHook(key) : key;
+      return undefined;
     }
   };
 

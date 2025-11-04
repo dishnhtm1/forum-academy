@@ -818,10 +818,10 @@ const AdminSetting = () => {
                       placeholder="Select language"
                     >
                       <Option value="en">
-                        <span>�E�E English</span>
+                        <span>🇬🇧 English</span>
                       </Option>
                       <Option value="ja">
-                        <span>�E�E 日本誁E(Japanese)</span>
+                        <span>🇯🇵 日本語 (Japanese)</span>
                       </Option>
                     </Select>
                   </Form.Item>

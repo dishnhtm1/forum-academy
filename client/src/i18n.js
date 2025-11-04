@@ -20,12 +20,17 @@ i18n
   .use(initReactI18next) // Pass i18n to react-i18next
   .init({
     detection: languageDetectorOptions,
+    // Explicitly declare namespaces and supported languages to avoid prod mismatches
+    defaultNS: "translation",
+    ns: ["translation"],
+    supportedLngs: ["en", "ja"],
+    nonExplicitSupportedLngs: true, // map en-US -> en, ja-JP -> ja
     resources: {
       en: { translation: translationEN },
       ja: { translation: translationJA },
     },
     fallbackLng: "en",
-    debug: true,
+    debug: process.env.NODE_ENV !== "production",
     load: "languageOnly",
     cache: {
       enabled: false, // Disable caching to ensure fresh translations
@@ -39,7 +44,9 @@ i18n
   });
 
 // Debug: Log the loaded translations and configuration
-console.log("🌍 i18n Configuration [v3.0 - CACHE BUST - Nov 4, 2025 15:45 JST]:");
+console.log(
+  "🌍 i18n Configuration [v3.0 - CACHE BUST - Nov 4, 2025 15:45 JST]:"
+);
 console.log("  - Current Language:", i18n.language);
 console.log("  - Detected Language:", localStorage.getItem("i18nextLng"));
 console.log("  - Fallback Language:", i18n.options.fallbackLng);
