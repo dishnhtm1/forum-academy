@@ -1,8 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.73dc4594.css",
-    "main.js": "/static/js/main.976f79ef.js",
-    "static/js/238.537693f5.chunk.js": "/static/js/238.537693f5.chunk.js",
+    "main.css": "/static/css/main.7365e33e.css",
+    "main.js": "/static/js/main.c5692b04.js",
     "static/media/vid2.mp4": "/static/media/vid2.a6a4a24909a039be3145.mp4",
     "static/media/vid1.mp4": "/static/media/vid1.990ef5c1bbf2dbbf977d.mp4",
     "static/media/vid3.mp4": "/static/media/vid3.895d4ebf3d2994b91d36.mp4",
@@ -10,9 +9,9 @@
     "static/media/vid6.mp4": "/static/media/vid6.6c8d0c79f40cfedc5249.mp4",
     "static/media/vid4.mp4": "/static/media/vid4.920d16568044f34e096c.mp4",
     "static/media/honda.png": "/static/media/honda.55cadca24baf0deeddd1.png",
+    "static/media/hero2.jpg": "/static/media/hero2.482fe9b8d592fec8e095.jpg",
     "static/media/sushi2.jpg": "/static/media/sushi2.f6112d3cb808bd109f66.jpg",
     "static/media/map.jpg": "/static/media/map.d9fba62ea2b57f49b79d.jpg",
-    "static/media/hero1.png": "/static/media/hero1.d70c540151ae49266a90.png",
     "static/media/suzuki.png": "/static/media/suzuki.083db1137be4ee6a02b4.png",
     "static/media/fa-solid-900.ttf": "/static/media/fa-solid-900.2582b0e4bcf85eceead0.ttf",
     "static/media/edamame.jpg": "/static/media/edamame.c7ed32369cb36947644b.jpg",
@@ -23,7 +22,6 @@
     "static/media/material-icons-two-tone.woff": "/static/media/material-icons-two-tone.3baa5b8f3469222b822d.woff",
     "static/media/shasheme.jpg": "/static/media/shasheme.01987fb3c1f0fface2eb.jpg",
     "static/media/櫻岡先生.jpg": "/static/media/櫻岡先生.4f4258a252180b745595.jpg",
-    "static/media/hero3.jpg": "/static/media/hero3.333522357057496b81c0.jpg",
     "static/media/浅野先生.jpg": "/static/media/浅野先生.709b7d5162a0ffd54003.jpg",
     "static/media/kane.jpg": "/static/media/kane.fc65fa4b242faa549155.jpg",
     "static/media/関川先生.jpg": "/static/media/関川先生.f9954e108fe27a60d672.jpg",
@@ -56,6 +54,7 @@
     "static/media/material-icons.woff2": "/static/media/material-icons.0c35d18bf06992036b69.woff2",
     "static/media/tare.jpg": "/static/media/tare.55917cdfd6725aac4154.jpg",
     "static/media/fa-brands-400.woff2": "/static/media/fa-brands-400.c210719e60948b211a12.woff2",
+    "static/media/SchoolLinestep1.png": "/static/media/SchoolLinestep1.e964197ea701d49bcb9c.png",
     "static/media/cloud.jpg": "/static/media/cloud.6bd7271629ddd7275993.jpg",
     "static/media/mobile.jpg": "/static/media/mobile.49c9fdef26a4f44182ae.jpg",
     "static/media/data.jpg": "/static/media/data.70611c614dfc2e849bec.jpg",
@@ -71,6 +70,7 @@
     "static/media/png4.jpg": "/static/media/png4.ec3091072532d629338f.jpg",
     "static/media/mercari.png": "/static/media/mercari.1ee5f368e3745948ac61.png",
     "static/media/png9.jpg": "/static/media/png9.2df4493a3bb0b16658eb.jpg",
+    "static/media/SchoolLinestep2.png": "/static/media/SchoolLinestep2.281512fba10aaff41f10.png",
     "static/media/access.jpg": "/static/media/access.dd202ca530e5f239a275.jpg",
     "static/media/sushi.jpg": "/static/media/sushi.f7906c6f4fc667d4f67d.jpg",
     "static/media/png1.jpg": "/static/media/png1.27a55a26b8e3b0dd73df.jpg",
@@ -87,12 +87,11 @@
     "static/media/fa-v4compatibility.ttf": "/static/media/fa-v4compatibility.da94ef451f4969af06e6.ttf",
     "static/media/fa-v4compatibility.woff2": "/static/media/fa-v4compatibility.ea8f94e1d22e0d35ccd4.woff2",
     "index.html": "/index.html",
-    "main.73dc4594.css.map": "/static/css/main.73dc4594.css.map",
-    "main.976f79ef.js.map": "/static/js/main.976f79ef.js.map",
-    "238.537693f5.chunk.js.map": "/static/js/238.537693f5.chunk.js.map"
+    "main.7365e33e.css.map": "/static/css/main.7365e33e.css.map",
+    "main.c5692b04.js.map": "/static/js/main.c5692b04.js.map"
   },
   "entrypoints": [
-    "static/css/main.73dc4594.css",
-    "static/js/main.976f79ef.js"
+    "static/css/main.7365e33e.css",
+    "static/js/main.c5692b04.js"
   ]
 }
