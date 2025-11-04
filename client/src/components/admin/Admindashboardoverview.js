@@ -169,23 +169,35 @@ function Icon({ name, size = 24, color = "currentColor" }) {
 
 const Admindashboardoverview = ({ t, setActiveKey }) => {
   const history = useHistory();
-  const { i18n } = useTranslation();
+  const { t: tHook, i18n, ready } = useTranslation();
 
   // Translation helper with English fallback when a key is missing
+  // Fixed for production: Always use hook's t directly, ensure i18n is ready, detect missing translations reliably
   const translate = useCallback(
     (key, fallback) => {
       try {
-        const translator = t || i18n.t.bind(i18n);
-        const value = translator ? translator(key) : key;
+        // Ensure i18n is initialized - if not ready, use fallback immediately
+        if (!ready && i18n && !i18n.isInitialized) {
+          return fallback || key;
+        }
+        // Always use the hook's t first (most reliable in production, reactive to language changes)
+        const translator = tHook || t || (i18n && i18n.t ? i18n.t.bind(i18n) : null);
+        if (!translator) {
+          return fallback || key;
+        }
+        const value = translator(key);
+        // i18n returns the key string when translation is missing
+        // Simple check: if value equals key, translation is missing
         if (!value || value === key) {
           return fallback || key;
         }
         return value;
       } catch (e) {
+        console.warn("Translation error for key:", key, e);
         return fallback || key;
       }
     },
-    [t, i18n]
+    [tHook, t, i18n, ready]
   );
 
   // Translation helper with explicit JA fallback
@@ -255,6 +267,25 @@ const Admindashboardoverview = ({ t, setActiveKey }) => {
 
   // Always use local dashboard stats for this component
   const dashboardStats = localDashboardStats;
+
+  // Force re-render when language changes (production fix)
+  const [currentLanguage, setCurrentLanguage] = useState(i18n?.language || "en");
+  useEffect(() => {
+    const handleLanguageChange = (lng) => {
+      console.log("🌐 Dashboard language changed to:", lng);
+      setCurrentLanguage(lng);
+    };
+    if (i18n) {
+      i18n.on("languageChanged", handleLanguageChange);
+      // Sync on mount
+      setCurrentLanguage(i18n.language);
+    }
+    return () => {
+      if (i18n) {
+        i18n.off("languageChanged", handleLanguageChange);
+      }
+    };
+  }, [i18n]);
 
   // Debug logging
   useEffect(() => {
@@ -1944,7 +1975,8 @@ const Admindashboardoverview = ({ t, setActiveKey }) => {
                       width: 40,
                       height: 40,
                       borderRadius: 10,
-                      background: "linear-gradient(135deg, #6A82FB 0%, #7B94FF 100%)",
+                      background:
+                        "linear-gradient(135deg, #6A82FB 0%, #7B94FF 100%)",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -1962,7 +1994,10 @@ const Admindashboardoverview = ({ t, setActiveKey }) => {
                         display: "block",
                       }}
                     >
-                      {translate("admin.dashboard.eventCalendar", "Event Calendar")}
+                      {translate(
+                        "admin.dashboard.eventCalendar",
+                        "Event Calendar"
+                      )}
                     </Text>
                     <Text
                       type="secondary"
@@ -2008,7 +2043,8 @@ const Admindashboardoverview = ({ t, setActiveKey }) => {
                     size="small"
                     onClick={() => openEventModal()}
                     style={{
-                      background: "linear-gradient(135deg, #6A82FB 0%, #7B94FF 100%)",
+                      background:
+                        "linear-gradient(135deg, #6A82FB 0%, #7B94FF 100%)",
                       border: "none",
                       borderRadius: 8,
                       fontWeight: 600,
@@ -2031,7 +2067,9 @@ const Admindashboardoverview = ({ t, setActiveKey }) => {
               >
                 <Button.Group>
                   <Button
-                    type={calendarViewMode === "calendar" ? "primary" : "default"}
+                    type={
+                      calendarViewMode === "calendar" ? "primary" : "default"
+                    }
                     icon={<CalendarOutlined />}
                     onClick={() => setCalendarViewMode("calendar")}
                     style={{
@@ -2040,10 +2078,13 @@ const Admindashboardoverview = ({ t, setActiveKey }) => {
                           ? "linear-gradient(135deg, #6A82FB 0%, #7B94FF 100%)"
                           : "#fff",
                       borderColor:
-                        calendarViewMode === "calendar" ? "transparent" : "#D9D9D9",
+                        calendarViewMode === "calendar"
+                          ? "transparent"
+                          : "#D9D9D9",
                       color: calendarViewMode === "calendar" ? "#fff" : "#666",
                       fontWeight: 600,
-                      borderRadius: calendarViewMode === "calendar" ? "8px 0 0 8px" : 0,
+                      borderRadius:
+                        calendarViewMode === "calendar" ? "8px 0 0 8px" : 0,
                     }}
                   >
                     {translate("admin.calendar.calendarView", "Calendar")}
@@ -2061,7 +2102,8 @@ const Admindashboardoverview = ({ t, setActiveKey }) => {
                         calendarViewMode === "list" ? "transparent" : "#D9D9D9",
                       color: calendarViewMode === "list" ? "#fff" : "#666",
                       fontWeight: 600,
-                      borderRadius: calendarViewMode === "list" ? "0 8px 8px 0" : 0,
+                      borderRadius:
+                        calendarViewMode === "list" ? "0 8px 8px 0" : 0,
                     }}
                   >
                     {translate("admin.calendar.listView", "List")}
@@ -2072,348 +2114,358 @@ const Admindashboardoverview = ({ t, setActiveKey }) => {
 
             <div style={{ padding: "20px" }}>
               {/* Enhanced List View of Events */}
-            {calendarViewMode === "list" && (
-              <div>
-                {events.length > 0 ? (
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: 16,
-                    }}
-                  >
-                    {/* Group events by date */}
-                    {(() => {
-                      const groupedEvents = events.reduce((acc, event) => {
-                        const dateKey = moment(event.date).format("YYYY-MM-DD");
-                        if (!acc[dateKey]) {
-                          acc[dateKey] = [];
-                        }
-                        acc[dateKey].push(event);
-                        return acc;
-                      }, {});
-
-                      const sortedDates = Object.keys(groupedEvents).sort(
-                        (a, b) => moment(a).diff(moment(b))
-                      );
-
-                      return sortedDates.map((dateKey) => {
-                        const dateEvents = groupedEvents[dateKey];
-                        const eventDate = moment(dateKey);
-                        const isToday = eventDate.isSame(moment(), "day");
-                        const isPast = eventDate.isBefore(moment(), "day");
-                        const isTomorrow = eventDate.isSame(
-                          moment().add(1, "day"),
-                          "day"
-                        );
-
-                        return (
-                          <div key={dateKey} style={{ marginBottom: 8 }}>
-                            {/* Date Header */}
-                            <div
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 8,
-                                marginBottom: 12,
-                                paddingBottom: 8,
-                                borderBottom: "2px solid #F0F0F0",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  width: 4,
-                                  height: 20,
-                                  borderRadius: 2,
-                                  background: isToday
-                                    ? "linear-gradient(135deg, #6A82FB 0%, #7B94FF 100%)"
-                                    : isPast
-                                    ? "#D9D9D9"
-                                    : "#20C997",
-                                }}
-                              />
-                              <Text
-                                strong
-                                style={{
-                                  fontSize: 14,
-                                  fontWeight: 700,
-                                  color: isToday ? "#6A82FB" : "#333",
-                                }}
-                              >
-                                {isToday
-                                  ? translate("admin.calendar.today", "Today")
-                                  : isTomorrow
-                                  ? translate(
-                                      "admin.calendar.tomorrow",
-                                      "Tomorrow"
-                                    )
-                                  : eventDate.format("DD MMMM, YYYY")}
-                              </Text>
-                              <Tag
-                                style={{
-                                  marginLeft: "auto",
-                                  background: "#F0F0F0",
-                                  color: "#666",
-                                  border: "none",
-                                  fontSize: 11,
-                                  fontWeight: 600,
-                                }}
-                              >
-                                {dateEvents.length}{" "}
-                                {dateEvents.length === 1
-                                  ? translate("admin.calendar.event", "event")
-                                  : translate("admin.calendar.events", "events")}
-                              </Tag>
-                            </div>
-
-                            {/* Events for this date */}
-                            {dateEvents
-                              .sort((a, b) => {
-                                if (a.time && b.time) {
-                                  const timeA = moment()
-                                    .hour(a.time.hour)
-                                    .minute(a.time.minute);
-                                  const timeB = moment()
-                                    .hour(b.time.hour)
-                                    .minute(b.time.minute);
-                                  return timeA.diff(timeB);
-                                }
-                                return a.time ? -1 : 1;
-                              })
-                              .map((event) => {
-                                const eventDate = moment(event.date);
-                                const isPast = eventDate.isBefore(moment(), "day");
-
-                                return (
-                                  <div
-                                    key={event.id}
-                                    style={{
-                                      padding: 16,
-                                      borderRadius: 12,
-                                      border: `1px solid ${
-                                        event.type === "task"
-                                          ? "#FFE4B5"
-                                          : "#D0D0FF"
-                                      }`,
-                                      background: isPast
-                                        ? "#FAFAFA"
-                                        : event.type === "task"
-                                        ? "linear-gradient(135deg, #FFF9F0 0%, #FFF4E6 100%)"
-                                        : "linear-gradient(135deg, #F5F7FF 0%, #E8E8FF 100%)",
-                                      display: "flex",
-                                      alignItems: "flex-start",
-                                      gap: 16,
-                                      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                                      cursor: "pointer",
-                                      marginBottom: 8,
-                                    }}
-                                    onMouseEnter={(e) => {
-                                      e.currentTarget.style.transform =
-                                        "translateX(4px)";
-                                      e.currentTarget.style.boxShadow =
-                                        "0 4px 16px rgba(0,0,0,0.1)";
-                                      e.currentTarget.style.borderColor =
-                                        event.type === "task"
-                                          ? "#FFD580"
-                                          : "#9BB0FF";
-                                    }}
-                                    onMouseLeave={(e) => {
-                                      e.currentTarget.style.transform =
-                                        "translateX(0)";
-                                      e.currentTarget.style.boxShadow = "none";
-                                      e.currentTarget.style.borderColor =
-                                        event.type === "task"
-                                          ? "#FFE4B5"
-                                          : "#D0D0FF";
-                                    }}
-                                    onClick={() => openEditModal(event)}
-                                  >
-                                    {/* Time Indicator */}
-                                    {event.time && (
-                                      <div
-                                        style={{
-                                          minWidth: 60,
-                                          textAlign: "center",
-                                          padding: "8px 12px",
-                                          borderRadius: 8,
-                                          background: isPast
-                                            ? "#F0F0F0"
-                                            : event.type === "task"
-                                            ? "linear-gradient(135deg, #FFD580 0%, #FFB84D 100%)"
-                                            : "linear-gradient(135deg, #9BB0FF 0%, #7B94FF 100%)",
-                                          color: isPast ? "#999" : "#fff",
-                                          fontWeight: 700,
-                                          fontSize: 12,
-                                        }}
-                                      >
-                                        {moment()
-                                          .hour(event.time.hour)
-                                          .minute(event.time.minute)
-                                          .format("HH:mm")}
-                                      </div>
-                                    )}
-
-                                    {/* Event Content */}
-                                    <div style={{ flex: 1, minWidth: 0 }}>
-                                      <div
-                                        style={{
-                                          display: "flex",
-                                          alignItems: "center",
-                                          gap: 8,
-                                          marginBottom: 8,
-                                          flexWrap: "wrap",
-                                        }}
-                                      >
-                                        <Tag
-                                          color={
-                                            event.type === "task"
-                                              ? "orange"
-                                              : "blue"
-                                          }
-                                          style={{
-                                            margin: 0,
-                                            fontWeight: 600,
-                                            fontSize: 11,
-                                            padding: "4px 10px",
-                                            borderRadius: 6,
-                                          }}
-                                        >
-                                          {event.type === "task"
-                                            ? translate(
-                                                "admin.calendar.typeTask",
-                                                "Task"
-                                              )
-                                            : translate(
-                                                "admin.calendar.typeEvent",
-                                                "Event"
-                                              )}
-                                        </Tag>
-                                      </div>
-                                      <Text
-                                        strong
-                                        style={{
-                                          fontSize: 16,
-                                          fontWeight: 700,
-                                          color: isPast ? "#999" : "#1A1A1A",
-                                          display: "block",
-                                          marginBottom: 6,
-                                          lineHeight: 1.4,
-                                        }}
-                                      >
-                                        {event.title}
-                                      </Text>
-                                      {event.description && (
-                                        <Text
-                                          type="secondary"
-                                          style={{
-                                            fontSize: 13,
-                                            display: "block",
-                                            marginBottom: 8,
-                                            color: isPast ? "#BBB" : "#666",
-                                            lineHeight: 1.5,
-                                          }}
-                                          ellipsis={{ rows: 2 }}
-                                        >
-                                          {event.description}
-                                        </Text>
-                                      )}
-                                    </div>
-
-                                    {/* Action Buttons */}
-                                    <Space
-                                      direction="vertical"
-                                      size="small"
-                                      onClick={(e) => e.stopPropagation()}
-                                    >
-                                      <Tooltip
-                                        title={translate(
-                                          "admin.calendar.edit",
-                                          "Edit"
-                                        )}
-                                      >
-                                        <Button
-                                          size="small"
-                                          icon={<EditOutlined />}
-                                          onClick={() => openEditModal(event)}
-                                          style={{
-                                            border: "1px solid #D9D9D9",
-                                            borderRadius: 6,
-                                          }}
-                                        />
-                                      </Tooltip>
-                                      <Tooltip
-                                        title={translate(
-                                          "admin.calendar.delete",
-                                          "Delete"
-                                        )}
-                                      >
-                                        <Button
-                                          size="small"
-                                          danger
-                                          icon={<DeleteOutlined />}
-                                          onClick={() => {
-                                            Modal.confirm({
-                                              title: translate(
-                                                "admin.calendar.deleteConfirm",
-                                                "Delete Event"
-                                              ),
-                                              content: translate(
-                                                "admin.calendar.deleteMessage",
-                                                "Are you sure you want to delete this event?"
-                                              ),
-                                              onOk: () =>
-                                                handleDeleteEvent(event.id),
-                                            });
-                                          }}
-                                          style={{ borderRadius: 6 }}
-                                        />
-                                      </Tooltip>
-                                    </Space>
-                                  </div>
-                                );
-                              })}
-                          </div>
-                        );
-                      });
-                    })()}
-                  </div>
-                ) : (
-                  <Empty
-                    description={translate(
-                      "admin.calendar.noEvents",
-                      "No events created yet. Click 'Create Event' to add one!"
-                    )}
-                    image={Empty.PRESENTED_IMAGE_SIMPLE}
-                    style={{ padding: "60px 0" }}
-                  >
-                    <Button
-                      type="primary"
-                      icon={<PlusOutlined />}
-                      onClick={() => openEventModal()}
-                      size="large"
+              {calendarViewMode === "list" && (
+                <div>
+                  {events.length > 0 ? (
+                    <div
                       style={{
-                        background:
-                          "linear-gradient(135deg, #6A82FB 0%, #7B94FF 100%)",
-                        border: "none",
-                        borderRadius: 8,
-                        fontWeight: 600,
-                        boxShadow: "0 4px 12px rgba(106, 130, 251, 0.3)",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 16,
                       }}
                     >
-                      {translate(
-                        "admin.calendar.createEvent",
-                        "Create Event"
+                      {/* Group events by date */}
+                      {(() => {
+                        const groupedEvents = events.reduce((acc, event) => {
+                          const dateKey = moment(event.date).format(
+                            "YYYY-MM-DD"
+                          );
+                          if (!acc[dateKey]) {
+                            acc[dateKey] = [];
+                          }
+                          acc[dateKey].push(event);
+                          return acc;
+                        }, {});
+
+                        const sortedDates = Object.keys(groupedEvents).sort(
+                          (a, b) => moment(a).diff(moment(b))
+                        );
+
+                        return sortedDates.map((dateKey) => {
+                          const dateEvents = groupedEvents[dateKey];
+                          const eventDate = moment(dateKey);
+                          const isToday = eventDate.isSame(moment(), "day");
+                          const isPast = eventDate.isBefore(moment(), "day");
+                          const isTomorrow = eventDate.isSame(
+                            moment().add(1, "day"),
+                            "day"
+                          );
+
+                          return (
+                            <div key={dateKey} style={{ marginBottom: 8 }}>
+                              {/* Date Header */}
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 8,
+                                  marginBottom: 12,
+                                  paddingBottom: 8,
+                                  borderBottom: "2px solid #F0F0F0",
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    width: 4,
+                                    height: 20,
+                                    borderRadius: 2,
+                                    background: isToday
+                                      ? "linear-gradient(135deg, #6A82FB 0%, #7B94FF 100%)"
+                                      : isPast
+                                      ? "#D9D9D9"
+                                      : "#20C997",
+                                  }}
+                                />
+                                <Text
+                                  strong
+                                  style={{
+                                    fontSize: 14,
+                                    fontWeight: 700,
+                                    color: isToday ? "#6A82FB" : "#333",
+                                  }}
+                                >
+                                  {isToday
+                                    ? translate("admin.calendar.today", "Today")
+                                    : isTomorrow
+                                    ? translate(
+                                        "admin.calendar.tomorrow",
+                                        "Tomorrow"
+                                      )
+                                    : eventDate.format("DD MMMM, YYYY")}
+                                </Text>
+                                <Tag
+                                  style={{
+                                    marginLeft: "auto",
+                                    background: "#F0F0F0",
+                                    color: "#666",
+                                    border: "none",
+                                    fontSize: 11,
+                                    fontWeight: 600,
+                                  }}
+                                >
+                                  {dateEvents.length}{" "}
+                                  {dateEvents.length === 1
+                                    ? translate("admin.calendar.event", "event")
+                                    : translate(
+                                        "admin.calendar.events",
+                                        "events"
+                                      )}
+                                </Tag>
+                              </div>
+
+                              {/* Events for this date */}
+                              {dateEvents
+                                .sort((a, b) => {
+                                  if (a.time && b.time) {
+                                    const timeA = moment()
+                                      .hour(a.time.hour)
+                                      .minute(a.time.minute);
+                                    const timeB = moment()
+                                      .hour(b.time.hour)
+                                      .minute(b.time.minute);
+                                    return timeA.diff(timeB);
+                                  }
+                                  return a.time ? -1 : 1;
+                                })
+                                .map((event) => {
+                                  const eventDate = moment(event.date);
+                                  const isPast = eventDate.isBefore(
+                                    moment(),
+                                    "day"
+                                  );
+
+                                  return (
+                                    <div
+                                      key={event.id}
+                                      style={{
+                                        padding: 16,
+                                        borderRadius: 12,
+                                        border: `1px solid ${
+                                          event.type === "task"
+                                            ? "#FFE4B5"
+                                            : "#D0D0FF"
+                                        }`,
+                                        background: isPast
+                                          ? "#FAFAFA"
+                                          : event.type === "task"
+                                          ? "linear-gradient(135deg, #FFF9F0 0%, #FFF4E6 100%)"
+                                          : "linear-gradient(135deg, #F5F7FF 0%, #E8E8FF 100%)",
+                                        display: "flex",
+                                        alignItems: "flex-start",
+                                        gap: 16,
+                                        transition:
+                                          "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                                        cursor: "pointer",
+                                        marginBottom: 8,
+                                      }}
+                                      onMouseEnter={(e) => {
+                                        e.currentTarget.style.transform =
+                                          "translateX(4px)";
+                                        e.currentTarget.style.boxShadow =
+                                          "0 4px 16px rgba(0,0,0,0.1)";
+                                        e.currentTarget.style.borderColor =
+                                          event.type === "task"
+                                            ? "#FFD580"
+                                            : "#9BB0FF";
+                                      }}
+                                      onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform =
+                                          "translateX(0)";
+                                        e.currentTarget.style.boxShadow =
+                                          "none";
+                                        e.currentTarget.style.borderColor =
+                                          event.type === "task"
+                                            ? "#FFE4B5"
+                                            : "#D0D0FF";
+                                      }}
+                                      onClick={() => openEditModal(event)}
+                                    >
+                                      {/* Time Indicator */}
+                                      {event.time && (
+                                        <div
+                                          style={{
+                                            minWidth: 60,
+                                            textAlign: "center",
+                                            padding: "8px 12px",
+                                            borderRadius: 8,
+                                            background: isPast
+                                              ? "#F0F0F0"
+                                              : event.type === "task"
+                                              ? "linear-gradient(135deg, #FFD580 0%, #FFB84D 100%)"
+                                              : "linear-gradient(135deg, #9BB0FF 0%, #7B94FF 100%)",
+                                            color: isPast ? "#999" : "#fff",
+                                            fontWeight: 700,
+                                            fontSize: 12,
+                                          }}
+                                        >
+                                          {moment()
+                                            .hour(event.time.hour)
+                                            .minute(event.time.minute)
+                                            .format("HH:mm")}
+                                        </div>
+                                      )}
+
+                                      {/* Event Content */}
+                                      <div style={{ flex: 1, minWidth: 0 }}>
+                                        <div
+                                          style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: 8,
+                                            marginBottom: 8,
+                                            flexWrap: "wrap",
+                                          }}
+                                        >
+                                          <Tag
+                                            color={
+                                              event.type === "task"
+                                                ? "orange"
+                                                : "blue"
+                                            }
+                                            style={{
+                                              margin: 0,
+                                              fontWeight: 600,
+                                              fontSize: 11,
+                                              padding: "4px 10px",
+                                              borderRadius: 6,
+                                            }}
+                                          >
+                                            {event.type === "task"
+                                              ? translate(
+                                                  "admin.calendar.typeTask",
+                                                  "Task"
+                                                )
+                                              : translate(
+                                                  "admin.calendar.typeEvent",
+                                                  "Event"
+                                                )}
+                                          </Tag>
+                                        </div>
+                                        <Text
+                                          strong
+                                          style={{
+                                            fontSize: 16,
+                                            fontWeight: 700,
+                                            color: isPast ? "#999" : "#1A1A1A",
+                                            display: "block",
+                                            marginBottom: 6,
+                                            lineHeight: 1.4,
+                                          }}
+                                        >
+                                          {event.title}
+                                        </Text>
+                                        {event.description && (
+                                          <Text
+                                            type="secondary"
+                                            style={{
+                                              fontSize: 13,
+                                              display: "block",
+                                              marginBottom: 8,
+                                              color: isPast ? "#BBB" : "#666",
+                                              lineHeight: 1.5,
+                                            }}
+                                            ellipsis={{ rows: 2 }}
+                                          >
+                                            {event.description}
+                                          </Text>
+                                        )}
+                                      </div>
+
+                                      {/* Action Buttons */}
+                                      <Space
+                                        direction="vertical"
+                                        size="small"
+                                        onClick={(e) => e.stopPropagation()}
+                                      >
+                                        <Tooltip
+                                          title={translate(
+                                            "admin.calendar.edit",
+                                            "Edit"
+                                          )}
+                                        >
+                                          <Button
+                                            size="small"
+                                            icon={<EditOutlined />}
+                                            onClick={() => openEditModal(event)}
+                                            style={{
+                                              border: "1px solid #D9D9D9",
+                                              borderRadius: 6,
+                                            }}
+                                          />
+                                        </Tooltip>
+                                        <Tooltip
+                                          title={translate(
+                                            "admin.calendar.delete",
+                                            "Delete"
+                                          )}
+                                        >
+                                          <Button
+                                            size="small"
+                                            danger
+                                            icon={<DeleteOutlined />}
+                                            onClick={() => {
+                                              Modal.confirm({
+                                                title: translate(
+                                                  "admin.calendar.deleteConfirm",
+                                                  "Delete Event"
+                                                ),
+                                                content: translate(
+                                                  "admin.calendar.deleteMessage",
+                                                  "Are you sure you want to delete this event?"
+                                                ),
+                                                onOk: () =>
+                                                  handleDeleteEvent(event.id),
+                                              });
+                                            }}
+                                            style={{ borderRadius: 6 }}
+                                          />
+                                        </Tooltip>
+                                      </Space>
+                                    </div>
+                                  );
+                                })}
+                            </div>
+                          );
+                        });
+                      })()}
+                    </div>
+                  ) : (
+                    <Empty
+                      description={translate(
+                        "admin.calendar.noEvents",
+                        "No events created yet. Click 'Create Event' to add one!"
                       )}
-                    </Button>
-                  </Empty>
-                )}
-              </div>
-            )}
+                      image={Empty.PRESENTED_IMAGE_SIMPLE}
+                      style={{ padding: "60px 0" }}
+                    >
+                      <Button
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        onClick={() => openEventModal()}
+                        size="large"
+                        style={{
+                          background:
+                            "linear-gradient(135deg, #6A82FB 0%, #7B94FF 100%)",
+                          border: "none",
+                          borderRadius: 8,
+                          fontWeight: 600,
+                          boxShadow: "0 4px 12px rgba(106, 130, 251, 0.3)",
+                        }}
+                      >
+                        {translate(
+                          "admin.calendar.createEvent",
+                          "Create Event"
+                        )}
+                      </Button>
+                    </Empty>
+                  )}
+                </div>
+              )}
 
               {/* Calendar View */}
               {calendarViewMode === "calendar" && (
-              <div>
-                <style>{`
+                <div>
+                  <style>{`
                 .ant-picker-calendar {
                   background: transparent !important;
                 }
@@ -2516,220 +2568,108 @@ const Admindashboardoverview = ({ t, setActiveKey }) => {
                   }
                 }
               `}</style>
-                <Calendar
-                  fullscreen={false}
-                  style={{ background: "transparent" }}
-                  validRange={[
-                    moment().subtract(1, "year"),
-                    moment().add(10, "years"),
-                  ]}
-                  headerRender={({ value, type, onChange, onTypeChange }) => {
-                    const start = 0;
-                    const end = 12;
-                    const monthOptions = [];
-                    const localeData = value.localeData();
-                    const months = [];
+                  <Calendar
+                    fullscreen={false}
+                    style={{ background: "transparent" }}
+                    validRange={[
+                      moment().subtract(1, "year"),
+                      moment().add(10, "years"),
+                    ]}
+                    headerRender={({ value, type, onChange, onTypeChange }) => {
+                      const start = 0;
+                      const end = 12;
+                      const monthOptions = [];
+                      const localeData = value.localeData();
+                      const months = [];
 
-                    // Generate months for the current year
-                    const yearValue = value.year();
-                    for (let i = 0; i < 12; i++) {
-                      const monthMoment = moment()
-                        .year(yearValue)
-                        .month(i)
-                        .startOf("month");
-                      months.push(localeData.monthsShort(monthMoment));
-                    }
+                      // Generate months for the current year
+                      const yearValue = value.year();
+                      for (let i = 0; i < 12; i++) {
+                        const monthMoment = moment()
+                          .year(yearValue)
+                          .month(i)
+                          .startOf("month");
+                        months.push(localeData.monthsShort(monthMoment));
+                      }
 
-                    for (let i = start; i < end; i++) {
-                      monthOptions.push(
-                        <Select.Option key={i} value={i} label={months[i]}>
-                          {months[i]}
-                        </Select.Option>
-                      );
-                    }
+                      for (let i = start; i < end; i++) {
+                        monthOptions.push(
+                          <Select.Option key={i} value={i} label={months[i]}>
+                            {months[i]}
+                          </Select.Option>
+                        );
+                      }
 
-                    const year = value.year();
-                    const month = value.month();
-                    const options = [];
-                    for (let i = year - 10; i < year + 10; i += 1) {
-                      options.push(
-                        <Select.Option key={i} value={i} label={String(i)}>
-                          {i}
-                        </Select.Option>
-                      );
-                    }
+                      const year = value.year();
+                      const month = value.month();
+                      const options = [];
+                      for (let i = year - 10; i < year + 10; i += 1) {
+                        options.push(
+                          <Select.Option key={i} value={i} label={String(i)}>
+                            {i}
+                          </Select.Option>
+                        );
+                      }
 
-                    const isCurrentMonth = value.isSame(moment(), "month");
+                      const isCurrentMonth = value.isSame(moment(), "month");
 
-                    return (
-                      <div
-                        style={{
-                          padding: "16px 20px",
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          background:
-                            "linear-gradient(135deg, #6A82FB 0%, #7B94FF 50%, #5A6DEB 100%)",
-                          borderRadius: 16,
-                          marginBottom: 20,
-                          boxShadow: "0 8px 24px rgba(106, 130, 251, 0.3)",
-                          position: "relative",
-                          overflow: "hidden",
-                          flexWrap: "wrap",
-                          gap: "12px",
-                        }}
-                      >
-                        {/* Background accent elements */}
+                      return (
                         <div
                           style={{
-                            position: "absolute",
-                            width: 120,
-                            height: 120,
-                            background: "rgba(255, 255, 255, 0.1)",
-                            borderRadius: "50%",
-                            top: -40,
-                            right: -40,
-                            pointerEvents: "none",
-                          }}
-                        />
-                        <div
-                          style={{
-                            position: "absolute",
-                            width: 80,
-                            height: 80,
-                            background: "rgba(255, 255, 255, 0.08)",
-                            borderRadius: "50%",
-                            bottom: -30,
-                            left: -30,
-                            pointerEvents: "none",
-                          }}
-                        />
-
-                        <Button
-                          type="text"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            const newValue = value.clone().subtract(1, "month");
-                            onChange(newValue);
-                          }}
-                          style={{
-                            width: 40,
-                            height: 40,
-                            minWidth: 40,
+                            padding: "16px 20px",
                             display: "flex",
+                            justifyContent: "space-between",
                             alignItems: "center",
-                            justifyContent: "center",
-                            borderRadius: 10,
-                            background: "rgba(255, 255, 255, 0.25)",
-                            border: "1px solid rgba(255, 255, 255, 0.3)",
-                            color: "#fff",
-                            fontSize: 18,
-                            fontWeight: 700,
-                            transition: "all 0.3s ease",
-                            zIndex: 1,
-                            padding: 0,
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.background =
-                              "rgba(255, 255, 255, 0.35)";
-                            e.currentTarget.style.transform =
-                              "scale(1.08) translateX(-2px)";
-                            e.currentTarget.style.boxShadow =
-                              "0 4px 12px rgba(0, 0, 0, 0.15)";
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.background =
-                              "rgba(255, 255, 255, 0.25)";
-                            e.currentTarget.style.transform = "scale(1)";
-                            e.currentTarget.style.boxShadow = "none";
-                          }}
-                          aria-label={translate(
-                            "admin.calendar.previousMonth",
-                            "Previous month"
-                          )}
-                        >
-                          ‹
-                        </Button>
-                        <div
-                          style={{
-                            display: "flex",
-                            gap: 12,
-                            alignItems: "center",
-                            zIndex: 1,
-                            flex: "1 1 auto",
-                            justifyContent: "center",
-                            minWidth: 0,
+                            background:
+                              "linear-gradient(135deg, #6A82FB 0%, #7B94FF 50%, #5A6DEB 100%)",
+                            borderRadius: 16,
+                            marginBottom: 20,
+                            boxShadow: "0 8px 24px rgba(106, 130, 251, 0.3)",
+                            position: "relative",
+                            overflow: "hidden",
+                            flexWrap: "wrap",
+                            gap: "12px",
                           }}
                         >
-                          <Select
-                            className="calendar-header-select"
-                            value={month}
-                            onChange={(newMonth) => {
-                              const newValue = value.clone().month(newMonth);
-                              onChange(newValue);
-                            }}
-                            onClick={(e) => e.stopPropagation()}
-                            getPopupContainer={(trigger) =>
-                              trigger.parentElement
-                            }
-                            style={{
-                              width: "auto",
-                              minWidth: 90,
-                              maxWidth: 120,
-                            }}
-                            bordered={true}
-                            dropdownStyle={{
-                              background: "#fff",
-                              borderRadius: 12,
-                              boxShadow: "0 4px 16px rgba(0,0,0,0.15)",
-                            }}
-                          >
-                            {monthOptions}
-                          </Select>
+                          {/* Background accent elements */}
                           <div
                             style={{
-                              width: 2,
-                              height: 24,
-                              background: "rgba(255, 255, 255, 0.3)",
-                              borderRadius: 1,
+                              position: "absolute",
+                              width: 120,
+                              height: 120,
+                              background: "rgba(255, 255, 255, 0.1)",
+                              borderRadius: "50%",
+                              top: -40,
+                              right: -40,
+                              pointerEvents: "none",
                             }}
                           />
-                          <Select
-                            className="calendar-header-select"
-                            value={year}
-                            onChange={(newYear) => {
-                              const newValue = value.clone().year(newYear);
-                              onChange(newValue);
-                            }}
-                            onClick={(e) => e.stopPropagation()}
-                            getPopupContainer={(trigger) =>
-                              trigger.parentElement
-                            }
+                          <div
                             style={{
-                              width: "auto",
-                              minWidth: 75,
-                              maxWidth: 100,
+                              position: "absolute",
+                              width: 80,
+                              height: 80,
+                              background: "rgba(255, 255, 255, 0.08)",
+                              borderRadius: "50%",
+                              bottom: -30,
+                              left: -30,
+                              pointerEvents: "none",
                             }}
-                            bordered={true}
-                            dropdownStyle={{
-                              background: "#fff",
-                              borderRadius: 12,
-                              boxShadow: "0 4px 16px rgba(0,0,0,0.15)",
-                            }}
-                          >
-                            {options}
-                          </Select>
-                        </div>
-                        {!isCurrentMonth && (
+                          />
+
                           <Button
                             type="text"
                             onClick={(e) => {
                               e.stopPropagation();
-                              onChange(moment());
+                              const newValue = value
+                                .clone()
+                                .subtract(1, "month");
+                              onChange(newValue);
                             }}
                             style={{
+                              width: 40,
                               height: 40,
-                              padding: "0 16px",
+                              minWidth: 40,
                               display: "flex",
                               alignItems: "center",
                               justifyContent: "center",
@@ -2737,209 +2677,326 @@ const Admindashboardoverview = ({ t, setActiveKey }) => {
                               background: "rgba(255, 255, 255, 0.25)",
                               border: "1px solid rgba(255, 255, 255, 0.3)",
                               color: "#fff",
-                              fontSize: 12,
-                              fontWeight: 600,
+                              fontSize: 18,
+                              fontWeight: 700,
                               transition: "all 0.3s ease",
                               zIndex: 1,
+                              padding: 0,
                             }}
                             onMouseEnter={(e) => {
                               e.currentTarget.style.background =
                                 "rgba(255, 255, 255, 0.35)";
+                              e.currentTarget.style.transform =
+                                "scale(1.08) translateX(-2px)";
+                              e.currentTarget.style.boxShadow =
+                                "0 4px 12px rgba(0, 0, 0, 0.15)";
                             }}
                             onMouseLeave={(e) => {
                               e.currentTarget.style.background =
                                 "rgba(255, 255, 255, 0.25)";
+                              e.currentTarget.style.transform = "scale(1)";
+                              e.currentTarget.style.boxShadow = "none";
                             }}
+                            aria-label={translate(
+                              "admin.calendar.previousMonth",
+                              "Previous month"
+                            )}
                           >
-                            {translate("admin.calendar.today", "Today")}
+                            ‹
                           </Button>
-                        )}
-                        <Button
-                          type="text"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            const newValue = value.clone().add(1, "month");
-                            onChange(newValue);
-                          }}
-                          style={{
-                            width: 40,
-                            height: 40,
-                            minWidth: 40,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            borderRadius: 10,
-                            background: "rgba(255, 255, 255, 0.25)",
-                            border: "1px solid rgba(255, 255, 255, 0.3)",
-                            color: "#fff",
-                            fontSize: 18,
-                            fontWeight: 700,
-                            transition: "all 0.3s ease",
-                            zIndex: 1,
-                            padding: 0,
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.background =
-                              "rgba(255, 255, 255, 0.35)";
-                            e.currentTarget.style.transform =
-                              "scale(1.08) translateX(2px)";
-                            e.currentTarget.style.boxShadow =
-                              "0 4px 12px rgba(0, 0, 0, 0.15)";
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.background =
-                              "rgba(255, 255, 255, 0.25)";
-                            e.currentTarget.style.transform = "scale(1)";
-                            e.currentTarget.style.boxShadow = "none";
-                          }}
-                          aria-label={translate(
-                            "admin.calendar.nextMonth",
-                            "Next month"
-                          )}
-                        >
-                          ›
-                        </Button>
-                      </div>
-                    );
-                  }}
-                  cellRender={(date, info) => {
-                    const isToday = date.isSame(moment(), "day");
-                    const dateEvents = getEventsForDate(date);
-                    const hasEvents = dateEvents.length > 0;
-
-                    // Only render dates for the current month
-                    if (info.type === "date") {
-                      const currentMonth = info.date
-                        ? moment(info.date).month()
-                        : moment().month();
-                      const isCurrentMonth = date.month() === currentMonth;
-
-                      if (!isCurrentMonth) {
-                        return (
-                          <div
-                            style={{ opacity: 0.3, pointerEvents: "none" }}
-                          />
-                        );
-                      }
-
-                      return (
-                        <div
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            justifyContent: "flex-start",
-                            padding: "8px 3px",
-                            minHeight: 70,
-                            position: "relative",
-                            transition: "all 0.3s ease",
-                            cursor: "pointer",
-                          }}
-                          onClick={() => openEventModal(date)}
-                          onMouseEnter={(e) => {
-                            if (!isToday) {
-                              e.currentTarget.style.background =
-                                "rgba(106, 130, 251, 0.05)";
-                              e.currentTarget.style.borderRadius = "10px";
-                            }
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.background = "transparent";
-                          }}
-                        >
                           <div
                             style={{
-                              width: isToday ? 36 : 30,
-                              height: isToday ? 36 : 30,
-                              borderRadius: isToday ? "10px" : "50%",
-                              background: isToday
-                                ? "linear-gradient(135deg, #6A82FB 0%, #7B94FF 100%)"
-                                : "transparent",
-                              color: isToday ? "#fff" : "#333",
+                              display: "flex",
+                              gap: 12,
+                              alignItems: "center",
+                              zIndex: 1,
+                              flex: "1 1 auto",
+                              justifyContent: "center",
+                              minWidth: 0,
+                            }}
+                          >
+                            <Select
+                              className="calendar-header-select"
+                              value={month}
+                              onChange={(newMonth) => {
+                                const newValue = value.clone().month(newMonth);
+                                onChange(newValue);
+                              }}
+                              onClick={(e) => e.stopPropagation()}
+                              getPopupContainer={(trigger) =>
+                                trigger.parentElement
+                              }
+                              style={{
+                                width: "auto",
+                                minWidth: 90,
+                                maxWidth: 120,
+                              }}
+                              bordered={true}
+                              dropdownStyle={{
+                                background: "#fff",
+                                borderRadius: 12,
+                                boxShadow: "0 4px 16px rgba(0,0,0,0.15)",
+                              }}
+                            >
+                              {monthOptions}
+                            </Select>
+                            <div
+                              style={{
+                                width: 2,
+                                height: 24,
+                                background: "rgba(255, 255, 255, 0.3)",
+                                borderRadius: 1,
+                              }}
+                            />
+                            <Select
+                              className="calendar-header-select"
+                              value={year}
+                              onChange={(newYear) => {
+                                const newValue = value.clone().year(newYear);
+                                onChange(newValue);
+                              }}
+                              onClick={(e) => e.stopPropagation()}
+                              getPopupContainer={(trigger) =>
+                                trigger.parentElement
+                              }
+                              style={{
+                                width: "auto",
+                                minWidth: 75,
+                                maxWidth: 100,
+                              }}
+                              bordered={true}
+                              dropdownStyle={{
+                                background: "#fff",
+                                borderRadius: 12,
+                                boxShadow: "0 4px 16px rgba(0,0,0,0.15)",
+                              }}
+                            >
+                              {options}
+                            </Select>
+                          </div>
+                          {!isCurrentMonth && (
+                            <Button
+                              type="text"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onChange(moment());
+                              }}
+                              style={{
+                                height: 40,
+                                padding: "0 16px",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                borderRadius: 10,
+                                background: "rgba(255, 255, 255, 0.25)",
+                                border: "1px solid rgba(255, 255, 255, 0.3)",
+                                color: "#fff",
+                                fontSize: 12,
+                                fontWeight: 600,
+                                transition: "all 0.3s ease",
+                                zIndex: 1,
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.background =
+                                  "rgba(255, 255, 255, 0.35)";
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.background =
+                                  "rgba(255, 255, 255, 0.25)";
+                              }}
+                            >
+                              {translate("admin.calendar.today", "Today")}
+                            </Button>
+                          )}
+                          <Button
+                            type="text"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const newValue = value.clone().add(1, "month");
+                              onChange(newValue);
+                            }}
+                            style={{
+                              width: 40,
+                              height: 40,
+                              minWidth: 40,
                               display: "flex",
                               alignItems: "center",
                               justifyContent: "center",
-                              fontSize: isToday ? 15 : 13,
-                              fontWeight: isToday ? 700 : 600,
-                              marginBottom: 5,
+                              borderRadius: 10,
+                              background: "rgba(255, 255, 255, 0.25)",
+                              border: "1px solid rgba(255, 255, 255, 0.3)",
+                              color: "#fff",
+                              fontSize: 18,
+                              fontWeight: 700,
                               transition: "all 0.3s ease",
-                              boxShadow: isToday
-                                ? "0 4px 12px rgba(106, 130, 251, 0.3)"
-                                : "none",
+                              zIndex: 1,
+                              padding: 0,
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.background =
+                                "rgba(255, 255, 255, 0.35)";
+                              e.currentTarget.style.transform =
+                                "scale(1.08) translateX(2px)";
+                              e.currentTarget.style.boxShadow =
+                                "0 4px 12px rgba(0, 0, 0, 0.15)";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.background =
+                                "rgba(255, 255, 255, 0.25)";
+                              e.currentTarget.style.transform = "scale(1)";
+                              e.currentTarget.style.boxShadow = "none";
+                            }}
+                            aria-label={translate(
+                              "admin.calendar.nextMonth",
+                              "Next month"
+                            )}
+                          >
+                            ›
+                          </Button>
+                        </div>
+                      );
+                    }}
+                    cellRender={(date, info) => {
+                      const isToday = date.isSame(moment(), "day");
+                      const dateEvents = getEventsForDate(date);
+                      const hasEvents = dateEvents.length > 0;
+
+                      // Only render dates for the current month
+                      if (info.type === "date") {
+                        const currentMonth = info.date
+                          ? moment(info.date).month()
+                          : moment().month();
+                        const isCurrentMonth = date.month() === currentMonth;
+
+                        if (!isCurrentMonth) {
+                          return (
+                            <div
+                              style={{ opacity: 0.3, pointerEvents: "none" }}
+                            />
+                          );
+                        }
+
+                        return (
+                          <div
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "center",
+                              justifyContent: "flex-start",
+                              padding: "8px 3px",
+                              minHeight: 70,
+                              position: "relative",
+                              transition: "all 0.3s ease",
+                              cursor: "pointer",
+                            }}
+                            onClick={() => openEventModal(date)}
+                            onMouseEnter={(e) => {
+                              if (!isToday) {
+                                e.currentTarget.style.background =
+                                  "rgba(106, 130, 251, 0.05)";
+                                e.currentTarget.style.borderRadius = "10px";
+                              }
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.background = "transparent";
                             }}
                           >
-                            {date.date()}
-                          </div>
-                          {hasEvents && (
                             <div
                               style={{
+                                width: isToday ? 36 : 30,
+                                height: isToday ? 36 : 30,
+                                borderRadius: isToday ? "10px" : "50%",
+                                background: isToday
+                                  ? "linear-gradient(135deg, #6A82FB 0%, #7B94FF 100%)"
+                                  : "transparent",
+                                color: isToday ? "#fff" : "#333",
                                 display: "flex",
-                                flexDirection: "column",
-                                gap: 4,
                                 alignItems: "center",
-                                marginTop: "auto",
-                                paddingBottom: 4,
-                                width: "100%",
+                                justifyContent: "center",
+                                fontSize: isToday ? 15 : 13,
+                                fontWeight: isToday ? 700 : 600,
+                                marginBottom: 5,
+                                transition: "all 0.3s ease",
+                                boxShadow: isToday
+                                  ? "0 4px 12px rgba(106, 130, 251, 0.3)"
+                                  : "none",
                               }}
                             >
-                              {/* Event indicators with improved visibility */}
+                              {date.date()}
+                            </div>
+                            {hasEvents && (
                               <div
                                 style={{
                                   display: "flex",
-                                  gap: 3,
+                                  flexDirection: "column",
+                                  gap: 4,
                                   alignItems: "center",
-                                  justifyContent: "center",
-                                  flexWrap: "wrap",
+                                  marginTop: "auto",
+                                  paddingBottom: 4,
                                   width: "100%",
                                 }}
                               >
-                                {dateEvents.slice(0, 3).map((event, idx) => (
-                                  <div
-                                    key={event.id}
-                                    style={{
-                                      width: dateEvents.length === 1 ? "60%" : "28%",
-                                      height: 4,
-                                      borderRadius: "2px",
-                                      background:
-                                        event.type === "task"
-                                          ? "linear-gradient(90deg, #FFB84D, #FFD580)"
-                                          : "linear-gradient(90deg, #7B94FF, #9BB0FF)",
-                                      transition: "all 0.3s ease",
-                                      boxShadow:
-                                        event.type === "task"
-                                          ? "0 2px 6px rgba(255, 180, 77, 0.4)"
-                                          : "0 2px 6px rgba(123, 148, 255, 0.4)",
-                                    }}
-                                    title={event.title}
-                                  />
-                                ))}
-                              </div>
-                              {dateEvents.length > 3 && (
+                                {/* Event indicators with improved visibility */}
                                 <div
                                   style={{
-                                    fontSize: 10,
-                                    color: "#6A82FB",
-                                    fontWeight: 700,
-                                    marginTop: 2,
-                                    background: "rgba(106, 130, 251, 0.1)",
-                                    padding: "2px 6px",
-                                    borderRadius: 4,
+                                    display: "flex",
+                                    gap: 3,
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    flexWrap: "wrap",
+                                    width: "100%",
                                   }}
                                 >
-                                  +{dateEvents.length - 3}
+                                  {dateEvents.slice(0, 3).map((event, idx) => (
+                                    <div
+                                      key={event.id}
+                                      style={{
+                                        width:
+                                          dateEvents.length === 1
+                                            ? "60%"
+                                            : "28%",
+                                        height: 4,
+                                        borderRadius: "2px",
+                                        background:
+                                          event.type === "task"
+                                            ? "linear-gradient(90deg, #FFB84D, #FFD580)"
+                                            : "linear-gradient(90deg, #7B94FF, #9BB0FF)",
+                                        transition: "all 0.3s ease",
+                                        boxShadow:
+                                          event.type === "task"
+                                            ? "0 2px 6px rgba(255, 180, 77, 0.4)"
+                                            : "0 2px 6px rgba(123, 148, 255, 0.4)",
+                                      }}
+                                      title={event.title}
+                                    />
+                                  ))}
                                 </div>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    }
-                    return null;
-                  }}
-                />
-              </div>
+                                {dateEvents.length > 3 && (
+                                  <div
+                                    style={{
+                                      fontSize: 10,
+                                      color: "#6A82FB",
+                                      fontWeight: 700,
+                                      marginTop: 2,
+                                      background: "rgba(106, 130, 251, 0.1)",
+                                      padding: "2px 6px",
+                                      borderRadius: 4,
+                                    }}
+                                  >
+                                    +{dateEvents.length - 3}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
+                </div>
               )}
             </div>
           </Card>
@@ -2982,8 +3039,7 @@ const Admindashboardoverview = ({ t, setActiveKey }) => {
             width={600}
             okButtonProps={{
               style: {
-                background:
-                  "linear-gradient(135deg, #6A82FB 0%, #7B94FF 100%)",
+                background: "linear-gradient(135deg, #6A82FB 0%, #7B94FF 100%)",
                 border: "none",
                 fontWeight: 600,
                 borderRadius: 8,
