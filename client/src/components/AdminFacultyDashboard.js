@@ -51,7 +51,7 @@ const { Content } = Layout;
  * - AdminSetting.js - System settings
  */
 const AdminFacultyDashboard = () => {
-  const { t, i18n: translationInstance } = useTranslation();
+  const { t, i18n } = useTranslation();
   const history = useHistory();
 
   // Layout and UI State
@@ -83,7 +83,7 @@ const AdminFacultyDashboard = () => {
   // Language change handler
   useEffect(() => {
     setCurrentLanguage(i18n.language);
-  }, [translationInstance.language]);
+  }, [i18n.language]);
 
   // Authentication check
   useEffect(() => {
@@ -107,7 +107,7 @@ const AdminFacultyDashboard = () => {
           localStorage.getItem("currentUser") ||
           sessionStorage.getItem("currentUser");
         const userData = userDataStr ? JSON.parse(userDataStr) : null;
-        
+
         console.log("👤 User Data:", userData);
         console.log("🎭 User Role:", userData?.role);
 
