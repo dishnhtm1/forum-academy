@@ -39,7 +39,7 @@ i18n
   });
 
 // Debug: Log the loaded translations and configuration
-console.log("🌍 i18n Configuration [v2.0 - Nov 4, 2025]:");
+console.log("🌍 i18n Configuration [v3.0 - CACHE BUST - Nov 4, 2025 15:45 JST]:");
 console.log("  - Current Language:", i18n.language);
 console.log("  - Detected Language:", localStorage.getItem("i18nextLng"));
 console.log("  - Fallback Language:", i18n.options.fallbackLng);
@@ -48,12 +48,42 @@ console.log("🔍 Translation File Sizes:");
 console.log("  - EN keys count:", Object.keys(translationEN).length);
 console.log("  - JA keys count:", Object.keys(translationJA).length);
 console.log("🔍 Sample JA translations:");
-console.log("  - admin.dashboard.welcomeBack:", translationJA.admin?.dashboard?.welcomeBack);
-console.log("  - admin.dashboard.title:", translationJA.admin?.dashboard?.title);
+console.log(
+  "  - admin.dashboard.welcomeBack:",
+  translationJA.admin?.dashboard?.welcomeBack
+);
+console.log(
+  "  - adminSidebar.sections.main:",
+  translationJA.adminSidebar?.sections?.main
+);
+console.log(
+  "  - adminSidebar.sections.showAll:",
+  translationJA.adminSidebar?.sections?.showAll
+);
+console.log(
+  "  - adminSidebar.sections.communication:",
+  translationJA.adminSidebar?.sections?.communication
+);
 console.log("  - common.status:", translationJA.common?.status);
 console.log("🔍 i18n.t function test:");
-console.log("  - i18n.t('admin.dashboard.welcomeBack'):", i18n.t('admin.dashboard.welcomeBack'));
-console.log("  - i18n.t('admin.dashboard.title'):", i18n.t('admin.dashboard.title'));
-console.log("✅ i18n initialized successfully [BUILD: " + new Date().toISOString() + "]");
+console.log(
+  "  - i18n.t('admin.dashboard.welcomeBack'):",
+  i18n.t("admin.dashboard.welcomeBack")
+);
+console.log(
+  "  - i18n.t('adminSidebar.sections.main'):",
+  i18n.t("adminSidebar.sections.main")
+);
+console.log(
+  "  - i18n.t('adminSidebar.sections.showAll'):",
+  i18n.t("adminSidebar.sections.showAll")
+);
+console.log(
+  "  - i18n.t('admin.dashboard.title'):",
+  i18n.t("admin.dashboard.title")
+);
+console.log(
+  "✅ i18n initialized successfully [BUILD: " + new Date().toISOString() + "]"
+);
 
 export default i18n;
