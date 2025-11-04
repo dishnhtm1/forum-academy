@@ -1815,6 +1815,14 @@
       "manageCourses": "Manage Courses",
       "studentProgress": "Student Progress"
     },
+    "modals": {
+      "close": "Close",
+      "cancel": "Cancel",
+      "save": "Save",
+      "send": "Send",
+      "delete": "Delete",
+      "edit": "Edit"
+    },
     "alerts": {
       "title": "System Alerts",
       "subtitle": "Recent notifications and warnings"

@@ -1783,6 +1783,14 @@
       "manageCourses": "コース管理",
       "studentProgress": "学生の進捗"
     },
+    "modals": {
+      "close": "閉じる",
+      "cancel": "キャンセル",
+      "save": "保存",
+      "send": "送信",
+      "delete": "削除",
+      "edit": "編集"
+    },
     "alerts": {
       "title": "システムアラート",
       "subtitle": "最近の通知と警告"
