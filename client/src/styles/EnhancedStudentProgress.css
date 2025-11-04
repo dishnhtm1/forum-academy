@@ -54,44 +54,454 @@
     background-color: #f8f9ff;
 }
 
-.table-row-warning { background-color: #fff2f0 !important; }
-.table-row-warning:hover { background-color: #ffe7e6 !important; }
-
-/* Progress bar enhancements */
-.ant-progress-inner { border-radius: 10px; }
-.ant-progress-bg { border-radius: 10px; }
-
-@media (max-width: 768px) {
-    .modern-stat-card { margin-bottom: 16px; }
-    .modern-table .ant-table-thead>tr>th { font-size: 12px; padding: 8px 4px; }
-    .modern-table .ant-table-tbody>tr>td { padding: 12px 4px; }
+.table-row-warning {
+    background-color: #fff2f0 !important;
 }
 
-@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.table-row-warning:hover {
+    background-color: #ffe7e6 !important;
+}
 
-.modern-stat-card { animation: fadeInUp 0.6s ease-out; }
-.modern-stat-card:nth-child(1) { animation-delay: 0.1s; }
-.modern-stat-card:nth-child(2) { animation-delay: 0.2s; }
-.modern-stat-card:nth-child(3) { animation-delay: 0.3s; }
-.modern-stat-card:nth-child(4) { animation-delay: 0.4s; }
+/* Progress bar enhancements */
+.ant-progress-inner {
+    border-radius: 10px;
+}
 
-.ant-avatar { display: flex; align-items: center; justify-content: center; font-weight: 600; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); }
-.ant-tag { border-radius: 12px; padding: 2px 8px; font-size: 10px; font-weight: 500; border: none; }
-.ant-btn-group>.ant-btn { border-radius: 6px; margin-right: 4px; }
-.ant-btn-group>.ant-btn:hover { transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); }
+.ant-progress-bg {
+    border-radius: 10px;
+}
 
-.modern-table .ant-table-scroll .ant-table-body { overflow-x: auto; }
-.modern-table .ant-table-fixed-right { right: 0 !important; background: white; box-shadow: -2px 0 8px rgba(0, 0, 0, 0.05); z-index: 10; }
+/* ============================================
+   RESPONSIVE DESIGN - TABLET & MOBILE
+   ============================================ */
 
-.modern-table .ant-table-thead th.ant-table-column-has-actions { position: sticky; right: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; z-index: 11; }
-.modern-table .ant-table-tbody td.ant-table-column-has-actions { position: sticky; right: 0; background: white; z-index: 9; border-left: 1px solid #f0f0f0; }
+/* Tablet (max-width: 1024px) */
+@media (max-width: 1024px) {
 
-.modern-table .ant-btn { border-radius: 6px; transition: all 0.3s ease; font-weight: 500; }
-.modern-table .ant-btn:hover { transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); opacity: 0.9; }
-.modern-table .ant-space { display: flex; justify-content: center; align-items: center; width: 100%; }
+    /* Stat Cards */
+    .modern-stat-card,
+    .simple-stat-card {
+        margin-bottom: 16px;
+        border-radius: 8px;
+    }
 
-.modern-table .actions-column { text-align: center; vertical-align: middle; }
-.modern-table th.actions-column { position: sticky; right: 0; background-color: #fafafa !important; color: #262626 !important; z-index: 15 !important; border-left: 1px solid #d9d9d9; box-shadow: -2px 0 8px rgba(0, 0, 0, 0.05); }
-.modern-table td.actions-column { position: sticky; right: 0; background: white !important; z-index: 14 !important; border-left: 1px solid #f0f0f0; box-shadow: -2px 0 8px rgba(0, 0, 0, 0.05); }
+    .modern-stat-card .ant-statistic-title {
+        font-size: 13px;
+    }
+
+    .modern-stat-card .ant-statistic-content {
+        font-size: 24px;
+    }
+
+    /* Table Cards */
+    .modern-table-card {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Table Headers & Cells */
+    .modern-table .ant-table-thead>tr>th {
+        font-size: 13px;
+        padding: 12px 8px;
+        white-space: nowrap;
+    }
+
+    .modern-table .ant-table-tbody>tr>td {
+        padding: 14px 8px;
+        font-size: 13px;
+    }
+
+    /* Buttons */
+    .modern-table .ant-btn {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+
+    .ant-btn-group>.ant-btn {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+
+    /* Tags & Avatars */
+    .ant-tag {
+        font-size: 10px;
+        padding: 2px 6px;
+    }
+
+    .ant-avatar {
+        width: 32px;
+        height: 32px;
+    }
+}
+
+/* Mobile (max-width: 768px) */
+@media (max-width: 768px) {
+
+    /* Stat Cards - Full Width */
+    .modern-stat-card,
+    .simple-stat-card {
+        margin-bottom: 12px;
+        border-radius: 8px;
+    }
+
+    .modern-stat-card .ant-statistic-title {
+        font-size: 12px;
+    }
+
+    .modern-stat-card .ant-statistic-content {
+        font-size: 20px;
+    }
+
+    /* Table Cards - Horizontal Scroll */
+    .modern-table-card {
+        overflow-x: scroll;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 8px;
+    }
+
+    /* Table Container */
+    .modern-table .ant-table-scroll .ant-table-body {
+        overflow-x: scroll;
+    }
+
+    /* Table Headers */
+    .modern-table .ant-table-thead>tr>th {
+        font-size: 12px;
+        padding: 10px 6px;
+        min-width: 100px;
+        white-space: nowrap;
+    }
+
+    /* Table Cells */
+    .modern-table .ant-table-tbody>tr>td {
+        padding: 12px 6px;
+        font-size: 12px;
+        min-width: 100px;
+        white-space: nowrap;
+    }
+
+    /* Action Buttons - Stack Vertically */
+    .modern-table .ant-btn {
+        font-size: 11px;
+        padding: 4px 10px;
+        margin: 2px 0;
+        width: 100%;
+    }
+
+    .modern-table .ant-space {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .modern-table .ant-space-item {
+        width: 100%;
+    }
+
+    .ant-btn-group>.ant-btn {
+        font-size: 11px;
+        padding: 4px 8px;
+        margin: 2px 0;
+        width: 100%;
+    }
+
+    .ant-btn-group {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    /* Actions Column - Wider on Mobile */
+    .modern-table th.actions-column,
+    .modern-table td.actions-column {
+        min-width: 120px;
+    }
+
+    /* Tags & Avatars */
+    .ant-tag {
+        font-size: 9px;
+        padding: 1px 6px;
+    }
+
+    .ant-avatar {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
+
+    /* Progress Bars */
+    .ant-progress {
+        font-size: 11px;
+    }
+
+    /* Scroll Indicator */
+    .modern-table-card::after {
+        content: '← Swipe to see more →';
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.6);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 10px;
+        pointer-events: none;
+        opacity: 0.8;
+        z-index: 20;
+    }
+}
+
+/* Small Mobile (max-width: 480px) */
+@media (max-width: 480px) {
+
+    /* Stat Cards - Compact */
+    .modern-stat-card,
+    .simple-stat-card {
+        margin-bottom: 10px;
+        padding: 12px;
+    }
+
+    .modern-stat-card .ant-statistic-title {
+        font-size: 11px;
+    }
+
+    .modern-stat-card .ant-statistic-content {
+        font-size: 18px;
+    }
+
+    /* Table Cards */
+    .modern-table-card {
+        border-radius: 8px;
+    }
+
+    /* Table Headers */
+    .modern-table .ant-table-thead>tr>th {
+        font-size: 11px;
+        padding: 8px 4px;
+        min-width: 90px;
+    }
+
+    /* Table Cells */
+    .modern-table .ant-table-tbody>tr>td {
+        padding: 10px 4px;
+        font-size: 11px;
+        min-width: 90px;
+    }
+
+    /* Action Buttons - Very Compact */
+    .modern-table .ant-btn {
+        font-size: 10px;
+        padding: 3px 8px;
+        margin: 2px 0;
+    }
+
+    .ant-btn-group>.ant-btn {
+        font-size: 10px;
+        padding: 3px 6px;
+        margin: 2px 0;
+    }
+
+    /* Tags & Avatars */
+    .ant-tag {
+        font-size: 8px;
+        padding: 1px 4px;
+    }
+
+    .ant-avatar {
+        width: 24px;
+        height: 24px;
+        font-size: 10px;
+    }
+
+    /* Progress Bars */
+    .ant-progress {
+        font-size: 10px;
+    }
+
+    .ant-progress-inner {
+        height: 6px !important;
+    }
+
+    /* Scroll Indicator */
+    .modern-table-card::after {
+        font-size: 9px;
+        padding: 3px 10px;
+    }
+}
+
+/* Landscape Mobile Adjustments */
+@media (max-width: 768px) and (orientation: landscape) {
+    .modern-table-card {
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+
+    .modern-stat-card,
+    .simple-stat-card {
+        margin-bottom: 10px;
+    }
+}
+
+/* Touch Device Optimizations */
+@media (hover: none) and (pointer: coarse) {
+
+    /* Larger touch targets */
+    .modern-table .ant-btn {
+        min-height: 40px;
+        padding: 8px 12px;
+    }
+
+    .ant-btn-group>.ant-btn {
+        min-height: 40px;
+    }
+
+    /* Disable hover effects on touch devices */
+    .modern-stat-card:hover,
+    .simple-stat-card:hover {
+        transform: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .modern-table .ant-table-tbody>tr:hover>td {
+        background-color: inherit;
+    }
+
+    .modern-table .ant-table-tbody>tr:active>td {
+        background-color: #f8f9ff;
+    }
+
+    .modern-table .ant-btn:hover {
+        transform: none;
+        box-shadow: none;
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modern-stat-card {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.modern-stat-card:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.modern-stat-card:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.modern-stat-card:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.modern-stat-card:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+.ant-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.ant-tag {
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 10px;
+    font-weight: 500;
+    border: none;
+}
+
+.ant-btn-group>.ant-btn {
+    border-radius: 6px;
+    margin-right: 4px;
+}
+
+.ant-btn-group>.ant-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.modern-table .ant-table-scroll .ant-table-body {
+    overflow-x: auto;
+}
+
+.modern-table .ant-table-fixed-right {
+    right: 0 !important;
+    background: white;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.05);
+    z-index: 10;
+}
+
+.modern-table .ant-table-thead th.ant-table-column-has-actions {
+    position: sticky;
+    right: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    z-index: 11;
+}
+
+.modern-table .ant-table-tbody td.ant-table-column-has-actions {
+    position: sticky;
+    right: 0;
+    background: white;
+    z-index: 9;
+    border-left: 1px solid #f0f0f0;
+}
+
+.modern-table .ant-btn {
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.modern-table .ant-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    opacity: 0.9;
+}
+
+.modern-table .ant-space {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.modern-table .actions-column {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.modern-table th.actions-column {
+    position: sticky;
+    right: 0;
+    background-color: #fafafa !important;
+    color: #262626 !important;
+    z-index: 15 !important;
+    border-left: 1px solid #d9d9d9;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.05);
+}
+
+.modern-table td.actions-column {
+    position: sticky;
+    right: 0;
+    background: white !important;
+    z-index: 14 !important;
+    border-left: 1px solid #f0f0f0;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.05);
+}
 
 /* End of EnhancedStudentProgress styles */
