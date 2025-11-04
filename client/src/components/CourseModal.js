@@ -4,10 +4,6 @@ import { useTranslation } from 'react-i18next';
 const CourseModal = ({ course, isOpen, onClose }) => {
     const { t } = useTranslation();
     
-    if (!isOpen || !course) {
-        return null;
-    }
-
     // Close modal on escape key
     useEffect(() => {
         const handleEscape = (e) => {
@@ -27,7 +23,9 @@ const CourseModal = ({ course, isOpen, onClose }) => {
         };
     }, [isOpen, onClose]);
 
-    if (!isOpen || !course) return null;
+    if (!isOpen || !course) {
+        return null;
+    }
 
     const getBadgeStyles = (color) => {
         const styles = {

@@ -2,53 +2,127 @@ import React, { useState, useEffect, useRef } from "react";
 import { Briefcase, Users, Award, GraduationCap } from "lucide-react";
 import { useTranslation } from 'react-i18next';
 
+// Easing function
+const easeOutCubic = (x) => {
+    return 1 - Math.pow(1 - x, 3);
+};
+
+// Custom hook for counter animation
+const useCounter = (end, duration = 2000, start = 0, isVisible) => {
+    const [count, setCount] = useState(start);
+    const countRef = useRef(start);
+    const frameRef = useRef(0);
+    const startTimeRef = useRef(0);
+
+    useEffect(() => {
+        if (!isVisible) return;
+
+        const animate = (timestamp) => {
+            if (!startTimeRef.current) startTimeRef.current = timestamp;
+            const progress = timestamp - startTimeRef.current;
+            const increment = Math.min(progress / duration, 1);
+            const currentCount = Math.floor(
+                start + (end - start) * easeOutCubic(increment)
+            );
+
+            countRef.current = currentCount;
+            setCount(currentCount);
+
+            if (progress < duration) {
+                frameRef.current = requestAnimationFrame(animate);
+            }
+        };
+
+        frameRef.current = requestAnimationFrame(animate);
+
+        return () => {
+            cancelAnimationFrame(frameRef.current);
+        };
+    }, [end, duration, start, isVisible]);
+
+    return count;
+};
+
+// Separate component for each stat card
+const StatCard = ({ stat, index, isVisible }) => {
+    const animatedValue = useCounter(
+        isVisible ? stat.value : 0,
+        2000,
+        0,
+        isVisible
+    );
+
+    return (
+        <div
+            className={`group relative transition-all duration-700 transform ${
+                isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-10 scale-95'
+            }`}
+            style={{ transitionDelay: `${index * 200}ms` }}
+        >
+            {/* Main Card */}
+            <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden border border-white/20 group-hover:border-white/40">
+                
+                {/* Gradient Background Overlay */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${stat.bgGradient} opacity-0 group-hover:opacity-50 transition-opacity duration-500 rounded-3xl`}></div>
+                
+                {/* Glow Effect */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500 rounded-3xl blur-xl`}></div>
+                
+                {/* Corner Accent */}
+                <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl ${stat.color} opacity-10 rounded-bl-3xl rounded-tr-3xl`}></div>
+                
+                <div className="relative z-10">
+                    {/* Enhanced Icon Container */}
+                    <div className="relative mb-6">
+                        <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${stat.color} flex items-center justify-center mb-2 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg`}>
+                            <div className="text-white drop-shadow-sm">
+                                {stat.icon}
+                            </div>
+                        </div>
+                        {/* Icon Glow */}
+                        <div className={`absolute top-0 left-0 w-20 h-20 rounded-2xl bg-gradient-to-br ${stat.color} opacity-30 blur-md group-hover:opacity-60 transition-opacity duration-500`}></div>
+                        
+                        {/* Floating Particles around Icon */}
+                        <div className={`absolute -top-1 -right-1 w-2 h-2 bg-gradient-to-r ${stat.color} rounded-full opacity-60 animate-pulse delay-300`}></div>
+                        <div className={`absolute -bottom-1 -left-1 w-1.5 h-1.5 bg-gradient-to-r ${stat.color} rounded-full opacity-40 animate-pulse delay-700`}></div>
+                    </div>
+                    
+                    {/* Enhanced Counter Display */}
+                    <div className="mb-4">
+                        <div className="flex items-end justify-center">
+                            <span className={`text-4xl md:text-5xl font-black bg-gradient-to-r ${stat.color} bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-300`}>
+                                {animatedValue}
+                            </span>
+                            <span className={`text-2xl md:text-3xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent ml-1 group-hover:scale-110 transition-transform duration-300`}>
+                                {stat.suffix}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    {/* Enhanced Label */}
+                    <p className="text-gray-700 font-semibold text-center text-sm md:text-base group-hover:text-gray-800 transition-colors duration-300 uppercase tracking-wider">
+                        {stat.label}
+                    </p>
+                    
+                    {/* Progress Bar Effect */}
+                    <div className="mt-4 h-1 w-full bg-gray-200 rounded-full overflow-hidden">
+                        <div className={`h-full bg-gradient-to-r ${stat.color} rounded-full transition-all duration-1000 ease-out ${isVisible ? 'w-full' : 'w-0'}`}></div>
+                    </div>
+                </div>
+            </div>
+            
+            {/* Outer Glow on Hover */}
+            <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-20 blur-2xl transition-opacity duration-500 -z-10 rounded-3xl scale-95`}></div>
+        </div>
+    );
+};
+
 function StatsSection() {
     const { t } = useTranslation();
     const [isVisible, setIsVisible] = useState(false);
     const sectionRef = useRef(null);
     const canvasRef = useRef(null);
     const animationRef = useRef(null);
-
-    // Keep ALL your existing animated counter hook exactly as is
-    const useCounter = (end, duration = 2000, start = 0) => {
-        const [count, setCount] = useState(start);
-        const countRef = useRef(start);
-        const frameRef = useRef(0);
-        const startTimeRef = useRef(0);
-
-        useEffect(() => {
-            if (!isVisible) return;
-
-            const animate = (timestamp) => {
-                if (!startTimeRef.current) startTimeRef.current = timestamp;
-                const progress = timestamp - startTimeRef.current;
-                const increment = Math.min(progress / duration, 1);
-                const currentCount = Math.floor(
-                    start + (end - start) * easeOutCubic(increment)
-                );
-
-                countRef.current = currentCount;
-                setCount(currentCount);
-
-                if (progress < duration) {
-                    frameRef.current = requestAnimationFrame(animate);
-                }
-            };
-
-            frameRef.current = requestAnimationFrame(animate);
-
-            return () => {
-                cancelAnimationFrame(frameRef.current);
-            };
-        }, [end, duration, start, isVisible]);
-
-        return count;
-    };
-
-    // Keep your easing function exactly as is
-    const easeOutCubic = (x) => {
-        return 1 - Math.pow(1 - x, 3);
-    };
 
     // Keep ALL your stats data structure - only replace text values
     const statsData = [
@@ -257,94 +331,9 @@ function StatsSection() {
 
                 {/* Enhanced Stats Grid */}
                 <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                    {statsData.map((stat, index) => {
-                        const animatedValue = useCounter(
-                            isVisible ? stat.value : 0,
-                            2000,
-                            0
-                        );
-
-                        return (
-                            <div
-                                key={index}
-                                className={`group relative transition-all duration-700 transform ${
-                                    isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-10 scale-95'
-                                }`}
-                                style={{ transitionDelay: `${index * 200}ms` }}
-                            >
-                                {/* Main Card */}
-                                <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden border border-white/20 group-hover:border-white/40">
-                                    
-                                    {/* Gradient Background Overlay */}
-                                    <div className={`absolute inset-0 bg-gradient-to-br ${stat.bgGradient} opacity-0 group-hover:opacity-50 transition-opacity duration-500 rounded-3xl`}></div>
-                                    
-                                    {/* Glow Effect */}
-                                    <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500 rounded-3xl blur-xl`}></div>
-                                    
-                                    {/* Corner Accent */}
-                                    <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl ${stat.color} opacity-10 rounded-bl-3xl rounded-tr-3xl`}></div>
-                                    
-                                    <div className="relative z-10">
-                                        {/* Enhanced Icon Container */}
-                                        <div className="relative mb-6">
-                                            <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${stat.color} flex items-center justify-center mb-2 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg`}>
-                                                <div className="text-white drop-shadow-sm">
-                                                    {stat.icon}
-                                                </div>
-                                            </div>
-                                            {/* Icon Glow */}
-                                            <div className={`absolute top-0 left-0 w-20 h-20 rounded-2xl bg-gradient-to-br ${stat.color} opacity-30 blur-md group-hover:opacity-60 transition-opacity duration-500`}></div>
-                                            
-                                            {/* Floating Particles around Icon */}
-                                            <div className={`absolute -top-1 -right-1 w-2 h-2 bg-gradient-to-r ${stat.color} rounded-full opacity-60 animate-pulse delay-300`}></div>
-                                            <div className={`absolute -bottom-1 -left-1 w-1.5 h-1.5 bg-gradient-to-r ${stat.color} rounded-full opacity-40 animate-pulse delay-700`}></div>
-                                        </div>
-                                        
-                                        {/* Enhanced Counter Display */}
-                                        <div className="mb-4">
-                                            <div className="flex items-end justify-center">
-                                                <span className={`text-4xl md:text-5xl font-black bg-gradient-to-r ${stat.color} bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-300`}>
-                                                    {animatedValue}
-                                                </span>
-                                                <span className={`text-2xl md:text-3xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent ml-1 group-hover:scale-110 transition-transform duration-300`}>
-                                                    {stat.suffix}
-                                                </span>
-                                            </div>
-                                        </div>
-                                        
-                                        {/* Enhanced Label */}
-                                        <p className="text-gray-700 font-semibold text-center text-sm md:text-base group-hover:text-gray-800 transition-colors duration-300 uppercase tracking-wider">
-                                            {stat.label}
-                                        </p>
-                                        
-                                        {/* Progress Bar Effect */}
-                                        <div className="mt-4 w-full h-1 bg-gray-200 rounded-full overflow-hidden">
-                                            <div 
-                                                className={`h-full bg-gradient-to-r ${stat.color} rounded-full transition-all duration-2000 ease-out`}
-                                                style={{ 
-                                                    width: isVisible ? '100%' : '0%',
-                                                    transitionDelay: `${index * 200 + 500}ms`
-                                                }}
-                                            ></div>
-                                        </div>
-                                    </div>
-
-                                    {/* Hover Border Effect */}
-                                    <div className={`absolute inset-0 rounded-3xl border-2 border-transparent bg-gradient-to-r ${stat.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} 
-                                         style={{ 
-                                             mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)', 
-                                             maskComposite: 'xor',
-                                             WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-                                             WebkitMaskComposite: 'xor'
-                                         }}>
-                                    </div>
-                                </div>
-
-                                {/* External Glow Effect */}
-                                <div className={`absolute inset-0 bg-gradient-to-r ${stat.color} opacity-0 group-hover:opacity-20 transition-opacity duration-500 rounded-3xl blur-xl -z-10`}></div>
-                            </div>
-                        );
-                    })}
+                    {statsData.map((stat, index) => (
+                        <StatCard key={index} stat={stat} index={index} isVisible={isVisible} />
+                    ))}
                 </div>
 
                 {/* Bottom Decorative Element */}
