@@ -837,7 +837,7 @@ const Admindashboardoverview = ({ t, setActiveKey }) => {
     homework,
     quizzes,
     listening,
-  ]); // eslint-disable-line react-hooks/exhaustive-deps
+  ]);
 
   // Calculate gender distribution (mock data - replace with actual data when available)
   const boysCount = Math.floor(dashboardStats.totalStudents * 0.6);

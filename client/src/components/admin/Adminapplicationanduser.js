@@ -985,14 +985,14 @@ Forum Academy Admissions Team`;
     };
 
     fetchInitialData();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   // Update stats when applications or messages change
   useEffect(() => {
     if (!contextFetchDashboardStats) {
       fetchLocalDashboardStats();
     }
-  }, [applications, contactMessages]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [applications, contactMessages]);
 
   const applicationColumns = [
     {
