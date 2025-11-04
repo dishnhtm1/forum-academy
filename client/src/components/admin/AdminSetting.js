@@ -155,8 +155,8 @@ const AdminSetting = () => {
       setSystemSettings(newSettings);
 
       // Apply language change immediately
-      if (values.language && translationInstance) {
-        translationInstance.changeLanguage(values.language);
+      if (values.language && i18n) {
+        i18n.changeLanguage(values.language);
         moment.locale(values.language === "ja" ? "ja" : "en");
       }
 
@@ -208,7 +208,7 @@ const AdminSetting = () => {
     setSystemSettings(defaultSettings);
     settingsForm.setFieldsValue(defaultSettings);
     localStorage.setItem("systemSettings", JSON.stringify(defaultSettings));
-    translationInstance.changeLanguage("en");
+    i18n.changeLanguage("en");
     moment.locale("en");
     message.success(
       t("adminDashboard.settings.resetSuccess") || "Settings reset to default"
@@ -811,7 +811,7 @@ const AdminSetting = () => {
                     <Select
                       size="large"
                       onChange={(value) => {
-                        translationInstance.changeLanguage(value);
+                        i18n.changeLanguage(value);
                         moment.locale(value === "ja" ? "ja" : "en");
                         settingsForm.setFieldValue("language", value);
                       }}
@@ -1227,8 +1227,8 @@ const AdminSetting = () => {
                         {moment()
                           .subtract(2, "days")
                           .format(
-                            translationInstance.language === "ja"
-                              ? "YYYY年MM朁ED日"
+                            i18n.language === "ja"
+                              ? "YYYY年MM月DD日"
                               : "MMMM DD, YYYY"
                           )}
                       </Text>
