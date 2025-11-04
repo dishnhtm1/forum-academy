@@ -65,9 +65,9 @@ const { Title, Text } = Typography;
 const { Option } = Select;
 const { TabPane } = Tabs;
 
-const AdminSetting = ({ t: propsT }) => {
+const AdminSetting = () => {
   const history = useHistory();
-  const { t, i18n: translationInstance } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [settingsForm] = Form.useForm();
 
   // Context
@@ -99,9 +99,6 @@ const AdminSetting = ({ t: propsT }) => {
     storage: 70,
   });
   const [activeTab, setActiveTab] = useState("general");
-
-  // Use prop t or hook t
-  const tFunc = propsT || t;
 
   // Fetch users
   const fetchUsers = async () => {
@@ -178,13 +175,13 @@ const AdminSetting = ({ t: propsT }) => {
       }
 
       message.success(
-        tFunc("adminDashboard.settings.saveSuccess") ||
+        t("adminDashboard.settings.saveSuccess") ||
           "Settings saved successfully!"
       );
     } catch (error) {
       console.error("Error saving settings:", error);
       message.error(
-        tFunc("adminDashboard.settings.saveError") || "Failed to save settings"
+        t("adminDashboard.settings.saveError") || "Failed to save settings"
       );
     } finally {
       setSettingsLoading(false);
@@ -214,8 +211,7 @@ const AdminSetting = ({ t: propsT }) => {
     translationInstance.changeLanguage("en");
     moment.locale("en");
     message.success(
-      tFunc("adminDashboard.settings.resetSuccess") ||
-        "Settings reset to default"
+      t("adminDashboard.settings.resetSuccess") || "Settings reset to default"
     );
   };
 
@@ -253,25 +249,31 @@ const AdminSetting = ({ t: propsT }) => {
 
     // Summary Sheet
     const summarySheet = workbook.addWorksheet(
-      tFunc("adminDashboard.settings.backupSummary") || "Summary"
+      t("adminDashboard.settings.backupSummary") || "Summary"
     );
     summarySheet.columns = [
-      { header: tFunc("adminDashboard.settings.backupField") || "Field", width: 30 },
-      { header: tFunc("adminDashboard.settings.backupValue") || "Value", width: 50 },
+      {
+        header: t("adminDashboard.settings.backupField") || "Field",
+        width: 30,
+      },
+      {
+        header: t("adminDashboard.settings.backupValue") || "Value",
+        width: 50,
+      },
     ];
 
     const summaryData = [
-      [tFunc("adminDashboard.settings.backupTimestamp") || "Timestamp", timestamp],
+      [t("adminDashboard.settings.backupTimestamp") || "Timestamp", timestamp],
       [
-        tFunc("adminDashboard.settings.backupVersion") || "Version",
+        t("adminDashboard.settings.backupVersion") || "Version",
         backupData.version || "2.1.0",
       ],
       [
-        tFunc("adminDashboard.settings.backupTotalUsers") || "Total Users",
+        t("adminDashboard.settings.backupTotalUsers") || "Total Users",
         backupData.users?.length || 0,
       ],
       [
-        tFunc("adminDashboard.settings.backupTotalCourses") || "Total Courses",
+        t("adminDashboard.settings.backupTotalCourses") || "Total Courses",
         backupData.courses?.length || 0,
       ],
     ];
@@ -285,15 +287,24 @@ const AdminSetting = ({ t: propsT }) => {
     // Users Sheet
     if (backupData.users && backupData.users.length > 0) {
       const usersSheet = workbook.addWorksheet(
-        tFunc("adminDashboard.settings.backupUsers") || "Users"
+        t("adminDashboard.settings.backupUsers") || "Users"
       );
       usersSheet.columns = [
         { header: "ID", width: 15 },
-        { header: tFunc("adminDashboard.settings.backupName") || "Name", width: 25 },
-        { header: tFunc("adminDashboard.settings.backupEmail") || "Email", width: 30 },
-        { header: tFunc("adminDashboard.settings.backupRole") || "Role", width: 15 },
         {
-          header: tFunc("adminDashboard.settings.backupCreated") || "Created",
+          header: t("adminDashboard.settings.backupName") || "Name",
+          width: 25,
+        },
+        {
+          header: t("adminDashboard.settings.backupEmail") || "Email",
+          width: 30,
+        },
+        {
+          header: t("adminDashboard.settings.backupRole") || "Role",
+          width: 15,
+        },
+        {
+          header: t("adminDashboard.settings.backupCreated") || "Created",
           width: 20,
         },
       ];
@@ -316,24 +327,24 @@ const AdminSetting = ({ t: propsT }) => {
     // Courses Sheet
     if (backupData.courses && backupData.courses.length > 0) {
       const coursesSheet = workbook.addWorksheet(
-        tFunc("adminDashboard.settings.backupCourses") || "Courses"
+        t("adminDashboard.settings.backupCourses") || "Courses"
       );
       coursesSheet.columns = [
         { header: "ID", width: 15 },
         {
-          header: tFunc("adminDashboard.settings.backupCourseTitle") || "Title",
+          header: t("adminDashboard.settings.backupCourseTitle") || "Title",
           width: 30,
         },
         {
-          header: tFunc("adminDashboard.settings.backupCourseCode") || "Code",
+          header: t("adminDashboard.settings.backupCourseCode") || "Code",
           width: 15,
         },
         {
-          header: tFunc("adminDashboard.settings.backupDuration") || "Duration",
+          header: t("adminDashboard.settings.backupDuration") || "Duration",
           width: 15,
         },
         {
-          header: tFunc("adminDashboard.settings.backupCreated") || "Created",
+          header: t("adminDashboard.settings.backupCreated") || "Created",
           width: 20,
         },
       ];
@@ -355,11 +366,17 @@ const AdminSetting = ({ t: propsT }) => {
 
     // Settings Sheet
     const settingsSheet = workbook.addWorksheet(
-      tFunc("adminDashboard.settings.backupSettings") || "Settings"
+      t("adminDashboard.settings.backupSettings") || "Settings"
     );
     settingsSheet.columns = [
-      { header: tFunc("adminDashboard.settings.backupSetting") || "Setting", width: 30 },
-      { header: tFunc("adminDashboard.settings.backupValue") || "Value", width: 50 },
+      {
+        header: t("adminDashboard.settings.backupSetting") || "Setting",
+        width: 30,
+      },
+      {
+        header: t("adminDashboard.settings.backupValue") || "Value",
+        width: 50,
+      },
     ];
 
     settingsSheet.getRow(1).eachCell(styleHeader);
@@ -427,14 +444,13 @@ const AdminSetting = ({ t: propsT }) => {
       localStorage.setItem("systemSettings", JSON.stringify(updatedSettings));
 
       message.success(
-        tFunc("adminDashboard.settings.backupCreated") ||
+        t("adminDashboard.settings.backupCreated") ||
           "Backup created successfully!"
       );
     } catch (error) {
       console.error("Error creating backup:", error);
       message.error(
-        tFunc("adminDashboard.settings.backupError") ||
-          "Failed to create backup"
+        t("adminDashboard.settings.backupError") || "Failed to create backup"
       );
     } finally {
       setBackupLoading(false);
@@ -470,13 +486,13 @@ const AdminSetting = ({ t: propsT }) => {
       }
 
       message.success(
-        tFunc("adminDashboard.settings.cacheCleared") ||
+        t("adminDashboard.settings.cacheCleared") ||
           "Cache cleared successfully!"
       );
     } catch (error) {
       console.error("Error clearing cache:", error);
       message.error(
-        tFunc("adminDashboard.settings.cacheError") || "Failed to clear cache"
+        t("adminDashboard.settings.cacheError") || "Failed to clear cache"
       );
     } finally {
       setCacheLoading(false);
@@ -501,10 +517,10 @@ const AdminSetting = ({ t: propsT }) => {
     }
 
     // Set moment locale
-    if (translationInstance?.language) {
-      moment.locale(translationInstance.language === "ja" ? "ja" : "en");
+    if (i18n?.language) {
+      moment.locale(i18n.language === "ja" ? "ja" : "en");
     }
-  }, []);
+  }, [fetchUsers, fetchCourses, settingsForm, i18n]);
 
   return (
     <div style={{ padding: "24px", background: "#f5f5f5", minHeight: "100vh" }}>
@@ -522,10 +538,10 @@ const AdminSetting = ({ t: propsT }) => {
             <Space direction="vertical" size={4}>
               <Title level={2} style={{ margin: 0 }}>
                 <SettingOutlined style={{ marginRight: 8, color: "#6C5CE7" }} />
-                {tFunc("adminDashboard.settings.title") || "System Settings"}
+                {t("adminDashboard.settings.title") || "System Settings"}
               </Title>
               <Text type="secondary" style={{ fontSize: 14 }}>
-                {tFunc("adminDashboard.settings.subtitle") ||
+                {t("adminDashboard.settings.subtitle") ||
                   "Configure system settings and preferences"}
               </Text>
             </Space>
@@ -533,14 +549,17 @@ const AdminSetting = ({ t: propsT }) => {
           <Col>
             <Space>
               <Tooltip
-                title={tFunc("adminDashboard.settings.resetToDefault") || "Reset to Default"}
+                title={
+                  t("adminDashboard.settings.resetToDefault") ||
+                  "Reset to Default"
+                }
               >
                 <Button
                   icon={<UndoOutlined />}
                   onClick={handleResetSettings}
                   danger
                 >
-                  {tFunc("adminDashboard.settings.resetToDefault")}
+                  {t("adminDashboard.settings.resetToDefault")}
                 </Button>
               </Tooltip>
             </Space>
@@ -562,7 +581,7 @@ const AdminSetting = ({ t: propsT }) => {
             <Statistic
               title={
                 <span style={{ color: "rgba(255,255,255,0.9)" }}>
-                  {tFunc("adminDashboard.settings.totalUsers") || "Total Users"}
+                  {t("adminDashboard.settings.totalUsers") || "Total Users"}
                 </span>
               }
               value={users.length}
@@ -583,8 +602,7 @@ const AdminSetting = ({ t: propsT }) => {
             <Statistic
               title={
                 <span style={{ color: "rgba(255,255,255,0.9)" }}>
-                  {tFunc("adminDashboard.settings.totalCourses") ||
-                    "Total Courses"}
+                  {t("adminDashboard.settings.totalCourses") || "Total Courses"}
                 </span>
               }
               value={courses.length}
@@ -605,8 +623,7 @@ const AdminSetting = ({ t: propsT }) => {
             <Statistic
               title={
                 <span style={{ color: "rgba(255,255,255,0.9)" }}>
-                  {tFunc("adminDashboard.settings.storageUsed") ||
-                    "Storage Used"}
+                  {t("adminDashboard.settings.storageUsed") || "Storage Used"}
                 </span>
               }
               value={systemStatus.storage}
@@ -628,7 +645,7 @@ const AdminSetting = ({ t: propsT }) => {
             <Statistic
               title={
                 <span style={{ color: "rgba(255,255,255,0.9)" }}>
-                  {tFunc("adminDashboard.settings.version") || "Version"}
+                  {t("adminDashboard.settings.version") || "Version"}
                 </span>
               }
               value="2.1.0"
@@ -664,7 +681,7 @@ const AdminSetting = ({ t: propsT }) => {
               tab={
                 <span>
                   <GlobalOutlined />
-                  {tFunc("adminDashboard.settings.generalSettings") ||
+                  {t("adminDashboard.settings.generalSettings") ||
                     "General Settings"}
                 </span>
               }
@@ -677,7 +694,7 @@ const AdminSetting = ({ t: propsT }) => {
                       <Space>
                         <SettingOutlined />
                         <span>
-                          {tFunc("adminDashboard.settings.systemName") ||
+                          {t("adminDashboard.settings.systemName") ||
                             "System Name"}
                         </span>
                       </Space>
@@ -687,14 +704,14 @@ const AdminSetting = ({ t: propsT }) => {
                       {
                         required: true,
                         message:
-                          tFunc("adminDashboard.settings.systemNameRequired") ||
+                          t("adminDashboard.settings.systemNameRequired") ||
                           "System name is required",
                       },
                     ]}
                   >
                     <Input
                       placeholder={
-                        tFunc("adminDashboard.settings.systemNamePlaceholder") ||
+                        t("adminDashboard.settings.systemNamePlaceholder") ||
                         "Enter system name"
                       }
                       size="large"
@@ -707,7 +724,7 @@ const AdminSetting = ({ t: propsT }) => {
                       <Space>
                         <MailOutlined />
                         <span>
-                          {tFunc("adminDashboard.settings.adminEmail") ||
+                          {t("adminDashboard.settings.adminEmail") ||
                             "Admin Email"}
                         </span>
                       </Space>
@@ -717,20 +734,20 @@ const AdminSetting = ({ t: propsT }) => {
                       {
                         required: true,
                         message:
-                          tFunc("adminDashboard.settings.adminEmailRequired") ||
+                          t("adminDashboard.settings.adminEmailRequired") ||
                           "Admin email is required",
                       },
                       {
                         type: "email",
                         message:
-                          tFunc("adminDashboard.settings.validEmailRequired") ||
+                          t("adminDashboard.settings.validEmailRequired") ||
                           "Please enter a valid email",
                       },
                     ]}
                   >
                     <Input
                       placeholder={
-                        tFunc("adminDashboard.settings.adminEmailPlaceholder") ||
+                        t("adminDashboard.settings.adminEmailPlaceholder") ||
                         "Enter admin email"
                       }
                       size="large"
@@ -743,8 +760,7 @@ const AdminSetting = ({ t: propsT }) => {
                       <Space>
                         <ClockCircleOutlined />
                         <span>
-                          {tFunc("adminDashboard.settings.timeZone") ||
-                            "Time Zone"}
+                          {t("adminDashboard.settings.timeZone") || "Time Zone"}
                         </span>
                       </Space>
                     }
@@ -752,19 +768,30 @@ const AdminSetting = ({ t: propsT }) => {
                   >
                     <Select size="large" placeholder="Select time zone">
                       <Option value="UTC">
-                        UTC - {tFunc("adminDashboard.settings.coordinatedUniversalTime") || "Coordinated Universal Time"}
+                        UTC -{" "}
+                        {t(
+                          "adminDashboard.settings.coordinatedUniversalTime"
+                        ) || "Coordinated Universal Time"}
                       </Option>
                       <Option value="JST">
-                        JST - {tFunc("adminDashboard.settings.japanStandardTime") || "Japan Standard Time"}
+                        JST -{" "}
+                        {t("adminDashboard.settings.japanStandardTime") ||
+                          "Japan Standard Time"}
                       </Option>
                       <Option value="GMT">
-                        GMT - {tFunc("adminDashboard.settings.greenwichMeanTime") || "Greenwich Mean Time"}
+                        GMT -{" "}
+                        {t("adminDashboard.settings.greenwichMeanTime") ||
+                          "Greenwich Mean Time"}
                       </Option>
                       <Option value="EST">
-                        EST - {tFunc("adminDashboard.settings.easternStandardTime") || "Eastern Standard Time"}
+                        EST -{" "}
+                        {t("adminDashboard.settings.easternStandardTime") ||
+                          "Eastern Standard Time"}
                       </Option>
                       <Option value="PST">
-                        PST - {tFunc("adminDashboard.settings.pacificStandardTime") || "Pacific Standard Time"}
+                        PST -{" "}
+                        {t("adminDashboard.settings.pacificStandardTime") ||
+                          "Pacific Standard Time"}
                       </Option>
                     </Select>
                   </Form.Item>
@@ -775,8 +802,7 @@ const AdminSetting = ({ t: propsT }) => {
                       <Space>
                         <GlobalOutlined />
                         <span>
-                          {tFunc("adminDashboard.settings.language") ||
-                            "Language"}
+                          {t("adminDashboard.settings.language") || "Language"}
                         </span>
                       </Space>
                     }
@@ -792,10 +818,10 @@ const AdminSetting = ({ t: propsT }) => {
                       placeholder="Select language"
                     >
                       <Option value="en">
-                        <span>🇺🇸 English</span>
+                        <span>�E�E English</span>
                       </Option>
                       <Option value="ja">
-                        <span>🇯🇵 日本語 (Japanese)</span>
+                        <span>�E�E 日本誁E(Japanese)</span>
                       </Option>
                     </Select>
                   </Form.Item>
@@ -808,7 +834,7 @@ const AdminSetting = ({ t: propsT }) => {
               tab={
                 <span>
                   <BellOutlined />
-                  {tFunc("adminDashboard.settings.notificationSettings") ||
+                  {t("adminDashboard.settings.notificationSettings") ||
                     "Notification Settings"}
                 </span>
               }
@@ -818,7 +844,7 @@ const AdminSetting = ({ t: propsT }) => {
                 <Col xs={24}>
                   <Alert
                     message={
-                      tFunc("adminDashboard.settings.notificationInfo") ||
+                      t("adminDashboard.settings.notificationInfo") ||
                       "Configure how you receive system notifications and reports"
                     }
                     type="info"
@@ -839,7 +865,7 @@ const AdminSetting = ({ t: propsT }) => {
                         <Space>
                           <MailOutlined />
                           <span>
-                            {tFunc("adminDashboard.settings.emailNotifications") ||
+                            {t("adminDashboard.settings.emailNotifications") ||
                               "Email Notifications"}
                           </span>
                         </Space>
@@ -852,17 +878,24 @@ const AdminSetting = ({ t: propsT }) => {
                         onChange={(checked) =>
                           message.success(
                             checked
-                              ? tFunc(
+                              ? t(
                                   "adminDashboard.settings.emailNotificationsEnabled"
                                 ) || "Email notifications enabled!"
-                              : tFunc(
+                              : t(
                                   "adminDashboard.settings.emailNotificationsDisabled"
                                 ) || "Email notifications disabled!"
                           )
                         }
                       />
-                      <Text type="secondary" style={{ marginLeft: 12, display: "block", marginTop: 8 }}>
-                        {tFunc("adminDashboard.settings.emailNotificationsDesc") ||
+                      <Text
+                        type="secondary"
+                        style={{
+                          marginLeft: 12,
+                          display: "block",
+                          marginTop: 8,
+                        }}
+                      >
+                        {t("adminDashboard.settings.emailNotificationsDesc") ||
                           "Receive email notifications for important system events"}
                       </Text>
                     </Form.Item>
@@ -881,7 +914,7 @@ const AdminSetting = ({ t: propsT }) => {
                         <Space>
                           <MobileOutlined />
                           <span>
-                            {tFunc("adminDashboard.settings.smsNotifications") ||
+                            {t("adminDashboard.settings.smsNotifications") ||
                               "SMS Notifications"}
                           </span>
                         </Space>
@@ -890,8 +923,15 @@ const AdminSetting = ({ t: propsT }) => {
                       valuePropName="checked"
                     >
                       <Switch size="default" />
-                      <Text type="secondary" style={{ marginLeft: 12, display: "block", marginTop: 8 }}>
-                        {tFunc("adminDashboard.settings.smsInfoText") ||
+                      <Text
+                        type="secondary"
+                        style={{
+                          marginLeft: 12,
+                          display: "block",
+                          marginTop: 8,
+                        }}
+                      >
+                        {t("adminDashboard.settings.smsInfoText") ||
                           "SMS notifications require additional setup and may incur charges."}
                       </Text>
                     </Form.Item>
@@ -910,7 +950,7 @@ const AdminSetting = ({ t: propsT }) => {
                         <Space>
                           <NotificationOutlined />
                           <span>
-                            {tFunc("adminDashboard.settings.pushNotifications") ||
+                            {t("adminDashboard.settings.pushNotifications") ||
                               "Push Notifications"}
                           </span>
                         </Space>
@@ -919,8 +959,15 @@ const AdminSetting = ({ t: propsT }) => {
                       valuePropName="checked"
                     >
                       <Switch size="default" />
-                      <Text type="secondary" style={{ marginLeft: 12, display: "block", marginTop: 8 }}>
-                        {tFunc("adminDashboard.settings.pushNotificationsDesc") ||
+                      <Text
+                        type="secondary"
+                        style={{
+                          marginLeft: 12,
+                          display: "block",
+                          marginTop: 8,
+                        }}
+                      >
+                        {t("adminDashboard.settings.pushNotificationsDesc") ||
                           "Receive browser push notifications for real-time updates"}
                       </Text>
                     </Form.Item>
@@ -939,7 +986,7 @@ const AdminSetting = ({ t: propsT }) => {
                         <Space>
                           <FileDoneOutlined />
                           <span>
-                            {tFunc("adminDashboard.settings.weeklyReports") ||
+                            {t("adminDashboard.settings.weeklyReports") ||
                               "Weekly Reports"}
                           </span>
                         </Space>
@@ -948,8 +995,15 @@ const AdminSetting = ({ t: propsT }) => {
                       valuePropName="checked"
                     >
                       <Switch size="default" />
-                      <Text type="secondary" style={{ marginLeft: 12, display: "block", marginTop: 8 }}>
-                        {tFunc("adminDashboard.settings.weeklyReportsDesc") ||
+                      <Text
+                        type="secondary"
+                        style={{
+                          marginLeft: 12,
+                          display: "block",
+                          marginTop: 8,
+                        }}
+                      >
+                        {t("adminDashboard.settings.weeklyReportsDesc") ||
                           "Receive weekly summary reports via email"}
                       </Text>
                     </Form.Item>
@@ -963,7 +1017,7 @@ const AdminSetting = ({ t: propsT }) => {
               tab={
                 <span>
                   <SafetyOutlined />
-                  {tFunc("adminDashboard.settings.securitySettings") ||
+                  {t("adminDashboard.settings.securitySettings") ||
                     "Security Settings"}
                 </span>
               }
@@ -973,7 +1027,7 @@ const AdminSetting = ({ t: propsT }) => {
                 <Col xs={24}>
                   <Alert
                     message={
-                      tFunc("adminDashboard.settings.securityInfo") ||
+                      t("adminDashboard.settings.securityInfo") ||
                       "Configure security settings to protect your system"
                     }
                     type="warning"
@@ -987,7 +1041,7 @@ const AdminSetting = ({ t: propsT }) => {
                       <Space>
                         <ClockCircleOutlined />
                         <span>
-                          {tFunc("adminDashboard.settings.sessionTimeout") ||
+                          {t("adminDashboard.settings.sessionTimeout") ||
                             "Session Timeout (minutes)"}
                         </span>
                       </Space>
@@ -997,7 +1051,7 @@ const AdminSetting = ({ t: propsT }) => {
                       {
                         required: true,
                         message:
-                          tFunc("adminDashboard.settings.sessionTimeoutRequired") ||
+                          t("adminDashboard.settings.sessionTimeoutRequired") ||
                           "Session timeout is required",
                       },
                     ]}
@@ -1017,7 +1071,7 @@ const AdminSetting = ({ t: propsT }) => {
                       <Space>
                         <LockOutlined />
                         <span>
-                          {tFunc("adminDashboard.settings.maxLoginAttempts") ||
+                          {t("adminDashboard.settings.maxLoginAttempts") ||
                             "Maximum Login Attempts"}
                         </span>
                       </Space>
@@ -1027,8 +1081,9 @@ const AdminSetting = ({ t: propsT }) => {
                       {
                         required: true,
                         message:
-                          tFunc("adminDashboard.settings.maxLoginAttemptsRequired") ||
-                          "Max login attempts is required",
+                          t(
+                            "adminDashboard.settings.maxLoginAttemptsRequired"
+                          ) || "Max login attempts is required",
                       },
                     ]}
                   >
@@ -1054,7 +1109,7 @@ const AdminSetting = ({ t: propsT }) => {
                         <Space>
                           <ToolOutlined />
                           <span>
-                            {tFunc("adminDashboard.settings.maintenanceMode") ||
+                            {t("adminDashboard.settings.maintenanceMode") ||
                               "Maintenance Mode"}
                           </span>
                         </Space>
@@ -1063,8 +1118,15 @@ const AdminSetting = ({ t: propsT }) => {
                       valuePropName="checked"
                     >
                       <Switch size="default" />
-                      <Text type="secondary" style={{ marginLeft: 12, display: "block", marginTop: 8 }}>
-                        {tFunc("adminDashboard.settings.maintenanceModeDesc") ||
+                      <Text
+                        type="secondary"
+                        style={{
+                          marginLeft: 12,
+                          display: "block",
+                          marginTop: 8,
+                        }}
+                      >
+                        {t("adminDashboard.settings.maintenanceModeDesc") ||
                           "Enable maintenance mode to restrict user access during updates"}
                       </Text>
                     </Form.Item>
@@ -1083,7 +1145,7 @@ const AdminSetting = ({ t: propsT }) => {
                         <Space>
                           <CloudDownloadOutlined />
                           <span>
-                            {tFunc("adminDashboard.settings.autoBackup") ||
+                            {t("adminDashboard.settings.autoBackup") ||
                               "Automatic Backup"}
                           </span>
                         </Space>
@@ -1092,8 +1154,15 @@ const AdminSetting = ({ t: propsT }) => {
                       valuePropName="checked"
                     >
                       <Switch size="default" />
-                      <Text type="secondary" style={{ marginLeft: 12, display: "block", marginTop: 8 }}>
-                        {tFunc("adminDashboard.settings.autoBackupDesc") ||
+                      <Text
+                        type="secondary"
+                        style={{
+                          marginLeft: 12,
+                          display: "block",
+                          marginTop: 8,
+                        }}
+                      >
+                        {t("adminDashboard.settings.autoBackupDesc") ||
                           "Automatically create backups on a scheduled basis"}
                       </Text>
                     </Form.Item>
@@ -1107,7 +1176,7 @@ const AdminSetting = ({ t: propsT }) => {
               tab={
                 <span>
                   <InfoCircleOutlined />
-                  {tFunc("adminDashboard.settings.systemInformation") ||
+                  {t("adminDashboard.settings.systemInformation") ||
                     "System Information"}
                 </span>
               }
@@ -1126,13 +1195,15 @@ const AdminSetting = ({ t: propsT }) => {
                         <Space>
                           <InfoCircleOutlined />
                           <span>
-                            {tFunc("adminDashboard.settings.version") ||
-                              "Version"}
+                            {t("adminDashboard.settings.version") || "Version"}
                           </span>
                         </Space>
                       }
                     >
-                      <Tag color="blue" style={{ fontSize: 14, padding: "4px 12px" }}>
+                      <Tag
+                        color="blue"
+                        style={{ fontSize: 14, padding: "4px 12px" }}
+                      >
                         v2.1.0
                       </Tag>
                     </Descriptions.Item>
@@ -1141,18 +1212,23 @@ const AdminSetting = ({ t: propsT }) => {
                         <Space>
                           <ClockCircleOutlined />
                           <span>
-                            {tFunc("adminDashboard.settings.lastUpdated") ||
+                            {t("adminDashboard.settings.lastUpdated") ||
                               "Last Updated"}
                           </span>
                         </Space>
                       }
                     >
-                      <Text style={{ display: "inline-block", whiteSpace: "nowrap" }}>
+                      <Text
+                        style={{
+                          display: "inline-block",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
                         {moment()
                           .subtract(2, "days")
                           .format(
                             translationInstance.language === "ja"
-                              ? "YYYY年MM月DD日"
+                              ? "YYYY年MM朁ED日"
                               : "MMMM DD, YYYY"
                           )}
                       </Text>
@@ -1162,7 +1238,7 @@ const AdminSetting = ({ t: propsT }) => {
                         <Space>
                           <DatabaseOutlined />
                           <span>
-                            {tFunc("adminDashboard.settings.databaseStatus") ||
+                            {t("adminDashboard.settings.databaseStatus") ||
                               "Database Status"}
                           </span>
                         </Space>
@@ -1173,8 +1249,7 @@ const AdminSetting = ({ t: propsT }) => {
                         icon={<CheckCircleOutlined />}
                         style={{ fontSize: 14, padding: "4px 12px" }}
                       >
-                        {tFunc("adminDashboard.settings.connected") ||
-                          "Connected"}
+                        {t("adminDashboard.settings.connected") || "Connected"}
                       </Tag>
                     </Descriptions.Item>
                     <Descriptions.Item
@@ -1182,7 +1257,7 @@ const AdminSetting = ({ t: propsT }) => {
                         <Space>
                           <CloudServerOutlined />
                           <span>
-                            {tFunc("adminDashboard.settings.serverStatus") ||
+                            {t("adminDashboard.settings.serverStatus") ||
                               "Server Status"}
                           </span>
                         </Space>
@@ -1193,7 +1268,7 @@ const AdminSetting = ({ t: propsT }) => {
                         icon={<CheckCircleOutlined />}
                         style={{ fontSize: 14, padding: "4px 12px" }}
                       >
-                        {tFunc("adminDashboard.settings.online") || "Online"}
+                        {t("adminDashboard.settings.online") || "Online"}
                       </Tag>
                     </Descriptions.Item>
                     <Descriptions.Item
@@ -1201,7 +1276,7 @@ const AdminSetting = ({ t: propsT }) => {
                         <Space>
                           <HddOutlined />
                           <span>
-                            {tFunc("adminDashboard.settings.storageUsed") ||
+                            {t("adminDashboard.settings.storageUsed") ||
                               "Storage Used"}
                           </span>
                         </Space>
@@ -1224,7 +1299,10 @@ const AdminSetting = ({ t: propsT }) => {
                           }}
                           style={{ flex: 1 }}
                         />
-                        <Text strong style={{ minWidth: 50, textAlign: "right" }}>
+                        <Text
+                          strong
+                          style={{ minWidth: 50, textAlign: "right" }}
+                        >
                           {systemStatus.storage}%
                         </Text>
                       </div>
@@ -1234,7 +1312,7 @@ const AdminSetting = ({ t: propsT }) => {
                         <Space>
                           <CloudDownloadOutlined />
                           <span>
-                            {tFunc("adminDashboard.settings.lastBackup") ||
+                            {t("adminDashboard.settings.lastBackup") ||
                               "Last Backup"}
                           </span>
                         </Space>
@@ -1253,7 +1331,10 @@ const AdminSetting = ({ t: propsT }) => {
 
                 <Col xs={24}>
                   <Divider />
-                  <Space size="large" style={{ width: "100%", justifyContent: "center" }}>
+                  <Space
+                    size="large"
+                    style={{ width: "100%", justifyContent: "center" }}
+                  >
                     <Dropdown
                       menu={{
                         items: [
@@ -1262,7 +1343,7 @@ const AdminSetting = ({ t: propsT }) => {
                             label: (
                               <Space>
                                 <FileExcelOutlined />
-                                {tFunc("adminDashboard.settings.backupExcel") ||
+                                {t("adminDashboard.settings.backupExcel") ||
                                   "Excel (.xlsx)"}
                               </Space>
                             ),
@@ -1273,7 +1354,7 @@ const AdminSetting = ({ t: propsT }) => {
                             label: (
                               <Space>
                                 <FileTextOutlined />
-                                {tFunc("adminDashboard.settings.backupJSON") ||
+                                {t("adminDashboard.settings.backupJSON") ||
                                   "JSON (.json)"}
                               </Space>
                             ),
@@ -1289,11 +1370,12 @@ const AdminSetting = ({ t: propsT }) => {
                         loading={backupLoading}
                         size="large"
                         style={{
-                          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                          background:
+                            "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                           border: "none",
                         }}
                       >
-                        {tFunc("adminDashboard.settings.createBackup") ||
+                        {t("adminDashboard.settings.createBackup") ||
                           "Create Backup"}{" "}
                         ▼
                       </Button>
@@ -1306,8 +1388,7 @@ const AdminSetting = ({ t: propsT }) => {
                       size="large"
                       danger
                     >
-                      {tFunc("adminDashboard.settings.clearCache") ||
-                        "Clear Cache"}
+                      {t("adminDashboard.settings.clearCache") || "Clear Cache"}
                     </Button>
                   </Space>
                 </Col>
@@ -1328,12 +1409,13 @@ const AdminSetting = ({ t: propsT }) => {
                     icon={<SaveOutlined />}
                     loading={settingsLoading}
                     style={{
-                      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                      background:
+                        "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                       border: "none",
                       minWidth: 150,
                     }}
                   >
-                    {tFunc("adminDashboard.settings.saveSettings") ||
+                    {t("adminDashboard.settings.saveSettings") ||
                       "Save Settings"}
                   </Button>
                   <Button
@@ -1341,7 +1423,7 @@ const AdminSetting = ({ t: propsT }) => {
                     onClick={() => settingsForm.resetFields()}
                     style={{ minWidth: 150 }}
                   >
-                    {tFunc("adminDashboard.settings.cancel") || "Cancel"}
+                    {t("adminDashboard.settings.cancel") || "Cancel"}
                   </Button>
                 </Space>
               </div>
