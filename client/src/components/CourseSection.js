@@ -160,13 +160,14 @@ const CourseSection = ({ limit, showFilters = false, title = "Our Featured Cours
             });
         }, { threshold: 0.1 });
         
-        if (sectionRef.current) {
-            observer.observe(sectionRef.current);
+        const currentRef = sectionRef.current;
+        if (currentRef) {
+            observer.observe(currentRef);
         }
         
         return () => {
-            if (sectionRef.current) {
-                observer.unobserve(sectionRef.current);
+            if (currentRef) {
+                observer.unobserve(currentRef);
             }
         };
     }, []);
@@ -179,7 +180,7 @@ const CourseSection = ({ limit, showFilters = false, title = "Our Featured Cours
         } else {
             setVisibleCourses(3);
         }
-    }, [limit]);
+    }, [limit, courses.length]);
     
     const filterCourses = (category) => {
         setActiveFilter(category);
