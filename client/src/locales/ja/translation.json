@@ -3137,6 +3137,41 @@
         "technologies": "• Zoom SDK • WebRTC • Agora Video • Twilio Video",
         "endCall": "通話終了"
       }
+    },
+    "notifications": {
+      "title": "通知",
+      "noNotifications": "通知はまだありません",
+      "markAllRead": "すべて既読にする",
+      "refresh": "更新",
+      "markAllAsRead": "すべて既読にする",
+      "details": "通知詳細",
+      "close": "閉じる",
+      "viewDetails": "詳細を表示",
+      "delete": "削除",
+      "confirmDelete": "この通知を削除しますか？",
+      "confirmDeleteDesc": "この操作は取り消せません。",
+      "deleteSuccess": "通知が正常に削除されました",
+      "deleteError": "通知の削除に失敗しました",
+      "type": "タイプ",
+      "priority": "優先度",
+      "sender": "送信者",
+      "read": "既読",
+      "readBy": "読者",
+      "types": {
+        "announcement": "お知らせ",
+        "admin_announcement": "管理者からのお知らせ",
+        "notification_read": "通知が読まれました",
+        "grade_update": "成績更新",
+        "assignment_new": "新しい課題",
+        "quiz_available": "クイズ利用可能",
+        "homework_due": "宿題期限",
+        "live_class_started": "ライブクラス開始",
+        "live_class_ended": "ライブクラス終了",
+        "zoom_class": "Zoomクラス",
+        "teacher_message": "教師からのメッセージ",
+        "application": "新しい申し込み",
+        "contact": "お問い合わせメッセージ"
+      }
     }
   },
   "adminSettings": {
@@ -3820,6 +3855,7 @@
   },
   "teacherDashboard": {
     "sidebar": {
+      "teacherPortal": "教師ポータル",
       "overview": "概要",
       "myClasses": "担当クラス",
       "materials": "教材",
@@ -3830,7 +3866,49 @@
       "liveClasses": "ライブクラス",
       "gradingCenter": "採点センター",
       "analytics": "分析",
-      "settings": "設定"
+      "settings": "設定",
+      "profile": "プロフィール",
+      "logout": "ログアウト",
+      "sections": {
+        "main": "メイン",
+        "students": "学生",
+        "analytics": "分析と設定"
+      }
+    },
+    "notifications": {
+      "title": "通知",
+      "noNotifications": "通知はまだありません",
+      "markAllRead": "すべて既読にする",
+      "refresh": "更新",
+      "markAllAsRead": "すべて既読にする",
+      "details": "通知詳細",
+      "close": "閉じる",
+      "viewDetails": "詳細を表示",
+      "type": "タイプ",
+      "priority": "優先度",
+      "sender": "送信者",
+      "read": "既読",
+      "delete": "削除",
+      "deleteConfirmTitle": "通知を削除しますか？",
+      "deleteConfirmContent": "この通知を削除してもよろしいですか？この操作は元に戻せません。",
+      "deleteSuccess": "通知が正常に削除されました",
+      "deleteError": "通知の削除に失敗しました。もう一度お試しください。",
+      "types": {
+        "announcement": "お知らせ",
+        "admin_announcement": "管理者からのお知らせ",
+        "grade_update": "成績更新",
+        "assignment_new": "新しい課題",
+        "quiz_available": "クイズ利用可能",
+        "homework_due": "宿題期限",
+        "live_class_started": "ライブクラス開始",
+        "live_class_ended": "ライブクラス終了",
+        "zoom_class": "Zoomクラス",
+        "teacher_message": "教師からのメッセージ"
+      },
+      "readNotification": {
+        "title": "{{name}}があなたの通知を読みました",
+        "message": "{{name}}があなたの通知を読みました：「{{title}}」"
+      }
     },
     "overview": {
       "title": "教師ダッシュボード",
@@ -4709,6 +4787,11 @@
       "active": "アクティブ",
       "expired": "期限切れ"
     },
+    "deleteTitle": "お知らせを削除",
+    "deleteConfirm": "このお知らせを削除してもよろしいですか？",
+    "notification": {
+      "titlePrefix": "新しいお知らせ"
+    },
     "modal": {
       "createTitle": "新しいお知らせを作成",
       "editTitle": "お知らせを編集",
@@ -4754,13 +4837,33 @@
         },
         "validation": {
           "title": "お知らせのタイトルを入力してください",
-          "content": "お知らせの内容を入力してください"
+          "titleMin": "タイトルは3文字以上である必要があります",
+          "titleMax": "タイトルは200文字を超えることはできません",
+          "titleWhitespace": "タイトルは空白または空白文字のみにすることはできません",
+          "content": "お知らせの内容を入力してください",
+          "contentMin": "内容は10文字以上である必要があります",
+          "contentMax": "内容は5000文字を超えることはできません",
+          "contentWhitespace": "内容は空白または空白文字のみにすることはできません"
         },
         "note": {
           "title": "注意",
           "content": "このお知らせは、選択されたすべてのユーザーに自動的に通知を作成します。通知はユーザーの通知パネルに表示され、ユーザーの設定に基づいてメールアラートをトリガーできます。"
         }
       }
+    },
+    "success": {
+      "published": "お知らせが公開されました！",
+      "publishedDescription": "「{{title}}」が公開され、{{audience}}ユーザーに通知が送信されました。",
+      "created": "お知らせが正常に作成されました！",
+      "createdDescription": "{{audience}}ユーザーに通知が送信されました。",
+      "updated": "お知らせが正常に更新されました！",
+      "updatedDescription": "{{audience}}ユーザーに通知が送信されました。"
+    },
+    "audienceLabels": {
+      "all": "全員",
+      "students": "学生",
+      "teachers": "教師",
+      "admins": "管理者"
     }
   }
 }

@@ -348,48 +348,57 @@ const ApplyPage = () => {
     try {
       const notificationData = {
         type: "application",
-        title: "📝 New Application Submitted",
-        message: `New application from ${applicationData.fullName} for ${applicationData.course}`,
+        titleKey: "adminPortal.notifications.newApplicationSubmitted",
+        messageKey: "adminPortal.notifications.applicationFrom",
+        messageParams: {
+          name: applicationData.fullName,
+          course: applicationData.course,
+        },
         priority: "high",
         sender: "system",
         targetAudience: "admin",
-        actionUrl: "/admin/applications",
+        actionUrl: "/admin/dashboard?tab=applications",
         icon: "solution",
         color: "#1890ff",
       };
 
       // Store notification in localStorage
-      const localNotifications = JSON.parse(localStorage.getItem('localNotifications') || '[]');
-      
+      const localNotifications = JSON.parse(
+        localStorage.getItem("localNotifications") || "[]"
+      );
+
       const localNotification = {
         id: `app_${Date.now()}`,
         ...notificationData,
         timestamp: new Date().toISOString(),
         read: false,
-        source: 'local',
+        source: "local",
         applicationId: applicationData._id || `local_${Date.now()}`,
         applicantName: applicationData.fullName,
         course: applicationData.course,
       };
-      
+
       localNotifications.unshift(localNotification);
-      
+
       // Keep only last 50 notifications
       if (localNotifications.length > 50) {
         localNotifications.splice(50);
       }
-      
-      localStorage.setItem('localNotifications', JSON.stringify(localNotifications));
-      
+
+      localStorage.setItem(
+        "localNotifications",
+        JSON.stringify(localNotifications)
+      );
+
       // Show browser notification if supported
-      if ('Notification' in window && Notification.permission === 'granted') {
+      if ("Notification" in window && Notification.permission === "granted") {
         new Notification(notificationData.title, {
           body: notificationData.message,
-          icon: '/favicon.ico',
-          tag: 'application',
+          icon: "/favicon.ico",
+          tag: "application",
         });
       }
-      
+
       console.log("✅ Application notification created successfully");
     } catch (error) {
       console.error("Error creating application notification:", error);

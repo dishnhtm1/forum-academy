@@ -51,49 +51,58 @@ const ContactPage = () => {
     try {
       const notificationData = {
         type: "contact",
-        title: "📧 New Contact Message",
-        message: `New message from ${formData.name} regarding ${formData.subject}`,
+        titleKey: "adminPortal.notifications.newContactMessage",
+        messageKey: "adminPortal.notifications.contactFrom",
+        messageParams: {
+          name: formData.name,
+          subject: formData.subject,
+        },
         priority: "medium",
         sender: "system",
         targetAudience: "admin",
-        actionUrl: "/admin/contacts",
+        actionUrl: "/admin/dashboard?tab=applications",
         icon: "message",
         color: "#52c41a",
       };
 
       // Store notification in localStorage
-      const localNotifications = JSON.parse(localStorage.getItem('localNotifications') || '[]');
-      
+      const localNotifications = JSON.parse(
+        localStorage.getItem("localNotifications") || "[]"
+      );
+
       const localNotification = {
         id: `contact_${Date.now()}`,
         ...notificationData,
         timestamp: new Date().toISOString(),
         read: false,
-        source: 'local',
+        source: "local",
         contactId: `contact_${Date.now()}`,
         senderName: formData.name,
         subject: formData.subject,
         email: formData.email,
       };
-      
+
       localNotifications.unshift(localNotification);
-      
+
       // Keep only last 50 notifications
       if (localNotifications.length > 50) {
         localNotifications.splice(50);
       }
-      
-      localStorage.setItem('localNotifications', JSON.stringify(localNotifications));
-      
+
+      localStorage.setItem(
+        "localNotifications",
+        JSON.stringify(localNotifications)
+      );
+
       // Show browser notification if supported
-      if ('Notification' in window && Notification.permission === 'granted') {
+      if ("Notification" in window && Notification.permission === "granted") {
         new Notification(notificationData.title, {
           body: notificationData.message,
-          icon: '/favicon.ico',
-          tag: 'contact',
+          icon: "/favicon.ico",
+          tag: "contact",
         });
       }
-      
+
       console.log("✅ Contact notification created successfully");
     } catch (error) {
       console.error("Error creating contact notification:", error);

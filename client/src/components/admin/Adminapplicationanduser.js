@@ -103,7 +103,11 @@ const Adminapplicationanduser = ({ t }) => {
     try {
       const primary = typeof t === "function" ? t(key) : undefined;
       const value = primary !== undefined ? primary : tHook(key);
-      if (!value || value === key || (typeof value === "string" && value.includes("."))) {
+      if (
+        !value ||
+        value === key ||
+        (typeof value === "string" && value.includes("."))
+      ) {
         return undefined;
       }
       return value;
@@ -1081,7 +1085,7 @@ Forum Academy Admissions Team`;
     {
       title: t("table.actions"),
       key: "actions",
-      width: 300,
+      width: 400,
       render: (_, record) => (
         <Space>
           <Button
@@ -1094,6 +1098,27 @@ Forum Academy Admissions Team`;
           >
             {l10n("actions.view", "View", "表示")}
           </Button>
+          {record.status === "pending" && (
+            <>
+              <Button
+                icon={<CheckOutlined />}
+                size="small"
+                type="primary"
+                style={{ backgroundColor: "#52c41a", borderColor: "#52c41a" }}
+                onClick={() => updateApplicationStatus(record._id, "approved")}
+              >
+                {l10n("actions.approve", "Approve", "承認")}
+              </Button>
+              <Button
+                icon={<CloseOutlined />}
+                size="small"
+                danger
+                onClick={() => updateApplicationStatus(record._id, "rejected")}
+              >
+                {l10n("actions.reject", "Reject", "拒否")}
+              </Button>
+            </>
+          )}
           <Button
             icon={<MessageOutlined />}
             size="small"
