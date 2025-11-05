@@ -124,7 +124,7 @@
   },
   "programs": {
     "webDevelopment": "ウェブ開発",
-    "dataScience": "データサイエンス", 
+    "dataScience": "データサイエンス",
     "cybersecurity": "サイバーセキュリティ",
     "cloudComputing": "クラウドコンピューティング",
     "aiMachineLearning": "AI・機械学習"
@@ -1342,7 +1342,7 @@
     "contactUs": "お問い合わせ",
     "address": "〒950-2076 新潟県新潟市西区上新栄町5番地1",
     "phone": "電話: 025-247-6300",
-    "fax": "FAX: 025-247-6305", 
+    "fax": "FAX: 025-247-6305",
     "websiteLabel": "https://www.forum.ac.jp/",
     "hours": "月-金: 午前9:00 - 午後6:00",
     "copyright": "© {{year}} フォーラム情報アカデミー. 全著作権所有.",
@@ -1352,7 +1352,7 @@
   "social": {
     "facebook": "Facebookでフォロー",
     "twitter": "Twitterでフォロー",
-    "instagram": "Instagramでフォロー", 
+    "instagram": "Instagramでフォロー",
     "linkedin": "LinkedInで接続",
     "youtube": "YouTubeチャンネル登録"
   },
@@ -1548,7 +1548,7 @@
     },
     "techIcons": {
       "development": "開発",
-      "cloud": "クラウド", 
+      "cloud": "クラウド",
       "security": "セキュリティ",
       "data": "データ"
     }
@@ -1603,7 +1603,7 @@
       "jobPlacement": {
         "label": "就職率"
       },
-           "industryPartners": {
+      "industryPartners": {
         "label": "業界パートナー"
       },
       "programs": {
@@ -2030,112 +2030,112 @@
     }
   },
   "userManagement": {
-      "title": "ユーザー管理",
-      "stats": {
-        "totalUsers": "総ユーザー数",
-        "pending": "承認待ち",
-        "approved": "承認済み"
+    "title": "ユーザー管理",
+    "stats": {
+      "totalUsers": "総ユーザー数",
+      "pending": "承認待ち",
+      "approved": "承認済み"
+    },
+    "search": {
+      "placeholder": "名前、メール、またはIDで検索..."
+    },
+    "filters": {
+      "allRoles": "すべての役割",
+      "allStatus": "すべてのステータス",
+      "students": "学生",
+      "teachers": "教師",
+      "admins": "管理者",
+      "approved": "承認済み",
+      "pending": "保留中"
+    },
+    "roles": {
+      "student": "学生",
+      "teacher": "教師",
+      "admin": "管理者"
+    },
+    "status": {
+      "approved": "承認済み",
+      "pending": "保留中",
+      "needsReview": "要審査"
+    },
+    "actions": {
+      "createUser": "新規ユーザー作成",
+      "cancel": "キャンセル",
+      "updateUser": "ユーザー更新",
+      "confirmDelete": "はい、削除",
+      "approveUser": "ユーザーを承認",
+      "rejectUser": "ユーザーを拒否",
+      "editUser": "ユーザーを編集",
+      "deleteUser": "ユーザーを削除",
+      "sendMessage": "メッセージを送信",
+      "resetPassword": "パスワードをリセット"
+    },
+    "modals": {
+      "createUser": {
+        "title": "新規ユーザー作成"
       },
-      "search": {
-        "placeholder": "名前、メール、またはIDで検索..."
+      "editUser": {
+        "title": "ユーザー編集"
       },
-      "filters": {
-        "allRoles": "すべての役割",
-        "allStatus": "すべてのステータス",
-        "students": "学生",
-        "teachers": "教師",
-        "admins": "管理者",
-        "approved": "承認済み",
-        "pending": "保留中"
+      "deleteUser": {
+        "title": "ユーザー削除",
+        "message": "{{name}} ({{email}}) を削除してもよろしいですか？",
+        "warning": "この操作は元に戻せません。"
       },
-      "roles": {
-        "student": "学生",
-        "teacher": "教師",
-        "admin": "管理者"
-      },
-      "status": {
-        "approved": "承認済み",
-        "pending": "保留中",
-        "needsReview": "要審査"
-      },
-      "actions": {
-        "createUser": "新規ユーザー作成",
+      "sendMessage": {
+        "title": "メッセージを送信",
+        "subtitle": "{{firstName}} {{lastName}} にメッセージを送信",
+        "to": "宛先:",
+        "subject": "件名:",
+        "message": "メッセージ:",
+        "subjectPlaceholder": "件名を入力...",
+        "messagePlaceholder": "メッセージをこちらに入力...",
         "cancel": "キャンセル",
-        "updateUser": "ユーザー更新",
-        "confirmDelete": "はい、削除",
-        "approveUser": "ユーザーを承認",
-        "rejectUser": "ユーザーを拒否",
-        "editUser": "ユーザーを編集",
-        "deleteUser": "ユーザーを削除",
-        "sendMessage": "メッセージを送信",
-        "resetPassword": "パスワードをリセット"
-      },
-      "modals": {
-        "createUser": {
-          "title": "新規ユーザー作成"
-        },
-        "editUser": {
-          "title": "ユーザー編集"
-        },
-        "deleteUser": {
-          "title": "ユーザー削除",
-          "message": "{{name}} ({{email}}) を削除してもよろしいですか？",
-          "warning": "この操作は元に戻せません。"
-        },
-        "sendMessage": {
-          "title": "メッセージを送信",
-          "subtitle": "{{firstName}} {{lastName}} にメッセージを送信",
-          "to": "宛先:",
-          "subject": "件名:",
-          "message": "メッセージ:",
-          "subjectPlaceholder": "件名を入力...",
-          "messagePlaceholder": "メッセージをこちらに入力...",
-          "cancel": "キャンセル",
-          "send": "メッセージを送信"
-        }
-      },
-      "fields": {
-        "firstName": "名",
-        "lastName": "姓",
-        "email": "メールアドレス",
-        "password": "パスワード",
-        "newPassword": "新しいパスワード",
-        "role": "役割"
-      },
-      "placeholders": {
-        "firstName": "名を入力",
-        "lastName": "姓を入力",
-        "email": "メールアドレスを入力",
-        "password": "パスワードを入力",
-        "newPassword": "現在のパスワードを保持する場合は空白のまま"
-      },
-      "hints": {
-        "passwordHint": "現在のパスワードを保持する場合は空白のまま"
-      },
-      "table": {
-        "headers": {
-          "user": "ユーザー",
-          "contact": "連絡先",
-          "role": "役割",
-          "status": "ステータス",
-          "joined": "登録日",
-          "actions": "アクション"
-        },
-        "footer": {
-          "showing": "{{showing}} / {{total}} ユーザーを表示中",
-          "filtered": "フィルター済み"
-        },
-        "pagination": {
-          "previous": "前へ",
-          "next": "次へ",
-          "showing": "{{from}}〜{{to}}件 / 全{{total}}ユーザー",
-          "filtered": "フィルタ済み"
-        }
-      },
-      "time": {
-        "today": "今日",
-        "daysAgo": "{{days}}日前"
+        "send": "メッセージを送信"
       }
+    },
+    "fields": {
+      "firstName": "名",
+      "lastName": "姓",
+      "email": "メールアドレス",
+      "password": "パスワード",
+      "newPassword": "新しいパスワード",
+      "role": "役割"
+    },
+    "placeholders": {
+      "firstName": "名を入力",
+      "lastName": "姓を入力",
+      "email": "メールアドレスを入力",
+      "password": "パスワードを入力",
+      "newPassword": "現在のパスワードを保持する場合は空白のまま"
+    },
+    "hints": {
+      "passwordHint": "現在のパスワードを保持する場合は空白のまま"
+    },
+    "table": {
+      "headers": {
+        "user": "ユーザー",
+        "contact": "連絡先",
+        "role": "役割",
+        "status": "ステータス",
+        "joined": "登録日",
+        "actions": "アクション"
+      },
+      "footer": {
+        "showing": "{{showing}} / {{total}} ユーザーを表示中",
+        "filtered": "フィルター済み"
+      },
+      "pagination": {
+        "previous": "前へ",
+        "next": "次へ",
+        "showing": "{{from}}〜{{to}}件 / 全{{total}}ユーザー",
+        "filtered": "フィルタ済み"
+      }
+    },
+    "time": {
+      "today": "今日",
+      "daysAgo": "{{days}}日前"
+    }
   },
   "applicationManagement": {
     "title": "申請管理",
@@ -2196,7 +2196,7 @@
     "table": {
       "headers": {
         "applicant": "申請者",
-        "contact": "連絡先",  
+        "contact": "連絡先",
         "program": "プログラム",
         "status": "ステータス",
         "submitted": "申請日",
@@ -2268,37 +2268,37 @@
         "placeholder": "メッセージをここに入力..."
       }
     },
-  "common": {
-    "notProvided": "未記入",
-    "today": "今日",
-    "daysAgo": "{{days}}日前",
-    "needsReview": "要審査",
-    "needsResponse": "要返信",
-    "items": "項目",
-    "messages": "メッセージ",
-    "cannotBeUndone": "この操作は元に戻せません。",
-    "showing": "表示中",
-    "of": "の",
-    "filtered": "フィルタ済み",
-    "status": "ステータス",
-    "actions": "アクション",
-    "cancel": "キャンセル",
-    "create": "作成",
-    "update": "更新",
-    "upload": "アップロード",
-    "close": "閉じる",
-    "view": "表示",
-    "edit": "編集",
-    "delete": "削除",
-    "yes": "はい",
-    "no": "いいえ",
-    "minutes": "分",
-    "seconds": "秒"
-  },
+    "common": {
+      "notProvided": "未記入",
+      "today": "今日",
+      "daysAgo": "{{days}}日前",
+      "needsReview": "要審査",
+      "needsResponse": "要返信",
+      "items": "項目",
+      "messages": "メッセージ",
+      "cannotBeUndone": "この操作は元に戻せません。",
+      "showing": "表示中",
+      "of": "の",
+      "filtered": "フィルタ済み",
+      "status": "ステータス",
+      "actions": "アクション",
+      "cancel": "キャンセル",
+      "create": "作成",
+      "update": "更新",
+      "upload": "アップロード",
+      "close": "閉じる",
+      "view": "表示",
+      "edit": "編集",
+      "delete": "削除",
+      "yes": "はい",
+      "no": "いいえ",
+      "minutes": "分",
+      "seconds": "秒"
+    },
     "pagination": {
       "showing": "表示中",
       "of": "の",
-      "results": "件のアプリケーション", 
+      "results": "件のアプリケーション",
       "filtered": "フィルタ済み",
       "previous": "前へ",
       "prev": "前",
@@ -2447,7 +2447,7 @@
       "subtitle": "学生の申請とユーザーアカウントを管理",
       "newApplication": "新規申請",
       "totalApplications": "総申請数",
-      "pendingApplications": "保留中申請", 
+      "pendingApplications": "保留中申請",
       "approvedApplications": "承認済み申請",
       "rejectedApplications": "却下申請",
       "applicationDetails": "申請詳細",
@@ -2719,7 +2719,7 @@
       },
       "validation": {
         "firstNameRequired": "名を入力してください",
-        "lastNameRequired": "姓を入力してください", 
+        "lastNameRequired": "姓を入力してください",
         "emailRequired": "メールアドレスを入力してください",
         "emailValid": "有効なメールアドレスを入力してください",
         "passwordRequired": "パスワードを入力してください",
@@ -3286,100 +3286,100 @@
     }
   },
   "dashboard": {
-      "loading": {
-        "title": "ダッシュボードを読み込み中...",
-        "message": "パーソナライズされたダッシュボードを読み込んでいます。しばらくお待ちください"
+    "loading": {
+      "title": "ダッシュボードを読み込み中...",
+      "message": "パーソナライズされたダッシュボードを読み込んでいます。しばらくお待ちください"
+    },
+    "error": {
+      "title": "ダッシュボードエラー",
+      "message": "ダッシュボードのコンテンツを読み込めません。ページを更新してください。",
+      "retry": "再試行"
+    },
+    "roleSwitch": {
+      "loading": "ダッシュボードビューを切り替え中...",
+      "error": "ダッシュボードビューを切り替えできません"
+    },
+    "applicationManagement": {
+      "title": "申請管理",
+      "subtitle": "コース申請の確認と管理",
+      "stats": {
+        "totalApplications": "総申請数",
+        "pending": "保留中",
+        "approved": "承認済み",
+        "rejected": "拒否済み"
       },
-      "error": {
-        "title": "ダッシュボードエラー",
-        "message": "ダッシュボードのコンテンツを読み込めません。ページを更新してください。",
-        "retry": "再試行"
+      "search": {
+        "placeholder": "申請を検索...",
+        "allPrograms": "すべてのプログラム",
+        "allStatus": "すべてのステータス"
       },
-      "roleSwitch": {
-        "loading": "ダッシュボードビューを切り替え中...",
-        "error": "ダッシュボードビューを切り替えできません"
+      "table": {
+        "applicant": "申請者",
+        "contact": "連絡先",
+        "program": "プログラム",
+        "status": "ステータス",
+        "applied": "申請日",
+        "actions": "アクション",
+        "startDate": "開始日:",
+        "needsReview": "要確認",
+        "today": "今日",
+        "daysAgo": "日前"
       },
-      "applicationManagement": {
-        "title": "申請管理",
-        "subtitle": "コース申請の確認と管理",
-        "stats": {
-          "totalApplications": "総申請数",
-          "pending": "保留中",
-          "approved": "承認済み",
-          "rejected": "拒否済み"
+      "actions": {
+        "viewDetails": "申請詳細を表示",
+        "sendMessage": "申請者にメッセージ送信",
+        "deleteApplication": "申請を削除",
+        "approveApplication": "申請を承認",
+        "rejectApplication": "申請を拒否",
+        "markAsPending": "保留中にマーク"
+      },
+      "modals": {
+        "viewApplication": {
+          "title": "申請詳細",
+          "personalInfo": "個人情報",
+          "contactInfo": "連絡先情報",
+          "academicInfo": "学術情報",
+          "personalStatement": "志望動機書",
+          "applicationStatus": "申請ステータス",
+          "submittedOn": "提出日",
+          "applicationId": "申請ID",
+          "fullName": "氏名",
+          "email": "メールアドレス",
+          "phone": "電話番号",
+          "dateOfBirth": "生年月日",
+          "address": "住所",
+          "city": "市区町村",
+          "country": "国",
+          "programInterested": "希望プログラム",
+          "educationLevel": "学歴",
+          "notProvided": "未記入",
+          "sendMessage": "メッセージ送信",
+          "close": "閉じる"
         },
-        "search": {
-          "placeholder": "申請を検索...",
-          "allPrograms": "すべてのプログラム",
-          "allStatus": "すべてのステータス"
+        "deleteConfirm": {
+          "title": "申請を削除",
+          "message": "{{firstName}} {{lastName}}の{{program}}への申請を削除してもよろしいですか？",
+          "warning": "この操作は取り消すことができません。",
+          "cancel": "キャンセル",
+          "delete": "はい、削除"
         },
-        "table": {
-          "applicant": "申請者",
-          "contact": "連絡先",
-          "program": "プログラム",
-          "status": "ステータス",
-          "applied": "申請日",
-          "actions": "アクション",
-          "startDate": "開始日:",
-          "needsReview": "要確認",
-          "today": "今日",
-          "daysAgo": "日前"
-        },
-        "actions": {
-          "viewDetails": "申請詳細を表示",
-          "sendMessage": "申請者にメッセージ送信",
-          "deleteApplication": "申請を削除",
-          "approveApplication": "申請を承認",
-          "rejectApplication": "申請を拒否",
-          "markAsPending": "保留中にマーク"
-        },
-        "modals": {
-          "viewApplication": {
-            "title": "申請詳細",
-            "personalInfo": "個人情報",
-            "contactInfo": "連絡先情報",
-            "academicInfo": "学術情報",
-            "personalStatement": "志望動機書",
-            "applicationStatus": "申請ステータス",
-            "submittedOn": "提出日",
-            "applicationId": "申請ID",
-            "fullName": "氏名",
-            "email": "メールアドレス",
-            "phone": "電話番号",
-            "dateOfBirth": "生年月日",
-            "address": "住所",
-            "city": "市区町村",
-            "country": "国",
-            "programInterested": "希望プログラム",
-            "educationLevel": "学歴",
-            "notProvided": "未記入",
-            "sendMessage": "メッセージ送信",
-            "close": "閉じる"
-          },
-          "deleteConfirm": {
-            "title": "申請を削除",
-            "message": "{{firstName}} {{lastName}}の{{program}}への申請を削除してもよろしいですか？",
-            "warning": "この操作は取り消すことができません。",
-            "cancel": "キャンセル",
-            "delete": "はい、削除"
-          },
-          "sendMessage": {
-            "title": "{{firstName}} {{lastName}}にメッセージ送信",
-            "to": "宛先:",
-            "subject": "件名:",
-            "message": "メッセージ:",
-            "placeholder": "ここにメッセージを入力してください...",
-            "send": "メッセージ送信",
-            "cancel": "キャンセル"
-          }
-        },
-        "pagination": {
-          "showing": "{{from}}〜{{to}}件を表示（全{{total}}件中）",
-          "filtered": "（絞り込み済み）",
-          "previous": "前",
-          "next": "次"
+        "sendMessage": {
+          "title": "{{firstName}} {{lastName}}にメッセージ送信",
+          "to": "宛先:",
+          "subject": "件名:",
+          "message": "メッセージ:",
+          "placeholder": "ここにメッセージを入力してください...",
+          "send": "メッセージ送信",
+          "cancel": "キャンセル"
         }
+      },
+      "pagination": {
+        "showing": "{{from}}〜{{to}}件を表示（全{{total}}件中）",
+        "filtered": "（絞り込み済み）",
+        "previous": "前",
+        "next": "次"
       }
+    }
   },
   "dashboardTabs": {
     "student": {
@@ -3440,7 +3440,7 @@
     "sizes": {
       "small": "小さなバッジ",
       "medium": "中サイズバッジ",
-      "large": "大きなバッジ", 
+      "large": "大きなバッジ",
       "extraLarge": "特大バッジ"
     },
     "animations": {
@@ -3456,7 +3456,7 @@
   "dashboardTitle": {
     "todaysActivity": "今日の活動",
     "performance": "成績",
-    "status": "ステータス", 
+    "status": "ステータス",
     "active": "アクティブ",
     "stats": {
       "student": {
@@ -3466,7 +3466,7 @@
       },
       "teacher": {
         "activity": "12",
-        "performance": "98%", 
+        "performance": "98%",
         "status": "アクティブ"
       },
       "admin": {

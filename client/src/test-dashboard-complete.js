@@ -1,6 +1,6 @@
-// Test file to verify AdminFacultyDashboard_Complete component
-import React from 'react';
-import AdminFacultyDashboard from './components/AdminFacultyDashboard';
+// Test file to verify AdminFacultyDashboard component
+import React from "react";
+import AdminFacultyDashboard from "./components/AdminFacultyDashboard";
 
 const TestDashboard = () => {
   return <AdminFacultyDashboard />;

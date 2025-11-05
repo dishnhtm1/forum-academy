@@ -2976,133 +2976,423 @@ const TeacherDashboard = () => {
 
   const handleExportClassData = async () => {
     try {
-      message.loading("Preparing export...", 2);
+      message.loading(t("teacherDashboard.settings.exportLoading"), 2);
 
-      // Dynamically import xlsx library
-      const XLSX = await import("xlsx");
+      // Dynamically import ExcelJS library
+      const ExcelJS = await import("exceljs");
+      const workbook = new ExcelJS.Workbook();
 
-      // Create a new workbook
-      const wb = XLSX.utils.book_new();
+      // Get current language
+      const currentLanguage = i18nInstance.language || "en";
+      const isJapanese = currentLanguage === "ja";
 
-      // Prepare Courses sheet
-      const coursesData = courses.map((course) => ({
-        "Course Name": course.name || "",
-        "Course Code": course.code || "",
-        Level: course.level || "",
-        Description: course.description || "",
-        Status: course.status || "",
-        "Created Date": course.createdAt
-          ? moment(course.createdAt).format("YYYY-MM-DD")
-          : "",
+      // Create a unique cover page for teachers with beautiful design
+      const coverSheet = workbook.addWorksheet(isJapanese ? "カバー" : "Cover");
+      coverSheet.getColumn(1).width = 50;
+      coverSheet.getColumn(2).width = 35;
+      coverSheet.getColumn(3).width = 5;
+
+      // Header with gradient background
+      const headerRow = coverSheet.getRow(2);
+      headerRow.getCell(1).value = isJapanese ? "📊 フォーラムアカデミー" : "📊 Forum Academy";
+      headerRow.getCell(1).font = { size: 28, bold: true, color: { argb: "FFFFFFFF" } };
+      headerRow.getCell(1).fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FF6C5CE7" },
+      };
+      headerRow.getCell(1).alignment = { horizontal: "center", vertical: "middle" };
+      coverSheet.mergeCells(2, 1, 2, 2);
+      headerRow.height = 50;
+
+      // Subtitle
+      const subtitleRow = coverSheet.getRow(3);
+      subtitleRow.getCell(1).value = isJapanese ? "教師用データエクスポートレポート" : "Teacher Data Export Report";
+      subtitleRow.getCell(1).font = { size: 14, italic: true, color: { argb: "FF6C5CE7" } };
+      subtitleRow.getCell(1).alignment = { horizontal: "center", vertical: "middle" };
+      coverSheet.mergeCells(3, 1, 3, 2);
+      subtitleRow.height = 25;
+
+      // Teacher Information Card
+      const infoCardRow = coverSheet.getRow(5);
+      infoCardRow.getCell(1).value = "👤 Teacher Information";
+      infoCardRow.getCell(1).font = { size: 14, bold: true, color: { argb: "FF495057" } };
+      infoCardRow.getCell(1).alignment = { horizontal: "left", vertical: "middle" };
+      infoCardRow.getCell(1).fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFF0F2FF" },
+      };
+      coverSheet.mergeCells(5, 1, 5, 2);
+      infoCardRow.height = 30;
+
+      // Teacher name
+      const nameRow = coverSheet.getRow(6);
+      nameRow.getCell(1).value = "Teacher Name:";
+      nameRow.getCell(1).font = { bold: true, color: { argb: "FF666666" } };
+      nameRow.getCell(2).value = currentUser?.name || "N/A";
+      nameRow.getCell(2).font = { size: 13, bold: true, color: { argb: "FF1A1A1A" } };
+      nameRow.height = 22;
+
+      // Export date
+      const dateRow = coverSheet.getRow(7);
+      dateRow.getCell(1).value = "Export Date:";
+      dateRow.getCell(1).font = { bold: true, color: { argb: "FF666666" } };
+      dateRow.getCell(2).value = moment().format("MMM DD, YYYY HH:mm");
+      dateRow.getCell(2).font = { size: 12, color: { argb: "FF888888" } };
+      dateRow.height = 22;
+
+      // Data Summary Header
+      const summaryHeaderRow = coverSheet.getRow(9);
+      summaryHeaderRow.getCell(1).value = "📈 Data Summary";
+      summaryHeaderRow.getCell(1).font = { size: 16, bold: true, color: { argb: "FFFFFFFF" } };
+      summaryHeaderRow.getCell(1).fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FF495057" },
+      };
+      summaryHeaderRow.getCell(1).alignment = { horizontal: "center", vertical: "middle" };
+      coverSheet.mergeCells(9, 1, 9, 2);
+      summaryHeaderRow.height = 35;
+
+      // Add statistics with icons and better styling
+      const statsData = [
+        { icon: "📚", label: isJapanese ? "総コース数" : "Total Courses", value: courses.length },
+        { icon: "👥", label: isJapanese ? "総学生数" : "Total Students", value: students.length },
+        { icon: "📄", label: isJapanese ? "教材数" : "Total Materials", value: materials.length },
+        { icon: "❓", label: isJapanese ? "総クイズ数" : "Total Quizzes", value: quizzes.length },
+        { icon: "📝", label: isJapanese ? "総課題数" : "Total Assignments", value: homeworks.length },
+        { icon: "📊", label: isJapanese ? "進捗記録数" : "Progress Records", value: progressRecords.length },
+      ];
+
+      statsData.forEach((stat, index) => {
+        const row = coverSheet.getRow(11 + index);
+        
+        // Left column: Icon + Label
+        const cell = row.getCell(1);
+        cell.value = `${stat.icon}  ${stat.label}:`;
+        cell.font = { size: 12, bold: true, color: { argb: "FF333333" } };
+        
+        // Right column: Value with colored background
+        const valueCell = row.getCell(2);
+        valueCell.value = stat.value;
+        valueCell.font = { size: 16, bold: true, color: { argb: "FF6C5CE7" } };
+        valueCell.alignment = { horizontal: "center", vertical: "middle" };
+        valueCell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FFF0F2FF" },
+        };
+        
+        // Add borders
+        cell.border = {
+          top: { style: "thin", color: { argb: "FFDDDDDD" } },
+          left: { style: "thin", color: { argb: "FFDDDDDD" } },
+          bottom: { style: "thin", color: { argb: "FFDDDDDD" } },
+          right: { style: "thin", color: { argb: "FFDDDDDD" } },
+        };
+        valueCell.border = {
+          top: { style: "thin", color: { argb: "FFDDDDDD" } },
+          left: { style: "thin", color: { argb: "FFDDDDDD" } },
+          bottom: { style: "thin", color: { argb: "FFDDDDDD" } },
+          right: { style: "thin", color: { argb: "FFDDDDDD" } },
+        };
+        
+        row.height = 28;
+      });
+
+      // Footer
+      const footerRow = coverSheet.getRow(19);
+      footerRow.getCell(1).value = isJapanese 
+        ? "このレポートは自動生成されました。" 
+        : "This report was automatically generated.";
+      footerRow.getCell(1).font = { size: 10, italic: true, color: { argb: "FF999999" } };
+      footerRow.getCell(1).alignment = { horizontal: "center", vertical: "middle" };
+      coverSheet.mergeCells(19, 1, 19, 2);
+      footerRow.height = 20;
+
+      // Helper function to create styled worksheets
+      const createStyledSheet = (name, headers, rows, colorScheme) => {
+        const worksheet = workbook.addWorksheet(name);
+
+        // Set column widths
+        worksheet.columns = headers.map((header, index) => {
+          const colWidth = Math.max(15, Math.min(30, header.label.length + 5));
+          return { header: header.label, key: header.key, width: colWidth };
+        });
+
+        // Style header row
+        const headerRow = worksheet.getRow(1);
+        headerRow.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: colorScheme || "FF6C5CE7" },
+        };
+        headerRow.font = { size: 12, bold: true, color: { argb: "FFFFFFFF" } };
+        headerRow.alignment = { horizontal: "center", vertical: "middle" };
+        headerRow.height = 25;
+
+        headers.forEach((header, index) => {
+          const cell = headerRow.getCell(index + 1);
+          cell.value = header.label;
+        });
+
+        // Add data rows with alternating colors
+        rows.forEach((row, rowIndex) => {
+          const excelRow = worksheet.addRow(row);
+          if (rowIndex % 2 === 0) {
+            excelRow.fill = {
+              type: "pattern",
+              pattern: "solid",
+              fgColor: { argb: "FFF8F9FA" },
+            };
+          }
+          excelRow.height = 20;
+          excelRow.alignment = { vertical: "middle" };
+        });
+
+        // Add border to all cells
+        for (let row = 1; row <= rows.length + 1; row++) {
+          for (let col = 1; col <= headers.length; col++) {
+            const cell = worksheet.getCell(row, col);
+            cell.border = {
+              top: { style: "thin" },
+              left: { style: "thin" },
+              bottom: { style: "thin" },
+              right: { style: "thin" },
+            };
+          }
+        }
+
+        return worksheet;
+      };
+
+      // Create Courses sheet
+      const coursesHeaders = [
+        { key: "courseName", label: t("teacherDashboard.settings.exportHeaders.courseName") },
+        { key: "courseCode", label: t("teacherDashboard.settings.exportHeaders.courseCode") },
+        { key: "level", label: t("teacherDashboard.settings.exportHeaders.level") },
+        { key: "description", label: t("teacherDashboard.settings.exportHeaders.description") },
+        { key: "status", label: t("teacherDashboard.settings.exportHeaders.status") },
+        { key: "createdDate", label: t("teacherDashboard.settings.exportHeaders.createdDate") },
+      ];
+      const coursesRows = courses.map((course) => ({
+        courseName: course.title || course.name || "",
+        courseCode: course.code || "",
+        level: course.level || "",
+        description: course.description || "",
+        status: course.isActive 
+          ? (isJapanese ? "アクティブ" : "Active") 
+          : (isJapanese ? "非アクティブ" : "Inactive"),
+        createdDate: course.createdAt ? moment(course.createdAt).format("YYYY-MM-DD") : "",
       }));
-      const coursesSheet = XLSX.utils.json_to_sheet(coursesData);
-      XLSX.utils.book_append_sheet(wb, coursesSheet, "Courses");
+      createStyledSheet(
+        t("teacherDashboard.settings.exportSheets.courses"),
+        coursesHeaders,
+        coursesRows,
+        "FF6C5CE7"
+      );
 
-      // Prepare Students sheet
-      const studentsData = students.map((student) => ({
-        "Student Name":
-          `${student.firstName || ""} ${student.lastName || ""}`.trim() ||
-          student.name ||
-          student.email,
-        Email: student.email || "",
-        Phone: student.phone || "",
-        Department: student.department || "",
-        "Enrollment Date": student.createdAt
-          ? moment(student.createdAt).format("YYYY-MM-DD")
-          : "",
+      // Create Students sheet
+      const studentsHeaders = [
+        { key: "studentName", label: t("teacherDashboard.settings.exportHeaders.studentName") },
+        { key: "email", label: t("teacherDashboard.settings.exportHeaders.email") },
+        { key: "phone", label: t("teacherDashboard.settings.exportHeaders.phone") },
+        { key: "department", label: t("teacherDashboard.settings.exportHeaders.department") },
+        { key: "enrollmentDate", label: t("teacherDashboard.settings.exportHeaders.enrollmentDate") },
+      ];
+      const studentsRows = students.map((student) => ({
+        studentName: `${student.firstName || ""} ${student.lastName || ""}`.trim() || student.name || student.email,
+        email: student.email || "",
+        phone: student.phone || "",
+        department: student.department || "",
+        enrollmentDate: student.createdAt ? moment(student.createdAt).format("YYYY-MM-DD") : "",
       }));
-      const studentsSheet = XLSX.utils.json_to_sheet(studentsData);
-      XLSX.utils.book_append_sheet(wb, studentsSheet, "Students");
+      createStyledSheet(
+        t("teacherDashboard.settings.exportSheets.students"),
+        studentsHeaders,
+        studentsRows,
+        "FF4CAF50"
+      );
 
-      // Prepare Materials sheet
-      const materialsData = materials.map((material) => ({
-        "Material Title": material.title || "",
-        Course: material.course?.name || material.courseName || "",
-        Type: material.type || "",
-        Description: material.description || "",
-        "Upload Date": material.createdAt
-          ? moment(material.createdAt).format("YYYY-MM-DD")
-          : "",
+      // Create Materials sheet
+      const materialsHeaders = [
+        { key: "materialTitle", label: t("teacherDashboard.settings.exportHeaders.materialTitle") },
+        { key: "course", label: t("teacherDashboard.settings.exportHeaders.course") },
+        { key: "type", label: t("teacherDashboard.settings.exportHeaders.type") },
+        { key: "description", label: t("teacherDashboard.settings.exportHeaders.description") },
+        { key: "fileSize", label: t("teacherDashboard.settings.exportHeaders.fileSize") },
+        { key: "uploadDate", label: t("teacherDashboard.settings.exportHeaders.uploadDate") },
+      ];
+      const materialsRows = materials.map((material) => {
+        const fileSizeMB = material.fileSize 
+          ? (material.fileSize / (1024 * 1024)).toFixed(2) + " MB"
+          : "";
+        
+        return {
+          materialTitle: material.title || "",
+          course: material.course?.title || material.course?.name || material.courseName || "",
+          type: material.fileType || material.type || "",
+          description: material.description || "",
+          fileSize: fileSizeMB,
+          uploadDate: material.createdAt ? moment(material.createdAt).format("YYYY-MM-DD") : "",
+        };
+      });
+      createStyledSheet(
+        t("teacherDashboard.settings.exportSheets.materials"),
+        materialsHeaders,
+        materialsRows,
+        "FFFF9800"
+      );
+
+      // Create Quizzes sheet
+      const quizzesHeaders = [
+        { key: "quizTitle", label: t("teacherDashboard.settings.exportHeaders.quizTitle") },
+        { key: "course", label: t("teacherDashboard.settings.exportHeaders.course") },
+        { key: "questions", label: t("teacherDashboard.settings.exportHeaders.questions") },
+        { key: "durationMin", label: t("teacherDashboard.settings.exportHeaders.durationMin") },
+        { key: "createdDate", label: t("teacherDashboard.settings.exportHeaders.createdDate") },
+      ];
+      const quizzesRows = quizzes.map((quiz) => ({
+        quizTitle: quiz.title || "",
+        course: quiz.course?.title || quiz.course?.name || quiz.courseName || "",
+        questions: quiz.questions?.length || 0,
+        durationMin: quiz.duration || "",
+        createdDate: quiz.createdAt ? moment(quiz.createdAt).format("YYYY-MM-DD") : "",
       }));
-      const materialsSheet = XLSX.utils.json_to_sheet(materialsData);
-      XLSX.utils.book_append_sheet(wb, materialsSheet, "Materials");
+      createStyledSheet(
+        t("teacherDashboard.settings.exportSheets.quizzes"),
+        quizzesHeaders,
+        quizzesRows,
+        "FF2196F3"
+      );
 
-      // Prepare Quizzes sheet
-      const quizzesData = quizzes.map((quiz) => ({
-        "Quiz Title": quiz.title || "",
-        Course: quiz.course?.name || quiz.courseName || "",
-        Questions: quiz.questions?.length || 0,
-        "Duration (min)": quiz.duration || "",
-        "Created Date": quiz.createdAt
-          ? moment(quiz.createdAt).format("YYYY-MM-DD")
-          : "",
+      // Create Assignments sheet
+      const assignmentsHeaders = [
+        { key: "assignmentTitle", label: t("teacherDashboard.settings.exportHeaders.assignmentTitle") },
+        { key: "course", label: t("teacherDashboard.settings.exportHeaders.course") },
+        { key: "dueDate", label: t("teacherDashboard.settings.exportHeaders.dueDate") },
+        { key: "maxPoints", label: t("teacherDashboard.settings.exportHeaders.maxPoints") },
+        { key: "status", label: t("teacherDashboard.settings.exportHeaders.status") },
+        { key: "createdDate", label: t("teacherDashboard.settings.exportHeaders.createdDate") },
+      ];
+      const assignmentsRows = homeworks.map((hw) => ({
+        assignmentTitle: hw.title || "",
+        course: hw.course?.title || hw.course?.name || hw.courseName || "",
+        dueDate: hw.dueDate ? moment(hw.dueDate).format("YYYY-MM-DD") : "",
+        maxPoints: hw.maxPoints || "",
+        status: hw.status || "",
+        createdDate: hw.createdAt ? moment(hw.createdAt).format("YYYY-MM-DD") : "",
       }));
-      const quizzesSheet = XLSX.utils.json_to_sheet(quizzesData);
-      XLSX.utils.book_append_sheet(wb, quizzesSheet, "Quizzes");
+      createStyledSheet(
+        t("teacherDashboard.settings.exportSheets.assignments"),
+        assignmentsHeaders,
+        assignmentsRows,
+        "FFE91E63"
+      );
 
-      // Prepare Homework sheet
-      const homeworksData = homeworks.map((hw) => ({
-        "Assignment Title": hw.title || "",
-        Course: hw.course?.name || hw.courseName || "",
-        "Due Date": hw.dueDate ? moment(hw.dueDate).format("YYYY-MM-DD") : "",
-        "Max Points": hw.maxPoints || "",
-        Status: hw.status || "",
-        "Created Date": hw.createdAt
-          ? moment(hw.createdAt).format("YYYY-MM-DD")
-          : "",
-      }));
-      const homeworksSheet = XLSX.utils.json_to_sheet(homeworksData);
-      XLSX.utils.book_append_sheet(wb, homeworksSheet, "Assignments");
+      // Create Progress Records sheet
+      const progressHeaders = [
+        { key: "studentName", label: t("teacherDashboard.settings.exportHeaders.studentName") },
+        { key: "studentId", label: t("teacherDashboard.settings.exportHeaders.studentId") },
+        { key: "studentEmail", label: t("teacherDashboard.settings.exportHeaders.email") },
+        { key: "gradeLevel", label: t("teacherDashboard.settings.exportHeaders.gradeLevel") },
+        { key: "subject", label: t("teacherDashboard.settings.exportHeaders.subject") },
+        { key: "course", label: t("teacherDashboard.settings.exportHeaders.course") },
+        { key: "assignment", label: t("teacherDashboard.settings.exportHeaders.assignment") },
+        { key: "assignmentType", label: t("teacherDashboard.settings.exportHeaders.assignmentType") },
+        { key: "description", label: t("teacherDashboard.settings.exportHeaders.description") },
+        { key: "score", label: t("teacherDashboard.settings.exportHeaders.score") },
+        { key: "maxScore", label: t("teacherDashboard.settings.exportHeaders.maxScore") },
+        { key: "percentage", label: t("teacherDashboard.settings.exportHeaders.percentage") },
+        { key: "grade", label: t("teacherDashboard.settings.exportHeaders.grade") },
+        { key: "feedback", label: t("teacherDashboard.settings.exportHeaders.feedback") },
+        { key: "teacher", label: t("teacherDashboard.settings.exportHeaders.teacher") },
+        { key: "teacherEmail", label: t("teacherDashboard.settings.exportHeaders.teacherEmail") },
+        { key: "submittedDate", label: t("teacherDashboard.settings.exportHeaders.submittedDate") },
+        { key: "gradedDate", label: t("teacherDashboard.settings.exportHeaders.gradedDate") },
+      ];
+      // Debug: Log progress records
+      console.log("📊 Progress Records to export:", progressRecords);
+      console.log("📊 Progress Records count:", progressRecords.length);
+      
+      const progressRows = progressRecords.map((record) => {
+        console.log("📊 Processing record:", record);
+        const scoreDisplay = record.score && record.maxScore 
+          ? `${record.score}/${record.maxScore}` 
+          : record.score || "";
+        
+        const studentName = record.student?.name || 
+          `${record.student?.firstName || ""} ${record.student?.lastName || ""}`.trim() || 
+          record.studentName || "";
+        
+        const teacherName = record.teacher?.name || 
+          `${record.teacher?.firstName || ""} ${record.teacher?.lastName || ""}`.trim() || 
+          "";
+        
+        return {
+          studentName: studentName,
+          studentId: record.student?.studentId || record.student?._id || record.studentId || "N/A",
+          studentEmail: record.student?.email || "",
+          gradeLevel: record.student?.gradeLevel || record.gradeLevel || "N/A",
+          subject: record.subject || record.course?.name || record.courseName || "",
+          course: record.course?.title || record.course?.name || record.courseName || "",
+          assignment: record.assignment || "",
+          assignmentType: record.assignmentType ? record.assignmentType.toUpperCase() : "",
+          description: record.description || "",
+          score: scoreDisplay,
+          maxScore: record.maxScore || "",
+          percentage: record.percentage ? `${record.percentage}%` : "",
+          grade: record.grade || "",
+          feedback: record.feedback || "",
+          teacher: teacherName,
+          teacherEmail: record.teacher?.email || "",
+          submittedDate: record.submissionDate ? moment(record.submissionDate).format("MMM DD, YYYY HH:mm") : 
+                        record.submittedAt ? moment(record.submittedAt).format("MMM DD, YYYY HH:mm") : "",
+          gradedDate: record.gradedDate ? moment(record.gradedDate).format("MMM DD, YYYY HH:mm") : "",
+        };
+      });
+      
+      console.log("📊 Final progress rows:", progressRows);
+      
+      createStyledSheet(
+        t("teacherDashboard.settings.exportSheets.progress"),
+        progressHeaders,
+        progressRows,
+        "FF9C27B0"
+      );
 
-      // Prepare Progress Records sheet
-      const progressData = progressRecords.map((record) => ({
-        Student:
-          record.student?.name ||
-          `${record.student?.firstName || ""} ${
-            record.student?.lastName || ""
-          }`.trim() ||
-          record.studentName ||
-          "",
-        Course: record.course?.name || record.courseName || "",
-        Assignment: record.assignment || "",
-        Score: record.score || "",
-        Grade: record.grade || "",
-        Feedback: record.feedback || "",
-        "Submitted Date": record.submittedAt
-          ? moment(record.submittedAt).format("YYYY-MM-DD")
-          : "",
-        "Graded Date": record.gradedAt
-          ? moment(record.gradedAt).format("YYYY-MM-DD")
-          : "",
-      }));
-      const progressSheet = XLSX.utils.json_to_sheet(progressData);
-      XLSX.utils.book_append_sheet(wb, progressSheet, "Progress Records");
-
-      // Generate Excel file
-      const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-      const dataBlob = new Blob([excelBuffer], {
+      // Generate and download the Excel file
+      const buffer = await workbook.xlsx.writeBuffer();
+      const dataBlob = new Blob([buffer], {
         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       });
 
       const url = URL.createObjectURL(dataBlob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `class-data-${moment().format("YYYY-MM-DD")}.xlsx`;
+      link.download = isJapanese
+        ? `フォーラムアカデミー-教師データ-${moment().format("YYYY-MM-DD")}.xlsx`
+        : `forum-academy-teacher-data-${moment().format("YYYY-MM-DD")}.xlsx`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
-      message.success("Class data exported to Excel successfully");
+      message.success(t("teacherDashboard.settings.exportSuccess"));
     } catch (error) {
       console.error("Error exporting data:", error);
-      message.error("Failed to export class data. Please try again.");
+      message.error(t("teacherDashboard.settings.exportError"));
     }
   };
 
   const handleGenerateReport = async () => {
     try {
       message.loading("Generating report...", 2);
+
+      // Get current language
+      const currentLanguage = i18nInstance.language || "en";
+      const isJapanese = currentLanguage === "ja";
 
       // Fetch all students to ensure we have the latest data
       let allStudents = [...students];
@@ -3157,6 +3447,7 @@ const TeacherDashboard = () => {
         console.log("Student fields:", Object.keys(allStudents[0]));
       }
 
+      // Get all data from dashboard state - ensuring we use all fetched data
       const reportData = {
         generatedDate: moment().format("MMMM DD, YYYY"),
         teacher: currentUser?.name,
@@ -3169,9 +3460,40 @@ const TeacherDashboard = () => {
           totalProgress: progressRecords.length,
         },
         courses: courses.map((c) => ({
-          title: c.title,
-          level: c.level,
-          studentsEnrolled: c.enrolledStudents?.length || 0,
+          title: c.title || c.name || "Untitled Course",
+          level: c.level || "N/A",
+          code: c.code || "N/A",
+          category: c.category || "N/A",
+          studentsEnrolled: c.enrolledStudents?.length || c.students?.length || 0,
+          status: c.isActive ? "Active" : "Inactive",
+        })),
+        students: allStudents.map((s) => ({
+          name: s.name || `${s.firstName || ""} ${s.lastName || ""}`.trim() || s.email || "Unknown",
+          email: s.email || "No Email",
+          phone: s.phone || "N/A",
+          department: s.department || "N/A",
+          enrolledCourses: s.enrolledCourses?.length || 0,
+        })),
+        materials: materials.map((m) => ({
+          title: m.title || "Untitled Material",
+          course: m.course?.title || m.course?.name || m.courseName || "N/A",
+          type: m.fileType || m.type || "N/A",
+          description: m.description || "",
+          uploadDate: m.createdAt ? moment(m.createdAt).format("MMM DD, YYYY") : "N/A",
+        })),
+        quizzesList: quizzes.map((q) => ({
+          title: q.title || "Untitled Quiz",
+          course: q.course?.title || q.course?.name || q.courseName || "N/A",
+          questions: q.questions?.length || 0,
+          duration: q.duration || "N/A",
+          createdDate: q.createdAt ? moment(q.createdAt).format("MMM DD, YYYY") : "N/A",
+        })),
+        homeworkList: homeworks.map((h) => ({
+          title: h.title || "Untitled Homework",
+          course: h.course?.title || h.course?.name || h.courseName || "N/A",
+          dueDate: h.dueDate ? moment(h.dueDate).format("MMM DD, YYYY") : "N/A",
+          maxPoints: h.maxPoints || "N/A",
+          status: h.status || "N/A",
         })),
         recentActivity: progressRecords.slice(0, 10).map((p) => {
           // Get student name and email from the map, or from the progress record
@@ -3216,107 +3538,492 @@ const TeacherDashboard = () => {
         }),
       };
 
+      const translations = {
+        en: {
+          title: "📊 Forum Academy - Teacher Report",
+          subtitle: "Comprehensive Teaching Analytics Report",
+          generated: "Generated",
+          teacher: "Teacher",
+          summary: "Data Summary",
+          myCourses: "My Courses",
+          myStudents: "My Students",
+          recentActivity: "Recent Activity",
+          courseTitle: "Course Title",
+          level: "Level",
+          studentsEnrolled: "Students Enrolled",
+          studentName: "Student Name",
+          email: "Email",
+          enrolledCourses: "Enrolled Courses",
+          assignmentType: "Assignment Type",
+          score: "Score",
+          date: "Date",
+          totalCourses: "Total Courses",
+          totalStudents: "Total Students",
+          totalMaterials: "Total Materials",
+          totalQuizzes: "Total Quizzes",
+          totalHomework: "Total Homework",
+          gradedSubmissions: "Graded Submissions",
+          noEmail: "No Email",
+          unknown: "Unknown",
+          materials: "Materials",
+          quizzes: "Quizzes",
+          homework: "Homework",
+          courseCode: "Code",
+          category: "Category",
+          phone: "Phone",
+          department: "Department",
+          type: "Type",
+          description: "Description",
+          questions: "Questions",
+          duration: "Duration",
+          dueDate: "Due Date",
+          maxPoints: "Max Points",
+          uploadDate: "Upload Date"
+        },
+        ja: {
+          title: "📊 フォーラムアカデミー - 教師レポート",
+          subtitle: "包括的教育分析レポート",
+          generated: "生成日",
+          teacher: "教師",
+          summary: "データサマリー",
+          myCourses: "マイコース",
+          myStudents: "私の学生",
+          recentActivity: "最近のアクティビティ",
+          courseTitle: "コース名",
+          level: "レベル",
+          studentsEnrolled: "登録学生数",
+          studentName: "学生名",
+          email: "メール",
+          enrolledCourses: "登録コース",
+          assignmentType: "課題タイプ",
+          score: "スコア",
+          date: "日付",
+          totalCourses: "総コース数",
+          totalStudents: "総学生数",
+          totalMaterials: "教材数",
+          totalQuizzes: "総クイズ数",
+          totalHomework: "総課題数",
+          gradedSubmissions: "採点済み提出物",
+          noEmail: "メールなし",
+          unknown: "不明",
+          materials: "教材",
+          quizzes: "クイズ",
+          homework: "宿題",
+          courseCode: "コード",
+          category: "カテゴリー",
+          phone: "電話",
+          department: "部署",
+          type: "タイプ",
+          description: "説明",
+          questions: "問題数",
+          duration: "所要時間",
+          dueDate: "締切日",
+          maxPoints: "最大ポイント",
+          uploadDate: "アップロード日"
+        }
+      };
+      
+      const t = translations[currentLanguage] || translations.en;
+      
       const reportHTML = `
         <!DOCTYPE html>
-        <html>
+        <html lang="${currentLanguage}">
         <head>
-          <title>Teaching Report - ${moment().format("YYYY-MM-DD")}</title>
+          <meta charset="UTF-8">
+          <title>${t.title} - ${moment().format("YYYY-MM-DD")}</title>
           <style>
-            body { font-family: Arial, sans-serif; padding: 40px; }
-            h1 { color: #1890ff; }
-            h2 { color: #333; border-bottom: 2px solid #1890ff; padding-bottom: 10px; }
-            table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-            th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-            th { background-color: #1890ff; color: white; }
-            .summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 20px 0; }
-            .summary-card { background: #f0f2f5; padding: 20px; border-radius: 8px; }
-            .summary-card h3 { margin: 0 0 10px 0; color: #666; }
-            .summary-card p { font-size: 32px; font-weight: bold; margin: 0; color: #1890ff; }
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            
+            body { 
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+              background: #f5f7fa;
+              padding: 30px 20px;
+              line-height: 1.6;
+            }
+            
+            .container {
+              max-width: 1200px;
+              margin: 0 auto;
+              background: white;
+              border-radius: 12px;
+              box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+              overflow: hidden;
+            }
+            
+            .header {
+              background: #6c5ce7;
+              color: white;
+              padding: 40px;
+              text-align: center;
+            }
+            
+            .header h1 {
+              font-size: 36px;
+              font-weight: 600;
+              margin-bottom: 8px;
+            }
+            
+            .header .subtitle {
+              font-size: 16px;
+              opacity: 0.9;
+            }
+            
+            .info-section {
+              padding: 25px 40px;
+              background: #f8f9fa;
+              border-bottom: 1px solid #e9ecef;
+              display: flex;
+              justify-content: space-between;
+              flex-wrap: wrap;
+              gap: 20px;
+            }
+            
+            .info-item {
+              display: flex;
+              align-items: center;
+              gap: 8px;
+            }
+            
+            .info-item strong {
+              color: #6c5ce7;
+              font-size: 13px;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            }
+            
+            .info-item span {
+              font-size: 15px;
+              color: #495057;
+              font-weight: 500;
+            }
+            
+            .content {
+              padding: 35px;
+            }
+            
+            .section {
+              margin-bottom: 40px;
+            }
+            
+            .section-title {
+              font-size: 24px;
+              color: #2d3436;
+              margin-bottom: 20px;
+              padding-bottom: 12px;
+              border-bottom: 2px solid #6c5ce7;
+            }
+            
+            .summary-grid {
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+              gap: 20px;
+              margin-bottom: 35px;
+            }
+            
+            .summary-card {
+              background: #6c5ce7;
+              padding: 25px 20px;
+              border-radius: 10px;
+              color: white;
+              text-align: center;
+            }
+            
+            .summary-card h3 {
+              font-size: 13px;
+              font-weight: 500;
+              margin-bottom: 12px;
+              opacity: 0.9;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            }
+            
+            .summary-card .value {
+              font-size: 42px;
+              font-weight: 700;
+              margin: 0;
+            }
+            
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin: 20px 0;
+              border-radius: 8px;
+              overflow: hidden;
+              box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            }
+            
+            thead {
+              background: #6c5ce7;
+              color: white;
+            }
+            
+            th {
+              padding: 16px 15px;
+              text-align: left;
+              font-weight: 600;
+              font-size: 13px;
+              text-transform: uppercase;
+              letter-spacing: 0.3px;
+            }
+            
+            tbody tr {
+              border-bottom: 1px solid #f1f3f5;
+            }
+            
+            tbody tr:nth-child(even) {
+              background: #fafbfc;
+            }
+            
+            tbody tr:hover {
+              background: #f0f0f5;
+            }
+            
+            tbody tr:last-child {
+              border-bottom: none;
+            }
+            
+            td {
+              padding: 14px 15px;
+              color: #495057;
+              font-size: 14px;
+            }
+            
+            .badge {
+              display: inline-block;
+              padding: 4px 10px;
+              border-radius: 4px;
+              font-size: 12px;
+              font-weight: 500;
+              text-transform: uppercase;
+            }
+            
+            .badge-primary {
+              background: #e9ecff;
+              color: #6c5ce7;
+            }
+            
+            .badge-success {
+              background: #e6f7e6;
+              color: #52c41a;
+            }
+            
+            .badge-warning {
+              background: #fff7e6;
+              color: #fa8c16;
+            }
+            
+            .footer {
+              background: #495057;
+              color: #fff;
+              padding: 20px 40px;
+              text-align: center;
+              font-size: 12px;
+            }
+            
+            @media print {
+              body { background: white; padding: 0; }
+              .container { box-shadow: none; }
+            }
           </style>
         </head>
         <body>
-          <h1>Teaching Report</h1>
-          <p><strong>Generated:</strong> ${reportData.generatedDate}</p>
-          <p><strong>Teacher:</strong> ${reportData.teacher}</p>
-          
-          <h2>Summary</h2>
-          <div class="summary">
-            <div class="summary-card">
-              <h3>Total Courses</h3>
-              <p>${reportData.summary.totalCourses}</p>
+          <div class="container">
+            <div class="header">
+              <h1>${t.title}</h1>
+              <p class="subtitle">${t.subtitle}</p>
             </div>
-            <div class="summary-card">
-              <h3>Total Students</h3>
-              <p>${reportData.summary.totalStudents}</p>
+            
+            <div class="info-section">
+              <div class="info-item">
+                <strong>${t.generated}:</strong>
+                <span>${reportData.generatedDate}</span>
+              </div>
+              <div class="info-item">
+                <strong>${t.teacher}:</strong>
+                <span>${reportData.teacher}</span>
+              </div>
             </div>
-            <div class="summary-card">
-              <h3>Total Materials</h3>
-              <p>${reportData.summary.totalMaterials}</p>
+            
+            <div class="content">
+              <div class="section">
+                <h2 class="section-title">📊 ${t.summary}</h2>
+                <div class="summary-grid">
+                  <div class="summary-card">
+                    <h3>${t.totalCourses}</h3>
+                    <p class="value">${reportData.summary.totalCourses}</p>
+                  </div>
+                  <div class="summary-card">
+                    <h3>${t.totalStudents}</h3>
+                    <p class="value">${reportData.summary.totalStudents}</p>
+                  </div>
+                  <div class="summary-card">
+                    <h3>${t.totalMaterials}</h3>
+                    <p class="value">${reportData.summary.totalMaterials}</p>
+                  </div>
+                  <div class="summary-card">
+                    <h3>${t.totalQuizzes}</h3>
+                    <p class="value">${reportData.summary.totalQuizzes}</p>
+                  </div>
+                  <div class="summary-card">
+                    <h3>${t.totalHomework}</h3>
+                    <p class="value">${reportData.summary.totalHomework}</p>
+                  </div>
+                  <div class="summary-card">
+                    <h3>${t.gradedSubmissions}</h3>
+                    <p class="value">${reportData.summary.totalProgress}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="section">
+                <h2 class="section-title">📚 ${t.myCourses}</h2>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>${t.courseTitle}</th>
+                      <th>${t.level}</th>
+                      <th>${t.studentsEnrolled}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${reportData.courses.map(c => `
+                      <tr>
+                        <td><strong>${c.title}</strong></td>
+                        <td><span class="badge badge-primary">${c.level}</span></td>
+                        <td>${c.studentsEnrolled}</td>
+                      </tr>
+                    `).join("")}
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="section">
+                <h2 class="section-title">👥 ${t.myStudents}</h2>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>${t.studentName}</th>
+                      <th>${t.email}</th>
+                      <th>${t.enrolledCourses}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${reportData.students.map(s => `
+                      <tr>
+                        <td><strong>${s.name}</strong></td>
+                        <td>${s.email}</td>
+                        <td>${s.enrolledCourses}</td>
+                      </tr>
+                    `).join("")}
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="section">
+                <h2 class="section-title">📄 ${t.materials}</h2>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>${t.courseTitle}</th>
+                      <th>${t.course}</th>
+                      <th>${t.type}</th>
+                      <th>${t.uploadDate}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${reportData.materials.map(m => `
+                      <tr>
+                        <td><strong>${m.title}</strong></td>
+                        <td>${m.course}</td>
+                        <td><span class="badge badge-primary">${m.type}</span></td>
+                        <td>${m.uploadDate}</td>
+                      </tr>
+                    `).join("")}
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="section">
+                <h2 class="section-title">❓ ${t.quizzes}</h2>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>${t.courseTitle}</th>
+                      <th>${t.course}</th>
+                      <th>${t.questions}</th>
+                      <th>${t.duration}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${reportData.quizzesList.map(q => `
+                      <tr>
+                        <td><strong>${q.title}</strong></td>
+                        <td>${q.course}</td>
+                        <td>${q.questions}</td>
+                        <td>${q.duration}</td>
+                      </tr>
+                    `).join("")}
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="section">
+                <h2 class="section-title">📝 ${t.homework}</h2>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>${t.courseTitle}</th>
+                      <th>${t.course}</th>
+                      <th>${t.dueDate}</th>
+                      <th>${t.maxPoints}</th>
+                      <th>${t.score}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${reportData.homeworkList.map(h => `
+                      <tr>
+                        <td><strong>${h.title}</strong></td>
+                        <td>${h.course}</td>
+                        <td>${h.dueDate}</td>
+                        <td>${h.maxPoints}</td>
+                        <td><span class="badge badge-success">${h.status}</span></td>
+                      </tr>
+                    `).join("")}
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="section">
+                <h2 class="section-title">⚡ ${t.recentActivity}</h2>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>${t.studentName}</th>
+                      <th>${t.email}</th>
+                      <th>${t.assignmentType}</th>
+                      <th>${t.score}</th>
+                      <th>${t.date}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${reportData.recentActivity.map(a => `
+                      <tr>
+                        <td><strong>${a.student}</strong></td>
+                        <td>${a.studentEmail}</td>
+                        <td><span class="badge badge-warning">${a.type}</span></td>
+                        <td><strong>${a.score}%</strong></td>
+                        <td>${a.date}</td>
+                      </tr>
+                    `).join("")}
+                  </tbody>
+                </table>
+              </div>
             </div>
-            <div class="summary-card">
-              <h3>Total Quizzes</h3>
-              <p>${reportData.summary.totalQuizzes}</p>
-            </div>
-            <div class="summary-card">
-              <h3>Total Homework</h3>
-              <p>${reportData.summary.totalHomework}</p>
-            </div>
-            <div class="summary-card">
-              <h3>Graded Submissions</h3>
-              <p>${reportData.summary.totalProgress}</p>
+            
+            <div class="footer">
+              ${isJapanese ? "このレポートは自動生成されました。" : "This report was automatically generated."}
             </div>
           </div>
-
-          <h2>My Courses</h2>
-          <table>
-            <tr><th>Course Title</th><th>Level</th><th>Students Enrolled</th></tr>
-            ${reportData.courses
-              .map(
-                (c) => `
-              <tr><td>${c.title}</td><td>${c.level}</td><td>${c.studentsEnrolled}</td></tr>
-            `
-              )
-              .join("")}
-          </table>
-
-          <h2>My Students</h2>
-          <table>
-            <tr><th>Student Name</th><th>Email</th><th>Enrolled Courses</th></tr>
-            ${allStudents
-              .map((s) => {
-                const studentName =
-                  s.name ||
-                  (s.firstName && s.lastName
-                    ? `${s.firstName} ${s.lastName}`
-                    : s.firstName || s.lastName || s.email || "Unknown");
-                return `
-              <tr>
-                <td>${studentName}</td>
-                <td>${s.email || "No Email"}</td>
-                <td>${s.enrolledCourses?.length || 0}</td>
-              </tr>
-            `;
-              })
-              .join("")}
-          </table>
-
-          <h2>Recent Activity</h2>
-          <table>
-            <tr><th>Student Name</th><th>Email</th><th>Assignment Type</th><th>Score</th><th>Date</th></tr>
-            ${reportData.recentActivity
-              .map(
-                (a) => `
-              <tr>
-                <td>${a.student}</td>
-                <td>${a.studentEmail}</td>
-                <td>${a.type}</td>
-                <td>${a.score}%</td>
-                <td>${a.date}</td>
-              </tr>
-            `
-              )
-              .join("")}
-          </table>
         </body>
         </html>
       `;
@@ -3325,7 +4032,9 @@ const TeacherDashboard = () => {
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `teaching-report-${moment().format("YYYY-MM-DD")}.html`;
+      link.download = isJapanese
+        ? `フォーラムアカデミー-教師レポート-${moment().format("YYYY-MM-DD")}.html`
+        : `forum-academy-teacher-report-${moment().format("YYYY-MM-DD")}.html`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -4530,7 +5239,7 @@ const TeacherDashboard = () => {
 
       <Row gutter={[16, 16]} style={{ marginBottom: "32px" }}>
         <Col xs={24} sm={12} md={8} lg={6}>
-          <Card className="stat-card stat-card-1" bordered={false} style={{ background: "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)" }}>
+          <Card className="stat-card stat-card-1" variant="borderless" style={{ background: "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)" }}>
             <div style={{ position: "relative", zIndex: 10, color: "white" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
                 <BookOutlined style={{ fontSize: 32, color: "rgba(255, 255, 255, 0.9)" }} />
@@ -4557,7 +5266,7 @@ const TeacherDashboard = () => {
           </Card>
         </Col>
         <Col xs={24} sm={12} md={8} lg={6}>
-          <Card className="stat-card stat-card-2" bordered={false} style={{ background: "linear-gradient(135deg, #059669 0%, #0d9488 100%)" }}>
+          <Card className="stat-card stat-card-2" variant="borderless" style={{ background: "linear-gradient(135deg, #059669 0%, #0d9488 100%)" }}>
             <div style={{ position: "relative", zIndex: 10, color: "white" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
                 <TeamOutlined style={{ fontSize: 32, color: "rgba(255, 255, 255, 0.9)" }} />
@@ -4584,7 +5293,7 @@ const TeacherDashboard = () => {
           </Card>
         </Col>
         <Col xs={24} sm={12} md={8} lg={6}>
-          <Card className="stat-card stat-card-3" bordered={false} style={{ background: "linear-gradient(135deg, #dc2626 0%, #ea580c 100%)" }}>
+          <Card className="stat-card stat-card-3" variant="borderless" style={{ background: "linear-gradient(135deg, #dc2626 0%, #ea580c 100%)" }}>
             <div style={{ position: "relative", zIndex: 10, color: "white" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
                 <FileOutlined style={{ fontSize: 32, color: "rgba(255, 255, 255, 0.9)" }} />
@@ -4611,7 +5320,7 @@ const TeacherDashboard = () => {
           </Card>
         </Col>
         <Col xs={24} sm={12} md={8} lg={6}>
-          <Card className="stat-card stat-card-4" bordered={false} style={{ background: "linear-gradient(135deg, #0891b2 0%, #0284c7 100%)" }}>
+          <Card className="stat-card stat-card-4" variant="borderless" style={{ background: "linear-gradient(135deg, #0891b2 0%, #0284c7 100%)" }}>
             <div style={{ position: "relative", zIndex: 10, color: "white" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
                 <ClockCircleOutlined style={{ fontSize: 32, color: "rgba(255, 255, 255, 0.9)" }} />
@@ -4638,7 +5347,7 @@ const TeacherDashboard = () => {
           </Card>
         </Col>
         <Col xs={24} sm={12} md={8} lg={6}>
-          <Card className="stat-card stat-card-5" bordered={false} style={{ background: "linear-gradient(135deg, #7c2d12 0%, #92400e 100%)" }}>
+          <Card className="stat-card stat-card-5" variant="borderless" style={{ background: "linear-gradient(135deg, #7c2d12 0%, #92400e 100%)" }}>
             <div style={{ position: "relative", zIndex: 10, color: "white" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
                 <QuestionCircleOutlined style={{ fontSize: 32, color: "rgba(255, 255, 255, 0.9)" }} />
@@ -4670,7 +5379,7 @@ const TeacherDashboard = () => {
         <Col xs={24} md={12}>
           <Card
             className="glass-card"
-            bordered={false}
+            variant="borderless"
             title={
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <ClockCircleOutlined style={{ color: "#667eea", fontSize: "20px" }} />
@@ -4692,9 +5401,9 @@ const TeacherDashboard = () => {
               </Button>
             }
           >
-            <Timeline>
-              {recentActivities.length > 0 ? (
-                recentActivities.map((activity, index) => {
+            {recentActivities.length > 0 ? (
+              <Timeline 
+                items={recentActivities.map((activity, index) => {
                   let activityText = "";
 
                   switch (activity.type) {
@@ -4740,29 +5449,33 @@ const TeacherDashboard = () => {
                       );
                   }
 
-                  return (
-                    <Timeline.Item key={index} color={activity.color}>
-                      <Text>{activityText}</Text>
-                      <br />
-                      <Text type="secondary">
-                        {getTimeAgo(activity.timestamp)}
-                      </Text>
-                    </Timeline.Item>
-                  );
-                })
-              ) : (
-                <Empty
-                  description={t("teacherDashboard.overview.noRecentActivity")}
-                  image={Empty.PRESENTED_IMAGE_SIMPLE}
-                />
-              )}
-            </Timeline>
+                  return {
+                    key: index,
+                    color: activity.color,
+                    children: (
+                      <>
+                        <Text>{activityText}</Text>
+                        <br />
+                        <Text type="secondary">
+                          {getTimeAgo(activity.timestamp)}
+                        </Text>
+                      </>
+                    ),
+                  };
+                })}
+              />
+            ) : (
+              <Empty
+                description={t("teacherDashboard.overview.noRecentActivity")}
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+              />
+            )}
           </Card>
         </Col>
         <Col xs={24} md={12}>
           <Card 
             className="glass-card"
-            bordered={false}
+            variant="borderless"
             title={
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <Zap style={{ color: "#667eea", fontSize: "20px" }} />
@@ -4847,7 +5560,7 @@ const TeacherDashboard = () => {
         <Col span={24}>
           <Card 
             className="glass-card"
-            bordered={false}
+            variant="borderless"
             title={
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <TrendingUp style={{ color: "#667eea", fontSize: "20px" }} />
@@ -4858,10 +5571,10 @@ const TeacherDashboard = () => {
             }
           >
             <div style={{ padding: "16px 0" }}>
-            <Progress
+              <Progress
               percent={dashboardStats.avgClassPerformance}
               status="active"
-                strokeWidth={12}
+                size={12}
               strokeColor={{
                   from: "#667eea",
                   to: "#764ba2",
@@ -5427,7 +6140,7 @@ const TeacherDashboard = () => {
     return (
       <Card
         className="glass-card"
-        bordered={false}
+        variant="borderless"
         title={
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <div style={{
@@ -5870,7 +6583,7 @@ const TeacherDashboard = () => {
     return (
       <Card
         className="glass-card"
-        bordered={false}
+        variant="borderless"
         title={
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <div style={{
@@ -6711,7 +7424,7 @@ const TeacherDashboard = () => {
           </Button>
         </div>
 
-        <Card className="glass-card" bordered={false}>
+        <Card className="glass-card" variant="borderless">
           <Table
             columns={columns}
             dataSource={zoomClasses}
@@ -6731,7 +7444,7 @@ const TeacherDashboard = () => {
         {embeddedZoomVisible && currentLiveClass && (
           <Card 
             className="glass-card" 
-            bordered={false}
+            variant="borderless"
             style={{ marginTop: 24 }}
           >
             <div style={{ display: "flex", gap: 24, minHeight: 500 }}>
@@ -7998,7 +8711,7 @@ const TeacherDashboard = () => {
 
         <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
           <Col xs={24} sm={12} md={6}>
-            <Card className="stat-card stat-card-1" bordered={false} style={{ background: "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)" }}>
+            <Card className="stat-card stat-card-1" variant="borderless" style={{ background: "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)" }}>
               <div style={{ position: "relative", zIndex: 10, color: "white" }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
                   <FormOutlined style={{ fontSize: 28, color: "rgba(255, 255, 255, 0.9)" }} />
@@ -8015,7 +8728,7 @@ const TeacherDashboard = () => {
             </Card>
           </Col>
           <Col xs={24} sm={12} md={6}>
-            <Card className="stat-card stat-card-4" bordered={false} style={{ background: "linear-gradient(135deg, #0891b2 0%, #0284c7 100%)" }}>
+            <Card className="stat-card stat-card-4" variant="borderless" style={{ background: "linear-gradient(135deg, #0891b2 0%, #0284c7 100%)" }}>
               <div style={{ position: "relative", zIndex: 10, color: "white" }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
                   <CheckCircleOutlined style={{ fontSize: 28, color: "rgba(255, 255, 255, 0.9)" }} />
@@ -8032,7 +8745,7 @@ const TeacherDashboard = () => {
             </Card>
           </Col>
           <Col xs={24} sm={12} md={6}>
-            <Card className="stat-card stat-card-5" bordered={false} style={{ background: "linear-gradient(135deg, #7c2d12 0%, #92400e 100%)" }}>
+            <Card className="stat-card stat-card-5" variant="borderless" style={{ background: "linear-gradient(135deg, #7c2d12 0%, #92400e 100%)" }}>
               <div style={{ position: "relative", zIndex: 10, color: "white" }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
                   <EditOutlined style={{ fontSize: 28, color: "rgba(255, 255, 255, 0.9)" }} />
@@ -8049,7 +8762,7 @@ const TeacherDashboard = () => {
             </Card>
           </Col>
           <Col xs={24} sm={12} md={6}>
-            <Card className="stat-card stat-card-3" bordered={false} style={{ background: "linear-gradient(135deg, #dc2626 0%, #ea580c 100%)" }}>
+            <Card className="stat-card stat-card-3" variant="borderless" style={{ background: "linear-gradient(135deg, #dc2626 0%, #ea580c 100%)" }}>
               <div style={{ position: "relative", zIndex: 10, color: "white" }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
                   <TrophyOutlined style={{ fontSize: 28, color: "rgba(255, 255, 255, 0.9)" }} />
@@ -8067,7 +8780,7 @@ const TeacherDashboard = () => {
           </Col>
         </Row>
 
-        <Card className="glass-card" bordered={false}>
+        <Card className="glass-card" variant="borderless">
           <Table
             key={`quiz-table-${currentLanguage}`}
             columns={quizColumns}
@@ -9629,18 +10342,20 @@ const TeacherDashboard = () => {
                 }}
               />
               {!isMobile && (
-                <Breadcrumb style={{ marginLeft: 16 }}>
-                  <Breadcrumb.Item>
-                    <HomeOutlined />
-                  </Breadcrumb.Item>
-                  <Breadcrumb.Item>Teacher Dashboard</Breadcrumb.Item>
-                  <Breadcrumb.Item>
+                <Breadcrumb 
+                  style={{ marginLeft: 16 }}
+                  items={[
                     {
-                      teacherMenuItems.find((item) => item.key === activeTab)
-                        ?.label
-                    }
-                  </Breadcrumb.Item>
-                </Breadcrumb>
+                      title: <HomeOutlined />,
+                    },
+                    {
+                      title: "Teacher Dashboard",
+                    },
+                    {
+                      title: teacherMenuItems.find((item) => item.key === activeTab)?.label,
+                    },
+                  ]}
+                />
               )}
               {isMobile && (
                 <Title
@@ -9722,25 +10437,37 @@ const TeacherDashboard = () => {
                 placement="bottomRight"
               >
                 <div
+                  className="teacher-profile-button"
                   style={{
-                    display: "flex",
+                    display: "inline-flex",
                     alignItems: "center",
                     cursor: "pointer",
-                    padding: isMobile ? "6px 8px" : "8px 12px",
-                    borderRadius: "6px",
-                    transition: "background-color 0.2s",
+                    padding: isMobile ? "4px 8px" : "5px 10px",
+                    borderRadius: "20px",
+                    backgroundColor: "#e8e8e8 !important",
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.1) !important",
+                    transition: "all 0.2s",
+                    border: "none !important",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.setProperty("background-color", "#dcdcdc", "important");
+                    e.currentTarget.style.setProperty("box-shadow", "0 2px 4px rgba(0,0,0,0.12)", "important");
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.setProperty("background-color", "#e8e8e8", "important");
+                    e.currentTarget.style.setProperty("box-shadow", "0 1px 3px rgba(0,0,0,0.1)", "important");
                   }}
                 >
                   <Avatar
-                    size={isMobile ? 32 : "small"}
+                    size={isMobile ? 24 : 28}
                     style={{
-                      backgroundColor: "#1890ff",
-                      marginRight: isMobile ? 6 : 8,
+                      backgroundColor: "#b0b0b0",
+                      marginRight: isMobile ? 4 : 6,
                     }}
                     icon={<UserOutlined />}
                   />
                   {!isMobile && (
-                    <Text strong style={{ color: "#262626" }}>
+                    <Text style={{ color: "#404040", fontSize: "13px", fontWeight: 500 }}>
                       {currentUser?.name || "Teacher"}
                     </Text>
                   )}

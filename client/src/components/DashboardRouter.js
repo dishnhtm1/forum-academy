@@ -18,12 +18,21 @@ const DashboardRouter = () => {
       localStorage.getItem("authToken") || localStorage.getItem("token");
     const currentPath = window.location.pathname;
 
-    console.log("🔍 DashboardRouter - Role:", userRole, "Token:", !!token, "Path:", currentPath);
+    console.log(
+      "🔍 DashboardRouter - Role:",
+      userRole,
+      "Token:",
+      !!token,
+      "Path:",
+      currentPath
+    );
 
     // If already on a specific dashboard, don't redirect
-    if (currentPath.includes("/admin/dashboard") || 
-        currentPath.includes("/teacher/dashboard") || 
-        currentPath.includes("/student/dashboard")) {
+    if (
+      currentPath.includes("/admin/dashboard") ||
+      currentPath.includes("/teacher/dashboard") ||
+      currentPath.includes("/student/dashboard")
+    ) {
       console.log("✅ Already on a dashboard page, skipping redirect");
       hasRedirected.current = true;
       return;

@@ -113,7 +113,7 @@
   .stat-card .ant-statistic-content-value {
     font-size: 24px !important;
   }
-  
+
   .stat-card .ant-statistic-content-prefix {
     font-size: 20px !important;
   }
@@ -176,4 +176,131 @@
   bottom: 0 !important;
   pointer-events: none !important;
   z-index: -1 !important;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN - Mobile & Tablet
+   ============================================ */
+
+/* Tablet (768px - 1024px) */
+@media (max-width: 1024px) {
+  .dashboard-overview {
+    padding: 16px;
+  }
+
+  .stat-card {
+    padding: 20px !important;
+  }
+
+  .ant-statistic-title {
+    font-size: 13px !important;
+  }
+
+  .ant-statistic-content {
+    font-size: 24px !important;
+  }
+
+  /* Make tables scrollable */
+  .ant-table-wrapper {
+    overflow-x: auto;
+  }
+
+  /* Stack cards vertically on tablet */
+  .ant-row {
+    flex-direction: column;
+  }
+}
+
+/* Mobile (max-width: 768px) */
+@media (max-width: 768px) {
+  .dashboard-overview {
+    padding: 12px;
+  }
+
+  .stat-card {
+    padding: 16px !important;
+    margin-bottom: 12px;
+  }
+
+  .ant-statistic-title {
+    font-size: 12px !important;
+  }
+
+  .ant-statistic-content {
+    font-size: 20px !important;
+  }
+
+  /* Full width cards on mobile */
+  .ant-col {
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+  }
+
+  /* Reduce card title sizes */
+  .ant-card-head-title {
+    font-size: 16px !important;
+  }
+
+  /* Make buttons full width on mobile */
+  .ant-btn {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+
+  .ant-space {
+    width: 100%;
+  }
+
+  .ant-space-item {
+    width: 100%;
+  }
+
+  /* Adjust table for mobile */
+  .ant-table {
+    font-size: 12px;
+  }
+
+  .ant-table-thead>tr>th,
+  .ant-table-tbody>tr>td {
+    padding: 8px 4px !important;
+  }
+}
+
+/* Small Mobile (max-width: 480px) */
+@media (max-width: 480px) {
+  .dashboard-overview {
+    padding: 8px;
+  }
+
+  .stat-card {
+    padding: 12px !important;
+    border-radius: 12px !important;
+  }
+
+  .ant-statistic-content {
+    font-size: 18px !important;
+  }
+
+  /* Stack all elements vertically */
+  .ant-space {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  /* Smaller text for very small screens */
+  body {
+    font-size: 14px;
+  }
+
+  h1 {
+    font-size: 20px !important;
+  }
+
+  h2 {
+    font-size: 18px !important;
+  }
+
+  h3 {
+    font-size: 16px !important;
+  }
 }
