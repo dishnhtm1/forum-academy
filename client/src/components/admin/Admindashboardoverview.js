@@ -15,19 +15,6 @@ import {
   Tooltip as ChartTooltip,
   Legend,
 } from "chart.js";
-
-// Register Chart.js components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  BarElement,
-  ArcElement,
-  Title,
-  ChartTooltip,
-  Legend
-);
 import {
   Row,
   Col,
@@ -80,6 +67,19 @@ import {
   getArrayFromData,
 } from "../../utils/adminApiUtils";
 import { materialAPI } from "../../utils/apiClient";
+
+// Register Chart.js components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  ArcElement,
+  Title,
+  ChartTooltip,
+  Legend
+);
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -181,7 +181,8 @@ const Admindashboardoverview = ({ t, setActiveKey }) => {
           return fallback || key;
         }
         // Always use the hook's t first (most reliable in production, reactive to language changes)
-        const translator = tHook || t || (i18n && i18n.t ? i18n.t.bind(i18n) : null);
+        const translator =
+          tHook || t || (i18n && i18n.t ? i18n.t.bind(i18n) : null);
         if (!translator) {
           return fallback || key;
         }
@@ -269,7 +270,9 @@ const Admindashboardoverview = ({ t, setActiveKey }) => {
   const dashboardStats = localDashboardStats;
 
   // Force re-render when language changes (production fix)
-  const [currentLanguage, setCurrentLanguage] = useState(i18n?.language || "en");
+  const [currentLanguage, setCurrentLanguage] = useState(
+    i18n?.language || "en"
+  );
   useEffect(() => {
     const handleLanguageChange = (lng) => {
       console.log("🌐 Dashboard language changed to:", lng);
