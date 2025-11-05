@@ -1,4 +1,6 @@
 // API Client for Admin Dashboard
+import { zoomAPI } from "../services/zoomApiService";
+
 const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
 // Helper function to get auth headers
@@ -748,10 +750,7 @@ export const announcementAPI = {
   },
 };
 
-// Import zoomAPI
-import { zoomAPI } from '../services/zoomApiService';
-
-export default {
+const apiExport = {
   courseAPI,
   materialAPI,
   userAPI,
@@ -766,3 +765,5 @@ export default {
   announcementAPI,
   zoomAPI,
 };
+
+export default apiExport;
