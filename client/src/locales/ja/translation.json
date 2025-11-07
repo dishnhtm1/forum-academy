@@ -9,6 +9,7 @@
     "yes": "はい",
     "no": "いいえ",
     "cancel": "キャンセル",
+    "confirm": "確認",
     "create": "作成",
     "update": "更新",
     "upload": "アップロード",
@@ -3945,6 +3946,117 @@
         "newActivity": "新しいアクティビティ"
       }
     },
+    "myClasses": {
+      "subtitle": "クラスの概要",
+      "search": "コースを検索",
+      "filter": {
+        "category": "カテゴリー"
+      },
+      "view": {
+        "grid": "グリッド",
+        "table": "テーブル"
+      },
+      "buttons": {
+        "create": "コースを作成",
+        "live": "ライブクラスへ"
+      },
+      "metrics": {
+        "total": "総コース数",
+        "active": "アクティブ",
+        "students": "学生数",
+        "average": "平均受講数"
+      },
+      "notifications": {
+        "created": "コースが作成されました",
+        "updated": "コースが更新されました",
+        "deleted": "コースが削除されました",
+        "enrolled": "学生を追加しました",
+        "removed": "学生を削除しました"
+      },
+      "errors": {
+        "fetch": "コースの取得に失敗しました",
+        "save": "コースを保存できませんでした",
+        "delete": "コースの削除に失敗しました",
+        "fetchStudents": "学生の取得に失敗しました",
+        "enroll": "学生を追加できませんでした",
+        "remove": "学生を削除できませんでした"
+      },
+      "table": {
+        "title": "コース",
+        "code": "コード",
+        "category": "カテゴリー",
+        "students": "学生",
+        "status": "ステータス",
+        "schedule": "スケジュール",
+        "actions": "アクション"
+      },
+      "actions": {
+        "view": "表示",
+        "edit": "編集",
+        "delete": "削除",
+        "manage": "学生を管理"
+      },
+      "confirm": {
+        "delete": "このコースを削除しますか？"
+      },
+      "labels": {
+        "other": "その他",
+        "active": "アクティブ",
+        "inactive": "非アクティブ",
+        "unscheduled": "未定",
+        "weeks": "週",
+        "flex": "柔軟",
+        "enrolled": "在籍",
+        "studentsSuffix": "名"
+      },
+      "categories": {
+        "language": "言語",
+        "business": "ビジネス",
+        "technology": "テクノロジー",
+        "arts": "アート",
+        "science": "科学",
+        "other": "その他"
+      },
+      "level": {
+        "beginner": "初級",
+        "intermediate": "中級",
+        "advanced": "上級"
+      },
+      "form": {
+        "title": "コース名",
+        "titlePlaceholder": "例：会話日本語",
+        "code": "コースコード",
+        "level": "レベル",
+        "levelPlaceholder": "レベルを選択",
+        "category": "カテゴリー",
+        "categoryPlaceholder": "カテゴリーを選択",
+        "duration": "期間（週）",
+        "start": "開始日",
+        "end": "終了日",
+        "capacity": "最大人数",
+        "status": "ステータス",
+        "description": "説明",
+        "descriptionPlaceholder": "学習目標やリソースなどを記入してください"
+      },
+      "validation": {
+        "title": "タイトルを入力してください",
+        "code": "一意のコードを入力してください"
+      },
+      "modals": {
+        "createTitle": "コースを作成",
+        "editTitle": "コースを編集",
+        "details": "コース詳細"
+      },
+      "manage": {
+        "title": "学生を管理",
+        "selectStudent": "学生を選択（複数可）",
+        "add": "学生を追加",
+        "enrolled": "在籍学生",
+        "remove": "削除",
+        "empty": "在籍している学生はいません"
+      },
+      "empty": "該当するコースはありません"
+    },
     "courses": {
       "myClasses": "担当クラス",
       "addNewCourse": "新しいコースを追加",
@@ -4583,13 +4695,65 @@
     "liveClasses": {
       "title": "ライブクラス",
       "subtitle": "ライブクラスとインタラクティブセッションに参加",
+      "search": "ライブクラスを検索",
+      "metrics": {
+        "total": "総セッション数",
+        "upcoming": "今後のセッション",
+        "past": "完了済み",
+        "courses": "ライブクラスのあるコース"
+      },
+      "actions": {
+        "refresh": "再読み込み",
+        "create": "作成",
+        "update": "更新"
+      },
       "notifications": "通知",
       "noNotifications": "新しいライブクラスの通知はありません",
       "loading": "ライブクラスを読み込み中...",
-      "noClasses": "ライブクラスはありません",
+      "noClasses": "ライブクラスはまだありません",
       "noClassesDesc1": "まだライブクラスのあるコースに登録されていません。",
       "noClassesDesc2": "ライブセッションへのアクセスについては講師にお問い合わせください。",
       "yourClasses": "ライブクラス",
+      "cards": {
+        "sessionsCount": "セッション{{count}}件",
+        "next": "次のセッション",
+        "untitled": "名称未設定のセッション",
+        "minutes": "分",
+        "start": "開始",
+        "edit": "編集",
+        "delete": "削除",
+        "confirmDelete": "このライブクラスを削除しますか？",
+        "schedule": "ライブクラスを予約",
+        "startNext": "ライブクラスを開始",
+        "upcoming": "予定されているセッション",
+        "past": "最近のセッション",
+        "morePast": "過去のセッションがさらに{{count}}件あります",
+        "noUpcoming": "予定されているセッションはありません。",
+        "noDate": "日時未定"
+      },
+      "errors": {
+        "noMeetingId": "ミーティングIDが見つかりません。ページを再読み込みしてください。"
+      },
+      "modal": {
+        "createTitle": "ライブクラスを作成",
+        "editTitle": "ライブクラスを編集",
+        "liveClassTitle": "ライブクラス",
+        "course": "コース",
+        "coursePlaceholder": "コースを選択",
+        "courseRequired": "コースを選択してください",
+        "topic": "ミーティングのタイトル",
+        "topicPlaceholder": "タイトルを入力",
+        "topicRequired": "ミーティングのタイトルを入力してください",
+        "description": "説明",
+        "descriptionPlaceholder": "任意：詳細を入力",
+        "dateTime": "開始日時",
+        "dateTimeRequired": "開始日時を選択してください",
+        "duration": "所要時間（分）"
+      },
+      "unassigned": {
+        "title": "未割り当てのミーティング",
+        "description": "これらのライブクラスはまだコースに関連付けられていません。編集してコースを割り当ててください。"
+      },
       "joinModal": {
         "title": "ライブクラスに参加",
         "meetingId": "ミーティングID",
