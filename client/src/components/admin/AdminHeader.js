@@ -170,10 +170,27 @@ function AdminHeader(props) {
             }}
             aria-label="Notifications"
           >
-            {unreadCount > 0 && (
+            {((unreadCount || 0) > 0) && (
               <span style={{
-                position: "absolute", top: 4, right: 4, background: "#ff4d4f", color: "#fff", borderRadius: 8, padding: "0 6px", fontSize: 10, fontWeight: 600,
-              }}>{unreadCount > 99 ? "99+" : unreadCount}</span>
+                position: "absolute",
+                top: 4,
+                right: 4,
+                background: "#ff4d4f",
+                color: "#fff",
+                borderRadius: 8,
+                padding: "0 6px",
+                minWidth: "18px",
+                height: "18px",
+                fontSize: 10,
+                fontWeight: 600,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+                zIndex: 10,
+              }}>
+                {(unreadCount || 0) > 99 ? "99+" : (unreadCount || 0)}
+              </span>
             )}
             <Icon name="bell" size={isMobile ? 22 : 20} />
           </button>

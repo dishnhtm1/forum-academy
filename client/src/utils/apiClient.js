@@ -74,14 +74,14 @@ export const courseAPI = {
     return handleResponse(response);
   },
 
-  // Enroll student
+  // Enroll student(s)
   enrollStudent: async (courseId, studentId) => {
     const response = await fetch(
-      `${API_BASE_URL}/api/courses/${courseId}/enroll`,
+      `${API_BASE_URL}/api/courses/${courseId}/students`,
       {
         method: "POST",
         headers: getAuthHeaders(),
-        body: JSON.stringify({ studentId }),
+        body: JSON.stringify({ studentIds: Array.isArray(studentId) ? studentId : [studentId] }),
       }
     );
     return handleResponse(response);
@@ -90,11 +90,10 @@ export const courseAPI = {
   // Unenroll student
   unenrollStudent: async (courseId, studentId) => {
     const response = await fetch(
-      `${API_BASE_URL}/api/courses/${courseId}/unenroll`,
+      `${API_BASE_URL}/api/courses/${courseId}/students/${studentId}`,
       {
-        method: "POST",
+        method: "DELETE",
         headers: getAuthHeaders(),
-        body: JSON.stringify({ studentId }),
       }
     );
     return handleResponse(response);

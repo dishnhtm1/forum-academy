@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useHistory } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import moment from "moment";
 import {
   Row,
@@ -16,6 +17,10 @@ import {
   message,
   notification,
   Form,
+  Input,
+  Select,
+  DatePicker,
+  Switch,
 } from "antd";
 import {
   SoundOutlined,
@@ -31,13 +36,12 @@ import { AdminContext } from "../../context/AdminContext";
 import { getAuthHeaders, API_BASE_URL } from "../../utils/adminApiUtils";
 
 const { Title, Text } = Typography;
+const { TextArea } = Input;
+const { Option } = Select;
 
-const AdminAnnouncement = ({
-  t,
-  setAnnouncementViewModalVisible,
-  setViewModalVisible,
-  setAnnouncementModalVisible,
-}) => {
+const AdminAnnouncement = ({ t: tProp }) => {
+  const { t: tHook } = useTranslation();
+  const t = tProp || tHook;
   const history = useHistory();
   const [announcementForm] = Form.useForm();
 
@@ -49,29 +53,81 @@ const AdminAnnouncement = ({
   const [announcements, setAnnouncements] = useState([]);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
 
+  // Modal state - managed internally
+  const [announcementModalVisible, setAnnouncementModalVisible] =
+    useState(false);
+  const [announcementViewModalVisible, setAnnouncementViewModalVisible] =
+    useState(false);
+  const [viewModalVisible, setViewModalVisible] = useState(false);
+
   // Fetch announcements
   const fetchAnnouncements = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/announcements`, {
-        headers: getAuthHeaders(),
+      let apiAnnouncements = [];
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/announcements`, {
+          headers: getAuthHeaders(),
+        });
+
+        if (response.status === 401) {
+          localStorage.removeItem("token");
+          history.push("/login");
+          return;
+        }
+
+        if (response.ok) {
+          const data = await response.json();
+          apiAnnouncements = data.announcements || [];
+        }
+      } catch (apiError) {
+        console.log("API not available, using local announcements");
+      }
+
+      // Always load local announcements and merge with API announcements
+      const localAnnouncements = JSON.parse(
+        localStorage.getItem("localAnnouncements") || "[]"
+      );
+
+      // Merge API and local announcements, with local taking precedence for duplicates
+      const allAnnouncements = [...apiAnnouncements, ...localAnnouncements];
+
+      // Remove duplicates (prefer local over API if same ID)
+      const uniqueAnnouncements = allAnnouncements.reduce(
+        (acc, announcement) => {
+          const existingIndex = acc.findIndex(
+            (a) => a._id === announcement._id || a.id === announcement.id
+          );
+          if (existingIndex === -1) {
+            acc.push(announcement);
+          } else {
+            // If duplicate, prefer local announcement
+            if (announcement.isLocal) {
+              acc[existingIndex] = announcement;
+            }
+          }
+          return acc;
+        },
+        []
+      );
+
+      // Sort by creation date (newest first)
+      uniqueAnnouncements.sort((a, b) => {
+        const dateA = new Date(a.createdAt || 0);
+        const dateB = new Date(b.createdAt || 0);
+        return dateB - dateA;
       });
 
-      if (response.status === 401) {
-        localStorage.removeItem("token");
-        history.push("/login");
-        return;
-      }
-
-      if (response.ok) {
-        const data = await response.json();
-        setAnnouncements(data.announcements || []);
-      } else {
-        // Load local announcements if API fails
-        const localAnnouncements = JSON.parse(
-          localStorage.getItem("localAnnouncements") || "[]"
-        );
-        setAnnouncements(localAnnouncements);
-      }
+      setAnnouncements(uniqueAnnouncements);
+      console.log(
+        "📢 Fetched announcements:",
+        uniqueAnnouncements.length,
+        "Total (API:",
+        apiAnnouncements.length,
+        "Local:",
+        localAnnouncements.length,
+        ")"
+      );
     } catch (error) {
       console.error("Error fetching announcements:", error);
       // Load local announcements as fallback
@@ -88,10 +144,15 @@ const AdminAnnouncement = ({
       const localNotifications = JSON.parse(
         localStorage.getItem("localNotifications") || "[]"
       );
+      const uniqueId = `local_${Date.now()}_${Math.random()
+        .toString(36)
+        .substr(2, 9)}`;
       const notification = {
         ...notificationData,
-        _id: `local_${Date.now()}`,
+        _id: uniqueId,
+        id: uniqueId,
         createdAt: new Date().toISOString(),
+        timestamp: new Date().toISOString(),
         isLocal: true,
         read: false,
       };
@@ -100,8 +161,24 @@ const AdminAnnouncement = ({
         "localNotifications",
         JSON.stringify(localNotifications)
       );
+      console.log("✅ AdminAnnouncement - Local notification created:", {
+        id: notification.id,
+        type: notification.type,
+        title: notification.title?.substring(0, 50),
+        targetAudience: notification.targetAudience,
+      });
+      console.log(
+        "📋 AdminAnnouncement - Total local notifications:",
+        localNotifications.length
+      );
+      console.log("📋 AdminAnnouncement - Full notification:", notification);
+      return notification;
     } catch (error) {
-      console.error("Error creating local notification:", error);
+      console.error(
+        "❌ AdminAnnouncement - Error creating local notification:",
+        error
+      );
+      return null;
     }
   };
 
@@ -111,9 +188,13 @@ const AdminAnnouncement = ({
     announcementResult
   ) => {
     try {
+      // Get translated notification title prefix
+      const newAnnouncementPrefix =
+        t("announcements.notification.titlePrefix") || "New Announcement";
+
       const notificationData = {
-        type: "announcement",
-        title: `📢 New Announcement: ${announcementData.title}`,
+        type: "admin_announcement",
+        title: `📢 ${newAnnouncementPrefix}: ${announcementData.title}`,
         message: announcementData.content,
         priority: announcementData.priority || "medium",
         sender: announcementData.authorName || "Admin",
@@ -149,6 +230,8 @@ const AdminAnnouncement = ({
           if (response.ok) {
             notificationSuccess = true;
             console.log("✅ Notifications created successfully via", endpoint);
+            // Also save locally as backup
+            createLocalNotification(notificationData);
             break;
           }
         } catch (error) {
@@ -159,8 +242,12 @@ const AdminAnnouncement = ({
 
       if (!notificationSuccess) {
         console.warn(
-          "⚠️ Could not create notifications - endpoints may not be available"
+          "⚠️ Could not create notifications - endpoints may not be available, saving locally"
         );
+        createLocalNotification(notificationData);
+      } else {
+        // Even if API succeeds, always save locally as backup for teachers
+        console.log("✅ API notification sent, also saving locally as backup");
         createLocalNotification(notificationData);
       }
     } catch (error) {
@@ -184,8 +271,16 @@ const AdminAnnouncement = ({
         expiryDate: values.expiryDate ? values.expiryDate.toISOString() : null,
         tags: values.tags || [],
         author: currentUser?.id || currentUser?._id,
-        authorName: currentUser?.firstName + " " + currentUser?.lastName,
+        authorName:
+          (currentUser?.firstName || currentUser?.name || "Admin") +
+          " " +
+          (currentUser?.lastName || ""),
       };
+
+      console.log(
+        "📢 AdminAnnouncement - Creating announcement:",
+        announcementData
+      );
 
       // Try multiple possible API endpoints
       const possibleEndpoints = [
@@ -232,9 +327,12 @@ const AdminAnnouncement = ({
         const localAnnouncements = JSON.parse(
           localStorage.getItem("localAnnouncements") || "[]"
         );
+        const announcementId =
+          selectedAnnouncement?._id || `local_${Date.now()}`;
         const newAnnouncement = {
           ...announcementData,
-          _id: selectedAnnouncement?._id || `local_${Date.now()}`,
+          _id: announcementId,
+          id: announcementId,
           createdAt: new Date().toISOString(),
           isLocal: true,
         };
@@ -255,11 +353,58 @@ const AdminAnnouncement = ({
           JSON.stringify(localAnnouncements)
         );
 
+        // Create notifications even when saved locally
+        const announcementResult = { _id: announcementId, id: announcementId };
+        await createAnnouncementNotifications(
+          announcementData,
+          announcementResult
+        );
+
+        // Get audience label for translation
+        const audienceLabel =
+          t(
+            `announcements.audienceLabels.${announcementData.targetAudience}`
+          ) || announcementData.targetAudience;
+
+        const successMessage = selectedAnnouncement
+          ? t("announcements.success.updated") ||
+            "Announcement updated successfully!"
+          : t("announcements.success.created") ||
+            "Announcement created successfully!";
+
+        const successDescription = selectedAnnouncement
+          ? t("announcements.success.updatedDescription", {
+              audience: audienceLabel,
+            }) || `Notifications sent to ${audienceLabel} users.`
+          : t("announcements.success.createdDescription", {
+              audience: audienceLabel,
+            }) || `Notifications sent to ${audienceLabel} users.`;
+
+        message.success(successMessage + " " + successDescription);
         message.warning(
           `📢 Announcement saved locally. It will sync when the server is available.`
         );
+
+        // Show success notification
+        const publishedMessage =
+          t("announcements.success.published") || "Announcement Published!";
+        const publishedDescription =
+          t("announcements.success.publishedDescription", {
+            title: values.title,
+            audience: audienceLabel,
+          }) ||
+          `"${values.title}" has been published and notifications sent to ${audienceLabel} users.`;
+
+        notification.success({
+          message: publishedMessage,
+          description: publishedDescription,
+          icon: <SoundOutlined style={{ color: "#1890ff" }} />,
+          duration: 4,
+        });
+
         setAnnouncementModalVisible(false);
         setSelectedAnnouncement(null);
+        announcementForm.resetFields();
         fetchAnnouncements();
         return;
       }
@@ -276,21 +421,45 @@ const AdminAnnouncement = ({
         // Create notifications for target audience
         await createAnnouncementNotifications(announcementData, result);
 
-        message.success(
-          `📢 Announcement ${
-            selectedAnnouncement ? "updated" : "created"
-          } successfully! Notifications sent to ${
-            announcementData.targetAudience
-          } users.`
-        );
+        // Get audience label for translation
+        const audienceLabel =
+          t(
+            `announcements.audienceLabels.${announcementData.targetAudience}`
+          ) || announcementData.targetAudience;
+
+        const successMessage = selectedAnnouncement
+          ? t("announcements.success.updated") ||
+            "Announcement updated successfully!"
+          : t("announcements.success.created") ||
+            "Announcement created successfully!";
+
+        const successDescription = selectedAnnouncement
+          ? t("announcements.success.updatedDescription", {
+              audience: audienceLabel,
+            }) || `Notifications sent to ${audienceLabel} users.`
+          : t("announcements.success.createdDescription", {
+              audience: audienceLabel,
+            }) || `Notifications sent to ${audienceLabel} users.`;
+
+        message.success(successMessage + " " + successDescription);
+
         setAnnouncementModalVisible(false);
         setSelectedAnnouncement(null);
         fetchAnnouncements();
 
         // Show success notification
+        const publishedMessage =
+          t("announcements.success.published") || "Announcement Published!";
+        const publishedDescription =
+          t("announcements.success.publishedDescription", {
+            title: values.title,
+            audience: audienceLabel,
+          }) ||
+          `"${values.title}" has been published and notifications sent to ${audienceLabel} users.`;
+
         notification.success({
-          message: "Announcement Published!",
-          description: `"${values.title}" has been published and notifications sent to ${announcementData.targetAudience} users.`,
+          message: publishedMessage,
+          description: publishedDescription,
           icon: <SoundOutlined style={{ color: "#1890ff" }} />,
           duration: 4,
         });
@@ -310,11 +479,18 @@ const AdminAnnouncement = ({
   }, []);
 
   const confirmDelete = (record) => {
+    const deleteTitle = t("announcements.deleteTitle");
+    const deleteConfirm = t("announcements.deleteConfirm");
+
     Modal.confirm({
-      title: t("announcements.deleteTitle") || "Delete Announcement",
+      title:
+        deleteTitle === "announcements.deleteTitle"
+          ? "Delete Announcement"
+          : deleteTitle,
       content:
-        t("announcements.deleteConfirm") ||
-        "Are you sure you want to delete this announcement?",
+        deleteConfirm === "announcements.deleteConfirm"
+          ? "Are you sure you want to delete this announcement?"
+          : deleteConfirm,
       onOk: async () => {
         try {
           const response = await fetch(
@@ -348,7 +524,7 @@ const AdminAnnouncement = ({
             setAnnouncementViewModalVisible(false);
             setViewModalVisible(false);
             setSelectedAnnouncement(null);
-            announcementForm && announcementForm.resetFields();
+            if (announcementForm) announcementForm.resetFields();
             setAnnouncementModalVisible(true);
           }}
         >
@@ -551,6 +727,375 @@ const AdminAnnouncement = ({
           }}
         />
       </Card>
+
+      {/* Create/Edit Announcement Modal */}
+      <Modal
+        title={
+          selectedAnnouncement
+            ? t("announcements.modal.editTitle") || "Edit Announcement"
+            : t("announcements.modal.createTitle") || "Create New Announcement"
+        }
+        open={announcementModalVisible}
+        onCancel={() => {
+          setAnnouncementModalVisible(false);
+          setSelectedAnnouncement(null);
+          announcementForm.resetFields();
+        }}
+        footer={null}
+        width={700}
+      >
+        <Form
+          form={announcementForm}
+          layout="vertical"
+          onFinish={handleCreateAnnouncement}
+          initialValues={{
+            priority: "medium",
+            type: "general",
+            targetAudience: "all",
+            isSticky: false,
+          }}
+        >
+          <Form.Item
+            name="title"
+            label={t("announcements.modal.form.title") || "Title"}
+            rules={[
+              {
+                required: true,
+                message:
+                  t("announcements.modal.form.validation.title") ||
+                  "Please enter announcement title",
+              },
+              {
+                min: 3,
+                message:
+                  t("announcements.modal.form.validation.titleMin") ||
+                  "Title must be at least 3 characters",
+              },
+              {
+                whitespace: true,
+                message:
+                  t("announcements.modal.form.validation.titleWhitespace") ||
+                  "Title cannot be empty or contain only whitespace",
+              },
+            ]}
+          >
+            <Input
+              placeholder={
+                t("announcements.modal.form.titlePlaceholder") ||
+                "Enter announcement title (minimum 3 characters)"
+              }
+              showCount
+              maxLength={200}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="content"
+            label={t("announcements.modal.form.content") || "Content"}
+            rules={[
+              {
+                required: true,
+                message:
+                  t("announcements.modal.form.validation.content") ||
+                  "Please enter announcement content",
+              },
+              {
+                min: 10,
+                message:
+                  t("announcements.modal.form.validation.contentMin") ||
+                  "Content must be at least 10 characters",
+              },
+              {
+                whitespace: true,
+                message:
+                  t("announcements.modal.form.validation.contentWhitespace") ||
+                  "Content cannot be empty or contain only whitespace",
+              },
+            ]}
+          >
+            <TextArea
+              rows={6}
+              placeholder={
+                t("announcements.modal.form.contentPlaceholder") ||
+                "Enter announcement content that will be visible to users (minimum 10 characters)"
+              }
+              showCount
+              maxLength={5000}
+            />
+          </Form.Item>
+
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="targetAudience"
+                label={
+                  t("announcements.modal.form.targetAudience") ||
+                  "Target Audience"
+                }
+              >
+                <Select>
+                  <Option value="all">
+                    {t("announcements.modal.form.audienceOptions.all") ||
+                      "All Users"}
+                  </Option>
+                  <Option value="students">
+                    {t("announcements.modal.form.audienceOptions.students") ||
+                      "Students Only"}
+                  </Option>
+                  <Option value="teachers">
+                    {t("announcements.modal.form.audienceOptions.teachers") ||
+                      "Teachers Only"}
+                  </Option>
+                  <Option value="admins">
+                    {t("announcements.modal.form.audienceOptions.admins") ||
+                      "Admins Only"}
+                  </Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="priority"
+                label={t("announcements.modal.form.priority") || "Priority"}
+              >
+                <Select>
+                  <Option value="low">
+                    {t("announcements.modal.form.priorityOptions.low") ||
+                      "Low Priority"}
+                  </Option>
+                  <Option value="medium">
+                    {t("announcements.modal.form.priorityOptions.medium") ||
+                      "Medium Priority"}
+                  </Option>
+                  <Option value="high">
+                    {t("announcements.modal.form.priorityOptions.high") ||
+                      "High Priority"}
+                  </Option>
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="type"
+                label={t("announcements.modal.form.type") || "Type"}
+              >
+                <Select>
+                  <Option value="general">
+                    {t("announcements.modal.form.typeOptions.general") ||
+                      "General"}
+                  </Option>
+                  <Option value="academic">
+                    {t("announcements.modal.form.typeOptions.academic") ||
+                      "Academic"}
+                  </Option>
+                  <Option value="event">
+                    {t("announcements.modal.form.typeOptions.event") || "Event"}
+                  </Option>
+                  <Option value="maintenance">
+                    {t("announcements.modal.form.typeOptions.maintenance") ||
+                      "Maintenance"}
+                  </Option>
+                  <Option value="urgent">
+                    {t("announcements.modal.form.typeOptions.urgent") ||
+                      "Urgent"}
+                  </Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="isSticky"
+                label={
+                  t("announcements.modal.form.pinAnnouncement") ||
+                  "Pin Announcement"
+                }
+                valuePropName="checked"
+              >
+                <Switch />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="publishDate"
+                label={
+                  t("announcements.modal.form.publishDate") || "Publish Date"
+                }
+              >
+                <DatePicker
+                  style={{ width: "100%" }}
+                  showTime
+                  placeholder={
+                    t("announcements.modal.form.publishDatePlaceholder") ||
+                    "Select publish date (optional)"
+                  }
+                />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="expiryDate"
+                label={
+                  t("announcements.modal.form.expiryDate") || "Expiry Date"
+                }
+              >
+                <DatePicker
+                  style={{ width: "100%" }}
+                  showTime
+                  placeholder={
+                    t("announcements.modal.form.expiryDatePlaceholder") ||
+                    "Select expiry date (optional)"
+                  }
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Form.Item
+            name="tags"
+            label={t("announcements.modal.form.tags") || "Tags (optional)"}
+          >
+            <Input
+              placeholder={
+                t("announcements.modal.form.tagsPlaceholder") ||
+                "Add tags for better organization"
+              }
+            />
+          </Form.Item>
+
+          <Form.Item style={{ marginBottom: 0, marginTop: 24 }}>
+            <Space style={{ width: "100%", justifyContent: "flex-end" }}>
+              <Button
+                onClick={() => {
+                  setAnnouncementModalVisible(false);
+                  setSelectedAnnouncement(null);
+                  announcementForm.resetFields();
+                }}
+              >
+                {t("announcements.modal.buttons.cancel") || "Cancel"}
+              </Button>
+              <Button type="primary" htmlType="submit">
+                {selectedAnnouncement
+                  ? t("announcements.modal.buttons.update") || "Update & Notify"
+                  : t("announcements.modal.buttons.create") ||
+                    "Create & Send Notifications"}
+              </Button>
+            </Space>
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* View Announcement Modal */}
+      <Modal
+        title={t("announcements.modal.viewTitle") || "Announcement Details"}
+        open={announcementViewModalVisible}
+        onCancel={() => {
+          setAnnouncementViewModalVisible(false);
+          setSelectedAnnouncement(null);
+        }}
+        footer={[
+          <Button
+            key="close"
+            onClick={() => {
+              setAnnouncementViewModalVisible(false);
+              setSelectedAnnouncement(null);
+            }}
+          >
+            {t("announcements.modal.buttons.close") || "Close"}
+          </Button>,
+        ]}
+        width={700}
+      >
+        {selectedAnnouncement && (
+          <div>
+            <Title level={4}>{selectedAnnouncement.title}</Title>
+            <div style={{ marginBottom: 16 }}>
+              <Text type="secondary">
+                {t("announcements.table.createdAgo", {
+                  time: moment(selectedAnnouncement.createdAt).fromNow(),
+                })}
+              </Text>
+            </div>
+            <div style={{ marginBottom: 16, whiteSpace: "pre-wrap" }}>
+              <Text>{selectedAnnouncement.content}</Text>
+            </div>
+            <Row gutter={16} style={{ marginTop: 24 }}>
+              <Col span={12}>
+                <Text strong>
+                  {t("announcements.modal.form.targetAudience") ||
+                    "Target Audience"}
+                  :{" "}
+                </Text>
+                <Tag color="blue">
+                  {t(
+                    `announcements.targetAudience.${selectedAnnouncement.targetAudience}`
+                  )}
+                </Tag>
+              </Col>
+              <Col span={12}>
+                <Text strong>
+                  {t("announcements.modal.form.priority") || "Priority"}:{" "}
+                </Text>
+                <Tag
+                  color={
+                    selectedAnnouncement.priority === "high"
+                      ? "red"
+                      : selectedAnnouncement.priority === "medium"
+                      ? "orange"
+                      : "default"
+                  }
+                >
+                  {t(`announcements.priority.${selectedAnnouncement.priority}`)}
+                </Tag>
+              </Col>
+            </Row>
+            <Row gutter={16} style={{ marginTop: 16 }}>
+              <Col span={12}>
+                <Text strong>
+                  {t("announcements.modal.form.type") || "Type"}:{" "}
+                </Text>
+                <Tag>
+                  {t(`announcements.type.${selectedAnnouncement.type}`)}
+                </Tag>
+              </Col>
+              <Col span={12}>
+                {selectedAnnouncement.isSticky && (
+                  <Tag color="orange">📌 Pinned</Tag>
+                )}
+              </Col>
+            </Row>
+            {selectedAnnouncement.publishDate && (
+              <div style={{ marginTop: 16 }}>
+                <Text strong>
+                  {t("announcements.modal.form.publishDate") || "Publish Date"}:{" "}
+                </Text>
+                <Text>
+                  {moment(selectedAnnouncement.publishDate).format(
+                    "MMMM DD, YYYY HH:mm"
+                  )}
+                </Text>
+              </div>
+            )}
+            {selectedAnnouncement.expiryDate && (
+              <div style={{ marginTop: 8 }}>
+                <Text strong>
+                  {t("announcements.modal.form.expiryDate") || "Expiry Date"}:{" "}
+                </Text>
+                <Text>
+                  {moment(selectedAnnouncement.expiryDate).format(
+                    "MMMM DD, YYYY HH:mm"
+                  )}
+                </Text>
+              </div>
+            )}
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };

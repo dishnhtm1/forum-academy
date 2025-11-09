@@ -3915,6 +3915,7 @@
       "title": "教師ダッシュボード",
       "welcome": "おかえりなさい",
       "myClasses": "担当クラス",
+      "materials": "教材",
       "totalStudents": "総学生数",
       "teachingMaterials": "教材数",
       "pendingReviews": "未確認",
@@ -3931,6 +3932,10 @@
       "newSubmission": "上級英語で新しいクイズ提出",
       "materialUploaded": "日本語101にコース教材がアップロードされました",
       "deadlineReminder": "宿題の期限リマインダーが送信されました",
+      "quizManagement": "クイズ管理",
+      "assignmentCenter": "課題センター",
+      "studentManagement": "学生管理",
+      "analyticsSettings": "分析と設定",
       "minutesAgo": "分前",
       "hourAgo": "時間前",
       "hoursAgo": "時間前",
@@ -3944,7 +3949,46 @@
         "materialUploaded": "教材「{{material}}」が{{course}}にアップロードされました",
         "announcement": "お知らせ「{{title}}」が{{course}}に投稿されました",
         "newActivity": "新しいアクティビティ"
-      }
+      },
+      "weather": {
+        "errorMessage": "現在、天気情報を取得できません。",
+        "defaultLocation": "新潟"
+      },
+      "daysShort": {
+        "mon": "月",
+        "tue": "火",
+        "wed": "水",
+        "thu": "木",
+        "fri": "金"
+      },
+      "actionCenter": {
+        "title": "アクションセンター",
+        "subtitle": "クラス運営をサポートするおすすめの次の一手",
+        "open": "開く",
+        "items": {
+          "pendingReviews": {
+            "title": "未採点の提出物を評価",
+            "description": "フィードバック待ちの課題が{{count}}件あります。"
+          },
+          "createQuiz": {
+            "title": "新しいクイズを公開",
+            "description": "クラスの理解度を素早く確認するクイズを設定しましょう。"
+          },
+          "planAssignment": {
+            "title": "次の課題を計画",
+            "description": "今週の学習内容を補強する新しい課題を作成しましょう。"
+          },
+          "scheduleEvent": {
+            "title": "今後の予定をスケジュール",
+            "description": "イベントやリマインダーを追加して、学習計画を共有しましょう。"
+          },
+          "celebrate": {
+            "title": "計画通りに進んでいます！",
+            "description": "急ぎのタスクはありません。分析を確認したり、新しい教材を共有しましょう。"
+          }
+        }
+      },
+      "heroGreeting": "{{name}} 👋"
     },
     "myClasses": {
       "subtitle": "クラスの概要",
@@ -4155,6 +4199,136 @@
       "deleteConfirm": "この教材を削除してもよろしいですか？",
       "downloadError": "ファイルのダウンロードに失敗しました"
     },
+    "studentManagement": {
+      "title": "学生管理ワークスペース",
+      "subtitle": "進捗を把握し、素早くフォローし、クラス運営を円滑に進めましょう。",
+      "unknown": "不明",
+      "unknownStudent": "学生",
+      "noEmail": "メール未登録",
+      "noGrade": "未公開",
+      "noData": "データなし",
+      "empty": "—",
+      "selectCourse": "コースを選択",
+      "selectCoursePrompt": "受講生を閲覧するコースを選択してください。",
+      "searchPlaceholder": "学生を検索...",
+      "rosterTitle": "受講生一覧",
+      "noStudents": "現在の条件に一致する学生はいません。",
+      "overview": {
+        "totalStudents": "アクティブ学生数",
+        "recentSubmissions": "最近の提出数",
+        "averageScore": "平均スコア",
+        "activeStudents": "直近30日で関与した学生"
+      },
+      "actions": {
+        "refresh": "更新",
+        "bulkMessage": "絞り込み対象へメッセージ",
+        "bulkMessageShort": "一括メッセージ",
+        "viewProfile": "プロフィールを見る",
+        "sendMessage": "メッセージ",
+        "cancel": "キャンセル",
+        "send": "送信"
+      },
+      "filters": {
+        "all": "すべての学生",
+        "active": "アクティブ",
+        "needsAttention": "要フォロー",
+        "inactive": "非アクティブ"
+      },
+      "labels": {
+        "recentGrade": "最新の評価",
+        "noRecentWork": "最近の提出はありません",
+        "submissionsLast30": "過去30日に{{count}}件の提出"
+      },
+      "engagement": {
+        "high": "高いエンゲージメント",
+        "medium": "適度",
+        "low": "フォローが必要"
+      },
+      "messages": {
+        "title": "メッセージを送信",
+        "bulkTitle": "選択した学生にメッセージを送信",
+        "subject": "件名",
+        "content": "本文",
+        "validation": {
+          "subject": "件名を入力してください",
+          "content": "本文を入力してください"
+        },
+        "bulkContext": "このメッセージは各学生に個別に送信されます。返信はそれぞれ別のスレッドで届きます。",
+        "sending": "メッセージを送信しています...",
+        "sent": "メッセージを送信しました。"
+      },
+      "templates": {
+        "label": "テンプレート",
+        "placeholder": "テンプレートを選択",
+        "placeholderName": "学生",
+        "welcome": {
+          "title": "歓迎メッセージ",
+          "subject": "授業へようこそ！",
+          "body": "こんにちは、{{studentName}}さん。授業へようこそ。学習を始めるうえで必要なものがあれば遠慮なく知らせてください。"
+        },
+        "reminder": {
+          "title": "フォローアップ",
+          "subject": "提出期限のリマインダー",
+          "body": "こんにちは、{{studentName}}さん。今週の提出期限が近づいています。サポートが必要な場合はいつでも連絡してください。"
+        },
+        "congrats": {
+          "title": "称賛メッセージ",
+          "subject": "最近の頑張りが素晴らしいです",
+          "body": "こんにちは、{{studentName}}さん。最近の提出物が素晴らしいですね。この調子で頑張りましょう！"
+        }
+      },
+      "drawer": {
+        "title": "学生",
+        "overview": "概要",
+        "email": "メール",
+        "status": "ステータス",
+        "averageScore": "平均スコア",
+        "submissions30": "30日間の提出数",
+        "progress": "進捗履歴",
+        "communication": "コミュニケーション",
+        "notes": "ノート",
+        "score": "スコア",
+        "noProgress": "まだ進捗記録がありません。",
+        "noMessages": "まだメッセージのやり取りはありません。",
+        "empty": "学生を選択すると詳細が表示されます。"
+      },
+      "notes": {
+        "placeholder": "フォロー内容・強み・気になる点を記録しましょう。",
+        "save": "ノートを保存",
+        "saved": "この学生向けノートを保存しました。",
+        "defaultPrompt": "この学生への最初のメモを追加しましょう。"
+      },
+      "tasks": {
+        "title": "フォローアップタスク",
+        "subtitle": "優先事項を見える化し、次にすべき行動を把握しましょう。",
+        "filters": {
+          "active": "進行中",
+          "completed": "完了",
+          "all": "すべて"
+        },
+        "validation": {
+          "title": "タスク名を入力してください"
+        },
+        "placeholders": {
+          "title": "1on1の予定を立てる...",
+          "student": "学生を関連付ける",
+          "dueDate": "期限日"
+        },
+        "add": "タスクを追加",
+        "markPending": "未完了に戻す",
+        "markDone": "完了にする",
+        "delete": "削除",
+        "due": "期限",
+        "empty": "タスクはまだありません。",
+        "added": "タスクを追加しました"
+      },
+      "errors": {
+        "courses": "担当コースの読み込みに失敗しました。",
+        "students": "受講学生の読み込みに失敗しました。",
+        "recipient": "宛先を1件以上選択してください。",
+        "messageSend": "メッセージを送信できませんでした。もう一度お試しください。"
+      }
+    },
     "students": {
       "title": "学生管理",
       "courseLabel": "コース",
@@ -4300,101 +4474,354 @@
       }
     },
     "analytics": {
-      "title": "分析とレポート",
-      "liveData": "ライブ",
-      "realTimeAnalytics": "教育モジュールによるリアルタイム分析",
-      "dataCalculation": "学生管理、採点センター、クイズと課題システムから自動計算されたデータ",
-      "refreshAnalytics": "分析を更新",
-      "lastUpdated": "最終更新",
-      "liveDataTitle": "ライブデータ分析",
-      "liveDataAnalytics": "ライブデータ分析",
-      "currentDataIncludes": "現在のデータには以下が含まれます",
-      "courses": "コース",
-      "students": "学生",
-      "gradedAssignments": "採点済み課題",
-      "quizzes": "クイズ",
-      "and": "および",
-      "homeworkAssignments": "宿題課題",
-      "metricsDescription": "以下のすべての指標は、アクティブな教育モジュールからリアルタイムで計算されます",
-      "metricsCalculated": "以下のすべての指標は、アクティブな教育モジュールからリアルタイムで計算されます",
-      "kpiTitle": "主要パフォーマンス指標",
-      "kpiTooltip": "これらの指標は実際の教育データから計算されます",
-      "live": "ライブ",
-      "totalStudents": "総学生数",
-      "enrolledAcrossClasses": "全クラスに登録",
-      "enrolledAcross": "全クラスに登録",
-      "totalSubmissions": "総提出数",
-      "submissionsDescription": "課題、クイズ、演習",
-      "assignmentsQuizzes": "課題、クイズ、演習",
-      "averageScore": "平均スコア",
-      "acrossAssessments": "全評価の平均",
-      "activeStudents": "アクティブな学生",
-      "recentActivity": "最近のアクティビティ（7日間）",
-      "dataSourcesTitle": "データソースと計算方法",
-      "totalStudentsDesc": "学生管理モジュールから教師のクラスに登録されているすべての学生の数",
-      "totalSubmissionsDesc": "採点センターデータから提出された課題、クイズ、演習の合計",
-      "averageScoreDesc": "進捗記録から提出されたすべての評価の平均成績",
-      "activeStudentsDesc": "ユーザーアクティビティログから過去7日間に提出またはアクティビティがある学生",
-      "performanceTrends": "パフォーマンストレンド",
-      "last4Weeks": "過去4週間",
-      "lastWeeks": "過去4週間",
-      "noPerformanceData": "パフォーマンスデータがありません",
-      "assignmentTypes": "課題タイプ",
-      "distribution": "分布",
-      "noAssignmentData": "課題データがありません",
-      "recentGradingActivity": "最近の採点アクティビティ",
-      "latestActivities": "最新の{{count}}件のアクティビティ",
-      "latest": "最新の",
-      "activities": "件のアクティビティ",
-      "completed": "完了",
-      "in": "科目",
-      "noRecentActivity": "最近の採点アクティビティはありません",
-      "noActivity": "最近の採点アクティビティはありません",
-      "gradeDistribution": "成績分布",
-      "grade": "成績",
-      "week1": "第1週",
-      "week2": "第2週",
-      "week3": "第3週",
-      "week4": "第4週",
-      "averageScorePercent": "平均スコア（%）",
-      "noData": "データなし",
-      "kpi": {
-        "title": "主要パフォーマンス指標",
-        "totalStudents": "総学生数",
-        "enrolledAcross": "全クラスに登録",
-        "totalSubmissions": "総提出数",
-        "assignmentsQuizzes": "課題、クイズ、演習",
-        "averageScore": "平均スコア",
-        "acrossAssessments": "全評価の平均",
-        "activeStudents": "アクティブな学生",
-        "recentActivity": "最近のアクティビティ（7日間）"
+      "title": "教師向けパフォーマンス分析",
+      "subtitle": "担当コースの状況や採点、連絡の優先度を一元管理しましょう。",
+      "badges": {
+        "secure": "セキュリティ整合",
+        "studentSafe": "生徒に安全なコンテンツ",
+        "translationParity": "翻訳整合性の追跡"
       },
-      "dataSources": {
-        "title": "データソースと計算方法",
-        "totalStudentsDesc": "学生管理モジュールから教師のクラスに登録されているすべての学生の数",
-        "totalSubmissionsDesc": "採点センターデータから提出された課題、クイズ、演習の合計",
-        "averageScoreDesc": "進捗記録から提出されたすべての評価の平均成績",
-        "activeStudentsDesc": "ユーザーアクティビティログから過去7日間に提出またはアクティビティがある学生"
+      "actions": {
+        "refresh": "データを更新",
+        "validate": "検証を実行",
+        "apply": "この翻訳を使用"
       },
-      "charts": {
-        "performanceTrends": "パフォーマンストレンド",
-        "lastWeeks": "過去4週間",
-        "assignmentTypes": "課題タイプ",
-        "distribution": "分布",
-        "noPerformanceData": "パフォーマンスデータがありません",
-        "noAssignmentData": "課題データがありません"
+      "hero": {
+        "qualityScore": "品質スコア",
+        "pending": "要対応件数",
+        "studentGaps": "学生向けテキストの不足",
+        "teacherGaps": "教職員向けテキストの不足",
+        "tooltipQuality": "カバレッジと未解決の問題から算出しています。",
+        "activeStudents": "アクティブ学生数",
+        "activeCourses": "担当コース",
+        "pendingReviews": "未採点",
+        "averageScore": "平均スコア"
       },
-      "recentActivityObj": {
+      "overviewCards": {
+        "totalKeys": "翻訳キー総数",
+        "coverage": "カバレッジ",
+        "issues": "要確認の項目",
+        "missing": "不足している翻訳"
+      },
+      "tabs": {
+        "validator": "リアルタイム検証",
+        "accounts": "アカウント健全性"
+      },
+      "actionCenter": {
+        "title": "教師向けアクションセンター",
+        "description": "学習に影響する翻訳作業から優先的に着手しましょう。",
+        "items": {
+          "missingEnglish": {
+            "title": "英語訳を追加",
+            "subtitle": "英語版が未作成の文言が{{count}}件あります"
+          },
+          "missingJapanese": {
+            "title": "日本語訳を追加",
+            "subtitle": "日本語版が未作成の文言が{{count}}件あります"
+          },
+          "mixedLanguage": {
+            "title": "混在した言語を整える",
+            "subtitle": "日本語と英語が混在している文言が{{count}}件あります"
+          }
+        },
+        "preview": "例",
+        "cta": "翻訳リソースを開く",
+        "empty": "大きな翻訳作業はありません。"
+      },
+      "communication": {
+        "title": "コミュニケーションサポート",
+        "description": "教師と学生への連絡を適切なタイミングで行いましょう。",
+        "audiences": {
+          "students": "学生向け",
+          "teachers": "教職員向け",
+          "general": "全校向け"
+        },
+        "actions": {
+          "students": "言語サポートグループにリマインダーを送る",
+          "teachers": "教職員チームと共有する",
+          "general": "コミュニティ全体にお知らせを投稿する"
+        },
+        "copyKey": "キーをコピー",
+        "empty": "追跡が必要な連絡はありません。"
+      },
+      "namespaces": {
+        "title": "ネームスペースの状態",
+        "namespace": "ネームスペース",
+        "coverage": "カバレッジ",
+        "flagged": "フラグ",
+        "total": "文言数"
+      },
+      "templates": {
+        "title": "メッセージテンプレート",
+        "description": "翻訳変更時に利用できるメッセージを用意しています。",
+        "items": {
+          "release": {
+            "title": "更新内容をクラスに通知する",
+            "body": "皆さんへ\n{{key}} の英語テキストを更新しました。新しい表現を確認し、疑問があればお知らせください。"
+          },
+          "support": {
+            "title": "分かりづらい表現をフォローする",
+            "body": "こんにちは。\n{{key}} の日本語表現が分かりづらいかもしれません。オフィスアワーで一緒に確認しましょう。"
+          },
+          "thankyou": {
+            "title": "フィードバックに感謝する",
+            "body": "翻訳についてのご指摘ありがとうございます。{{key}} の更新が日英ともに反映されました。"
+          },
+          "deadlineReminder": {
+            "title": "次の締切を学生にリマインドする",
+            "body": "皆さんへ\n「{{assessment}}」の締切は{{when}}です。期限内の提出をお願いします。サポートが必要な場合は気軽に相談してください。"
+          },
+          "studentSupport": {
+            "title": "学生にフォローの連絡をする",
+            "body": "{{student}}さんへ\n最近の提出状況を拝見しました。進捗をサポートできるよう、短い時間でも面談を調整しましょう。"
+          },
+          "teacherSync": {
+            "title": "教職員同士で状況共有する",
+            "body": "チーム各位\n現在の採点優先度と翻訳タスクを共有します。次回のスタンドアップで認識を合わせましょう。"
+          }
+        },
+        "copy": "メッセージをコピー"
+      },
+      "workload": {
+        "title": "直近のタスク",
+        "subtitle": "締切と期限切れの課題を把握しましょう。",
+        "empty": "今後2週間以内に締切の課題はありません。",
+        "quiz": "クイズ",
+        "homework": "課題",
+        "dueToday": "今日が締切",
+        "dueTomorrow": "明日が締切",
+        "dueInDays": "{{count}}日後に締切",
+        "overdueDays": "{{count}}日前に締切",
+        "duration": "{{minutes}}分"
+      },
+      "students": {
+        "title": "サポートが必要な学生",
+        "subtitle": "成績が低い、または提出が少ない学生を優先的にフォローしましょう。",
+        "empty": "緊急のフォローが必要な学生はいません。",
+        "tags": {
+          "lowScore": "成績が低い",
+          "new": "エンゲージメント低"
+        },
+        "details": "平均 {{score}}% ・提出 {{submissions}} 件",
+        "averageScore": "平均 {{score}}%"
+      },
+      "performance": {
+        "title": "パフォーマンストレンド",
+        "week": "第{{index}}週",
+        "averageScore": "平均スコア"
+      },
+      "courseHealth": {
+        "title": "コースの状況",
+        "columns": {
+          "course": "コース",
+          "code": "コード",
+          "students": "学生数",
+          "avgScore": "平均スコア",
+          "pendingReviews": "未採点"
+        }
+      },
+      "recent": {
         "title": "最近の採点アクティビティ",
-        "latest": "最新の",
-        "activities": "件のアクティビティ",
-        "completed": "完了",
-        "in": "科目",
-        "noActivity": "最近の採点アクティビティはありません"
+        "empty": "最近の採点アクティビティはありません。",
+        "score": "スコア: {{score}}"
       },
-      "gradeDistributionObj": {
-        "title": "成績分布",
-        "grade": "成績"
+      "coverage": {
+        "title": "言語カバレッジ",
+        "incomplete": "未完了"
+      },
+      "table": {
+        "title": "問題のある翻訳",
+        "empty": "問題は検出されませんでした。",
+        "key": "キー",
+        "japanese": "日本語文言",
+        "english": "英語文言",
+        "issues": "問題"
+      },
+      "errors": {
+        "fetch": "アナリティクスデータを読み込めませんでした。"
+      },
+      "issues": {
+        "missingEnglish": "英語訳がありません",
+        "missingJapanese": "日本語訳がありません",
+        "hasJapaneseInEnglish": "英語文言に日本語が含まれています",
+        "hasEnglishInJapanese": "日本語文言に英語が含まれています"
+      },
+      "validator": {
+        "title": "リアルタイム翻訳検証",
+        "description": "日本語の文章と候補の英語訳を貼り付けて、リアルタイムで正確性を確認しましょう。",
+        "jpLabel": "日本語の原文",
+        "enLabel": "英語訳",
+        "scoreLabel": "一致スコア",
+        "resultsTitle": "検証結果",
+        "suggestions": "既存の翻訳",
+        "apply": "この翻訳を使用",
+        "applied": "翻訳をフォームに反映しました。",
+        "copy": "英語訳をコピー",
+        "emptyField": "検証する日本語テキストを入力してください。",
+        "perfect": "承認済みの翻訳と完全に一致しています。",
+        "partial": "近い翻訳が見つかりました。差分を確認してください。",
+        "mismatch": "差異が大きいため、翻訳を見直してください。",
+        "noMatch": "参照となる翻訳がまだありません。追加を検討してください。",
+        "referenceKey": "参照キー"
+      },
+      "accounts": {
+        "title": "アカウント健全性モニター",
+        "description": "翻訳機能を付与する前に注意が必要なアカウントを可視化します。",
+        "empty": "すべてのアカウントが健全です。",
+        "fetchError": "アカウント情報を読み込めませんでした。",
+        "columns": {
+          "name": "ユーザー",
+          "email": "メールアドレス",
+          "role": "権限",
+          "issues": "フラグ"
+        },
+        "flags": {
+          "noRecentLogin": "未ログイン",
+          "inactive": "90日以上ログインなし",
+          "incompleteProfile": "教員プロフィール未入力",
+          "missingEnrollment": "在籍コースなし",
+          "unverified": "メール未確認"
+        }
+      }
+    },
+    "gradingCenter": {
+      "title": "採点センター",
+      "subtitle": "課題を採点し、フィードバックを共有して学生とリアルタイムで連携しましょう。",
+      "errors": {
+        "load": "採点データを読み込めませんでした。再度お試しください。",
+        "save": "採点を保存できませんでした。再度お試しください。",
+        "delete": "採点を削除できませんでした。",
+        "messageSend": "現在メッセージを送信できません。"
+      },
+      "messages": {
+        "created": "採点を登録しました。",
+        "updated": "採点を更新しました。",
+        "deleted": "採点を削除しました。",
+        "sent": "学生へメッセージを送信しました。"
+      },
+      "metrics": {
+        "graded": "採点済み提出物",
+        "average": "平均スコア",
+        "pending": "未採点",
+        "lastUpdate": "最終更新"
+      },
+      "search": {
+        "placeholder": "学生または課題名で検索"
+      },
+      "filters": {
+        "course": "コースで絞り込む",
+        "student": "学生で絞り込む",
+        "type": "タイプで絞り込む"
+      },
+      "assignmentTypes": {
+        "quiz": "クイズ",
+        "homework": "宿題",
+        "exam": "試験",
+        "project": "プロジェクト",
+        "participation": "参加"
+      },
+      "columns": {
+        "student": "学生",
+        "assignment": "課題",
+        "course": "コース",
+        "score": "スコア",
+        "grade": "評価",
+        "updated": "更新日時",
+        "actions": "操作"
+      },
+      "labels": {
+        "unknownStudent": "不明",
+        "awaitingScore": "スコア待ち",
+        "toGrade": "未採点",
+        "noFeedback": "フィードバックなし",
+        "na": "N/A"
+      },
+      "sections": {
+        "courseBreakdown": "コース別概要",
+        "recentActivity": "最近のアクティビティ"
+      },
+      "courseBreakdownEmpty": "採点を開始するとここに表示されます。",
+      "courseBreakdownDescription": "{{total}}件中{{graded}}件を採点済み",
+      "recentActivityEmpty": "アクティビティはまだありません。",
+      "empty": "採点データがありません。まずは採点を登録しましょう。",
+      "actions": {
+        "newGrade": "採点を追加",
+        "view": "詳細を見る",
+        "edit": "採点を編集",
+        "message": "学生にメッセージ",
+        "delete": "削除",
+        "deleteConfirm": "この採点を削除しますか？",
+        "create": "作成",
+        "update": "更新",
+        "send": "送信"
+      },
+      "modal": {
+        "createTitle": "採点を追加",
+        "editTitle": "採点を編集"
+      },
+      "form": {
+        "course": "コース",
+        "student": "学生",
+        "type": "課題タイプ",
+        "assignment": "課題名",
+        "score": "スコア",
+        "maxScore": "満点",
+        "grade": "評価",
+        "feedback": "フィードバック",
+        "coursePlaceholder": "コースを選択",
+        "studentPlaceholder": "学生を選択"
+      },
+      "validation": {
+        "course": "コースを選択してください",
+        "student": "学生を選択してください",
+        "assignment": "課題名を入力してください",
+        "score": "スコアを入力してください",
+        "subject": "件名を入力してください",
+        "message": "メッセージを入力してください"
+      },
+      "view": {
+        "title": "採点の詳細",
+        "student": "学生",
+        "course": "コース",
+        "assignment": "課題",
+        "type": "タイプ",
+        "score": "スコア",
+        "grade": "評価",
+        "feedback": "フィードバック",
+        "lastUpdated": "最終更新"
+      },
+      "drawer": {
+        "title": "学生ワークスペース",
+        "empty": "学生ワークスペース",
+        "placeholder": "表から行を選択すると学生の詳細が表示されます。",
+        "stats": {
+          "completed": "完了数",
+          "average": "平均"
+        },
+        "recentGrades": "最近の採点",
+        "noGrades": "まだ採点がありません。",
+        "communication": "学生にメッセージを送る",
+        "subject": "件名",
+        "message": "メッセージ",
+        "conversation": "メッセージ履歴",
+        "noConversation": "メッセージはまだありません。",
+        "studentLabel": "学生",
+        "teacherLabel": "あなた"
+      }
+    },
+    "common": {
+      "actions": {
+        "refresh": "再読み込み",
+        "cancel": "キャンセル",
+        "close": "閉じる",
+        "clear": "クリア"
+      },
+      "labels": {
+        "na": "N/A",
+        "today": "今日",
+        "tomorrow": "明日",
+        "yesterday": "昨日",
+        "noEmail": "メールなし"
       }
     },
     "settings": {

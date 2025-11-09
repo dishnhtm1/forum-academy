@@ -207,6 +207,11 @@ function AdminLayout(props) {
 
   const communicationItems = [
     {
+      key: "announcements",
+      iconName: "announcements",
+      label: t("adminSidebar.navigation.announcements") || "Announcements",
+    },
+    {
       key: "analytics",
       iconName: "analytics",
       label: t("adminSidebar.navigation.analytics") || "Analytics",

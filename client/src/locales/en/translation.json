@@ -3846,6 +3846,7 @@
       "title": "Teacher Dashboard",
       "myClasses": "My Classes",
       "totalStudents": "Total Students",
+      "materials": "Materials",
       "teachingMaterials": "Teaching Materials",
       "pendingReviews": "Pending Reviews",
       "activeQuizzes": "Active Quizzes",
@@ -3857,6 +3858,10 @@
       "createQuiz": "Create New Quiz",
       "assignHomework": "Assign Homework",
       "viewAnalytics": "View Class Analytics",
+      "quizManagement": "Quiz Management",
+      "assignmentCenter": "Assignment Center",
+      "studentManagement": "Student Management",
+      "analyticsSettings": "Analytics & Settings",
       "viewAll": "View All",
       "newSubmission": "New quiz submission in Advanced English",
       "materialUploaded": "Course material uploaded to Japanese 101",
@@ -3874,7 +3879,46 @@
         "materialUploaded": "Material '{{material}}' uploaded to {{course}}",
         "announcement": "Announcement '{{title}}' posted to {{course}}",
         "newActivity": "New activity"
-      }
+      },
+      "weather": {
+        "errorMessage": "Weather data is currently unavailable.",
+        "defaultLocation": "Niigata"
+      },
+      "daysShort": {
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri"
+      },
+      "actionCenter": {
+        "title": "Action center",
+        "subtitle": "Quick opportunities to support your classes",
+        "open": "Open",
+        "items": {
+          "pendingReviews": {
+            "title": "Grade pending submissions",
+            "description": "You have {{count}} assignments waiting for feedback."
+          },
+          "createQuiz": {
+            "title": "Launch a new quiz",
+            "description": "Keep momentum by scheduling a quick knowledge check for your classes."
+          },
+          "planAssignment": {
+            "title": "Plan the next assignment",
+            "description": "Create a fresh assignment to reinforce this week’s lessons."
+          },
+          "scheduleEvent": {
+            "title": "Schedule an upcoming milestone",
+            "description": "Add an event or reminder so students stay aligned with your plan."
+          },
+          "celebrate": {
+            "title": "Great job staying organized!",
+            "description": "No urgent tasks right now. Use the time to explore analytics or share new resources."
+          }
+        }
+      },
+      "heroGreeting": "{{name}} 👋"
     },
     "courses": {
       "management": "Course Management",
@@ -3998,6 +4042,136 @@
       "uploadHint": "Support for single file upload. Supported formats: PDF, DOC, PPT, MP4, MP3, etc.",
       "deleteConfirm": "Are you sure you want to delete this material?",
       "downloadError": "Failed to download file"
+    },
+    "studentManagement": {
+      "title": "Student management workspace",
+      "subtitle": "Track progress, follow up quickly, and keep classes thriving.",
+      "unknown": "Unknown",
+      "unknownStudent": "Student",
+      "noEmail": "No email",
+      "noGrade": "Unpublished",
+      "noData": "No data",
+      "empty": "—",
+      "selectCourse": "Select course",
+      "selectCoursePrompt": "Choose a course to see enrolled students.",
+      "searchPlaceholder": "Search students...",
+      "rosterTitle": "Class roster",
+      "noStudents": "No students match the current filters.",
+      "overview": {
+        "totalStudents": "Active students",
+        "recentSubmissions": "Recent submissions",
+        "averageScore": "Average score",
+        "activeStudents": "Engaged last 30 days"
+      },
+      "actions": {
+        "refresh": "Refresh",
+        "bulkMessage": "Send message to filtered students",
+        "bulkMessageShort": "Message filtered",
+        "viewProfile": "View profile",
+        "sendMessage": "Send message",
+        "cancel": "Cancel",
+        "send": "Send"
+      },
+      "filters": {
+        "all": "All students",
+        "active": "Active",
+        "needsAttention": "Needs attention",
+        "inactive": "Inactive"
+      },
+      "labels": {
+        "recentGrade": "Latest grade",
+        "noRecentWork": "No recent submissions",
+        "submissionsLast30": "{{count}} submissions in the last 30 days"
+      },
+      "engagement": {
+        "high": "Highly engaged",
+        "medium": "Moderate",
+        "low": "Needs focus"
+      },
+      "messages": {
+        "title": "Send message",
+        "bulkTitle": "Send message to selected students",
+        "subject": "Subject",
+        "content": "Message",
+        "validation": {
+          "subject": "Enter a subject",
+          "content": "Enter a message"
+        },
+        "bulkContext": "This message will be sent individually to each selected student. Replies will arrive separately.",
+        "sending": "Sending message...",
+        "sent": "Message sent successfully."
+      },
+      "templates": {
+        "label": "Template",
+        "placeholder": "Choose a template",
+        "placeholderName": "student",
+        "welcome": {
+          "title": "Welcome message",
+          "subject": "Welcome to class!",
+          "body": "Hi {{studentName}}, welcome to our class. I'm excited to work with you—let me know if you need anything to get started."
+        },
+        "reminder": {
+          "title": "Gentle reminder",
+          "subject": "Quick reminder about upcoming work",
+          "body": "Hi {{studentName}}, this is a friendly reminder about the upcoming deadline this week. Let me know if you’d like extra support."
+        },
+        "congrats": {
+          "title": "Celebration note",
+          "subject": "Great job recently!",
+          "body": "Hi {{studentName}}, fantastic work on your recent submissions. Keep the momentum going!"
+        }
+      },
+      "drawer": {
+        "title": "Student",
+        "overview": "Overview",
+        "email": "Email",
+        "status": "Status",
+        "averageScore": "Average score",
+        "submissions30": "Submissions (30 days)",
+        "progress": "Progress history",
+        "communication": "Communication",
+        "notes": "Notes",
+        "score": "Score",
+        "noProgress": "No progress records yet.",
+        "noMessages": "No conversations yet.",
+        "empty": "Select a student to view details."
+      },
+      "notes": {
+        "placeholder": "Document follow-up plans, strengths, and concerns.",
+        "save": "Save note",
+        "saved": "Note saved for this student.",
+        "defaultPrompt": "Add your first note for this student."
+      },
+      "tasks": {
+        "title": "Follow-up tasks",
+        "subtitle": "Keep priorities visible and track next actions.",
+        "filters": {
+          "active": "Active",
+          "completed": "Completed",
+          "all": "All"
+        },
+        "validation": {
+          "title": "Enter a task title"
+        },
+        "placeholders": {
+          "title": "Schedule a 1:1 with...",
+          "student": "Link a student",
+          "dueDate": "Due date"
+        },
+        "add": "Add task",
+        "markPending": "Reopen",
+        "markDone": "Complete",
+        "delete": "Delete",
+        "due": "Due",
+        "empty": "No tasks yet.",
+        "added": "Task added"
+      },
+      "errors": {
+        "courses": "Failed to load your courses.",
+        "students": "Failed to load enrolled students.",
+        "recipient": "Select at least one recipient.",
+        "messageSend": "Unable to send message. Please try again."
+      }
     },
     "students": {
       "title": "Student Management",
@@ -4197,101 +4371,335 @@
       }
     },
     "analytics": {
-      "title": "Analytics & Reports",
-      "liveData": "LIVE",
-      "realTimeAnalytics": "Real-time analytics powered by your teaching modules",
-      "dataCalculation": "Data automatically calculated from Student Management, Grading Center, Quiz & Assignment systems",
-      "refreshAnalytics": "Refresh Analytics",
-      "lastUpdated": "Last updated",
-      "liveDataTitle": "Live Data Analytics",
-      "liveDataAnalytics": "Live Data Analytics",
-      "currentDataIncludes": "Current data includes",
-      "courses": "courses",
-      "students": "students",
-      "gradedAssignments": "graded assignments",
-      "quizzes": "quizzes",
-      "and": "and",
-      "homeworkAssignments": "homework assignments",
-      "metricsDescription": "All metrics below are calculated in real-time from your active teaching modules",
-      "metricsCalculated": "All metrics below are calculated in real-time from your active teaching modules",
-      "kpiTitle": "Key Performance Indicators",
-      "kpiTooltip": "These metrics are calculated from your actual teaching data",
-      "live": "LIVE",
-      "totalStudents": "Total Students",
-      "enrolledAcrossClasses": "Enrolled across all classes",
-      "enrolledAcross": "Enrolled across all classes",
-      "totalSubmissions": "Total Submissions",
-      "submissionsDescription": "Assignments, quizzes & exercises",
-      "assignmentsQuizzes": "Assignments, quizzes & exercises",
-      "averageScore": "Average Score",
-      "acrossAssessments": "Across all assessments",
-      "activeStudents": "Active Students",
-      "recentActivity": "Recent activity (7 days)",
-      "dataSourcesTitle": "Data Sources & Calculation Methods",
-      "totalStudentsDesc": "Count of all students enrolled across teacher's classes from Student Management module",
-      "totalSubmissionsDesc": "Total assignments, quizzes, exercises submitted from Grading Center data",
-      "averageScoreDesc": "Average grade across all submitted assessments from Progress Records",
-      "activeStudentsDesc": "Students with submissions or activity in the past 7 days from User Activity logs",
-      "performanceTrends": "Performance Trends",
-      "last4Weeks": "Last 4 weeks",
-      "lastWeeks": "Last 4 weeks",
-      "noPerformanceData": "No performance data available",
-      "assignmentTypes": "Assignment Types",
-      "distribution": "Distribution",
-      "noAssignmentData": "No assignment data available",
-      "recentGradingActivity": "Recent Grading Activity",
-      "latestActivities": "Latest {{count}} activities",
-      "latest": "Latest",
-      "activities": "activities",
-      "completed": "completed",
-      "in": "in",
-      "noRecentActivity": "No recent grading activity",
-      "noActivity": "No recent grading activity",
-      "gradeDistribution": "Grade Distribution",
-      "grade": "Grade",
-      "week1": "Week 1",
-      "week2": "Week 2",
-      "week3": "Week 3",
-      "week4": "Week 4",
-      "averageScorePercent": "Average Score (%)",
-      "noData": "No Data",
-      "kpi": {
-        "title": "Key Performance Indicators",
-        "totalStudents": "Total Students",
-        "enrolledAcross": "Enrolled across all classes",
-        "totalSubmissions": "Total Submissions",
-        "assignmentsQuizzes": "Assignments, quizzes & exercises",
-        "averageScore": "Average Score",
-        "acrossAssessments": "Across all assessments",
-        "activeStudents": "Active Students",
-        "recentActivity": "Recent activity (7 days)"
+      "title": "Teacher Performance Analytics",
+      "subtitle": "Track classes, grading, and communication insights in one place.",
+      "badges": {
+        "secure": "Security aligned",
+        "studentSafe": "Student-safe content",
+        "translationParity": "Translation parity tracking"
       },
-      "dataSources": {
-        "title": "Data Sources & Calculation Methods",
-        "totalStudentsDesc": "Count of all students enrolled across teacher's classes from Student Management module",
-        "totalSubmissionsDesc": "Total assignments, quizzes, exercises submitted from Grading Center data",
-        "averageScoreDesc": "Average grade across all submitted assessments from Progress Records",
-        "activeStudentsDesc": "Students with submissions or activity in the past 7 days from User Activity logs"
+      "actions": {
+        "refresh": "Refresh data",
+        "validate": "Run validation",
+        "apply": "Use this translation"
       },
-      "charts": {
-        "performanceTrends": "Performance Trends",
-        "lastWeeks": "Last 4 weeks",
-        "assignmentTypes": "Assignment Types",
-        "distribution": "Distribution",
-        "noPerformanceData": "No performance data available",
-        "noAssignmentData": "No assignment data available"
+      "hero": {
+        "qualityScore": "Quality score",
+        "pending": "Pending fixes",
+        "studentGaps": "Student copy gaps",
+        "teacherGaps": "Internal copy gaps",
+        "tooltipQuality": "Calculated from coverage and unresolved issues.",
+        "activeStudents": "Active students",
+        "activeCourses": "Active courses",
+        "pendingReviews": "Pending reviews",
+        "averageScore": "Average score"
       },
-      "recentActivityObj": {
-        "title": "Recent Grading Activity",
-        "latest": "Latest",
-        "activities": "activities",
-        "completed": "completed",
-        "in": "in",
-        "noActivity": "No recent grading activity"
+      "overviewCards": {
+        "totalKeys": "Translation keys",
+        "coverage": "Coverage",
+        "issues": "Flagged issues",
+        "missing": "Missing entries"
       },
-      "gradeDistributionObj": {
-        "title": "Grade Distribution",
-        "grade": "Grade"
+      "tabs": {
+        "validator": "Real-time validator",
+        "accounts": "Account integrity"
+      },
+      "actionCenter": {
+        "title": "Teacher action center",
+        "description": "Prioritise translation fixes that impact learners first.",
+        "items": {
+          "missingEnglish": {
+            "title": "Add English translation",
+            "subtitle": "{{count}} strings still need an English version"
+          },
+          "missingJapanese": {
+            "title": "Add Japanese translation",
+            "subtitle": "{{count}} strings still need a Japanese version"
+          },
+          "mixedLanguage": {
+            "title": "Clean mixed language text",
+            "subtitle": "{{count}} strings mix Japanese and English"
+          }
+        },
+        "preview": "Examples",
+        "cta": "Open translation resource",
+        "empty": "Everything looks balanced—no urgent translation work."
+      },
+      "communication": {
+        "title": "Communication support",
+        "description": "Coordinate timely updates with teachers and students.",
+        "audiences": {
+          "students": "Students",
+          "teachers": "Teachers",
+          "general": "Whole school"
+        },
+        "actions": {
+          "students": "Send a note to the language support group",
+          "teachers": "Share the update with fellow teachers",
+          "general": "Post an announcement to the community feed"
+        },
+        "copyKey": "Copy key",
+        "empty": "No communication follow-ups detected."
+      },
+      "namespaces": {
+        "title": "Namespace health",
+        "namespace": "Namespace",
+        "coverage": "Coverage",
+        "flagged": "Flags",
+        "total": "Strings"
+      },
+      "templates": {
+        "title": "Message playbook",
+        "description": "Use ready-made messages when translations change.",
+        "items": {
+          "release": {
+            "title": "Notify class about updated copy",
+            "body": "Hi everyone,\nWe just refreshed the English text for {{key}}. Please review the new wording and let me know if you need anything."
+          },
+          "support": {
+            "title": "Offer support on confusing wording",
+            "body": "Hello,\nI noticed the Japanese text for {{key}} might need clarification. Let's review it together during office hours."
+          },
+          "thankyou": {
+            "title": "Thank students for feedback",
+            "body": "Thank you for flagging the translation for {{key}}. The update is now live in both languages."
+          },
+          "deadlineReminder": {
+            "title": "Remind students about the next deadline",
+            "body": "Hi everyone,\nA reminder that \"{{assessment}}\" is due {{when}}. Please submit before the deadline and reach out if you need help."
+          },
+          "studentSupport": {
+            "title": "Check in with a student",
+            "body": "Hi {{student}},\nI noticed your recent submissions. Let's schedule a quick check-in to support your progress."
+          },
+          "teacherSync": {
+            "title": "Sync with fellow teachers",
+            "body": "Team,\nHere are the current grading priorities and translation tasks. Let’s align during our next stand-up."
+          }
+        },
+        "copy": "Copy message"
+      },
+      "workload": {
+        "title": "Upcoming workload",
+        "subtitle": "Track deadlines and overdue items.",
+        "empty": "No pending deadlines in the next two weeks.",
+        "quiz": "Quiz",
+        "homework": "Homework",
+        "dueToday": "Due today",
+        "dueTomorrow": "Due tomorrow",
+        "dueInDays": "Due in {{count}} days",
+        "overdueDays": "{{count}} days overdue",
+        "duration": "{{minutes}} min"
+      },
+      "students": {
+        "title": "Students needing support",
+        "subtitle": "Focus on learners with low performance or limited submissions.",
+        "empty": "No students need immediate follow-up.",
+        "tags": {
+          "lowScore": "Low score",
+          "new": "Needs engagement"
+        },
+        "details": "Average {{score}}% · {{submissions}} submissions",
+        "averageScore": "Average {{score}}%"
+      },
+      "performance": {
+        "title": "Performance trends",
+        "week": "Week {{index}}",
+        "averageScore": "Average score"
+      },
+      "courseHealth": {
+        "title": "Course health",
+        "columns": {
+          "course": "Course",
+          "code": "Code",
+          "students": "Students",
+          "avgScore": "Avg score",
+          "pendingReviews": "Pending reviews"
+        }
+      },
+      "recent": {
+        "title": "Recent assessment activity",
+        "empty": "No assessment activity yet.",
+        "score": "Score: {{score}}"
+      },
+      "table": {
+        "title": "Flagged translations",
+        "empty": "No issues detected.",
+        "key": "Key",
+        "japanese": "Japanese copy",
+        "english": "English copy",
+        "issues": "Issues"
+      },
+      "errors": {
+        "fetch": "Unable to load analytics data."
+      },
+      "issues": {
+        "missingEnglish": "Missing English",
+        "missingJapanese": "Missing Japanese",
+        "hasJapaneseInEnglish": "Japanese text in English copy",
+        "hasEnglishInJapanese": "English text in Japanese copy"
+      },
+      "validator": {
+        "title": "Real-time translation validator",
+        "description": "Paste the Japanese sentence and candidate English translation to check accuracy in real time.",
+        "jpLabel": "Japanese source",
+        "enLabel": "English translation",
+        "scoreLabel": "Match score",
+        "resultsTitle": "Validation results",
+        "suggestions": "Existing translations",
+        "apply": "Use this translation",
+        "applied": "Translation copied to the form.",
+        "copy": "Copy your English translation",
+        "emptyField": "Enter Japanese text to validate.",
+        "perfect": "Great! The translation matches the approved copy.",
+        "partial": "Close match detected. Review the highlighted differences.",
+        "mismatch": "Significant differences detected. Please revise the translation.",
+        "noMatch": "No reference found yet. Consider adding the translation.",
+        "referenceKey": "Reference key"
+      },
+      "accounts": {
+        "title": "Account integrity monitor",
+        "description": "Highlight accounts that may need attention before giving translation access.",
+        "empty": "All accounts look good.",
+        "fetchError": "Unable to load account records.",
+        "columns": {
+          "name": "User",
+          "email": "Email",
+          "role": "Role",
+          "issues": "Flags"
+        },
+        "flags": {
+          "noRecentLogin": "Never logged in",
+          "inactive": "No login in 90+ days",
+          "incompleteProfile": "Teacher profile incomplete",
+          "missingEnrollment": "No course enrolments",
+          "unverified": "Email unverified"
+        }
+    }
+  },
+    "gradingCenter": {
+      "title": "Grading Center",
+      "subtitle": "Grade work, share feedback, and keep students in sync in real time.",
+      "errors": {
+        "load": "Unable to load grading data. Please try again.",
+        "save": "Unable to save grade. Please try again.",
+        "delete": "Unable to delete grade.",
+        "messageSend": "Unable to send message right now."
+      },
+      "messages": {
+        "created": "Grade recorded successfully.",
+        "updated": "Grade updated successfully.",
+        "deleted": "Grade removed.",
+        "sent": "Message sent to student."
+      },
+      "metrics": {
+        "graded": "Graded submissions",
+        "average": "Average score",
+        "pending": "Awaiting review",
+        "lastUpdate": "Last update"
+      },
+      "search": {
+        "placeholder": "Search by student or assignment"
+      },
+      "filters": {
+        "course": "Filter by course",
+        "student": "Filter by student",
+        "type": "Filter by type"
+      },
+      "assignmentTypes": {
+        "quiz": "Quiz",
+        "homework": "Homework",
+        "exam": "Exam",
+        "project": "Project",
+        "participation": "Participation"
+      },
+      "columns": {
+        "student": "Student",
+        "assignment": "Assignment",
+        "course": "Course",
+        "score": "Score",
+        "grade": "Grade",
+        "updated": "Updated",
+        "actions": "Actions"
+      },
+      "labels": {
+        "unknownStudent": "Unknown",
+        "awaitingScore": "Awaiting score",
+        "toGrade": "To grade",
+        "noFeedback": "No feedback",
+        "na": "N/A"
+      },
+      "sections": {
+        "courseBreakdown": "Course breakdown",
+        "recentActivity": "Recent activity"
+      },
+      "courseBreakdownEmpty": "Grades will appear here when you start grading.",
+      "courseBreakdownDescription": "Graded {{graded}} of {{total}} submissions",
+      "recentActivityEmpty": "No activity yet.",
+      "empty": "No graded work yet. Start by adding a grade.",
+      "actions": {
+        "newGrade": "Add grade",
+        "view": "View details",
+        "edit": "Edit grade",
+        "message": "Message student",
+        "delete": "Delete",
+        "deleteConfirm": "Delete this grade?",
+        "create": "Create",
+        "update": "Update",
+        "send": "Send"
+      },
+      "modal": {
+        "createTitle": "Add grade",
+        "editTitle": "Edit grade"
+      },
+      "form": {
+        "course": "Course",
+        "student": "Student",
+        "type": "Assignment type",
+        "assignment": "Assignment name",
+        "score": "Score",
+        "maxScore": "Max score",
+        "grade": "Grade",
+        "feedback": "Feedback",
+        "coursePlaceholder": "Select course",
+        "studentPlaceholder": "Select student"
+      },
+      "validation": {
+        "course": "Select a course",
+        "student": "Select a student",
+        "assignment": "Enter the assignment name",
+        "score": "Enter the score",
+        "subject": "Enter a subject",
+        "message": "Enter a message"
+      },
+      "view": {
+        "title": "Grade details",
+        "student": "Student",
+        "course": "Course",
+        "assignment": "Assignment",
+        "type": "Type",
+        "score": "Score",
+        "grade": "Grade",
+        "feedback": "Feedback",
+        "lastUpdated": "Last updated"
+      },
+      "drawer": {
+        "title": "Student workspace",
+        "empty": "Student workspace",
+        "placeholder": "Select a row from the table to view student details.",
+        "stats": {
+          "completed": "Completed",
+          "average": "Average"
+        },
+        "recentGrades": "Recent grades",
+        "noGrades": "No grades recorded yet.",
+        "communication": "Message student",
+        "subject": "Subject",
+        "message": "Message",
+        "conversation": "Conversation history",
+        "noConversation": "No messages yet.",
+        "studentLabel": "Student",
+        "teacherLabel": "You"
       }
     },
     "settings": {
@@ -4424,7 +4832,20 @@
       "success": "Success",
       "error": "Error",
       "warning": "Warning",
-      "info": "Info"
+      "info": "Info",
+      "actions": {
+        "refresh": "Refresh",
+        "cancel": "Cancel",
+        "close": "Close",
+        "clear": "Clear"
+      },
+      "labels": {
+        "na": "N/A",
+        "today": "Today",
+        "tomorrow": "Tomorrow",
+        "yesterday": "Yesterday",
+        "noEmail": "No email"
+      }
     }
   },
   "studentDashboard": {

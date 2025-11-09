@@ -110,6 +110,9 @@ import { authAPI, statsAPI } from "../utils/apiClient";
 const { Header, Sider, Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
+const ASSIGNMENTS_STORAGE_KEY = "forumAcademy.quizAssignments.byStudent";
+
+const STUDENT_ASSIGNMENT_CACHE_KEY = "forumAcademy.teacherAssignments.studentCache";
 
 const StudentDashboard = () => {
   const { t } = useTranslation();
@@ -258,7 +261,7 @@ const StudentDashboard = () => {
       // Fetch all data
       Promise.all([
         fetchDashboardStats(),
-        fetchListeningExercises(),
+        fetchListeningExercises(true),
         fetchQuizzes(),
         fetchHomework(),
         fetchProgress(),
@@ -270,6 +273,7 @@ const StudentDashboard = () => {
     };
 
     checkAuth();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [history]);
 
   const fetchDashboardStats = async () => {
@@ -292,87 +296,106 @@ const StudentDashboard = () => {
     }
   };
 
-  // Fetch listening exercises
-  const fetchListeningExercises = async () => {
+  const LISTENING_CACHE_KEY = "forumAcademy.listening.assignments";
+  const LISTENING_EVENT = "listeningAssignmentsUpdated";
+
+  const loadCachedListeningExercises = useCallback(() => {
     try {
-      const token =
-        localStorage.getItem("authToken") || localStorage.getItem("token");
-
-      if (!token) {
-        console.error("❌ No authentication token found");
-        message.error("Please login again");
-        history.push("/login");
-        return;
+      const raw = localStorage.getItem(LISTENING_CACHE_KEY);
+      if (!raw) {
+        return [];
       }
-
-      console.log(
-        "🔄 Fetching listening exercises from:",
-        `${process.env.REACT_APP_API_URL}/api/listening-exercises`
-      );
-      console.log("🔑 Using token:", token ? "Token exists" : "No token");
-
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/listening-exercises`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      console.log("📡 Response status:", response.status);
-      console.log("📡 Response OK:", response.ok);
-
-      if (response.status === 401) {
-        console.error("❌ Authentication failed - token expired or invalid");
-        message.error("Your session has expired. Please login again.");
-        localStorage.clear();
-        history.push("/login");
-        return;
-      }
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log("📚 Listening Exercises Response:", data);
-        console.log(
-          "📚 Total exercises received:",
-          Array.isArray(data) ? data.length : 0
-        );
-
-        // The API returns an array directly, not wrapped in an object
-        const exercises = Array.isArray(data) ? data : [];
-
-        // Log each exercise's publish status
-        exercises.forEach((ex, index) => {
-          console.log(`📋 Exercise ${index + 1}:`, {
-            title: ex.title,
-            isPublished: ex.isPublished,
-            level: ex.level,
-            course: ex.course?.title || ex.course?.name || "No course",
-          });
-        });
-
-        // Filter only published exercises for students
-        const publishedExercises = exercises.filter(
-          (ex) => ex.isPublished === true
-        );
-        console.log(
-          "✅ Published Listening Exercises:",
-          publishedExercises.length
-        );
-        console.log("✅ Published exercises data:", publishedExercises);
-        setListeningExercises(publishedExercises);
-      } else {
-        console.error(
-          "❌ Failed to fetch listening exercises:",
-          response.status
-        );
-      }
-    } catch (error) {
-      console.error("❌ Error fetching listening exercises:", error);
+      const parsed = JSON.parse(raw);
+      const assignments = Array.isArray(parsed)
+        ? parsed
+        : parsed?.assignments || [];
+      return assignments;
+    } catch {
+      return [];
     }
-  };
+  }, []);
+
+  // Fetch listening exercises
+  const fetchListeningExercises = useCallback(
+    async (useCacheFirst = false) => {
+      if (useCacheFirst) {
+        const cached = loadCachedListeningExercises();
+        if (cached.length > 0) {
+          setListeningExercises(cached);
+        }
+      }
+
+      try {
+        const token =
+          localStorage.getItem("authToken") || localStorage.getItem("token");
+
+        if (!token) {
+          console.error("❌ No authentication token found");
+          message.error("Please login again");
+          history.push("/login");
+          return;
+        }
+
+        const response = await fetch(
+          `${process.env.REACT_APP_API_URL}/api/listening-exercises`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (response.status === 401) {
+          console.error("❌ Authentication failed - token expired or invalid");
+          message.error("Your session has expired. Please login again.");
+          localStorage.clear();
+          history.push("/login");
+          return;
+        }
+
+        if (response.ok) {
+          const data = await response.json();
+          const exercises = Array.isArray(data) ? data : [];
+
+          const publishedExercises = exercises
+            .filter((exercise) =>
+              typeof exercise.isPublished === "boolean"
+                ? exercise.isPublished
+                : exercise.isActive !== false
+            )
+            .map((exercise) => ({
+              ...exercise,
+              course:
+                exercise.course ||
+                loadCachedListeningExercises().find(
+                  (item) =>
+                    (item._id || item.id) === (exercise._id || exercise.id)
+                )?.course ||
+                null,
+            }));
+
+          setListeningExercises(publishedExercises);
+        } else {
+          console.error(
+            "❌ Failed to fetch listening exercises:",
+            response.status
+          );
+        }
+      } catch (error) {
+        console.error("❌ Error fetching listening exercises:", error);
+      }
+    },
+    [history, loadCachedListeningExercises]
+  );
+
+  useEffect(() => {
+    const handleListeningUpdate = () => fetchListeningExercises(true);
+    window.addEventListener(LISTENING_EVENT, handleListeningUpdate);
+    return () => {
+      window.removeEventListener(LISTENING_EVENT, handleListeningUpdate);
+    };
+  }, [fetchListeningExercises]);
 
   // Fetch quizzes
   const fetchQuizzes = async () => {
@@ -403,17 +426,58 @@ const StudentDashboard = () => {
       if (response.ok) {
         const data = await response.json();
         console.log("📝 Quizzes Response:", data);
-        // The API returns an array directly, not wrapped in an object
-        const quizList = Array.isArray(data) ? data : [];
-        // Filter only published quizzes
-        const publishedQuizzes = quizList.filter((q) => q.isPublished === true);
-        console.log("✅ Published Quizzes:", publishedQuizzes.length);
-        setQuizzes(publishedQuizzes);
+        const quizList = Array.isArray(data)
+          ? data
+          : Array.isArray(data?.quizzes)
+          ? data.quizzes
+          : [];
+
+        let assignmentsForStudent = {};
+        try {
+          const storedAssignments = localStorage.getItem(
+            ASSIGNMENTS_STORAGE_KEY
+          );
+          if (storedAssignments) {
+            const parsed = JSON.parse(storedAssignments);
+            if (parsed && typeof parsed === "object") {
+              const studentId =
+                localStorage.getItem("userId") ||
+                localStorage.getItem("userID");
+              if (studentId && parsed[studentId]) {
+                assignmentsForStudent = parsed[studentId];
+              }
+            }
+          }
+        } catch (error) {
+          console.error("❌ Error parsing quiz assignments:", error);
+        }
+
+        const assignedQuizzes = quizList
+          .map((quiz) => {
+            const quizId = quiz._id || quiz.id;
+            if (!quizId) {
+              return null;
+            }
+            const assignment = assignmentsForStudent[quizId];
+            if (!assignment) {
+              return null;
+            }
+            return {
+              ...quiz,
+              assignment,
+            };
+          })
+          .filter(Boolean);
+
+        console.log("✅ Assigned quizzes:", assignedQuizzes.length);
+        setQuizzes(assignedQuizzes);
       } else {
         console.error("❌ Failed to fetch quizzes:", response.status);
+        setQuizzes([]);
       }
     } catch (error) {
       console.error("❌ Error fetching quizzes:", error);
+      setQuizzes([]);
     }
   };
 
@@ -446,19 +510,61 @@ const StudentDashboard = () => {
       if (response.ok) {
         const data = await response.json();
         console.log("📋 Homework Response:", data);
-        // The API returns an array directly, not wrapped in an object
         const homeworkList = Array.isArray(data) ? data : [];
-        // Filter only published homework
-        const publishedHomework = homeworkList.filter(
-          (hw) => hw.isPublished === true
-        );
-        console.log("✅ Published Homework:", publishedHomework.length);
-        setHomework(publishedHomework);
+        const availableHomework = homeworkList.filter((hw) => {
+          if (typeof hw.isPublished === "boolean") {
+            return hw.isPublished;
+          }
+          if (typeof hw.isActive === "boolean") {
+            return hw.isActive;
+          }
+          return true;
+        });
+
+        let cachedAssignments = [];
+        try {
+          const cachedRaw = localStorage.getItem(STUDENT_ASSIGNMENT_CACHE_KEY);
+          if (cachedRaw) {
+            const cachedParsed = JSON.parse(cachedRaw);
+            if (Array.isArray(cachedParsed)) {
+              cachedAssignments = cachedParsed;
+            } else if (cachedParsed?.assignments) {
+              cachedAssignments = cachedParsed.assignments;
+            }
+          }
+        } catch (cacheError) {
+          console.warn("Failed to read assignment cache:", cacheError);
+        }
+
+        const assignmentMap = new Map();
+        availableHomework.forEach((assignment) => {
+          const key = assignment._id || assignment.id;
+          if (key) {
+            assignmentMap.set(key, assignment);
+          }
+        });
+
+        cachedAssignments.forEach((assignment) => {
+          const key = assignment._id || assignment.id;
+          if (!key) {
+            return;
+          }
+          if (!assignmentMap.has(key)) {
+            assignmentMap.set(key, assignment);
+          }
+        });
+
+        const combinedHomework = Array.from(assignmentMap.values());
+
+        console.log("✅ Homework assignments available:", combinedHomework.length);
+        setHomework(combinedHomework);
       } else {
         console.error("❌ Failed to fetch homework:", response.status);
+        setHomework([]);
       }
     } catch (error) {
       console.error("❌ Error fetching homework:", error);
+      setHomework([]);
     }
   };
 
@@ -1431,7 +1537,7 @@ const StudentDashboard = () => {
           <Table
             columns={columns}
             dataSource={listeningExercises}
-            rowKey="_id"
+            rowKey={(record) => record._id || record.id}
             pagination={{ pageSize: 10 }}
             locale={{ emptyText: t("studentDashboard.listening.noExercises") }}
           />
@@ -1447,51 +1553,88 @@ const StudentDashboard = () => {
         title: t("studentDashboard.quizzes.columns.title"),
         dataIndex: "title",
         key: "title",
-        render: (text, record) => (
-          <Space direction="vertical" size={0}>
-            <Text strong>{text}</Text>
-            <Text type="secondary">{record.course?.name}</Text>
-          </Space>
-        ),
+        render: (text, record) => {
+          const courseName =
+            record.assignment?.courseDetails?.map((course) => course.title).join(", ") ||
+            record.course?.name ||
+            record.course?.title ||
+            t("studentDashboard.quizzes.courseUnknown", "Course");
+          return (
+            <Space direction="vertical" size={0}>
+              <Text strong>{text}</Text>
+              <Text type="secondary">{courseName}</Text>
+            </Space>
+          );
+        },
       },
       {
         title: t("studentDashboard.quizzes.columns.questions"),
         dataIndex: "questions",
         key: "questions",
         render: (questions) => (
-          <Tag color="blue">{questions?.length || 0} {t("studentDashboard.quizzes.columns.questions")}</Tag>
+          <Tag color="blue">
+            {questions?.length || 0} {t("studentDashboard.quizzes.columns.questions")}
+          </Tag>
         ),
       },
       {
         title: t("studentDashboard.quizzes.columns.timeLimit"),
-        dataIndex: "timeLimit",
         key: "timeLimit",
-        render: (time) => (
-          <Text>
-            <FieldTimeOutlined /> {time} minutes
-          </Text>
-        ),
+        render: (_, record) => {
+          const duration = record.duration || record.timeLimit || 0;
+          return (
+            <Text>
+              <FieldTimeOutlined /> {duration}{" "}
+              {t("studentDashboard.quizzes.minutes", "minutes")}
+            </Text>
+          );
+        },
       },
       {
-        title: t("studentDashboard.quizzes.columns.passingScore"),
-        dataIndex: "passingScore",
-        key: "passingScore",
-        render: (score) => <Tag color="green">{score}%</Tag>,
+        title: t("studentDashboard.quizzes.columns.dueDate"),
+        key: "dueDate",
+        render: (_, record) => {
+          const dueDate = record.assignment?.dueDate;
+          return dueDate
+            ? moment(dueDate).format("MMM DD, YYYY HH:mm")
+            : t("studentDashboard.quizzes.noDeadline", "No deadline");
+        },
       },
       {
-        title: t("studentDashboard.quizzes.columns.attempts"),
-        dataIndex: "maxAttempts",
-        key: "maxAttempts",
-        render: (attempts) => (
-          <Text>{attempts === -1 ? t("studentDashboard.quizzes.unlimited") : `${attempts} ${t("studentDashboard.quizzes.attempts")}`}</Text>
-        ),
-      },
-      {
-        title: t("studentDashboard.quizzes.columns.availableUntil"),
-        dataIndex: "availableUntil",
-        key: "availableUntil",
-        render: (date) =>
-          date ? moment(date).format("MMM DD, YYYY") : t("studentDashboard.quizzes.noDeadline"),
+        title: t("studentDashboard.quizzes.columns.status"),
+        key: "status",
+        render: (_, record) => {
+          const dueDate = record.assignment?.dueDate;
+          if (!dueDate) {
+            return (
+              <Tag color="default">
+                {t("studentDashboard.quizzes.status.available", "Available")}
+              </Tag>
+            );
+          }
+          const isOverdue = moment(dueDate).isBefore(moment());
+          const isDueSoon =
+            !isOverdue && moment(dueDate).diff(moment(), "hours") <= 24;
+          if (isOverdue) {
+            return (
+              <Tag color="red">
+                {t("studentDashboard.quizzes.status.overdue", "Overdue")}
+              </Tag>
+            );
+          }
+          if (isDueSoon) {
+            return (
+              <Tag color="orange">
+                {t("studentDashboard.quizzes.status.dueSoon", "Due soon")}
+              </Tag>
+            );
+          }
+          return (
+            <Tag color="green">
+              {t("studentDashboard.quizzes.status.assigned", "Assigned")}
+            </Tag>
+          );
+        },
       },
       {
         title: t("studentDashboard.quizzes.columns.actions"),
@@ -1525,9 +1668,14 @@ const StudentDashboard = () => {
           <Table
             columns={columns}
             dataSource={quizzes}
-            rowKey="_id"
+            rowKey={(record) => record._id || record.id}
             pagination={{ pageSize: 10 }}
-            locale={{ emptyText: t("studentDashboard.quizzes.noQuizzes") }}
+            locale={{
+              emptyText: t(
+                "studentDashboard.quizzes.noAssigned",
+                "No quizzes assigned yet."
+              ),
+            }}
           />
         </Card>
       </div>
@@ -1851,7 +1999,7 @@ const StudentDashboard = () => {
         render: (score, record) => (
           <Space>
             <Text strong>
-              {score}/{record.maxScore}
+              {score}/{record.maxPoints ?? record.maxScore}
             </Text>
             <Text type="secondary">({record.percentage}%)</Text>
           </Space>
@@ -2602,33 +2750,55 @@ const StudentDashboard = () => {
         {selectedQuiz && (
           <Space direction="vertical" size="large" style={{ width: "100%" }}>
             <Descriptions bordered column={2}>
-              <Descriptions.Item label="Course" span={2}>
-                <Tag color="blue">{selectedQuiz.course?.name}</Tag>
+              <Descriptions.Item label={t("studentDashboard.quizzes.columns.course")} span={2}>
+                <Tag color="blue">
+                  {selectedQuiz.assignment?.courseDetails?.map((course) => course.title).join(", ") ||
+                    selectedQuiz.course?.name ||
+                    selectedQuiz.course?.title ||
+                    t("studentDashboard.quizzes.courseUnknown")}
+                </Tag>
               </Descriptions.Item>
-              <Descriptions.Item label="Questions">
-                {selectedQuiz.questions?.length || 0} questions
+              <Descriptions.Item label={t("studentDashboard.quizzes.columns.questions")}>
+                {selectedQuiz.questions?.length || 0}
               </Descriptions.Item>
-              <Descriptions.Item label="Time Limit">
-                <FieldTimeOutlined /> {selectedQuiz.timeLimit} minutes
+              <Descriptions.Item label={t("studentDashboard.quizzes.columns.timeLimit")}>
+                <FieldTimeOutlined />{" "}
+                {selectedQuiz.duration || selectedQuiz.timeLimit || 0}{" "}
+                {t("studentDashboard.quizzes.minutes")}
               </Descriptions.Item>
-              <Descriptions.Item label="Passing Score">
+              <Descriptions.Item label={t("studentDashboard.quizzes.columns.passingScore")}>
                 <Tag color="green">{selectedQuiz.passingScore}%</Tag>
               </Descriptions.Item>
-              <Descriptions.Item label="Max Attempts">
+              <Descriptions.Item label={t("studentDashboard.quizzes.columns.attempts")}>
                 {selectedQuiz.maxAttempts === -1
-                  ? "Unlimited"
-                  : selectedQuiz.maxAttempts}
+                  ? t("studentDashboard.quizzes.unlimited")
+                  : `${selectedQuiz.maxAttempts} ${t("studentDashboard.quizzes.attempts")}`}
               </Descriptions.Item>
-              <Descriptions.Item label="Available Until" span={2}>
-                {selectedQuiz.availableUntil
-                  ? moment(selectedQuiz.availableUntil).format("MMM DD, YYYY")
-                  : "No deadline"}
+              <Descriptions.Item label={t("studentDashboard.quizzes.columns.dueDate")} span={2}>
+                {selectedQuiz.assignment?.dueDate
+                  ? moment(selectedQuiz.assignment.dueDate).format("MMM DD, YYYY HH:mm")
+                  : t("studentDashboard.quizzes.noDeadline")}
               </Descriptions.Item>
             </Descriptions>
 
             <Alert
-              message="Quiz Instructions"
-              description="Read all questions carefully. You cannot go back once you submit an answer."
+              message={t(
+                "studentDashboard.quizzes.instructionsTitle",
+                "Quiz instructions"
+              )}
+              description={
+                <Space direction="vertical" size={4}>
+                  <Text>
+                    {t(
+                      "studentDashboard.quizzes.instructionsDefault",
+                      "Read all questions carefully before submitting."
+                    )}
+                  </Text>
+                  {selectedQuiz.assignment?.notes && (
+                    <Text>{selectedQuiz.assignment.notes}</Text>
+                  )}
+                </Space>
+              }
               type="info"
               showIcon
             />

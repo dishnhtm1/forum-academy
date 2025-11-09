@@ -209,3 +209,212 @@ html {
 
 /* Your existing global styles can go here */
 /* Keep any important existing styles that you want to preserve */
+
+/* Teacher dashboard responsive layout */
+.teacher-dashboard-layout {
+    animation: fadeIn 0.25s ease-out;
+}
+
+.teacher-dashboard-content {
+    width: 100%;
+}
+
+.teacher-dashboard-hero {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.teacher-dashboard-stat-card,
+.teacher-dashboard-nav-card,
+.teacher-dashboard-action-card,
+.teacher-dashboard-announcement-card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.teacher-dashboard-nav-card:hover,
+.teacher-dashboard-action-card:hover,
+.teacher-dashboard-announcement-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 36px rgba(124, 58, 237, 0.18);
+}
+
+.teacher-dashboard-nav-card:focus-visible,
+.teacher-dashboard-action-card:focus-visible {
+    outline: 2px solid rgba(124, 58, 237, 0.6);
+    outline-offset: 2px;
+}
+
+.teacher-dashboard-main-column .ant-card,
+.teacher-dashboard-side-column .ant-card,
+.teacher-dashboard-stats .ant-card {
+    width: 100%;
+}
+
+@media (max-width: 1024px) {
+    .teacher-dashboard-stats .ant-row {
+        row-gap: 16px !important;
+    }
+
+    .teacher-dashboard-nav-card {
+        padding: 14px;
+    }
+
+    .teacher-dashboard-action-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 768px) {
+    .teacher-dashboard-hero {
+        padding: 24px !important;
+    }
+
+    .teacher-dashboard-hero .ant-typography {
+        font-size: 1.25rem !important;
+    }
+
+    .teacher-dashboard-nav-card {
+        grid-column: span 1;
+    }
+
+    .teacher-dashboard-action-card {
+        gap: 12px;
+    }
+
+    .teacher-dashboard-announcement-card {
+        padding: 14px !important;
+    }
+}
+
+.td-card-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    color: #1f1f2e;
+}
+
+.teacher-dashboard-wrapper .ant-card-head-title {
+    width: 100%;
+}
+
+.td-progress-insights div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.td-goal-progress .ant-progress-circle {
+    min-width: 96px;
+}
+
+@media (max-width: 768px) {
+    .td-header-primary {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+
+    .td-summary-card {
+        padding: 16px !important;
+    }
+
+    .td-goal-progress {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+}
+
+.td-hero-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.td-course-card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.td-course-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 24px 40px rgba(15, 23, 42, 0.3);
+}
+
+.td-best-table-wrapper {
+    overflow-x: auto;
+}
+
+.td-best-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.td-best-table th,
+.td-best-table td {
+    padding: 12px 10px;
+    font-size: 13px;
+    text-align: left;
+}
+
+.td-best-table thead th {
+    color: #6b6f80;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.td-best-table tbody tr {
+    border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.td-best-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.td-best-table tbody tr:hover {
+    background: rgba(99, 102, 241, 0.06);
+}
+
+.td-calendar {
+    background: linear-gradient(135deg, rgba(248, 250, 255, 0.95) 0%, #ffffff 100%);
+    border-radius: 18px;
+    padding: 16px;
+}
+
+.td-assignment-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.td-assignment-card:hover {
+    transform: translateX(4px);
+    box-shadow: 0 18px 32px rgba(99, 102, 241, 0.14);
+}
+
+@media (max-width: 1024px) {
+    .td-best-table th,
+    .td-best-table td {
+        padding: 10px 8px;
+    }
+}
+
+.td-hero-weather {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    border-radius: 22px;
+    padding: 16px 22px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.12));
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.td-weather-visual span {
+    text-shadow: 0 4px 12px rgba(15, 23, 42, 0.25);
+}
+
+.td-weather-info span {
+    display: block;
+}
+
+.td-weather-character svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
