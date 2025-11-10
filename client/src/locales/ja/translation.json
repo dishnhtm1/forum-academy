@@ -5358,6 +5358,16 @@
         "admin_announcement": "お知らせ",
         "system": "システム"
       }
+    },
+    "sidebar": {
+      "sections": {
+        "main": "メイン",
+        "explore": "追加"
+      }
+    },
+    "portal": {
+      "title": "学生ポータル",
+      "subtitle": "フォーラムアカデミー"
     }
   },
   "announcements": {

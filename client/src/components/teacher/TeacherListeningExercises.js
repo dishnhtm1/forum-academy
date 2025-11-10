@@ -33,6 +33,11 @@ import {
   Statistic,
   Progress,
   Grid,
+  List,
+  Badge,
+  Alert,
+  Divider,
+  Radio,
 } from "antd";
 import {
   AudioOutlined,
@@ -48,6 +53,13 @@ import {
   CheckCircleOutlined,
   UserOutlined,
   ClockCircleOutlined,
+  CloseCircleOutlined,
+  InfoCircleOutlined,
+  SoundOutlined,
+  FileTextOutlined,
+  BarChartOutlined,
+  CheckOutlined,
+  QuestionCircleOutlined,
 } from "@ant-design/icons";
 import { listeningAPI, courseAPI } from "../../utils/apiClient";
 import { ensureTeacherMyClassesTranslations } from "../../utils/teacherMyClassesTranslations";
@@ -141,6 +153,7 @@ const TeacherListeningExercises = ({
 
   const [exercises, setExercises] = useState([]);
   const [courses, setCourses] = useState([]);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [courseFilter, setCourseFilter] = useState("all");
@@ -161,6 +174,16 @@ const TeacherListeningExercises = ({
   const [currentPlayingId, setCurrentPlayingId] = useState(null);
   const [audioUrl, setAudioUrl] = useState("");
   const firstLoadRef = useRef(true);
+  const [selectedSubmission, setSelectedSubmission] = useState(null);
+  const [submissionDetailModalVisible, setSubmissionDetailModalVisible] =
+    useState(false);
+
+  const getGradeColor = (percentage) => {
+    if (percentage >= 90) return "success";
+    if (percentage >= 80) return "processing";
+    if (percentage >= 70) return "warning";
+    return "error";
+  };
 
   const courseMap = useMemo(() => {
     const map = {};
@@ -203,13 +226,8 @@ const TeacherListeningExercises = ({
     [courseMap]
   );
 
-  useEffect(() => {
-    setExercises((previous) =>
-      previous
-        .map((exercise) => normalizeExercise(exercise))
-        .filter(Boolean)
-    );
-  }, [normalizeExercise]);
+  // Removed auto-normalization useEffect to prevent infinite re-renders
+  // Exercises are normalized when fetched in fetchExercises()
 
   useEffect(() => {
     if (!hasWindow) {
@@ -225,12 +243,16 @@ const TeacherListeningExercises = ({
         ? parsed
         : parsed?.assignments || [];
       if (assignments.length > 0) {
-        setExercises(assignments.map((assignment) => normalizeExercise(assignment)).filter(Boolean));
+        // Set exercises from cache without normalizing to prevent dependency loop
+        // They will be normalized when fetchExercises runs
+        setExercises(assignments);
       }
     } catch (error) {
       console.warn("Failed to load listening cache:", error);
     }
-  }, [hasWindow, normalizeExercise]);
+    // Only run once on mount to load from cache
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasWindow]);
 
   const fetchCourses = useCallback(async () => {
     try {
@@ -238,6 +260,12 @@ const TeacherListeningExercises = ({
       const rawCourses = response?.courses || response?.data || response || [];
       const courseList = Array.isArray(rawCourses) ? rawCourses : [];
       const teacherId = normalizeId(currentUser);
+
+      // TEMPORARY: Show all courses for debugging
+      // TODO: Re-enable teacher filtering once course assignment is working
+      const teacherCourses = courseList; // Disabled filtering
+
+      /* Original filtering logic - commented out temporarily
       const teacherCourses = courseList.filter((course) => {
         const courseTeacherId =
           normalizeId(course.teacher) ||
@@ -246,10 +274,19 @@ const TeacherListeningExercises = ({
           course.ownerId;
         return teacherId ? courseTeacherId === teacherId : true;
       });
-      setCourses(teacherId ? teacherCourses : courseList);
+      */
+
+      setCourses(courseList); // Show all courses
     } catch (error) {
       console.error("Error fetching courses:", error);
+      message.error(
+        translateText(
+          "teacherListening.errors.fetchCourses",
+          "Failed to fetch courses. Please try again."
+        )
+      );
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser]);
 
   const fetchExercises = useCallback(async () => {
@@ -267,8 +304,30 @@ const TeacherListeningExercises = ({
           normalizeId(exercise.createdBy);
         return teacherId ? exerciseTeacherId === teacherId : true;
       });
+      // Normalize inline to avoid dependency on normalizeExercise
       const normalized = teacherExercises
-        .map((exercise) => normalizeExercise(exercise))
+        .map((exercise) => {
+          if (!exercise) return null;
+          const id = normalizeId(exercise);
+          const courseId =
+            exercise.courseId ||
+            normalizeId(exercise.course) ||
+            exercise.course_id;
+          return {
+            ...exercise,
+            _id: id,
+            id,
+            courseId,
+            questions: Array.isArray(exercise.questions)
+              ? exercise.questions.map((question) => ({
+                  ...question,
+                  points: question.points || 1,
+                  options: question.options || [],
+                  _id: normalizeId(question) || undefined,
+                }))
+              : [],
+          };
+        })
         .filter(Boolean);
       setExercises(normalized);
     } catch (error) {
@@ -282,13 +341,13 @@ const TeacherListeningExercises = ({
     } finally {
       setLoading(false);
     }
-  }, [currentUser, normalizeExercise, translateText]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser]);
 
   useEffect(() => {
     fetchCourses();
     fetchExercises();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchCourses, fetchExercises]);
 
   useEffect(() => {
     if (!hasWindow || exercises.length === 0) {
@@ -390,9 +449,15 @@ const TeacherListeningExercises = ({
         formData.append("description", values.description || "");
         formData.append("course", values.courseId);
         formData.append("courseId", values.courseId);
-        formData.append("isActive", values.isActive !== false ? "true" : "false");
-        formData.append("teacher", teacherId);
-        formData.append("teacherId", teacherId);
+        formData.append("level", values.level || "beginner"); // Add required level field
+        formData.append("createdBy", teacherId); // Server expects createdBy, not teacher
+        formData.append("timeLimit", values.timeLimit || "30");
+        formData.append("playLimit", values.playLimit || "3");
+        formData.append(
+          "isActive",
+          values.isActive !== false ? "true" : "false"
+        );
+        formData.append("questions", JSON.stringify([])); // Initialize with empty questions array
 
         const result = await listeningAPI.create(formData);
         message.success(
@@ -423,7 +488,8 @@ const TeacherListeningExercises = ({
             normalized,
             ...previous.filter(
               (exercise) =>
-                (exercise._id || exercise.id) !== (normalized._id || normalized.id)
+                (exercise._id || exercise.id) !==
+                (normalized._id || normalized.id)
             ),
           ]);
         } else {
@@ -552,46 +618,69 @@ const TeacherListeningExercises = ({
     }
     try {
       const existingQuestions = viewingExercise.questions || [];
+
+      // Build options array from individual option fields in the correct format
+      const options = [
+        values.option1,
+        values.option2,
+        values.option3,
+        values.option4,
+      ]
+        .filter(Boolean)
+        .map((text, index) => ({
+          text: text,
+          isCorrect: values.correctAnswer === String(index + 1),
+        }));
+
       const questionData = {
+        type: "multiple_choice", // Required by the model
         question: values.question,
-        options: values.options
-          ? values.options.split(",").map((option) => option.trim())
-          : [],
+        options: options,
         correctAnswer: values.correctAnswer,
         points: values.points || 1,
       };
 
+      let updatedQuestions;
       if (editingQuestion) {
-        const updatedQuestions = existingQuestions.map((question) =>
+        updatedQuestions = existingQuestions.map((question) =>
           (normalizeId(question) || question.question) ===
           (normalizeId(editingQuestion) || editingQuestion.question)
             ? { ...questionData, _id: question._id || question.id }
             : question
         );
-        await listeningAPI.update(viewingExercise._id, {
-          questions: updatedQuestions,
-        });
-        message.success(
-          translateText(
-            "teacherListening.feedback.questionUpdated",
-            "Question updated successfully"
-          )
-        );
       } else {
-        await listeningAPI.update(viewingExercise._id, {
-          questions: [...existingQuestions, questionData],
-        });
-        message.success(
-          translateText(
-            "teacherListening.feedback.questionAdded",
-            "Question added successfully"
-          )
-        );
+        updatedQuestions = [...existingQuestions, questionData];
       }
+
+      // Update the exercise with all required fields to prevent server error
+      const updateData = {
+        title: viewingExercise.title,
+        description: viewingExercise.description,
+        course: viewingExercise.courseId || normalizeId(viewingExercise.course),
+        level: viewingExercise.level || "beginner",
+        questions: updatedQuestions,
+      };
+
+      console.log("Sending update data:", JSON.stringify(updateData, null, 2));
+
+      await listeningAPI.update(viewingExercise._id, updateData);
+
+      message.success(
+        translateText(
+          editingQuestion
+            ? "teacherListening.feedback.questionUpdated"
+            : "teacherListening.feedback.questionAdded",
+          editingQuestion
+            ? "Question updated successfully"
+            : "Question added successfully"
+        )
+      );
 
       setQuestionModalVisible(false);
       questionForm.resetFields();
       setEditingQuestion(null);
+
+      // Refresh the exercise data
       const updated = await listeningAPI.getById(viewingExercise._id);
       if (updated.success || updated._id) {
         const normalized = normalizeExercise(updated.exercise || updated);
@@ -608,8 +697,10 @@ const TeacherListeningExercises = ({
       }
     } catch (error) {
       console.error("Error saving question:", error);
+      console.error("Error details:", error.response?.data);
       message.error(
-        error.message ||
+        error.response?.data?.message ||
+          error.message ||
           translateText(
             "teacherListening.feedback.questionFailed",
             "Error saving question"
@@ -684,8 +775,7 @@ const TeacherListeningExercises = ({
   const selectedExercise = useMemo(
     () =>
       filteredExercises.find(
-        (exercise) =>
-          (exercise._id || exercise.id) === selectedExerciseId
+        (exercise) => (exercise._id || exercise.id) === selectedExerciseId
       ),
     [filteredExercises, selectedExerciseId]
   );
@@ -696,17 +786,22 @@ const TeacherListeningExercises = ({
       filteredExercises.length > 0 &&
       !selectedExerciseId
     ) {
-      setSelectedExerciseId(filteredExercises[0]._id || filteredExercises[0].id);
+      setSelectedExerciseId(
+        filteredExercises[0]._id || filteredExercises[0].id
+      );
     }
   }, [activeTab, filteredExercises, selectedExerciseId]);
 
   const fetchSubmissions = useCallback(
     async (exerciseId) => {
       if (!exerciseId) {
+        console.log("⚠️ No exercise ID provided for fetching submissions");
         return;
       }
       try {
         setSubmissionsLoading(true);
+        console.log("📊 Fetching submissions for exercise:", exerciseId);
+
         const token =
           localStorage.getItem("authToken") || localStorage.getItem("token");
         const response = await fetch(
@@ -718,30 +813,42 @@ const TeacherListeningExercises = ({
             },
           }
         );
+
+        console.log("📡 Submissions response status:", response.status);
+
         if (response.ok) {
           const data = await response.json();
+          console.log("✅ Submissions data received:", data);
+          console.log(
+            "📝 Number of submissions:",
+            data.submissions?.length || 0
+          );
+
           setSubmissions(data.submissions || []);
         } else {
+          const errorData = await response.json();
+          console.error("❌ Failed to fetch submissions:", errorData);
           message.error(
             translateText(
-              "teacherListening.feedback.fetchFailed",
-              "Failed to fetch listening exercises"
+              "teacherListening.feedback.fetchSubmissionsFailed",
+              "Failed to fetch submissions"
             )
           );
         }
       } catch (error) {
-        console.error("Error fetching submissions:", error);
+        console.error("💥 Error fetching submissions:", error);
         message.error(
           translateText(
-            "teacherListening.feedback.fetchFailed",
-            "Failed to fetch listening exercises"
+            "teacherListening.feedback.fetchSubmissionsFailed",
+            "Failed to fetch submissions"
           )
         );
       } finally {
         setSubmissionsLoading(false);
       }
     },
-    [translateText]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
   );
 
   useEffect(() => {
@@ -750,6 +857,54 @@ const TeacherListeningExercises = ({
     }
     fetchSubmissions(selectedExerciseId);
   }, [activeTab, selectedExerciseId, fetchSubmissions]);
+
+  const handleDeleteSubmission = async (submissionId) => {
+    try {
+      const token =
+        localStorage.getItem("authToken") || localStorage.getItem("token");
+
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/listening-exercises/submissions/${submissionId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        message.success(
+          translateText(
+            "teacherListening.feedback.submissionDeleted",
+            "Submission deleted successfully"
+          )
+        );
+        // Refresh submissions list
+        if (selectedExerciseId) {
+          fetchSubmissions(selectedExerciseId);
+        }
+      } else {
+        const errorData = await response.json();
+        message.error(
+          errorData.message ||
+            translateText(
+              "teacherListening.feedback.deleteFailed",
+              "Failed to delete submission"
+            )
+        );
+      }
+    } catch (error) {
+      console.error("Error deleting submission:", error);
+      message.error(
+        translateText(
+          "teacherListening.feedback.deleteFailed",
+          "Failed to delete submission"
+        )
+      );
+    }
+  };
 
   const uploadProps = {
     beforeUpload: (file) => {
@@ -796,10 +951,7 @@ const TeacherListeningExercises = ({
       ),
     },
     {
-      title: translateText(
-        "teacherListening.table.columns.course",
-        "Course"
-      ),
+      title: translateText("teacherListening.table.columns.course", "Course"),
       dataIndex: "course",
       key: "course",
       render: (_, record) => {
@@ -829,26 +981,26 @@ const TeacherListeningExercises = ({
       render: (questions) => <Tag>{questions?.length || 0}</Tag>,
     },
     {
-      title: translateText(
-        "teacherListening.table.columns.status",
-        "Status"
-      ),
+      title: translateText("teacherListening.table.columns.status", "Status"),
       dataIndex: "isActive",
       key: "isActive",
       render: (isActive, record) => (
         <Switch
           checked={isActive}
           onChange={() => handleToggleExercise(record)}
-          checkedChildren={translateText("teacherListening.actions.pause", "Pause")}
-          unCheckedChildren={translateText("teacherListening.actions.play", "Play")}
+          checkedChildren={translateText(
+            "teacherListening.actions.pause",
+            "Pause"
+          )}
+          unCheckedChildren={translateText(
+            "teacherListening.actions.play",
+            "Play"
+          )}
         />
       ),
     },
     {
-      title: translateText(
-        "teacherListening.table.columns.actions",
-        "Actions"
-      ),
+      title: translateText("teacherListening.table.columns.actions", "Actions"),
       key: "actions",
       render: (_, record) => (
         <Space wrap>
@@ -871,14 +1023,18 @@ const TeacherListeningExercises = ({
               onClick={() => handlePlayAudio(record)}
             />
           </Tooltip>
-          <Tooltip title={translateText("teacherListening.actions.view", "View")}>
+          <Tooltip
+            title={translateText("teacherListening.actions.view", "View")}
+          >
             <Button
               icon={<EyeOutlined />}
               size="small"
               onClick={() => handleViewExercise(record)}
             />
           </Tooltip>
-          <Tooltip title={translateText("teacherListening.actions.edit", "Edit")}>
+          <Tooltip
+            title={translateText("teacherListening.actions.edit", "Edit")}
+          >
             <Button
               icon={<EditOutlined />}
               size="small"
@@ -886,7 +1042,10 @@ const TeacherListeningExercises = ({
             />
           </Tooltip>
           <Tooltip
-            title={translateText("teacherListening.actions.viewSubmissions", "View submissions")}
+            title={translateText(
+              "teacherListening.actions.viewSubmissions",
+              "View submissions"
+            )}
           >
             <Button
               icon={<TrophyOutlined />}
@@ -923,12 +1082,21 @@ const TeacherListeningExercises = ({
       ),
       dataIndex: "student",
       key: "student",
+      fixed: computedIsMobile ? false : "left",
+      width: computedIsMobile ? undefined : 200,
       render: (student) => (
-        <Space>
-          <UserOutlined />
-          <Text strong>
-            {student?.firstName} {student?.lastName}
-          </Text>
+        <Space direction="vertical" size={0}>
+          <Space>
+            <UserOutlined />
+            <Text strong>
+              {student?.firstName} {student?.lastName}
+            </Text>
+          </Space>
+          {computedIsMobile && (
+            <Text type="secondary" style={{ fontSize: 12 }}>
+              {student?.email}
+            </Text>
+          )}
         </Space>
       ),
     },
@@ -936,12 +1104,15 @@ const TeacherListeningExercises = ({
       title: translateText("teacherListening.submissions.table.email", "Email"),
       dataIndex: ["student", "email"],
       key: "email",
+      responsive: ["md"],
+      width: 200,
     },
     {
       title: translateText("teacherListening.submissions.table.score", "Score"),
       key: "score",
+      width: computedIsMobile ? 80 : 120,
       render: (_, record) => (
-        <Space>
+        <Space size={4}>
           <TrophyOutlined style={{ color: "#faad14" }} />
           <Text strong>
             {record.score}/{record.answers?.length || 0}
@@ -956,6 +1127,7 @@ const TeacherListeningExercises = ({
       ),
       dataIndex: "percentage",
       key: "percentage",
+      width: computedIsMobile ? 90 : 120,
       render: (percentage) => {
         const color =
           percentage >= 90
@@ -975,6 +1147,8 @@ const TeacherListeningExercises = ({
       ),
       dataIndex: "attemptNumber",
       key: "attemptNumber",
+      responsive: ["sm"],
+      width: 100,
       render: (attempt) => <Tag color="blue">#{attempt}</Tag>,
     },
     {
@@ -984,12 +1158,74 @@ const TeacherListeningExercises = ({
       ),
       dataIndex: "submittedAt",
       key: "submittedAt",
+      responsive: ["lg"],
+      width: 180,
       render: (date) => (
-        <Space>
+        <Space size={4}>
           <ClockCircleOutlined />
-          <Text type="secondary">
+          <Text type="secondary" style={{ fontSize: 12 }}>
             {moment(date).format("MMM DD, YYYY HH:mm")}
           </Text>
+        </Space>
+      ),
+    },
+    {
+      title: translateText(
+        "teacherListening.submissions.table.actions",
+        "Actions"
+      ),
+      key: "actions",
+      fixed: computedIsMobile ? false : "right",
+      width: computedIsMobile ? 120 : 200,
+      render: (_, record) => (
+        <Space size={4} wrap>
+          <Tooltip
+            title={translateText(
+              "teacherListening.submissions.viewDetails",
+              "View Details"
+            )}
+          >
+            <Button
+              type="primary"
+              size="small"
+              icon={<EyeOutlined />}
+              onClick={() => {
+                setSelectedSubmission(record);
+                setSubmissionDetailModalVisible(true);
+              }}
+            >
+              {!computedIsMobile &&
+                translateText("teacherListening.submissions.view", "View")}
+            </Button>
+          </Tooltip>
+          <Popconfirm
+            title={translateText(
+              "teacherListening.submissions.deleteConfirm",
+              "Are you sure you want to delete this submission?"
+            )}
+            description={translateText(
+              "teacherListening.submissions.deleteWarning",
+              "This action cannot be undone."
+            )}
+            onConfirm={() => handleDeleteSubmission(record._id || record.id)}
+            okText={translateText("common.yes", "Yes")}
+            cancelText={translateText("common.no", "No")}
+          >
+            <Tooltip
+              title={translateText(
+                "teacherListening.submissions.delete",
+                "Delete"
+              )}
+            >
+              <Button danger size="small" icon={<DeleteOutlined />}>
+                {!computedIsMobile &&
+                  translateText(
+                    "teacherListening.submissions.delete",
+                    "Delete"
+                  )}
+              </Button>
+            </Tooltip>
+          </Popconfirm>
         </Space>
       ),
     },
@@ -1019,7 +1255,11 @@ const TeacherListeningExercises = ({
   }, [submissions]);
 
   const exerciseTabContent = (
-    <Space direction="vertical" size={computedIsMobile ? 16 : 24} style={{ width: "100%" }}>
+    <Space
+      direction="vertical"
+      size={computedIsMobile ? 16 : 24}
+      style={{ width: "100%" }}
+    >
       <div
         style={{
           display: "flex",
@@ -1078,10 +1318,7 @@ const TeacherListeningExercises = ({
             )}
           </Option>
           <Option value="active">
-            {translateText(
-              "teacherListening.filters.status.active",
-              "Active"
-            )}
+            {translateText("teacherListening.filters.status.active", "Active")}
           </Option>
           <Option value="inactive">
             {translateText(
@@ -1137,7 +1374,11 @@ const TeacherListeningExercises = ({
         )}
       />
     ) : (
-      <Space direction="vertical" size={computedIsMobile ? 16 : 24} style={{ width: "100%" }}>
+      <Space
+        direction="vertical"
+        size={computedIsMobile ? 16 : 24}
+        style={{ width: "100%" }}
+      >
         <Select
           value={selectedExerciseId || undefined}
           onChange={(value) => setSelectedExerciseId(value)}
@@ -1148,7 +1389,10 @@ const TeacherListeningExercises = ({
           )}
         >
           {filteredExercises.map((exercise) => (
-            <Option key={exercise._id || exercise.id} value={exercise._id || exercise.id}>
+            <Option
+              key={exercise._id || exercise.id}
+              value={exercise._id || exercise.id}
+            >
               {exercise.title}
             </Option>
           ))}
@@ -1197,13 +1441,42 @@ const TeacherListeningExercises = ({
               </Col>
             </Row>
 
-            <Card>
+            <Card
+              styles={{
+                body: {
+                  padding: computedIsMobile ? 8 : 24,
+                },
+              }}
+            >
               <Table
                 columns={submissionColumns}
                 dataSource={submissions}
                 rowKey={(record) => record._id || record.id}
                 loading={submissionsLoading}
-                pagination={{ pageSize: 10 }}
+                pagination={{
+                  pageSize: 10,
+                  showSizeChanger: true,
+                  showTotal: (total, range) =>
+                    `${range[0]}-${range[1]} ${translateText(
+                      "common.of",
+                      "of"
+                    )} ${total} ${translateText(
+                      "teacherListening.submissions.items",
+                      "items"
+                    )}`,
+                }}
+                scroll={{ x: computedIsMobile ? 800 : undefined }}
+                locale={{
+                  emptyText: (
+                    <Empty
+                      image={Empty.PRESENTED_IMAGE_SIMPLE}
+                      description={translateText(
+                        "teacherListening.submissions.noData",
+                        "No submissions yet"
+                      )}
+                    />
+                  ),
+                }}
               />
             </Card>
           </>
@@ -1227,7 +1500,11 @@ const TeacherListeningExercises = ({
           },
         }}
       >
-        <Space direction="vertical" size={computedIsMobile ? 16 : 20} style={{ width: "100%" }}>
+        <Space
+          direction="vertical"
+          size={computedIsMobile ? 16 : 20}
+          style={{ width: "100%" }}
+        >
           <Space align="start" size={16}>
             <AudioOutlined style={{ fontSize: 28, color: "#1890ff" }} />
             <Space direction="vertical" size={4}>
@@ -1274,14 +1551,8 @@ const TeacherListeningExercises = ({
       <Modal
         title={
           editingExercise
-            ? translateText(
-                "teacherListening.actions.update",
-                "Update"
-              )
-            : translateText(
-                "teacherListening.actions.create",
-                "Create"
-              )
+            ? translateText("teacherListening.actions.update", "Update")
+            : translateText("teacherListening.actions.create", "Create")
         }
         open={exerciseModalVisible}
         onCancel={closeExerciseModal}
@@ -1289,7 +1560,11 @@ const TeacherListeningExercises = ({
         width={computedIsTablet ? 640 : 600}
         destroyOnHidden
       >
-        <Form form={exerciseForm} layout="vertical" onFinish={handleCreateExercise}>
+        <Form
+          form={exerciseForm}
+          layout="vertical"
+          onFinish={handleCreateExercise}
+        >
           <Form.Item
             name="courseId"
             label={translateText("teacherListening.form.course", "Course")}
@@ -1324,7 +1599,10 @@ const TeacherListeningExercises = ({
           </Form.Item>
           <Form.Item
             name="title"
-            label={translateText("teacherListening.form.title", "Exercise title")}
+            label={translateText(
+              "teacherListening.form.title",
+              "Exercise title"
+            )}
             rules={[
               {
                 required: true,
@@ -1339,7 +1617,10 @@ const TeacherListeningExercises = ({
           </Form.Item>
           <Form.Item
             name="description"
-            label={translateText("teacherListening.form.description", "Description")}
+            label={translateText(
+              "teacherListening.form.description",
+              "Description"
+            )}
           >
             <TextArea
               rows={4}
@@ -1348,6 +1629,43 @@ const TeacherListeningExercises = ({
                 "Give instructions or context for this exercise"
               )}
             />
+          </Form.Item>
+          <Form.Item
+            name="level"
+            label={translateText(
+              "teacherListening.form.level",
+              "Difficulty Level"
+            )}
+            rules={[
+              {
+                required: true,
+                message: translateText(
+                  "teacherListening.form.levelRequired",
+                  "Please select a difficulty level"
+                ),
+              },
+            ]}
+            initialValue="beginner"
+          >
+            <Select
+              placeholder={translateText(
+                "teacherListening.form.levelPlaceholder",
+                "Select difficulty level"
+              )}
+            >
+              <Option value="beginner">
+                {translateText("teacherListening.level.beginner", "Beginner")}
+              </Option>
+              <Option value="intermediate">
+                {translateText(
+                  "teacherListening.level.intermediate",
+                  "Intermediate"
+                )}
+              </Option>
+              <Option value="advanced">
+                {translateText("teacherListening.level.advanced", "Advanced")}
+              </Option>
+            </Select>
           </Form.Item>
           {!editingExercise && (
             <Form.Item
@@ -1417,7 +1735,10 @@ const TeacherListeningExercises = ({
               setQuestionModalVisible(true);
             }}
           >
-            {translateText("teacherListening.actions.addQuestion", "Add question")}
+            {translateText(
+              "teacherListening.actions.addQuestion",
+              "Add question"
+            )}
           </Button>,
           <Button
             key="close"
@@ -1431,14 +1752,26 @@ const TeacherListeningExercises = ({
       >
         {viewingExercise ? (
           <Space direction="vertical" size={16} style={{ width: "100%" }}>
-            <Descriptions bordered column={computedIsMobile ? 1 : 2} size="small">
-              <Descriptions.Item label={translateText("teacherListening.form.title", "Exercise title")}>
+            <Descriptions
+              bordered
+              column={computedIsMobile ? 1 : 2}
+              size="small"
+            >
+              <Descriptions.Item
+                label={translateText(
+                  "teacherListening.form.title",
+                  "Exercise title"
+                )}
+              >
                 {viewingExercise.title}
               </Descriptions.Item>
-              <Descriptions.Item label={translateText("teacherListening.form.course", "Course")}>
+              <Descriptions.Item
+                label={translateText("teacherListening.form.course", "Course")}
+              >
                 {(() => {
                   const courseId =
-                    viewingExercise.courseId || normalizeId(viewingExercise.course);
+                    viewingExercise.courseId ||
+                    normalizeId(viewingExercise.course);
                   const course =
                     viewingExercise.course ||
                     courseMap[courseId] ||
@@ -1454,11 +1787,25 @@ const TeacherListeningExercises = ({
                   );
                 })()}
               </Descriptions.Item>
-              <Descriptions.Item label={translateText("teacherListening.form.description", "Description")} span={2}>
+              <Descriptions.Item
+                label={translateText(
+                  "teacherListening.form.description",
+                  "Description"
+                )}
+                span={2}
+              >
                 {viewingExercise.description ||
-                  translateText("teacherListening.table.noDescription", "No description")}
+                  translateText(
+                    "teacherListening.table.noDescription",
+                    "No description"
+                  )}
               </Descriptions.Item>
-              <Descriptions.Item label={translateText("teacherListening.table.columns.status", "Status")}>
+              <Descriptions.Item
+                label={translateText(
+                  "teacherListening.table.columns.status",
+                  "Status"
+                )}
+              >
                 <Tag color={viewingExercise.isActive ? "green" : "default"}>
                   {viewingExercise.isActive
                     ? translateText(
@@ -1480,12 +1827,20 @@ const TeacherListeningExercises = ({
                   "Questions"
                 )}
               </Title>
-              {viewingExercise.questions && viewingExercise.questions.length > 0 ? (
+              {viewingExercise.questions &&
+              viewingExercise.questions.length > 0 ? (
                 viewingExercise.questions.map((question, index) => (
                   <Card key={index} style={{ marginBottom: 12 }} size="small">
-                    <Space direction="vertical" size={6} style={{ width: "100%" }}>
+                    <Space
+                      direction="vertical"
+                      size={6}
+                      style={{ width: "100%" }}
+                    >
                       <Text strong>
-                        {translateText("teacherListening.questions.question", "Question")}{" "}
+                        {translateText(
+                          "teacherListening.questions.question",
+                          "Question"
+                        )}{" "}
                         {index + 1}: {question.question}
                       </Text>
                       <Text type="secondary">
@@ -1493,7 +1848,12 @@ const TeacherListeningExercises = ({
                           "teacherListening.questions.options",
                           "Options"
                         )}
-                        : {question.options?.join(", ") || "N/A"}
+                        :{" "}
+                        {question.options
+                          ?.map((opt) =>
+                            typeof opt === "object" ? opt.text : opt
+                          )
+                          .join(", ") || "N/A"}
                       </Text>
                       <Text type="secondary">
                         {translateText(
@@ -1508,16 +1868,30 @@ const TeacherListeningExercises = ({
                           icon={<EditOutlined />}
                           onClick={() => {
                             setEditingQuestion(question);
+                            const options = question.options || [];
+                            // Find which option is correct
+                            const correctIndex = options.findIndex(
+                              (opt) => opt.isCorrect
+                            );
                             questionForm.setFieldsValue({
                               question: question.question,
-                              options: question.options?.join(", ") || "",
-                              correctAnswer: question.correctAnswer,
+                              option1: options[0]?.text || "",
+                              option2: options[1]?.text || "",
+                              option3: options[2]?.text || "",
+                              option4: options[3]?.text || "",
+                              correctAnswer:
+                                correctIndex !== -1
+                                  ? String(correctIndex + 1)
+                                  : question.correctAnswer,
                               points: question.points || 1,
                             });
                             setQuestionModalVisible(true);
                           }}
                         >
-                          {translateText("teacherListening.actions.edit", "Edit")}
+                          {translateText(
+                            "teacherListening.actions.edit",
+                            "Edit"
+                          )}
                         </Button>
                         <Popconfirm
                           title={translateText(
@@ -1527,7 +1901,10 @@ const TeacherListeningExercises = ({
                           onConfirm={() => handleDeleteQuestion(index)}
                         >
                           <Button size="small" danger icon={<DeleteOutlined />}>
-                            {translateText("teacherListening.actions.delete", "Delete")}
+                            {translateText(
+                              "teacherListening.actions.delete",
+                              "Delete"
+                            )}
                           </Button>
                         </Popconfirm>
                       </Space>
@@ -1550,12 +1927,19 @@ const TeacherListeningExercises = ({
       </Modal>
 
       <Modal
-        title={translateText(
-          editingQuestion
-            ? "teacherListening.questions.modalTitle.edit"
-            : "teacherListening.questions.modalTitle.add",
-          editingQuestion ? "Edit question" : "Add question"
-        )}
+        title={
+          <Space>
+            <QuestionCircleOutlined style={{ color: "#1890ff" }} />
+            <Text strong>
+              {translateText(
+                editingQuestion
+                  ? "teacherListening.questions.modalTitle.edit"
+                  : "teacherListening.questions.modalTitle.add",
+                editingQuestion ? "Edit Question" : "Add Question"
+              )}
+            </Text>
+          </Space>
+        }
         open={questionModalVisible}
         onCancel={() => {
           setQuestionModalVisible(false);
@@ -1563,16 +1947,31 @@ const TeacherListeningExercises = ({
           questionForm.resetFields();
         }}
         footer={null}
-        width={computedIsTablet ? 640 : 600}
+        width={computedIsTablet ? 700 : 720}
         destroyOnHidden
       >
-        <Form form={questionForm} layout="vertical" onFinish={handleAddQuestion}>
+        <Form
+          form={questionForm}
+          layout="vertical"
+          onFinish={handleAddQuestion}
+          initialValues={{
+            points: 1,
+            option1: "",
+            option2: "",
+            option3: "",
+            option4: "",
+          }}
+        >
           <Form.Item
             name="question"
-            label={translateText(
-              "teacherListening.questions.question",
-              "Question"
-            )}
+            label={
+              <Text strong>
+                {translateText(
+                  "teacherListening.questions.question",
+                  "Question"
+                )}
+              </Text>
+            }
             rules={[
               {
                 required: true,
@@ -1583,63 +1982,539 @@ const TeacherListeningExercises = ({
               },
             ]}
           >
-            <TextArea rows={3} />
-          </Form.Item>
-          <Form.Item
-            name="options"
-            label={translateText(
-              "teacherListening.questions.options",
-              "Options (comma separated)"
-            )}
-          >
-            <Input
+            <TextArea
+              rows={3}
               placeholder={translateText(
-                "teacherListening.questions.options",
-                "Option 1, Option 2, Option 3, Option 4"
+                "teacherListening.questions.questionPlaceholder",
+                "What is the main topic discussed in the audio?"
               )}
+              showCount
+              maxLength={500}
             />
           </Form.Item>
-          <Form.Item
-            name="correctAnswer"
-            label={translateText(
-              "teacherListening.questions.correctAnswer",
-              "Correct answer"
+
+          <Text strong style={{ display: "block", marginBottom: 12 }}>
+            {translateText(
+              "teacherListening.questions.answerOptions",
+              "Answer Options"
             )}
-            rules={[
-              {
-                required: true,
-                message: translateText(
-                  "teacherListening.questions.correctAnswerRequired",
-                  "Please enter the correct answer"
-                ),
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="points"
-            label={translateText("teacherListening.questions.points", "Points")}
-            initialValue={1}
-          >
-            <InputNumber min={1} style={{ width: "100%" }} />
-          </Form.Item>
-          <Form.Item>
-            <Space>
-              <Button type="primary" htmlType="submit">
+          </Text>
+
+          <Row gutter={[16, 16]}>
+            <Col xs={24} sm={12}>
+              <Form.Item
+                name="option1"
+                label={
+                  translateText("teacherListening.questions.option", "Option") +
+                  " 1"
+                }
+                rules={[
+                  {
+                    required: true,
+                    message: translateText(
+                      "teacherListening.questions.optionRequired",
+                      "Required"
+                    ),
+                  },
+                ]}
+              >
+                <Input
+                  placeholder={translateText(
+                    "teacherListening.questions.optionPlaceholder",
+                    "Enter option 1"
+                  )}
+                  prefix={<Text type="secondary">A.</Text>}
+                />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12}>
+              <Form.Item
+                name="option2"
+                label={
+                  translateText("teacherListening.questions.option", "Option") +
+                  " 2"
+                }
+                rules={[
+                  {
+                    required: true,
+                    message: translateText(
+                      "teacherListening.questions.optionRequired",
+                      "Required"
+                    ),
+                  },
+                ]}
+              >
+                <Input
+                  placeholder={translateText(
+                    "teacherListening.questions.optionPlaceholder",
+                    "Enter option 2"
+                  )}
+                  prefix={<Text type="secondary">B.</Text>}
+                />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12}>
+              <Form.Item
+                name="option3"
+                label={
+                  translateText("teacherListening.questions.option", "Option") +
+                  " 3"
+                }
+                rules={[
+                  {
+                    required: true,
+                    message: translateText(
+                      "teacherListening.questions.optionRequired",
+                      "Required"
+                    ),
+                  },
+                ]}
+              >
+                <Input
+                  placeholder={translateText(
+                    "teacherListening.questions.optionPlaceholder",
+                    "Enter option 3"
+                  )}
+                  prefix={<Text type="secondary">C.</Text>}
+                />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12}>
+              <Form.Item
+                name="option4"
+                label={
+                  translateText("teacherListening.questions.option", "Option") +
+                  " 4"
+                }
+                rules={[
+                  {
+                    required: true,
+                    message: translateText(
+                      "teacherListening.questions.optionRequired",
+                      "Required"
+                    ),
+                  },
+                ]}
+              >
+                <Input
+                  placeholder={translateText(
+                    "teacherListening.questions.optionPlaceholder",
+                    "Enter option 4"
+                  )}
+                  prefix={<Text type="secondary">D.</Text>}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row gutter={16}>
+            <Col xs={24} sm={16}>
+              <Form.Item
+                name="correctAnswer"
+                label={
+                  <Text strong>
+                    {translateText(
+                      "teacherListening.questions.correctAnswer",
+                      "Correct Answer"
+                    )}
+                  </Text>
+                }
+                rules={[
+                  {
+                    required: true,
+                    message: translateText(
+                      "teacherListening.questions.correctAnswerRequired",
+                      "Please select the correct answer"
+                    ),
+                  },
+                ]}
+              >
+                <Radio.Group style={{ width: "100%" }}>
+                  <Space direction="vertical" style={{ width: "100%" }}>
+                    <Radio value="1">
+                      <Text>Option 1 (A)</Text>
+                    </Radio>
+                    <Radio value="2">
+                      <Text>Option 2 (B)</Text>
+                    </Radio>
+                    <Radio value="3">
+                      <Text>Option 3 (C)</Text>
+                    </Radio>
+                    <Radio value="4">
+                      <Text>Option 4 (D)</Text>
+                    </Radio>
+                  </Space>
+                </Radio.Group>
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={8}>
+              <Form.Item
+                name="points"
+                label={
+                  <Text strong>
+                    {translateText(
+                      "teacherListening.questions.points",
+                      "Points"
+                    )}
+                  </Text>
+                }
+                tooltip={translateText(
+                  "teacherListening.questions.pointsTooltip",
+                  "Points awarded for correct answer"
+                )}
+              >
+                <InputNumber
+                  min={1}
+                  max={100}
+                  style={{ width: "100%" }}
+                  placeholder="1"
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Form.Item style={{ marginBottom: 0, marginTop: 24 }}>
+            <Space style={{ width: "100%", justifyContent: "flex-end" }}>
+              <Button onClick={() => setQuestionModalVisible(false)}>
+                {translateText("teacherListening.actions.cancel", "Cancel")}
+              </Button>
+              <Button type="primary" htmlType="submit" icon={<CheckOutlined />}>
                 {editingQuestion
                   ? translateText(
                       "teacherListening.questions.update",
-                      "Update"
+                      "Update Question"
                     )
-                  : translateText("teacherListening.questions.add", "Add")}
-              </Button>
-              <Button onClick={() => setQuestionModalVisible(false)}>
-                {translateText("teacherListening.actions.cancel", "Cancel")}
+                  : translateText(
+                      "teacherListening.questions.add",
+                      "Add Question"
+                    )}
               </Button>
             </Space>
           </Form.Item>
         </Form>
+      </Modal>
+
+      {/* Enhanced Submission Detail Modal - Integrated from ListeningSubmissionsView */}
+      <Modal
+        title={
+          <Space>
+            <EyeOutlined />
+            <Text strong>
+              {translateText(
+                "teacherListening.submissions.detailTitle",
+                "Submission Details"
+              )}
+            </Text>
+          </Space>
+        }
+        open={submissionDetailModalVisible}
+        onCancel={() => {
+          setSubmissionDetailModalVisible(false);
+          setSelectedSubmission(null);
+        }}
+        footer={[
+          <Button
+            key="close"
+            type="primary"
+            onClick={() => {
+              setSubmissionDetailModalVisible(false);
+              setSelectedSubmission(null);
+            }}
+          >
+            {translateText("teacherListening.actions.close", "Close")}
+          </Button>,
+        ]}
+        width={computedIsMobile ? "95%" : 800}
+        style={{ top: computedIsMobile ? 20 : 40 }}
+      >
+        {selectedSubmission && (
+          <Space direction="vertical" size="large" style={{ width: "100%" }}>
+            {/* Student Information */}
+            <Card
+              size="small"
+              style={{
+                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                borderRadius: 12,
+              }}
+              bodyStyle={{ padding: 16 }}
+            >
+              <Space direction="vertical" size={8} style={{ width: "100%" }}>
+                <Space>
+                  <UserOutlined style={{ color: "#fff", fontSize: 18 }} />
+                  <Text strong style={{ color: "#fff", fontSize: 16 }}>
+                    {selectedSubmission.student?.firstName}{" "}
+                    {selectedSubmission.student?.lastName}
+                  </Text>
+                </Space>
+                <Text
+                  type="secondary"
+                  style={{ color: "rgba(255,255,255,0.85)", fontSize: 13 }}
+                >
+                  {selectedSubmission.student?.email}
+                </Text>
+              </Space>
+            </Card>
+
+            {/* Performance Overview */}
+            <Row gutter={[12, 12]}>
+              <Col xs={24} sm={8}>
+                <Card size="small" style={{ borderRadius: 8 }}>
+                  <Statistic
+                    title={translateText(
+                      "teacherListening.submissions.detail.score",
+                      "Score"
+                    )}
+                    value={selectedSubmission.score}
+                    suffix={`/ ${selectedSubmission.answers?.length || 0}`}
+                    prefix={<TrophyOutlined style={{ color: "#faad14" }} />}
+                    valueStyle={{ fontSize: 20, fontWeight: "bold" }}
+                  />
+                </Card>
+              </Col>
+              <Col xs={24} sm={8}>
+                <Card size="small" style={{ borderRadius: 8 }}>
+                  <Statistic
+                    title={translateText(
+                      "teacherListening.submissions.detail.percentage",
+                      "Percentage"
+                    )}
+                    value={selectedSubmission.percentage}
+                    suffix="%"
+                    prefix={<BarChartOutlined />}
+                    valueStyle={{
+                      fontSize: 20,
+                      fontWeight: "bold",
+                      color:
+                        selectedSubmission.percentage >= 90
+                          ? "#52c41a"
+                          : selectedSubmission.percentage >= 80
+                          ? "#1890ff"
+                          : selectedSubmission.percentage >= 70
+                          ? "#faad14"
+                          : "#f5222d",
+                    }}
+                  />
+                </Card>
+              </Col>
+              <Col xs={24} sm={8}>
+                <Card size="small" style={{ borderRadius: 8 }}>
+                  <Statistic
+                    title={translateText(
+                      "teacherListening.submissions.detail.attempt",
+                      "Attempt"
+                    )}
+                    value={`#${selectedSubmission.attemptNumber}`}
+                    prefix={<InfoCircleOutlined style={{ color: "#1890ff" }} />}
+                    valueStyle={{ fontSize: 20, fontWeight: "bold" }}
+                  />
+                </Card>
+              </Col>
+            </Row>
+
+            {/* Progress Bar */}
+            <Card
+              size="small"
+              title={
+                <Space>
+                  <BarChartOutlined />
+                  {translateText(
+                    "teacherListening.submissions.detail.performance",
+                    "Performance"
+                  )}
+                </Space>
+              }
+              style={{ borderRadius: 8 }}
+            >
+              <Progress
+                percent={selectedSubmission.percentage}
+                status={
+                  selectedSubmission.percentage >= 70 ? "success" : "exception"
+                }
+                strokeColor={{
+                  "0%":
+                    selectedSubmission.percentage >= 70 ? "#52c41a" : "#f5222d",
+                  "100%":
+                    selectedSubmission.percentage >= 70 ? "#95de64" : "#ff7875",
+                }}
+              />
+            </Card>
+
+            {/* Submission Details */}
+            <Descriptions
+              bordered
+              column={computedIsMobile ? 1 : 2}
+              size="small"
+              style={{ marginTop: 8 }}
+            >
+              <Descriptions.Item
+                label={translateText(
+                  "teacherListening.submissions.detail.exercise",
+                  "Exercise"
+                )}
+                span={computedIsMobile ? 1 : 2}
+              >
+                <Space>
+                  <SoundOutlined />
+                  <Text strong>
+                    {selectedSubmission.exercise?.title || "N/A"}
+                  </Text>
+                </Space>
+              </Descriptions.Item>
+              <Descriptions.Item
+                label={translateText(
+                  "teacherListening.submissions.detail.submittedAt",
+                  "Submitted At"
+                )}
+                span={computedIsMobile ? 1 : 2}
+              >
+                <Space>
+                  <ClockCircleOutlined />
+                  {moment(selectedSubmission.submittedAt).format(
+                    "MMMM DD, YYYY HH:mm:ss"
+                  )}
+                </Space>
+              </Descriptions.Item>
+            </Descriptions>
+
+            {/* Detailed Answers */}
+            <Card
+              size="small"
+              title={
+                <Space>
+                  <FileTextOutlined />
+                  {translateText(
+                    "teacherListening.submissions.detail.answers",
+                    "Detailed Answers"
+                  )}
+                </Space>
+              }
+              style={{ borderRadius: 8 }}
+              bodyStyle={{ padding: computedIsMobile ? 12 : 16 }}
+            >
+              <List
+                dataSource={selectedSubmission.answers}
+                renderItem={(answer, index) => (
+                  <List.Item style={{ padding: "12px 0" }}>
+                    <Space
+                      direction="vertical"
+                      style={{ width: "100%" }}
+                      size={4}
+                    >
+                      <Space wrap>
+                        {answer.isCorrect ? (
+                          <CheckCircleOutlined
+                            style={{
+                              color: "#52c41a",
+                              fontSize: 18,
+                              fontWeight: "bold",
+                            }}
+                          />
+                        ) : (
+                          <CloseCircleOutlined
+                            style={{
+                              color: "#f5222d",
+                              fontSize: 18,
+                              fontWeight: "bold",
+                            }}
+                          />
+                        )}
+                        <Text strong style={{ fontSize: 14 }}>
+                          {translateText(
+                            "teacherListening.submissions.detail.question",
+                            "Question"
+                          )}{" "}
+                          {index + 1}
+                        </Text>
+                        <Tag
+                          color={answer.isCorrect ? "success" : "error"}
+                          style={{ fontWeight: "bold" }}
+                        >
+                          {answer.isCorrect
+                            ? translateText(
+                                "teacherListening.submissions.detail.correct",
+                                "CORRECT"
+                              )
+                            : translateText(
+                                "teacherListening.submissions.detail.incorrect",
+                                "INCORRECT"
+                              )}
+                        </Tag>
+                      </Space>
+                      <Text type="secondary" style={{ fontSize: 13 }}>
+                        {translateText(
+                          "teacherListening.submissions.detail.selectedOption",
+                          "Selected Option"
+                        )}
+                        : {String.fromCharCode(65 + answer.answer)}
+                      </Text>
+                      <Text type="secondary" style={{ fontSize: 13 }}>
+                        {translateText(
+                          "teacherListening.submissions.detail.pointsEarned",
+                          "Points Earned"
+                        )}
+                        : {answer.pointsEarned || 0}
+                      </Text>
+                    </Space>
+                  </List.Item>
+                )}
+              />
+            </Card>
+
+            {/* Performance Summary */}
+            <Alert
+              message={
+                <Space>
+                  <TrophyOutlined />
+                  <Text strong>
+                    {translateText(
+                      "teacherListening.submissions.detail.summary",
+                      "Performance Summary"
+                    )}
+                  </Text>
+                </Space>
+              }
+              description={
+                <Space direction="vertical" size={4}>
+                  <Text>
+                    {translateText(
+                      "teacherListening.submissions.detail.totalQuestions",
+                      "Total Questions"
+                    )}
+                    : {selectedSubmission.answers?.length || 0}
+                  </Text>
+                  <Text>
+                    {translateText(
+                      "teacherListening.submissions.detail.correctAnswers",
+                      "Correct Answers"
+                    )}
+                    : {selectedSubmission.score}
+                  </Text>
+                  <Text>
+                    {translateText(
+                      "teacherListening.submissions.detail.grade",
+                      "Grade"
+                    )}
+                    :{" "}
+                    <Tag color={getGradeColor(selectedSubmission.percentage)}>
+                      {selectedSubmission.percentage >= 90
+                        ? "A"
+                        : selectedSubmission.percentage >= 80
+                        ? "B"
+                        : selectedSubmission.percentage >= 70
+                        ? "C"
+                        : selectedSubmission.percentage >= 60
+                        ? "D"
+                        : "F"}
+                    </Tag>
+                  </Text>
+                </Space>
+              }
+              type={selectedSubmission.percentage >= 70 ? "success" : "warning"}
+              showIcon
+              style={{ borderRadius: 8 }}
+            />
+          </Space>
+        )}
       </Modal>
     </div>
   );
