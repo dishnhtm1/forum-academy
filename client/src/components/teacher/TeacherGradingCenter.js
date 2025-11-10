@@ -416,79 +416,86 @@ const TeacherGradingCenter = ({
     [progressForm]
   );
 
-  const handleCreateProgress = useCallback(
-    async (values) => {
-      if (!teacherId) return;
-      const payload = {
-        student: values.studentId,
-        courseId: values.courseId,
-        assignmentType: values.assignmentType,
-        assignmentName: values.assignmentName?.trim(),
-        score: values.score,
-        maxScore: values.maxScore || 100,
-        grade: values.grade,
-        feedback: values.feedback?.trim() || "",
-        teacherId,
-      };
+const handleCreateProgress = useCallback(
+  async (values) => {
+    if (!teacherId) return;
 
-      setSavingGrade(true);
-      try {
-        let response;
-        if (editingProgress) {
-          response = await progressAPI.update(editingProgress._id, payload);
-          message.success(
-            t(
-              "teacherDashboard.gradingCenter.messages.updated",
-              "Grade updated successfully."
-            )
-          );
-        } else {
-          response = await progressAPI.create(payload);
-          message.success(
-            t(
-              "teacherDashboard.gradingCenter.messages.created",
-              "Grade recorded successfully."
-            )
-          );
-        }
+    // ✅ Find the selected course (used to extract subject name)
+    const selectedCourse =
+      courses.find(
+        (c) => c._id === values.courseId || c.id === values.courseId
+      ) || {};
 
-        const updatedRecord =
-          response?.progress ||
-          response?.data ||
-          (editingProgress
-            ? { ...editingProgress, ...payload, updatedAt: new Date().toISOString() }
-            : null);
+    // ✅ Complete payload with all required fields
+    const payload = {
+      student: values.studentId,
+      courseId: values.courseId,
+      assignmentType: values.assignmentType,
+      assignmentName: values.assignmentName?.trim(),
+      subject: selectedCourse?.title || selectedCourse?.name || "General", // required by backend
+      assignment: values.assignmentName?.trim(), // required by backend
+      score: values.score,
+      maxScore: values.maxScore || 100,
+      grade: values.grade,
+      feedback: values.feedback?.trim() || "",
+      teacherId,
+    };
 
-        if (updatedRecord) {
-          setProgressRecords((prev) => {
-            if (editingProgress) {
-              return prev.map((item) =>
-                (item._id || item.id) === (editingProgress._id || editingProgress.id)
-                  ? { ...item, ...updatedRecord }
-                  : item
-              );
-            }
-            return [
-              {
-                ...updatedRecord,
-                createdAt:
-                  updatedRecord.createdAt || new Date().toISOString(),
-              },
-              ...prev,
-            ];
-          });
-        } else {
-          fetchDashboardData();
-        }
+    setSavingGrade(true);
+    try {
+      let response;
+      if (editingProgress) {
+        response = await progressAPI.update(editingProgress._id, payload);
+        message.success(
+          t(
+            "teacherDashboard.gradingCenter.messages.updated",
+            "Grade updated successfully."
+          )
+        );
+      } else {
+        response = await progressAPI.create(payload);
+        message.success(
+          t(
+            "teacherDashboard.gradingCenter.messages.created",
+            "Grade recorded successfully."
+          )
+        );
+      }
 
-        setProgressModalVisible(false);
-        setEditingProgress(null);
-        progressForm.resetFields();
+      const updatedRecord =
+        response?.progress ||
+        response?.data ||
+        (editingProgress
+          ? { ...editingProgress, ...payload, updatedAt: new Date().toISOString() }
+          : null);
+
+      if (updatedRecord) {
+        setProgressRecords((prev) => {
+          if (editingProgress) {
+            return prev.map((item) =>
+              (item._id || item.id) === (editingProgress._id || editingProgress.id)
+                ? { ...item, ...updatedRecord }
+                : item
+            );
+          }
+          return [
+            {
+              ...updatedRecord,
+              createdAt: updatedRecord.createdAt || new Date().toISOString(),
+            },
+            ...prev,
+          ];
+        });
+      } else {
+        fetchDashboardData();
+      }
+
+      setProgressModalVisible(false);
+      setEditingProgress(null);
+      progressForm.resetFields();
     } catch (error) {
       const serverMessage =
-        error?.response?.message ||
-        error?.response?.error ||
-        error?.message;
+        error?.response?.message || error?.response?.error || error?.message;
       if (error?.status === 500) {
         console.warn(
           "TeacherGradingCenter: backend returned 500 while creating progress",
@@ -504,12 +511,13 @@ const TeacherGradingCenter = ({
             "Unable to save grade. Please try again."
           )
       );
-      } finally {
-        setSavingGrade(false);
-      }
-    },
-    [editingProgress, fetchDashboardData, progressForm, t, teacherId]
-  );
+    } finally {
+      setSavingGrade(false);
+    }
+  },
+  [editingProgress, fetchDashboardData, progressForm, t, teacherId, courses]
+);
+
 
   const handleDeleteProgress = useCallback(
     async (recordId) => {
