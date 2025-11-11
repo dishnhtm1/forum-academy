@@ -5,111 +5,70 @@ import i18n from "../i18n";
 import moment from "moment";
 import "../styles/AdminSidebar.css";
 import "../styles/Dashboard.css";
-import ZoomMeetingCard from "./ZoomMeetingCard";
+import StudentDashboardOverview from "./student/StudentDashboardOverview";
+import StudentListeningExercises from "./student/StudentListeningExercises";
+import StudentQuizzes from "./student/StudentQuizzes";
+import StudentHomework from "./student/StudentHomework";
+import StudentLiveClasses from "./student/StudentLiveClasses";
+import StudentProgress from "./student/StudentProgress";
+import StudentCourses from "./student/StudentCourses";
+import StudentAchievements from "./student/StudentAchievements";
+import StudentCalendarView from "./student/StudentCalendarView";
+import StudentLayout from "./student/StudentLayout";
+import StudentHeader from "./student/StudentHeader";
 
 // Ant Design imports
 import {
   Layout,
-  Menu,
   Card,
-  Table,
   Button,
   Form,
   Input,
   Upload,
   Modal,
-  Select,
-  Tabs,
-  Progress,
   notification,
   Tag,
   Space,
-  Divider,
   Row,
   Col,
-  Statistic,
-  DatePicker,
-  Switch,
-  InputNumber,
   Spin,
   Alert,
   Typography,
-  Rate,
   Drawer,
-  Breadcrumb,
   Empty,
   List,
-  Timeline,
-  Tooltip,
   Avatar,
   Badge,
-  Popconfirm,
   message,
   Descriptions,
-  Steps,
-  Collapse,
-  Calendar,
   Radio,
-  Dropdown,
 } from "antd";
 
 import {
-  PlusOutlined,
-  EditOutlined,
-  DeleteOutlined,
-  UploadOutlined,
-  DownloadOutlined,
-  FileOutlined,
   VideoCameraOutlined,
-  AudioOutlined,
   QuestionCircleOutlined,
   CheckCircleOutlined,
-  CloseCircleOutlined,
-  EyeOutlined,
   SearchOutlined,
-  FilterOutlined,
   BookOutlined,
   FileTextOutlined,
-  PlayCircleOutlined,
   HomeOutlined,
   UserOutlined,
-  BarChartOutlined,
   CalendarOutlined,
   BellOutlined,
-  SettingOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  StarOutlined,
-  ClockCircleOutlined,
   TrophyOutlined,
   MessageOutlined,
-  TeamOutlined,
-  LogoutOutlined,
-  ReadOutlined,
-  CheckSquareOutlined,
-  LineChartOutlined,
-  RocketOutlined,
-  FireOutlined,
-  HeartOutlined,
-  LikeOutlined,
+  ClockCircleOutlined,
   CrownOutlined,
   SoundOutlined,
   FormOutlined,
-  FieldTimeOutlined,
-  ExclamationCircleOutlined,
-  DashboardOutlined,
-  InfoCircleOutlined,
-  PhoneOutlined,
-  MailOutlined,
-  GlobalOutlined,
 } from "@ant-design/icons";
 
 // Import API client
 import { authAPI, statsAPI } from "../utils/apiClient";
 
-const { Header, Sider, Content } = Layout;
+const { Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
-const { TabPane } = Tabs;
+
 const ASSIGNMENTS_STORAGE_KEY = "forumAcademy.quizAssignments.byStudent";
 
 const STUDENT_ASSIGNMENT_CACHE_KEY = "forumAcademy.teacherAssignments.studentCache";
@@ -125,9 +84,6 @@ const StudentDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const [isTablet, setIsTablet] = useState(
-    window.innerWidth > 768 && window.innerWidth <= 1024
-  );
   const [dashboardStats, setDashboardStats] = useState({
     enrolledCourses: 0,
     completedQuizzes: 0,
@@ -204,15 +160,12 @@ const StudentDashboard = () => {
       const tablet = width > 768 && width <= 1024;
 
       setIsMobile(mobile);
-      setIsTablet(tablet);
 
       // Auto-collapse based on screen size
-      if (mobile) {
+      if (mobile || tablet) {
         setCollapsed(true);
-      } else if (tablet) {
-        setCollapsed(true); // Collapse on tablets too for more space
       } else {
-        setCollapsed(false); // Expand on desktop
+        setCollapsed(false);
       }
     };
 
@@ -315,7 +268,6 @@ const StudentDashboard = () => {
     }
   }, []);
 
-  // Fetch listening exercises
   const fetchListeningExercises = useCallback(
     async (useCacheFirst = false) => {
       if (useCacheFirst) {
@@ -1101,1171 +1053,228 @@ const StudentDashboard = () => {
   const studentMenuItems = [
     {
       key: "overview",
-      icon: <HomeOutlined />,
+      icon: React.createElement(HomeOutlined),
       label: t("studentDashboard.menu.overview"),
     },
     {
       key: "listening",
-      icon: <SoundOutlined />,
+      icon: React.createElement(SoundOutlined),
       label: t("studentDashboard.menu.listening"),
     },
     {
       key: "quizzes",
-      icon: <QuestionCircleOutlined />,
+      icon: React.createElement(QuestionCircleOutlined),
       label: t("studentDashboard.menu.quizzes"),
     },
     {
       key: "homework",
-      icon: <FormOutlined />,
+      icon: React.createElement(FormOutlined),
       label: t("studentDashboard.menu.homework"),
     },
     {
       key: "zoom",
-      icon: <VideoCameraOutlined />,
+      icon: React.createElement(VideoCameraOutlined),
       label: t("studentDashboard.menu.liveClasses"),
     },
     {
       key: "progress",
-      icon: <TrophyOutlined />,
+      icon: React.createElement(TrophyOutlined),
       label: t("studentDashboard.menu.progress"),
     },
     {
       key: "courses",
-      icon: <BookOutlined />,
+      icon: React.createElement(BookOutlined),
       label: t("studentDashboard.menu.courses"),
     },
     {
       key: "calendar",
-      icon: <CalendarOutlined />,
+      icon: React.createElement(CalendarOutlined),
       label: t("studentDashboard.menu.calendar"),
     },
     {
       key: "achievements",
-      icon: <CrownOutlined />,
+      icon: React.createElement(CrownOutlined),
       label: t("studentDashboard.menu.achievements"),
     },
   ];
 
-  const renderOverview = () => {
-    const upcomingDeadlines = [
-      ...homework.map((hw) => ({
-        type: "homework",
-        title: hw.title,
-        dueDate: hw.dueDate,
-        course: hw.course?.name,
-      })),
-      ...quizzes.map((q) => ({
-        type: "quiz",
-        title: q.title,
-        dueDate: q.availableUntil,
-        course: q.course?.name,
-      })),
-    ]
-      .filter((item) => item.dueDate)
-      .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
-      .slice(0, 5);
+  const renderOverview = () => (
+    <StudentDashboardOverview
+      t={t}
+      currentUser={currentUser}
+      listeningExercises={listeningExercises}
+      quizzes={quizzes}
+      homework={homework}
+      progressRecords={progressRecords}
+      setActiveTab={setActiveTab}
+    />
+  );
 
-    return (
-      <div style={{ padding: "24px" }}>
-        <Title level={2}>
-          <RocketOutlined style={{ marginRight: "12px", color: "#1890ff" }} />
-          {t("studentDashboard.title")}
-        </Title>
-        <Text type="secondary" style={{ fontSize: "16px" }}>
-          {t("studentDashboard.welcomeBack")}, <Text strong>{currentUser?.name}</Text>! {t("studentDashboard.continueJourney")}.
-        </Text>
+  const renderListeningExercises = () => (
+    <StudentListeningExercises
+      t={t}
+      listeningExercises={listeningExercises}
+      onStartExercise={(record) => {
+        setSelectedListening(record);
+        setListeningModalVisible(true);
+      }}
+    />
+  );
 
-        {/* Statistics Cards */}
-        <Row gutter={[16, 16]} style={{ marginTop: "32px" }}>
-          <Col xs={24} sm={12} md={6}>
-            <Card hoverable>
-              <Statistic
-                title={t("studentDashboard.overview.statistics.listeningExercises")}
-                value={listeningExercises.length}
-                prefix={<SoundOutlined style={{ color: "#1890ff" }} />}
-                valueStyle={{ color: "#1890ff" }}
-              />
-            </Card>
-          </Col>
-          <Col xs={24} sm={12} md={6}>
-            <Card hoverable>
-              <Statistic
-                title={t("studentDashboard.overview.statistics.availableQuizzes")}
-                value={quizzes.length}
-                prefix={<QuestionCircleOutlined style={{ color: "#52c41a" }} />}
-                valueStyle={{ color: "#52c41a" }}
-              />
-            </Card>
-          </Col>
-          <Col xs={24} sm={12} md={6}>
-            <Card hoverable>
-              <Statistic
-                title={t("studentDashboard.overview.statistics.pendingHomework")}
-                value={homework.length}
-                prefix={<FormOutlined style={{ color: "#faad14" }} />}
-                valueStyle={{ color: "#faad14" }}
-              />
-            </Card>
-          </Col>
-          <Col xs={24} sm={12} md={6}>
-            <Card hoverable>
-              <Statistic
-                title={t("studentDashboard.overview.statistics.myGrades")}
-                value={progressRecords.length}
-                prefix={<TrophyOutlined style={{ color: "#f5222d" }} />}
-                valueStyle={{ color: "#f5222d" }}
-              />
-            </Card>
-          </Col>
-        </Row>
+  const renderQuizzes = () => (
+    <StudentQuizzes
+      t={t}
+      quizzes={quizzes}
+      onStartQuiz={(record) => {
+        setSelectedQuiz(record);
+        setQuizModalVisible(true);
+      }}
+    />
+  );
 
-        {/* Quick Access Cards */}
-        <Row gutter={[16, 16]} style={{ marginTop: "24px" }}>
-          <Col xs={24} md={8}>
-            <Card
-              title={
-                <Space>
-                  <SoundOutlined />
-                  {t("studentDashboard.overview.quickAccess.listeningExercises")}
-                </Space>
-              }
-              extra={
-                <Button type="link" onClick={() => setActiveTab("listening")}>
-                  {t("studentDashboard.overview.quickAccess.viewAll")}
-                </Button>
-              }
-              hoverable
-            >
-              {listeningExercises.length > 0 ? (
-                <List
-                  dataSource={listeningExercises.slice(0, 3)}
-                  renderItem={(item) => (
-                    <List.Item>
-                      <List.Item.Meta
-                        title={<Text strong>{item.title}</Text>}
-                        description={
-                          <Space direction="vertical" size={0}>
-                            <Text type="secondary">
-                              {item.course?.title || item.course?.name}
-                            </Text>
-                            <Text type="secondary">
-                              <ClockCircleOutlined /> {item.timeLimit || "N/A"}{" "}
-                              min • {item.questions?.length || 0} questions
-                            </Text>
-                          </Space>
-                        }
-                      />
-                    </List.Item>
-                  )}
-                />
-              ) : (
-                <Empty description={t("studentDashboard.overview.noExercises")} />
-              )}
-            </Card>
-          </Col>
+  const renderHomework = () => (
+    <StudentHomework
+      t={t}
+      homework={homework}
+      onViewDetails={(record) => {
+        setSelectedHomework(record);
+        setHomeworkModalVisible(true);
+      }}
+      onSubmitHomework={(record) => {
+        setSelectedHomework(record);
+        setSubmissionModalVisible(true);
+      }}
+    />
+  );
 
-          <Col xs={24} md={8}>
-            <Card
-              title={
-                <Space>
-                  <QuestionCircleOutlined />
-                  {t("studentDashboard.overview.quickAccess.recentQuizzes")}
-                </Space>
-              }
-              extra={
-                <Button type="link" onClick={() => setActiveTab("quizzes")}>
-                  View All
-                </Button>
-              }
-              hoverable
-            >
-              {quizzes.length > 0 ? (
-                <List
-                  dataSource={quizzes.slice(0, 3)}
-                  renderItem={(item) => (
-                    <List.Item>
-                      <List.Item.Meta
-                        title={<Text strong>{item.title}</Text>}
-                        description={
-                          <Space direction="vertical" size={0}>
-                            <Text type="secondary">{item.course?.name}</Text>
-                            <Text type="secondary">
-                              <FieldTimeOutlined /> {item.timeLimit} min •{" "}
-                              {item.questions?.length || 0} questions
-                            </Text>
-                          </Space>
-                        }
-                      />
-                    </List.Item>
-                  )}
-                />
-              ) : (
-                <Empty description={t("studentDashboard.overview.noQuizzes")} />
-              )}
-            </Card>
-          </Col>
-
-          <Col xs={24} md={8}>
-            <Card
-              title={
-                <Space>
-                  <FormOutlined />
-                  {t("studentDashboard.overview.quickAccess.homework")}
-                </Space>
-              }
-              extra={
-                <Button type="link" onClick={() => setActiveTab("homework")}>
-                  View All
-                </Button>
-              }
-              hoverable
-            >
-              {homework.length > 0 ? (
-                <List
-                  dataSource={homework.slice(0, 3)}
-                  renderItem={(item) => (
-                    <List.Item>
-                      <List.Item.Meta
-                        title={<Text strong>{item.title}</Text>}
-                        description={
-                          <Space direction="vertical" size={0}>
-                            <Text type="secondary">{item.course?.name}</Text>
-                            <Text type="secondary">
-                              <CalendarOutlined /> Due:{" "}
-                              {moment(item.dueDate).format("MMM DD, YYYY")}
-                            </Text>
-                          </Space>
-                        }
-                      />
-                    </List.Item>
-                  )}
-                />
-              ) : (
-                <Empty description={t("studentDashboard.overview.noHomework")} />
-              )}
-            </Card>
-          </Col>
-        </Row>
-
-        {/* Upcoming Deadlines */}
-        <Row gutter={[16, 16]} style={{ marginTop: "24px" }}>
-          <Col xs={24} md={12}>
-            <Card
-              title={
-                <Space>
-                  <CalendarOutlined />
-                  {t("studentDashboard.overview.upcomingDeadlines")}
-                </Space>
-              }
-            >
-              {upcomingDeadlines.length > 0 ? (
-                <Timeline
-                  items={upcomingDeadlines.map((item, index) => ({
-                    key: index,
-                    color:
-                      moment(item.dueDate).diff(moment(), "days") <= 3
-                        ? "red"
-                        : "blue",
-                    children: (
-                      <>
-                        <Text strong>{item.title}</Text>
-                        <br />
-                        <Text type="secondary">
-                          {item.course} • Due:{" "}
-                          {moment(item.dueDate).format("MMM DD, YYYY")}
-                        </Text>
-                        <br />
-                        <Tag
-                          color={item.type === "homework" ? "orange" : "blue"}
-                        >
-                          {item.type.toUpperCase()}
-                        </Tag>
-                      </>
-                    ),
-                  }))}
-                />
-              ) : (
-                <Empty description={t("studentDashboard.overview.noDeadlines")} />
-              )}
-            </Card>
-          </Col>
-
-          <Col xs={24} md={12}>
-            <Card
-              title={
-                <Space>
-                  <RocketOutlined />
-                  {t("studentDashboard.overview.quickActions.title")}
-                </Space>
-              }
-            >
-              <Space
-                direction="vertical"
-                style={{ width: "100%" }}
-                size="large"
-              >
-                <Button
-                  type="primary"
-                  size="large"
-                  icon={<SoundOutlined />}
-                  block
-                  onClick={() => setActiveTab("listening")}
-                >
-                  {t("studentDashboard.overview.quickActions.startListening")}
-                </Button>
-                <Button
-                  size="large"
-                  icon={<QuestionCircleOutlined />}
-                  block
-                  onClick={() => setActiveTab("quizzes")}
-                >
-                  {t("studentDashboard.overview.quickActions.takeQuiz")}
-                </Button>
-                <Button
-                  size="large"
-                  icon={<FormOutlined />}
-                  block
-                  onClick={() => setActiveTab("homework")}
-                >
-                  {t("studentDashboard.overview.quickActions.submitHomework")}
-                </Button>
-                <Button
-                  size="large"
-                  icon={<TrophyOutlined />}
-                  block
-                  onClick={() => setActiveTab("progress")}
-                >
-                  {t("studentDashboard.overview.quickActions.viewProgress")}
-                </Button>
-              </Space>
-            </Card>
-          </Col>
-        </Row>
-      </div>
-    );
-  };
-
-  // Render Listening Exercises Section
-  const renderListeningExercises = () => {
-    const columns = [
-      {
-        title: t("studentDashboard.listening.columns.title"),
-        dataIndex: "title",
-        key: "title",
-        render: (text, record) => (
-          <Space direction="vertical" size={0}>
-            <Text strong>{text}</Text>
-            <Text type="secondary">
-              {record.course?.title || record.course?.name}
-            </Text>
-          </Space>
-        ),
-      },
-      {
-        title: t("studentDashboard.listening.columns.difficulty"),
-        dataIndex: "level",
-        key: "level",
-        render: (level) => {
-          const colors = {
-            beginner: "green",
-            intermediate: "orange",
-            advanced: "red",
-          };
-          const translatedLevel = level === "beginner" 
-            ? t("studentDashboard.listening.difficulty.beginner")
-            : level === "intermediate"
-            ? t("studentDashboard.listening.difficulty.intermediate")
-            : t("studentDashboard.listening.difficulty.advanced");
-          return <Tag color={colors[level]}>{translatedLevel}</Tag>;
-        },
-      },
-      {
-        title: t("studentDashboard.listening.columns.duration"),
-        dataIndex: "timeLimit",
-        key: "timeLimit",
-        render: (timeLimit) => (
-          <Text>
-            <ClockCircleOutlined /> {timeLimit || "N/A"} min
-          </Text>
-        ),
-      },
-      {
-        title: t("studentDashboard.listening.columns.questions"),
-        dataIndex: "questions",
-        key: "questions",
-        render: (questions) => <Tag>{questions?.length || 0} {t("studentDashboard.listening.columns.questions")}</Tag>,
-      },
-      {
-        title: t("studentDashboard.listening.columns.status"),
-        dataIndex: "isPublished",
-        key: "isPublished",
-        render: (isPublished) => (
-          <Tag color={isPublished ? "success" : "default"}>
-            {isPublished ? t("studentDashboard.listening.status.published") : t("studentDashboard.listening.status.draft")}
-          </Tag>
-        ),
-      },
-      {
-        title: t("studentDashboard.listening.columns.actions"),
-        key: "actions",
-        render: (_, record) => (
-          <Button
-            type="primary"
-            icon={<PlayCircleOutlined />}
-            onClick={() => {
-              setSelectedListening(record);
-              setListeningModalVisible(true);
-            }}
-          >
-            {t("studentDashboard.listening.startExercise")}
-          </Button>
-        ),
-      },
-    ];
-
-    return (
-      <div style={{ padding: "24px" }}>
-        <Title level={2}>
-          <SoundOutlined style={{ marginRight: "8px" }} />
-          {t("studentDashboard.listening.title")}
-        </Title>
-        <Text type="secondary">
-          {t("studentDashboard.listening.subtitle")}
-        </Text>
-
-        <Card style={{ marginTop: "24px" }}>
-          <Table
-            columns={columns}
-            dataSource={listeningExercises}
-            rowKey={(record) => record._id || record.id}
-            pagination={{ pageSize: 10 }}
-            locale={{ emptyText: t("studentDashboard.listening.noExercises") }}
-          />
-        </Card>
-      </div>
-    );
-  };
-
-  // Render Quizzes Section
-  const renderQuizzes = () => {
-    const columns = [
-      {
-        title: t("studentDashboard.quizzes.columns.title"),
-        dataIndex: "title",
-        key: "title",
-        render: (text, record) => {
-          const courseName =
-            record.assignment?.courseDetails?.map((course) => course.title).join(", ") ||
-            record.course?.name ||
-            record.course?.title ||
-            t("studentDashboard.quizzes.courseUnknown", "Course");
-          return (
-            <Space direction="vertical" size={0}>
-              <Text strong>{text}</Text>
-              <Text type="secondary">{courseName}</Text>
-            </Space>
-          );
-        },
-      },
-      {
-        title: t("studentDashboard.quizzes.columns.questions"),
-        dataIndex: "questions",
-        key: "questions",
-        render: (questions) => (
-          <Tag color="blue">
-            {questions?.length || 0} {t("studentDashboard.quizzes.columns.questions")}
-          </Tag>
-        ),
-      },
-      {
-        title: t("studentDashboard.quizzes.columns.timeLimit"),
-        key: "timeLimit",
-        render: (_, record) => {
-          const duration = record.duration || record.timeLimit || 0;
-          return (
-            <Text>
-              <FieldTimeOutlined /> {duration}{" "}
-              {t("studentDashboard.quizzes.minutes", "minutes")}
-            </Text>
-          );
-        },
-      },
-      {
-        title: t("studentDashboard.quizzes.columns.dueDate"),
-        key: "dueDate",
-        render: (_, record) => {
-          const dueDate = record.assignment?.dueDate;
-          return dueDate
-            ? moment(dueDate).format("MMM DD, YYYY HH:mm")
-            : t("studentDashboard.quizzes.noDeadline", "No deadline");
-        },
-      },
-      {
-        title: t("studentDashboard.quizzes.columns.status"),
-        key: "status",
-        render: (_, record) => {
-          const dueDate = record.assignment?.dueDate;
-          if (!dueDate) {
-            return (
-              <Tag color="default">
-                {t("studentDashboard.quizzes.status.available", "Available")}
-              </Tag>
-            );
-          }
-          const isOverdue = moment(dueDate).isBefore(moment());
-          const isDueSoon =
-            !isOverdue && moment(dueDate).diff(moment(), "hours") <= 24;
-          if (isOverdue) {
-            return (
-              <Tag color="red">
-                {t("studentDashboard.quizzes.status.overdue", "Overdue")}
-              </Tag>
-            );
-          }
-          if (isDueSoon) {
-            return (
-              <Tag color="orange">
-                {t("studentDashboard.quizzes.status.dueSoon", "Due soon")}
-              </Tag>
-            );
-          }
-          return (
-            <Tag color="green">
-              {t("studentDashboard.quizzes.status.assigned", "Assigned")}
-            </Tag>
-          );
-        },
-      },
-      {
-        title: t("studentDashboard.quizzes.columns.actions"),
-        key: "actions",
-        render: (_, record) => (
-          <Button
-            type="primary"
-            icon={<PlayCircleOutlined />}
-            onClick={() => {
-              setSelectedQuiz(record);
-              setQuizModalVisible(true);
-            }}
-          >
-            {t("studentDashboard.quizzes.takeQuiz")}
-          </Button>
-        ),
-      },
-    ];
-
-    return (
-      <div style={{ padding: "24px" }}>
-        <Title level={2}>
-          <QuestionCircleOutlined style={{ marginRight: "8px" }} />
-          {t("studentDashboard.quizzes.title")}
-        </Title>
-        <Text type="secondary">
-          {t("studentDashboard.quizzes.subtitle")}
-        </Text>
-
-        <Card style={{ marginTop: "24px" }}>
-          <Table
-            columns={columns}
-            dataSource={quizzes}
-            rowKey={(record) => record._id || record.id}
-            pagination={{ pageSize: 10 }}
-            locale={{
-              emptyText: t(
-                "studentDashboard.quizzes.noAssigned",
-                "No quizzes assigned yet."
-              ),
-            }}
-          />
-        </Card>
-      </div>
-    );
-  };
-
-  // Render Homework Section
-  const renderHomework = () => {
-    const columns = [
-      {
-        title: t("studentDashboard.homework.columns.assignment"),
-        dataIndex: "title",
-        key: "title",
-        render: (text, record) => (
-          <Space direction="vertical" size={0}>
-            <Text strong>{text}</Text>
-            <Text type="secondary">{record.course?.name}</Text>
-          </Space>
-        ),
-      },
-      {
-        title: t("studentDashboard.homework.columns.description"),
-        dataIndex: "description",
-        key: "description",
-        render: (text) => <Paragraph ellipsis={{ rows: 2 }}>{text}</Paragraph>,
-      },
-      {
-        title: t("studentDashboard.homework.columns.dueDate"),
-        dataIndex: "dueDate",
-        key: "dueDate",
-        render: (date) => {
-          const isOverdue = moment(date).isBefore(moment());
-          return (
-            <Space>
-              <CalendarOutlined
-                style={{ color: isOverdue ? "#ff4d4f" : "#1890ff" }}
-              />
-              <Text type={isOverdue ? "danger" : "secondary"}>
-                {moment(date).format("MMM DD, YYYY")}
-              </Text>
-              {isOverdue && <Tag color="error">{t("studentDashboard.homework.status.overdue")}</Tag>}
-            </Space>
-          );
-        },
-      },
-      {
-        title: t("studentDashboard.homework.columns.status"),
-        dataIndex: "status",
-        key: "status",
-        render: (status) => {
-          const colors = {
-            active: "success",
-            draft: "default",
-            archived: "warning",
-          };
-          const translatedStatus = status === "active"
-            ? t("studentDashboard.homework.status.active")
-            : status === "draft"
-            ? t("studentDashboard.homework.status.draft")
-            : t("studentDashboard.homework.status.archived");
-          return <Tag color={colors[status]}>{translatedStatus}</Tag>;
-        },
-      },
-      {
-        title: t("studentDashboard.homework.columns.actions"),
-        key: "actions",
-        render: (_, record) => (
-          <Space>
-            <Button
-              type="primary"
-              icon={<EyeOutlined />}
-              onClick={() => {
-                setSelectedHomework(record);
-                setHomeworkModalVisible(true);
-              }}
-            >
-              {t("studentDashboard.homework.viewDetails")}
-            </Button>
-            <Button
-              icon={<UploadOutlined />}
-              onClick={() => {
-                setSelectedHomework(record);
-                setSubmissionModalVisible(true);
-              }}
-            >
-              {t("studentDashboard.homework.submit")}
-            </Button>
-          </Space>
-        ),
-      },
-    ];
-
-    return (
-      <div style={{ padding: "24px" }}>
-        <Title level={2}>
-          <FormOutlined style={{ marginRight: "8px" }} />
-          {t("studentDashboard.homework.title")}
-        </Title>
-        <Text type="secondary">{t("studentDashboard.homework.subtitle")}</Text>
-
-        <Card style={{ marginTop: "24px" }}>
-          <Table
-            columns={columns}
-            dataSource={homework}
-            rowKey="_id"
-            pagination={{ pageSize: 10 }}
-            locale={{ emptyText: t("studentDashboard.homework.noAssignments") }}
-          />
-        </Card>
-      </div>
-    );
-  };
-
-  // Render Zoom Classes Section
-  const renderZoomClasses = () => {
-
-    return (
-      <div style={{ padding: "24px" }}>
-        <div
-          style={{
-            marginBottom: 32,
-            padding: "24px",
-            background: "linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7))",
-            borderRadius: "16px",
-            backdropFilter: "blur(10px)",
-            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.08)",
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
+  const renderZoomClasses = () => (
+    <>
+      <StudentLiveClasses
+        t={t}
+        zoomClasses={zoomClasses}
+        zoomLoading={zoomLoading}
+        onJoinClass={handleJoinZoomClass}
+      />
+      <Modal
+        title={
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <div
-              style={{
-                width: 48,
-                height: 48,
-                background: "linear-gradient(135deg, #dc2626 0%, #ea580c 100%)",
-                borderRadius: "12px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                boxShadow: "0 4px 16px rgba(220, 38, 38, 0.3)",
-              }}
-            >
-              <VideoCameraOutlined style={{ color: "#fff", fontSize: "20px" }} />
-            </div>
-            <div>
-              <Title level={2} style={{ margin: 0, color: "#1f2937" }}>
-                {t("studentDashboard.liveClasses.title")}
+            <VideoCameraOutlined style={{ color: "#dc2626", fontSize: "20px" }} />
+            <span>Join Live Class</span>
+          </div>
+        }
+        open={joinZoomModalVisible}
+        onCancel={() => {
+          setJoinZoomModalVisible(false);
+          setSelectedZoomClass(null);
+        }}
+        footer={null}
+        width={500}
+        className="modern-modal"
+      >
+        {selectedZoomClass && (
+          <div style={{ marginTop: 24 }}>
+            <div style={{ marginBottom: 24 }}>
+              <Title level={4} style={{ marginBottom: 8 }}>
+                {selectedZoomClass.title}
               </Title>
-              <Text style={{ color: "#6b7280" }}>
-                {t("studentDashboard.liveClasses.subtitle")}
+              <Text style={{ color: "#666" }}>
+                {selectedZoomClass.courseName} • {selectedZoomClass.teacherName}
               </Text>
             </div>
-          </div>
-        </div>
 
-        {zoomLoading ? (
-          <div style={{ textAlign: "center", padding: "40px" }}>
-            <Spin size="large" />
-            <div style={{ marginTop: "16px", color: "#666" }}>
-              Loading live classes...
+            <div style={{ marginBottom: 24 }}>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Text strong>Meeting ID:</Text>
+                  <br />
+                  <Tag color="blue" style={{ fontFamily: "monospace", marginTop: 4 }}>
+                    {selectedZoomClass.meetingId}
+                  </Tag>
+                </Col>
+                <Col span={12}>
+                  <Text strong>Password:</Text>
+                  <br />
+                  <Tag color="green" style={{ fontFamily: "monospace", marginTop: 4 }}>
+                    {selectedZoomClass.password}
+                  </Tag>
+                </Col>
+              </Row>
             </div>
-          </div>
-        ) : zoomClasses.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "40px" }}>
-            <VideoCameraOutlined
-              style={{ fontSize: "64px", color: "#d9d9d9", marginBottom: "16px" }}
+
+            <Alert
+              message="Joining Live Class"
+              description="Click 'Join Now' to open the Zoom class in a new tab. Your attendance will be automatically recorded when you join."
+              type="info"
+              showIcon
+              style={{ marginBottom: 24 }}
             />
-            <Title level={3} style={{ color: "#999" }}>
-              No Active Live Classes
-            </Title>
-          </div>
-        ) : (
-          <div>
-            <div style={{ marginBottom: "16px" }}>
-              <Text strong style={{ fontSize: "16px" }}>
-                {t("studentDashboard.liveClasses.yourClasses")} ({zoomClasses.length})
-              </Text>
-            </div>
-            {zoomClasses.map((meeting) => (
-              <ZoomMeetingCard
-                key={meeting.id}
-                meeting={meeting}
-                onJoinMeeting={handleJoinZoomClass}
-              />
-            ))}
-          </div>
-        )}
 
-        {/* Join Zoom Modal */}
-        <Modal
-          title={
-            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <VideoCameraOutlined style={{ color: "#dc2626", fontSize: "20px" }} />
-              <span>Join Live Class</span>
-            </div>
-          }
-          open={joinZoomModalVisible}
-          onCancel={() => {
-            setJoinZoomModalVisible(false);
-            setSelectedZoomClass(null);
-          }}
-          footer={null}
-          width={500}
-          className="modern-modal"
-        >
-          {selectedZoomClass && (
-            <div style={{ marginTop: 24 }}>
-              <div style={{ marginBottom: 24 }}>
-                <Title level={4} style={{ marginBottom: 8 }}>
-                  {selectedZoomClass.title}
-                </Title>
-                <Text style={{ color: "#666" }}>
-                  {selectedZoomClass.courseName} • {selectedZoomClass.teacherName}
-                </Text>
-              </div>
-
-              <div style={{ marginBottom: 24 }}>
-                <Row gutter={16}>
-                  <Col span={12}>
-                    <Text strong>Meeting ID:</Text>
-                    <br />
-                    <Tag color="blue" style={{ fontFamily: "monospace", marginTop: 4 }}>
-                      {selectedZoomClass.meetingId}
-                    </Tag>
-                  </Col>
-                  <Col span={12}>
-                    <Text strong>Password:</Text>
-                    <br />
-                    <Tag color="green" style={{ fontFamily: "monospace", marginTop: 4 }}>
-                      {selectedZoomClass.password}
-                    </Tag>
-                  </Col>
-                </Row>
-              </div>
-
+            {attendanceRecorded && (
               <Alert
-                message="Joining Live Class"
-                description="Click 'Join Now' to open the Zoom class in a new tab. Your attendance will be automatically recorded when you join."
-                type="info"
+                message="Attendance Recorded"
+                description="Your attendance has been automatically recorded for this class."
+                type="success"
                 showIcon
                 style={{ marginBottom: 24 }}
               />
+            )}
 
-              {attendanceRecorded && (
-                <Alert
-                  message="Attendance Recorded"
-                  description="Your attendance has been automatically recorded for this class."
-                  type="success"
-                  showIcon
-                  style={{ marginBottom: 24 }}
-                />
-              )}
-
-              <div style={{ textAlign: "right" }}>
-                <Space>
-                  <Button onClick={() => setJoinZoomModalVisible(false)}>
-                    Cancel
-                  </Button>
-                  <Button
-                    type="primary"
-                    onClick={handleConfirmJoinZoom}
-                    style={{
-                      background: "linear-gradient(135deg, #dc2626 0%, #ea580c 100%)",
-                      border: "none",
-                    }}
-                  >
-                    Join Now
-                  </Button>
-                </Space>
-              </div>
+            <div style={{ textAlign: "right" }}>
+              <Space>
+                <Button onClick={() => setJoinZoomModalVisible(false)}>Cancel</Button>
+                <Button
+                  type="primary"
+                  onClick={handleConfirmJoinZoom}
+                  style={{
+                    background: "linear-gradient(135deg, #dc2626 0%, #ea580c 100%)",
+                    border: "none",
+                  }}
+                >
+                  Join Now
+                </Button>
+              </Space>
             </div>
-          )}
-        </Modal>
-      </div>
-    );
-  };
-
-  // Render Progress Section
-  const renderProgress = () => {
-    const columns = [
-      {
-        title: t("studentDashboard.progress.columns.subject"),
-        dataIndex: "subject",
-        key: "subject",
-        render: (subject) => <Tag color="blue">{subject}</Tag>,
-      },
-      {
-        title: t("studentDashboard.progress.columns.assignment"),
-        dataIndex: "assignment",
-        key: "assignment",
-        render: (text) => <Text strong>{text}</Text>,
-      },
-      {
-        title: t("studentDashboard.progress.columns.type"),
-        dataIndex: "assignmentType",
-        key: "assignmentType",
-        render: (type) => {
-          const colors = {
-            homework: "orange",
-            quiz: "blue",
-            exam: "red",
-            project: "purple",
-          };
-          const translatedType = type === "homework"
-            ? t("studentDashboard.progress.types.homework")
-            : type === "quiz"
-            ? t("studentDashboard.progress.types.quiz")
-            : type === "exam"
-            ? t("studentDashboard.progress.types.exam")
-            : type === "project"
-            ? t("studentDashboard.progress.types.project")
-            : t("studentDashboard.progress.types.other");
-          return <Tag color={colors[type]}>{translatedType}</Tag>;
-        },
-      },
-      {
-        title: t("studentDashboard.progress.columns.score"),
-        dataIndex: "score",
-        key: "score",
-        render: (score, record) => (
-          <Space>
-            <Text strong>
-              {score}/{record.maxPoints ?? record.maxScore}
-            </Text>
-            <Text type="secondary">({record.percentage}%)</Text>
-          </Space>
-        ),
-      },
-      {
-        title: t("studentDashboard.progress.columns.grade"),
-        dataIndex: "grade",
-        key: "grade",
-        render: (grade) => {
-          const getColor = (g) => {
-            if (["A+", "A", "A-"].includes(g)) return "green";
-            if (["B+", "B", "B-"].includes(g)) return "blue";
-            if (["C+", "C", "C-"].includes(g)) return "orange";
-            return "red";
-          };
-          return (
-            <Tag color={getColor(grade)} style={{ fontWeight: "bold" }}>
-              {grade}
-            </Tag>
-          );
-        },
-      },
-      {
-        title: t("studentDashboard.progress.columns.dateGraded"),
-        dataIndex: "gradedDate",
-        key: "gradedDate",
-        render: (date) => moment(date).format("MMM DD, YYYY"),
-      },
-      {
-        title: t("studentDashboard.progress.columns.teacher"),
-        dataIndex: "teacher",
-        key: "teacher",
-        render: (teacher) =>
-          teacher ? `${teacher.firstName} ${teacher.lastName}` : "N/A",
-      },
-    ];
-
-    const averageGrade =
-      progressRecords.length > 0
-        ? (
-            progressRecords.reduce(
-              (sum, record) => sum + record.percentage,
-              0
-            ) / progressRecords.length
-          ).toFixed(1)
-        : 0;
-
-    return (
-      <div style={{ padding: "24px" }}>
-        <Title level={2}>
-          <TrophyOutlined style={{ marginRight: "8px" }} />
-          {t("studentDashboard.progress.title")}
-        </Title>
-        <Text type="secondary">{t("studentDashboard.progress.subtitle")}</Text>
-
-        <Row gutter={[16, 16]} style={{ marginTop: "24px" }}>
-          <Col xs={24} sm={8}>
-            <Card>
-              <Statistic
-                title={t("studentDashboard.progress.statistics.totalGraded")}
-                value={progressRecords.length}
-                prefix={<CheckCircleOutlined />}
-              />
-            </Card>
-          </Col>
-          <Col xs={24} sm={8}>
-            <Card>
-              <Statistic
-                title={t("studentDashboard.progress.statistics.averageScore")}
-                value={averageGrade}
-                suffix="%"
-                prefix={<BarChartOutlined />}
-                valueStyle={{
-                  color:
-                    averageGrade >= 80
-                      ? "#52c41a"
-                      : averageGrade >= 60
-                      ? "#faad14"
-                      : "#f5222d",
-                }}
-              />
-            </Card>
-          </Col>
-          <Col xs={24} sm={8}>
-            <Card>
-              <Statistic
-                title={t("studentDashboard.progress.statistics.studyStreak")}
-                value={dashboardStats.studyStreak || 0}
-                suffix={t("studentDashboard.progress.statistics.days")}
-                prefix={<FireOutlined />}
-                valueStyle={{ color: "#722ed1" }}
-              />
-            </Card>
-          </Col>
-        </Row>
-
-        <Card style={{ marginTop: "24px" }} title={t("studentDashboard.progress.gradeHistory")}>
-          <Table
-            columns={columns}
-            dataSource={progressRecords}
-            rowKey="_id"
-            pagination={{ pageSize: 10 }}
-            locale={{ emptyText: "No grades recorded yet" }}
-          />
-        </Card>
-      </div>
-    );
-  };
-
-  const renderCourses = () => (
-    <div style={{ padding: "24px" }}>
-      <Title level={2}>📚 {t("studentDashboard.courses.title")}</Title>
-      <Text type="secondary">{t("studentDashboard.courses.subtitle")}</Text>
-
-      <Row gutter={[16, 16]} style={{ marginTop: "24px" }}>
-        <Col xs={24} sm={12} md={8}>
-          <Card
-            hoverable
-            cover={
-              <div
-                style={{
-                  height: 120,
-                  background:
-                    "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                }}
-              />
-            }
-            actions={[
-              <Button type="link">Continue</Button>,
-              <Button type="link">View Materials</Button>,
-            ]}
-          >
-            <Card.Meta
-              title="Advanced English"
-              description="Progress: 75% • Next: Grammar Lesson 5"
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} md={8}>
-          <Card
-            hoverable
-            cover={
-              <div
-                style={{
-                  height: 120,
-                  background:
-                    "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
-                }}
-              />
-            }
-            actions={[
-              <Button type="link">Continue</Button>,
-              <Button type="link">View Materials</Button>,
-            ]}
-          >
-            <Card.Meta
-              title="Japanese 101"
-              description="Progress: 45% • Next: Hiragana Practice"
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} md={8}>
-          <Card
-            hoverable
-            cover={
-              <div
-                style={{
-                  height: 120,
-                  background:
-                    "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
-                }}
-              />
-            }
-            actions={[
-              <Button type="link">Continue</Button>,
-              <Button type="link">View Materials</Button>,
-            ]}
-          >
-            <Card.Meta
-              title="Spanish Basics"
-              description="Progress: 90% • Next: Final Exam"
-            />
-          </Card>
-        </Col>
-      </Row>
-    </div>
+          </div>
+        )}
+      </Modal>
+    </>
   );
 
-  const renderAchievements = () => (
-    <div style={{ padding: "24px" }}>
-      <Title level={2}>🏆 {t("studentDashboard.achievements.title")}</Title>
-      <Text type="secondary">{t("studentDashboard.achievements.subtitle")}</Text>
-
-      <Row gutter={[16, 16]} style={{ marginTop: "24px" }}>
-        <Col xs={24} sm={12} md={8}>
-          <Card>
-            <div style={{ textAlign: "center" }}>
-              <TrophyOutlined style={{ fontSize: "48px", color: "#faad14" }} />
-              <Title level={4}>{t("studentDashboard.achievements.quickLearner.title")}</Title>
-              <Text type="secondary">{t("studentDashboard.achievements.quickLearner.description")}</Text>
-            </div>
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} md={8}>
-          <Card>
-            <div style={{ textAlign: "center" }}>
-              <FireOutlined style={{ fontSize: "48px", color: "#f5222d" }} />
-              <Title level={4}>{t("studentDashboard.achievements.sevenDayStreak.title")}</Title>
-              <Text type="secondary">{t("studentDashboard.achievements.sevenDayStreak.description")}</Text>
-            </div>
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} md={8}>
-          <Card>
-            <div style={{ textAlign: "center" }}>
-              <StarOutlined style={{ fontSize: "48px", color: "#722ed1" }} />
-              <Title level={4}>{t("studentDashboard.achievements.perfectScore.title")}</Title>
-              <Text type="secondary">{t("studentDashboard.achievements.perfectScore.description")}</Text>
-            </div>
-          </Card>
-        </Col>
-      </Row>
-    </div>
+  const renderProgress = () => (
+    <StudentProgress
+      t={t}
+      progressRecords={progressRecords}
+      dashboardStats={dashboardStats}
+    />
   );
+
+  const renderCourses = () => <StudentCourses t={t} />;
+
+  const renderAchievements = () => <StudentAchievements t={t} />;
 
   const renderContent = () => {
-    return (
-      <>
-        <div style={{ display: activeTab === "overview" ? "block" : "none" }}>
-          {renderOverview()}
-        </div>
-        <div style={{ display: activeTab === "listening" ? "block" : "none" }}>
-          {renderListeningExercises()}
-        </div>
-        <div style={{ display: activeTab === "quizzes" ? "block" : "none" }}>
-          {renderQuizzes()}
-        </div>
-        <div style={{ display: activeTab === "homework" ? "block" : "none" }}>
-          {renderHomework()}
-        </div>
-        <div style={{ display: activeTab === "zoom" ? "block" : "none" }}>
-          {renderZoomClasses()}
-        </div>
-        <div style={{ display: activeTab === "progress" ? "block" : "none" }}>
-          {renderProgress()}
-        </div>
-        <div style={{ display: activeTab === "courses" ? "block" : "none" }}>
-          {renderCourses()}
-        </div>
-        <div style={{ display: activeTab === "calendar" ? "block" : "none" }}>
-          <div style={{ padding: "24px" }}>
-            <Title level={2}>
-              <CalendarOutlined style={{ marginRight: "8px" }} />
-              {t("studentDashboard.calendar.title")}
-            </Title>
-            <Calendar />
-          </div>
-        </div>
-        <div
-          style={{ display: activeTab === "achievements" ? "block" : "none" }}
-        >
-          {renderAchievements()}
-        </div>
-      </>
-    );
+    switch (activeTab) {
+      case "overview":
+        return renderOverview();
+      case "listening":
+        return renderListeningExercises();
+      case "quizzes":
+        return renderQuizzes();
+      case "homework":
+        return renderHomework();
+      case "zoom":
+        return renderZoomClasses();
+      case "progress":
+        return renderProgress();
+      case "courses":
+        return renderCourses();
+      case "calendar":
+        return <StudentCalendarView t={t} />;
+      case "achievements":
+        return renderAchievements();
+      default:
+        return renderOverview();
+    }
   };
 
   if (loading) {
@@ -2379,6 +1388,45 @@ const StudentDashboard = () => {
     }
   };
 
+  const handleSiderBreakpoint = (broken) => {
+    if (broken) {
+      setIsMobile(true);
+      setCollapsed(true);
+    } else {
+      setIsMobile(false);
+      setMobileDrawerVisible(false);
+    }
+  };
+
+  const handleMenuSelect = (key) => {
+    setActiveTab(key);
+    if (isMobile) {
+      setMobileDrawerVisible(false);
+    }
+  };
+
+  const handleCloseMobileDrawer = () => {
+    setMobileDrawerVisible(false);
+  };
+
+  const handleToggleSidebar = () => {
+    if (isMobile) {
+      setMobileDrawerVisible((prev) => !prev);
+    } else {
+      setCollapsed((prev) => !prev);
+    }
+  };
+
+  const handleToggleLanguage = () => {
+    const newLang = i18n.language === "en" ? "ja" : "en";
+    i18n.changeLanguage(newLang);
+  };
+
+  const handleZoomTabSelect = () => {
+    setActiveTab("zoom");
+    message.info(`🎥 ${zoomClasses.length} live class(es) available`);
+  };
+
   return (
     <>
       {/* Modern Styles */}
@@ -2490,750 +1538,32 @@ const StudentDashboard = () => {
         }
       `}</style>
 
-      <Layout style={{ minHeight: "100vh" }}>
-      {/* Listening Exercise Detail Modal */}
-      <Modal
-        title={
-          <Space>
-            <SoundOutlined />
-            {t("studentDashboard.listening.modal.title")}
-          </Space>
-        }
-        open={listeningModalVisible}
-        onCancel={() => setListeningModalVisible(false)}
-        footer={[
-          <Button
-            key="close"
-            onClick={() => {
-              setListeningModalVisible(false);
-              setSelectedAnswers({});
-            }}
-          >
-            {t("studentDashboard.listening.modal.close")}
-          </Button>,
-          <Button
-            key="submit"
-            type="primary"
-            icon={<CheckCircleOutlined />}
-            loading={submittingListening}
-            onClick={handleListeningSubmission}
-            disabled={
-              !selectedListening?.questions ||
-              Object.keys(selectedAnswers).length <
-                selectedListening?.questions?.length
-            }
-          >
-            {t("studentDashboard.listening.modal.submit")} ({Object.keys(selectedAnswers).length}/
-            {selectedListening?.questions?.length || 0})
-          </Button>,
-        ]}
-        width={700}
+      <StudentLayout
+        isMobile={isMobile}
+        collapsed={collapsed}
+        onBreakpoint={handleSiderBreakpoint}
+        studentMenuItems={studentMenuItems}
+        activeTab={activeTab}
+        onSelectMenu={handleMenuSelect}
+        mobileDrawerVisible={mobileDrawerVisible}
+        onCloseMobileDrawer={handleCloseMobileDrawer}
       >
-        {selectedListening && (
-          <Space direction="vertical" size="large" style={{ width: "100%" }}>
-            <Descriptions bordered column={2}>
-              <Descriptions.Item label={t("studentDashboard.listening.modal.course")} span={2}>
-                <Tag color="blue">{selectedListening.course?.name}</Tag>
-              </Descriptions.Item>
-              <Descriptions.Item label={t("studentDashboard.listening.modal.difficulty")}>
-                <Tag
-                  color={
-                    selectedListening.difficulty === "beginner"
-                      ? "green"
-                      : selectedListening.difficulty === "intermediate"
-                      ? "orange"
-                      : "red"
-                  }
-                >
-                  {selectedListening.difficulty === "beginner"
-                    ? t("studentDashboard.listening.difficulty.beginner")
-                    : selectedListening.difficulty === "intermediate"
-                    ? t("studentDashboard.listening.difficulty.intermediate")
-                    : t("studentDashboard.listening.difficulty.advanced")}
-                </Tag>
-              </Descriptions.Item>
-              <Descriptions.Item label={t("studentDashboard.listening.modal.duration")}>
-                {selectedListening.duration || "N/A"} minutes
-              </Descriptions.Item>
-              <Descriptions.Item label={t("studentDashboard.listening.modal.questions")} span={2}>
-                {selectedListening.questions?.length || 0} {t("studentDashboard.listening.modal.questions")}
-              </Descriptions.Item>
-              <Descriptions.Item label={t("studentDashboard.listening.modal.description")} span={2}>
-                {selectedListening.description || t("studentDashboard.listening.modal.noDescription")}
-              </Descriptions.Item>
-            </Descriptions>
-
-            {selectedListening.audioUrl && (
-              <>
-                <Alert
-                  message={t("studentDashboard.listening.modal.audioAvailable")}
-                  description={t("studentDashboard.listening.modal.audioDescription")}
-                  type="success"
-                  showIcon
-                  icon={<AudioOutlined />}
-                />
-                <Card title={t("studentDashboard.listening.modal.audioPlayer")} size="small">
-                  <audio
-                    controls
-                    style={{ width: "100%" }}
-                    src={selectedListening.audioUrl}
-                  >
-                    Your browser does not support the audio element.
-                  </audio>
-                </Card>
-              </>
-            )}
-
-            {!selectedListening.audioUrl && (
-              <Alert
-                message={t("studentDashboard.listening.modal.noAudio")}
-                description={t("studentDashboard.listening.modal.noAudioDescription")}
-                type="warning"
-                showIcon
-                icon={<ExclamationCircleOutlined />}
-              />
-            )}
-
-            {selectedListening.questions &&
-              selectedListening.questions.length > 0 && (
-                <Card title={t("studentDashboard.listening.modal.questionsTitle")} size="small">
-                  <Space
-                    direction="vertical"
-                    style={{ width: "100%" }}
-                    size="large"
-                  >
-                    {selectedListening.questions.map((question, index) => (
-                      <Card key={index} type="inner" size="small">
-                        <Space direction="vertical" style={{ width: "100%" }}>
-                          <Text strong>
-                            {t("studentDashboard.listening.modal.question")} {index + 1}:{" "}
-                            {question.questionText || question.question}
-                          </Text>
-
-                          {/* Question Type Badge */}
-                          <Tag color="blue">
-                            {question.type?.replace(/_/g, " ").toUpperCase() ||
-                              "QUESTION"}
-                          </Tag>
-
-                          {/* Debug: Log question details */}
-                          {console.log(`Question ${index + 1}:`, {
-                            type: question.type,
-                            hasOptions: !!question.options,
-                            optionsLength: question.options?.length,
-                            correctAnswer: question.correctAnswer,
-                            options: question.options,
-                          })}
-
-                          {/* Multiple Choice Questions - Smart detection: if has options array, treat as multiple choice */}
-                          {question.options && question.options.length > 0 && (
-                            <Radio.Group
-                              value={selectedAnswers[question._id]}
-                              onChange={(e) => {
-                                setSelectedAnswers({
-                                  ...selectedAnswers,
-                                  [question._id]: e.target.value,
-                                });
-                              }}
-                              style={{ width: "100%" }}
-                            >
-                              <Space
-                                direction="vertical"
-                                style={{ width: "100%" }}
-                              >
-                                {question.options.map((option, optIndex) => (
-                                  <Radio key={optIndex} value={optIndex}>
-                                    <Text>
-                                      {String.fromCharCode(65 + optIndex)}.{" "}
-                                      {typeof option === "string"
-                                        ? option
-                                        : option.text || option}
-                                    </Text>
-                                  </Radio>
-                                ))}
-                              </Space>
-                            </Radio.Group>
-                          )}
-
-                          {/* Fill in the Blank Questions */}
-                          {question.type === "fill_in_blank" && (
-                            <Input
-                              placeholder="Type your answer here..."
-                              value={selectedAnswers[question._id] || ""}
-                              onChange={(e) => {
-                                setSelectedAnswers({
-                                  ...selectedAnswers,
-                                  [question._id]: e.target.value,
-                                });
-                              }}
-                              style={{ width: "100%" }}
-                            />
-                          )}
-
-                          {/* Short Answer Questions */}
-                          {question.type === "short_answer" && (
-                            <Input.TextArea
-                              rows={3}
-                              placeholder="Type your answer here..."
-                              value={selectedAnswers[question._id] || ""}
-                              onChange={(e) => {
-                                setSelectedAnswers({
-                                  ...selectedAnswers,
-                                  [question._id]: e.target.value,
-                                });
-                              }}
-                              style={{ width: "100%" }}
-                            />
-                          )}
-
-                          {/* True/False Questions */}
-                          {question.type === "true_false" && (
-                            <Radio.Group
-                              value={selectedAnswers[question._id]}
-                              onChange={(e) => {
-                                setSelectedAnswers({
-                                  ...selectedAnswers,
-                                  [question._id]: e.target.value,
-                                });
-                              }}
-                              style={{ width: "100%" }}
-                            >
-                              <Space direction="vertical">
-                                <Radio value="true">True</Radio>
-                                <Radio value="false">False</Radio>
-                              </Space>
-                            </Radio.Group>
-                          )}
-
-                          {/* Points indicator */}
-                          <Text type="secondary" style={{ fontSize: "12px" }}>
-                            {t("studentDashboard.listening.modal.points")}: {question.points || 1}
-                          </Text>
-                        </Space>
-                      </Card>
-                    ))}
-                  </Space>
-                </Card>
-              )}
-          </Space>
-        )}
-      </Modal>
-
-      {/* Quiz Detail Modal */}
-      <Modal
-        title={
-          <Space>
-            <QuestionCircleOutlined />
-            Quiz Details
-          </Space>
-        }
-        open={quizModalVisible}
-        onCancel={() => setQuizModalVisible(false)}
-        footer={[
-          <Button key="close" onClick={() => setQuizModalVisible(false)}>
-            Close
-          </Button>,
-          <Button
-            key="start"
-            type="primary"
-            icon={<PlayCircleOutlined />}
-            onClick={() => {
-              message.info("Quiz interface will be implemented");
-              // TODO: Implement quiz taking interface
-            }}
-          >
-            Start Quiz
-          </Button>,
-        ]}
-        width={700}
-      >
-        {selectedQuiz && (
-          <Space direction="vertical" size="large" style={{ width: "100%" }}>
-            <Descriptions bordered column={2}>
-              <Descriptions.Item label={t("studentDashboard.quizzes.columns.course")} span={2}>
-                <Tag color="blue">
-                  {selectedQuiz.assignment?.courseDetails?.map((course) => course.title).join(", ") ||
-                    selectedQuiz.course?.name ||
-                    selectedQuiz.course?.title ||
-                    t("studentDashboard.quizzes.courseUnknown")}
-                </Tag>
-              </Descriptions.Item>
-              <Descriptions.Item label={t("studentDashboard.quizzes.columns.questions")}>
-                {selectedQuiz.questions?.length || 0}
-              </Descriptions.Item>
-              <Descriptions.Item label={t("studentDashboard.quizzes.columns.timeLimit")}>
-                <FieldTimeOutlined />{" "}
-                {selectedQuiz.duration || selectedQuiz.timeLimit || 0}{" "}
-                {t("studentDashboard.quizzes.minutes")}
-              </Descriptions.Item>
-              <Descriptions.Item label={t("studentDashboard.quizzes.columns.passingScore")}>
-                <Tag color="green">{selectedQuiz.passingScore}%</Tag>
-              </Descriptions.Item>
-              <Descriptions.Item label={t("studentDashboard.quizzes.columns.attempts")}>
-                {selectedQuiz.maxAttempts === -1
-                  ? t("studentDashboard.quizzes.unlimited")
-                  : `${selectedQuiz.maxAttempts} ${t("studentDashboard.quizzes.attempts")}`}
-              </Descriptions.Item>
-              <Descriptions.Item label={t("studentDashboard.quizzes.columns.dueDate")} span={2}>
-                {selectedQuiz.assignment?.dueDate
-                  ? moment(selectedQuiz.assignment.dueDate).format("MMM DD, YYYY HH:mm")
-                  : t("studentDashboard.quizzes.noDeadline")}
-              </Descriptions.Item>
-            </Descriptions>
-
-            <Alert
-              message={t(
-                "studentDashboard.quizzes.instructionsTitle",
-                "Quiz instructions"
-              )}
-              description={
-                <Space direction="vertical" size={4}>
-                  <Text>
-                    {t(
-                      "studentDashboard.quizzes.instructionsDefault",
-                      "Read all questions carefully before submitting."
-                    )}
-                  </Text>
-                  {selectedQuiz.assignment?.notes && (
-                    <Text>{selectedQuiz.assignment.notes}</Text>
-                  )}
-                </Space>
-              }
-              type="info"
-              showIcon
-            />
-          </Space>
-        )}
-      </Modal>
-
-      {/* Homework Detail Modal */}
-      <Modal
-        title={
-          <Space>
-            <FormOutlined />
-            {t("studentDashboard.homework.detailModal.title")}
-          </Space>
-        }
-        open={homeworkModalVisible}
-        onCancel={() => setHomeworkModalVisible(false)}
-        footer={[
-          <Button key="close" onClick={() => setHomeworkModalVisible(false)}>
-            {t("studentDashboard.homework.detailModal.close")}
-          </Button>,
-          <Button
-            key="submit"
-            type="primary"
-            icon={<UploadOutlined />}
-            onClick={() => {
-              setHomeworkModalVisible(false);
-              setSubmissionModalVisible(true);
-            }}
-          >
-            {t("studentDashboard.homework.detailModal.submitHomework")}
-          </Button>,
-        ]}
-        width={700}
-      >
-        {selectedHomework && (
-          <Space direction="vertical" size="large" style={{ width: "100%" }}>
-            <Descriptions bordered column={2}>
-              <Descriptions.Item label={t("studentDashboard.homework.detailModal.course")} span={2}>
-                <Tag color="blue">{selectedHomework.course?.name}</Tag>
-              </Descriptions.Item>
-              <Descriptions.Item label={t("studentDashboard.homework.detailModal.dueDate")} span={2}>
-                <Space>
-                  <CalendarOutlined />
-                  <Text>
-                    {moment(selectedHomework.dueDate).format("MMM DD, YYYY")}
-                  </Text>
-                  {moment(selectedHomework.dueDate).isBefore(moment()) && (
-                    <Tag color="error">{t("studentDashboard.homework.status.overdue")}</Tag>
-                  )}
-                </Space>
-              </Descriptions.Item>
-              <Descriptions.Item label={t("studentDashboard.homework.detailModal.description")} span={2}>
-                {selectedHomework.description}
-              </Descriptions.Item>
-              <Descriptions.Item label={t("studentDashboard.homework.detailModal.instructions")} span={2}>
-                {selectedHomework.instructions ||
-                  t("studentDashboard.homework.detailModal.noInstructions")}
-              </Descriptions.Item>
-            </Descriptions>
-
-            {selectedHomework.attachments?.length > 0 && (
-              <Card title={t("studentDashboard.homework.detailModal.attachments")} size="small">
-                <List
-                  dataSource={selectedHomework.attachments}
-                  renderItem={(item) => (
-                    <List.Item>
-                      <FileOutlined /> {item}
-                    </List.Item>
-                  )}
-                />
-              </Card>
-            )}
-          </Space>
-        )}
-      </Modal>
-
-      {/* Homework Submission Modal */}
-      <Modal
-        title={
-          <Space>
-            <UploadOutlined />
-            {t("studentDashboard.homework.submissionModal.title")}
-          </Space>
-        }
-        open={submissionModalVisible}
-        onCancel={() => {
-          setSubmissionModalVisible(false);
-          submissionForm.resetFields();
-        }}
-        footer={null}
-        width={600}
-      >
-        <Form
-          form={submissionForm}
-          layout="vertical"
-          onFinish={handleHomeworkSubmission}
-        >
-          <Alert
-            message={t("studentDashboard.homework.submissionModal.guidelines")}
-            description={t("studentDashboard.homework.submissionModal.guidelinesText")}
-            type="warning"
-            showIcon
-            style={{ marginBottom: "24px" }}
-          />
-
-          <Form.Item
-            label={t("studentDashboard.homework.submissionModal.answer")}
-            name="content"
-            rules={[{ required: true, message: "Please enter your answer" }]}
-          >
-            <Input.TextArea
-              rows={6}
-              placeholder={t("studentDashboard.homework.submissionModal.answerPlaceholder")}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label={t("studentDashboard.homework.submissionModal.attachFile")}
-            name="file"
-            valuePropName="file"
-          >
-            <Upload maxCount={1} beforeUpload={() => false}>
-              <Button icon={<UploadOutlined />}>{t("studentDashboard.homework.submissionModal.selectFile")}</Button>
-            </Upload>
-          </Form.Item>
-
-          <Form.Item>
-            <Space style={{ width: "100%", justifyContent: "flex-end" }}>
-              <Button
-                onClick={() => {
-                  setSubmissionModalVisible(false);
-                  submissionForm.resetFields();
-                }}
-              >
-                {t("studentDashboard.homework.submissionModal.cancel")}
-              </Button>
-              <Button
-                type="primary"
-                htmlType="submit"
-                icon={<CheckCircleOutlined />}
-              >
-                {t("studentDashboard.homework.submissionModal.submit")}
-              </Button>
-            </Space>
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      {/* Desktop/Tablet Sidebar */}
-      {!isMobile && (
-        <Sider
-          trigger={null}
-          collapsible
+        <StudentHeader
+          isMobile={isMobile}
           collapsed={collapsed}
-          breakpoint="lg"
-          collapsedWidth={80}
-          onBreakpoint={(broken) => {
-            if (broken) {
-              setIsMobile(true);
-              setCollapsed(true);
-            } else {
-              setIsMobile(false);
-            }
-          }}
-          width={260}
-          className="modern-sidebar"
-          style={{
-            background: "linear-gradient(180deg, #1e293b 0%, #334155 50%, #1e293b 100%)",
-            position: "fixed",
-            height: "100vh",
-            left: 0,
-            top: 0,
-            bottom: 0,
-            zIndex: 1000,
-            boxShadow: "4px 0 20px rgba(0, 0, 0, 0.1)",
-            transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-          }}
-        >
-          {/* Logo Section */}
-          <div
-            style={{
-              padding: "20px",
-              textAlign: "center",
-              background: "rgba(255, 255, 255, 0.05)",
-              backdropFilter: "blur(10px)",
-              borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
-              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-            }}
-          >
-            <div
-              style={{
-                width: collapsed ? 45 : 55,
-                height: collapsed ? 45 : 55,
-                background: "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)",
-                borderRadius: "12px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                margin: "0 auto",
-                marginBottom: collapsed ? 0 : 12,
-                border: "2px solid rgba(255, 255, 255, 0.1)",
-                boxShadow: "0 4px 16px rgba(79, 70, 229, 0.3)",
-                transition: "all 0.3s ease",
-              }}
-            >
-              <BookOutlined style={{ fontSize: collapsed ? 24 : 28, color: "#fff" }} />
-            </div>
-            {!collapsed && (
-              <>
-                <Title
-                  level={4}
-                  style={{
-                    color: "#fff",
-                    margin: "8px 0 4px 0",
-                    fontSize: "18px",
-                    fontWeight: 600,
-                    textShadow: "0 1px 4px rgba(0, 0, 0, 0.3)",
-                  }}
-                >
-                  Student Portal
-                </Title>
-                <Text
-                  style={{
-                    color: "rgba(255, 255, 255, 0.7)",
-                    fontSize: "12px",
-                    fontWeight: 400,
-                    textShadow: "0 1px 2px rgba(0, 0, 0, 0.3)",
-                  }}
-                >
-                  Forum Academy
-                </Text>
-              </>
-            )}
-          </div>
-
-          {/* Navigation Menu */}
-          <Menu
-            theme="dark"
-            mode="inline"
-            selectedKeys={[activeTab]}
-            items={studentMenuItems.map((item) => ({
-              ...item,
-              style: {
-                margin: "4px 0",
-                borderRadius: collapsed ? "0" : "0 25px 25px 0",
-                height: "48px",
-                display: "flex",
-                alignItems: "center",
-              },
-            }))}
-            onClick={(e) => setActiveTab(e.key)}
-            style={{
-              background: "transparent",
-              border: "none",
-              padding: "20px 0",
-              height: "calc(100vh - 120px)",
-              overflowY: "auto",
-            }}
-          />
-        </Sider>
-      )}
-
-      {/* Main Layout */}
-      <Layout
-        style={{
-          marginLeft: isMobile ? 0 : collapsed ? 80 : 260,
-          transition: "all 0.3s ease",
-          minHeight: "100vh",
-        }}
-      >
-        <Header
-          style={{
-            padding: isMobile ? "0 16px" : "0 32px",
-            background: "linear-gradient(90deg, #ffffff 0%, #f8f9ff 100%)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            boxShadow: "0 4px 20px rgba(102, 126, 234, 0.1)",
-            position: "sticky",
-            top: 0,
-            zIndex: 999,
-            height: isMobile ? "60px" : "72px",
-            borderBottom: "1px solid rgba(102, 126, 234, 0.1)",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <Button
-              type="text"
-              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-              onClick={() => {
-                if (isMobile) {
-                  setMobileDrawerVisible(!mobileDrawerVisible);
-                } else {
-                  setCollapsed(!collapsed);
-                }
-              }}
-              style={{
-                fontSize: "16px",
-                width: 64,
-                height: 64,
-              }}
-            />
-            {!isMobile && (
-              <Breadcrumb style={{ marginLeft: 16 }}>
-                <Breadcrumb.Item>
-                  <HomeOutlined />
-                </Breadcrumb.Item>
-                <Breadcrumb.Item>Student Dashboard</Breadcrumb.Item>
-                <Breadcrumb.Item>
-                  {studentMenuItems.find((item) => item.key === activeTab)?.label}
-                </Breadcrumb.Item>
-              </Breadcrumb>
-            )}
-            {isMobile && (
-              <Title
-                level={5}
-                style={{ margin: "0 0 0 16px", color: "#262626" }}
-              >
-                {studentMenuItems.find((item) => item.key === activeTab)?.label}
-              </Title>
-            )}
-          </div>
-
-          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-            <Badge count={notificationStats.unread} overflowCount={99}>
-              <Button
-                type="text"
-                icon={<BellOutlined />}
-                onClick={() => setNotificationDrawerVisible(true)}
-                style={{
-                  color: notificationStats.unread > 0 ? "#1890ff" : undefined,
-                  animation:
-                    notificationStats.unread > 0
-                      ? "pulse 2s infinite"
-                      : "none",
-                }}
-              />
-            </Badge>
-
-            {/* Live Class Notification Badge */}
-            <Badge count={zoomClasses.length} overflowCount={99} color="#dc2626">
-              <Button
-                type="text"
-                icon={<VideoCameraOutlined />}
-                onClick={() => {
-                  setActiveTab("zoom");
-                  message.info("🎥 " + zoomClasses.length + " live class(es) available");
-                }}
-                style={{
-                  color: zoomClasses.length > 0 ? "#dc2626" : undefined,
-                  fontSize: "16px",
-                }}
-                title="Active Live Classes"
-              />
-            </Badge>
-
-            {/* Language Toggle Button */}
-            <Button
-              type="text"
-              onClick={() => {
-                const newLang = i18n.language === "en" ? "ja" : "en";
-                i18n.changeLanguage(newLang);
-              }}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-                padding: isMobile ? "4px 8px" : "4px 12px",
-                fontWeight: 500,
-              }}
-            >
-              <GlobalOutlined style={{ fontSize: "16px" }} />
-              {!isMobile && (
-                <span>{i18n.language === "en" ? "EN" : "日本語"}</span>
-              )}
-            </Button>
-
-            <Dropdown
-              menu={{
-                items: [
-                  {
-                    key: "profile",
-                    icon: <UserOutlined />,
-                    label: t("studentDashboard.header.myProfile"),
-                    onClick: () => message.info("Profile settings coming soon"),
-                  },
-                  {
-                    key: "settings",
-                    icon: <SettingOutlined />,
-                    label: t("studentDashboard.header.settings"),
-                    onClick: () => message.info("Settings coming soon"),
-                  },
-                  {
-                    type: "divider",
-                  },
-                  {
-                    key: "logout",
-                    icon: <LogoutOutlined />,
-                    label: t("studentDashboard.header.logout"),
-                    onClick: handleLogout,
-                    danger: true,
-                  },
-                ],
-              }}
-              placement="bottomRight"
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  cursor: "pointer",
-                  padding: isMobile ? "6px 8px" : "8px 12px",
-                  borderRadius: "6px",
-                  transition: "background-color 0.2s",
-                }}
-              >
-                <Avatar
-                  size={isMobile ? 32 : "small"}
-                  style={{
-                    backgroundColor: "#1890ff",
-                    marginRight: isMobile ? 6 : 8,
-                  }}
-                  icon={<UserOutlined />}
-                />
-                {!isMobile && (
-                  <Text strong style={{ color: "#262626" }}>
-                    {currentUser?.name || "Student"}
-                  </Text>
-                )}
-              </div>
-            </Dropdown>
-          </div>
-        </Header>
-
+          activeTab={activeTab}
+          studentMenuItems={studentMenuItems}
+          notificationStats={notificationStats}
+          onNotificationClick={() => setNotificationDrawerVisible(true)}
+          zoomClasses={zoomClasses}
+          onSelectZoomTab={handleZoomTabSelect}
+          onToggleSidebar={handleToggleSidebar}
+          currentLanguage={currentLanguage}
+          onToggleLanguage={handleToggleLanguage}
+          currentUser={currentUser}
+          onLogout={handleLogout}
+          t={t}
+        />
         <Content
           style={{
             margin: isMobile ? "16px 8px" : "24px 16px",
@@ -3246,74 +1576,7 @@ const StudentDashboard = () => {
         >
           {renderContent()}
         </Content>
-      </Layout>
-      {/* Mobile Drawer */}
-      <Drawer
-        title={
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <div style={{
-              width: 36,
-              height: 36,
-              background: "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)",
-              borderRadius: "10px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              boxShadow: "0 2px 8px rgba(79, 70, 229, 0.3)",
-            }}>
-              <BookOutlined style={{ fontSize: 18, color: "#fff" }} />
-            </div>
-            <span style={{ fontWeight: 700, fontSize: "16px" }}>Student Portal</span>
-          </div>
-        }
-        placement="left"
-        closable={true}
-        onClose={() => setMobileDrawerVisible(false)}
-        open={mobileDrawerVisible && isMobile}
-        width={isMobile ? Math.min(280, window.innerWidth * 0.8) : 280}
-        styles={{
-          body: {
-            padding: 0,
-            background: "linear-gradient(180deg, #1e293b 0%, #334155 100%)",
-          },
-          header: {
-            background: "linear-gradient(135deg, #1e293b 0%, #334155 100%)",
-            color: "#fff",
-            borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
-            padding: "20px",
-          },
-        }}
-        className="mobile-drawer"
-      >
-        {/* Navigation Menu */}
-        <Menu
-          mode="inline"
-          selectedKeys={[activeTab]}
-          items={studentMenuItems.map((item) => ({
-            ...item,
-            style: {
-              margin: "8px 16px",
-              borderRadius: "8px",
-              height: "48px",
-              display: "flex",
-              alignItems: "center",
-              fontSize: "14px",
-              fontWeight: 500,
-            },
-          }))}
-          onClick={(e) => {
-            setActiveTab(e.key);
-            setMobileDrawerVisible(false);
-          }}
-          style={{
-            border: "none",
-            background: "transparent",
-            padding: "16px 0",
-            height: "100%",
-            overflowY: "auto",
-          }}
-        />
-      </Drawer>
+      </StudentLayout>
 
       {/* Notification Drawer */}
       <Drawer
@@ -3576,7 +1839,6 @@ const StudentDashboard = () => {
           </div>
         )}
       </Drawer>
-    </Layout>
     </>
   );
 };

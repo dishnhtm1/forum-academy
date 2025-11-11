@@ -510,7 +510,7 @@
     "markPending": "Mark as Pending",
     "selectAll": "Select All",
     "approveSelected": "Approve Selected",
-    "reviewSelected": "Review Selected", 
+    "reviewSelected": "Review Selected",
     "rejectSelected": "Reject Selected",
     "exportFiltered": "Export Filtered",
     "send": "Send",
@@ -751,7 +751,7 @@
       },
       "stats": {
         "upcomingEvents": "Upcoming Events",
-        "recentAnnouncements": "Recent Announcements", 
+        "recentAnnouncements": "Recent Announcements",
         "studentAchievements": "Student Achievements"
       }
     },
@@ -860,7 +860,7 @@
         "description": "Experience vibrant student communities, cultural events, and lifelong friendships in our dynamic campus environment."
       },
       "clubs": {
-        "title": "Clubs & Activities", 
+        "title": "Clubs & Activities",
         "description": "Join diverse clubs and organizations that match your interests and help you develop new skills and connections."
       },
       "dining": {
@@ -883,7 +883,7 @@
       "foods": {
         "mabomen": "Mabomen",
         "rice": "Rice",
-        "pear": "Pear", 
+        "pear": "Pear",
         "kiwamiSushi": "Kiwami Sushi",
         "matsubaCrab": "Matsuba Crab",
         "tareKatsudon": "Tare Katsudon",
@@ -1121,7 +1121,7 @@
         "description": "Tell us about yourself and how we can reach you"
       },
       "education": {
-        "title": "Educational Background", 
+        "title": "Educational Background",
         "description": "Share your academic history and relevant experience"
       },
       "programSelection": {
@@ -1380,36 +1380,36 @@
   },
   "social": {
     "facebook": "Follow us on Facebook",
-    "twitter": "Follow us on Twitter", 
+    "twitter": "Follow us on Twitter",
     "instagram": "Follow us on Instagram",
     "linkedin": "Connect on LinkedIn",
     "youtube": "Subscribe to our YouTube channel"
   },
-    "header": {
-      "academy": "Forum Academy",
-      "programs": {
-        "title": "Our Programs",
-        "subtitle": "Choose your path to success",
-        "certifiedTrack": "Industry-certified • Professional track",
-        "viewAll": "Explore All Programs"
-      },
-      "about": {
-        "title": "About Us", 
-        "subtitle": "Discover our story and mission",
-        "learnMore": "Learn More About Us",
-        "description": "Learn more about our story"
-      },
-      "mobile": {
-        "programs": "Programs",
-        "about": "About"
-      }
+  "header": {
+    "academy": "Forum Academy",
+    "programs": {
+      "title": "Our Programs",
+      "subtitle": "Choose your path to success",
+      "certifiedTrack": "Industry-certified • Professional track",
+      "viewAll": "Explore All Programs"
+    },
+    "about": {
+      "title": "About Us",
+      "subtitle": "Discover our story and mission",
+      "learnMore": "Learn More About Us",
+      "description": "Learn more about our story"
+    },
+    "mobile": {
+      "programs": "Programs",
+      "about": "About"
+    }
   },
   "navigation": {
     "home": "Home",
     "programs": "Programs",
     "about": "About",
     "newsEvents": "News & Events",
-    "careerServices": "Career Services", 
+    "careerServices": "Career Services",
     "contact": "Contact",
     "aboutUs": "About Us",
     "ourTeam": "Our Team",
@@ -1536,7 +1536,7 @@
         "excerpt": "Join us for our biggest technology event featuring industry leaders, innovative workshops, and networking opportunities."
       },
       "industryPartnership": {
-        "date": "March 10, 2025", 
+        "date": "March 10, 2025",
         "title": "New Industry Partnership Announcement",
         "excerpt": "FIA announces strategic partnerships with leading technology companies to enhance student opportunities and career prospects."
       },
@@ -1571,7 +1571,7 @@
   "preloader": {
     "messages": {
       "initializing": "Initializing application...",
-      "preparing": "Preparing resources...", 
+      "preparing": "Preparing resources...",
       "loading": "Loading content...",
       "almostReady": "Almost ready..."
     },
@@ -1590,7 +1590,7 @@
     },
     "steps": {
       "personal": "Personal",
-      "account": "Account", 
+      "account": "Account",
       "security": "Security"
     },
     "form": {
@@ -2068,112 +2068,112 @@
     }
   },
   "userManagement": {
-      "title": "User Management",
-      "stats": {
-        "totalUsers": "total users",
-        "pending": "pending approval",
-        "approved": "approved"
+    "title": "User Management",
+    "stats": {
+      "totalUsers": "total users",
+      "pending": "pending approval",
+      "approved": "approved"
+    },
+    "search": {
+      "placeholder": "Search by name, email, or ID..."
+    },
+    "filters": {
+      "allRoles": "All Roles",
+      "allStatus": "All Status",
+      "students": "Students",
+      "teachers": "Teachers",
+      "admins": "Administrators",
+      "approved": "Approved",
+      "pending": "Pending"
+    },
+    "roles": {
+      "student": "Student",
+      "teacher": "Teacher",
+      "admin": "Administrator"
+    },
+    "status": {
+      "approved": "Approved",
+      "pending": "Pending",
+      "needsReview": "Needs Review"
+    },
+    "actions": {
+      "createUser": "Create New User",
+      "cancel": "Cancel",
+      "updateUser": "Update User",
+      "confirmDelete": "Yes, Delete",
+      "approveUser": "Approve User",
+      "rejectUser": "Reject User",
+      "editUser": "Edit User",
+      "deleteUser": "Delete User",
+      "sendMessage": "Send Message",
+      "resetPassword": "Reset Password"
+    },
+    "modals": {
+      "createUser": {
+        "title": "Create New User"
       },
-      "search": {
-        "placeholder": "Search by name, email, or ID..."
+      "editUser": {
+        "title": "Edit User"
       },
-      "filters": {
-        "allRoles": "All Roles",
-        "allStatus": "All Status",
-        "students": "Students",
-        "teachers": "Teachers",
-        "admins": "Administrators",
-        "approved": "Approved",
-        "pending": "Pending"
+      "deleteUser": {
+        "title": "Delete User",
+        "message": "Are you sure you want to delete {{name}} ({{email}})?",
+        "warning": "This action cannot be undone."
       },
-      "roles": {
-        "student": "Student",
-        "teacher": "Teacher",
-        "admin": "Administrator"
-      },
-      "status": {
-        "approved": "Approved",
-        "pending": "Pending",
-        "needsReview": "Needs Review"
-      },
-      "actions": {
-        "createUser": "Create New User",
+      "sendMessage": {
+        "title": "Send Message",
+        "subtitle": "Send message to {{firstName}} {{lastName}}",
+        "to": "To:",
+        "subject": "Subject:",
+        "message": "Message:",
+        "subjectPlaceholder": "Enter subject...",
+        "messagePlaceholder": "Enter your message here...",
         "cancel": "Cancel",
-        "updateUser": "Update User",
-        "confirmDelete": "Yes, Delete",
-        "approveUser": "Approve User",
-        "rejectUser": "Reject User",
-        "editUser": "Edit User",
-        "deleteUser": "Delete User",
-        "sendMessage": "Send Message",
-        "resetPassword": "Reset Password"
-      },
-      "modals": {
-        "createUser": {
-          "title": "Create New User"
-        },
-        "editUser": {
-          "title": "Edit User"
-        },
-        "deleteUser": {
-          "title": "Delete User",
-          "message": "Are you sure you want to delete {{name}} ({{email}})?",
-          "warning": "This action cannot be undone."
-        },
-        "sendMessage": {
-          "title": "Send Message",
-          "subtitle": "Send message to {{firstName}} {{lastName}}",
-          "to": "To:",
-          "subject": "Subject:",
-          "message": "Message:",
-          "subjectPlaceholder": "Enter subject...",
-          "messagePlaceholder": "Enter your message here...",
-          "cancel": "Cancel",
-          "send": "Send Message"
-        }
-      },
-      "fields": {
-        "firstName": "First Name",
-        "lastName": "Last Name",
-        "email": "Email Address",
-        "password": "Password",
-        "newPassword": "New Password",
-        "role": "Role"
-      },
-      "placeholders": {
-        "firstName": "Enter first name",
-        "lastName": "Enter last name",
-        "email": "Enter email address",
-        "password": "Enter password",
-        "newPassword": "Leave blank to keep current password"
-      },
-      "hints": {
-        "passwordHint": "Leave blank to keep current password"
-      },
-      "table": {
-        "headers": {
-          "user": "User",
-          "contact": "Contact",
-          "role": "Role",
-          "status": "Status",
-          "joined": "Joined",
-          "actions": "Actions"
-        },
-        "footer": {
-          "showing": "Showing {{showing}} of {{total}} users",
-          "filtered": "Filtered"
-        },
-        "pagination": {
-          "previous": "Previous",
-          "next": "Next",
-          "showing": "Showing {{from}} to {{to}} of {{total}} users",
-          "filtered": "filtered"
-        }
-      },
-      "time": {
-        "today": "Today",
-        "daysAgo": "{{days}} days ago"
+        "send": "Send Message"
       }
+    },
+    "fields": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email Address",
+      "password": "Password",
+      "newPassword": "New Password",
+      "role": "Role"
+    },
+    "placeholders": {
+      "firstName": "Enter first name",
+      "lastName": "Enter last name",
+      "email": "Enter email address",
+      "password": "Enter password",
+      "newPassword": "Leave blank to keep current password"
+    },
+    "hints": {
+      "passwordHint": "Leave blank to keep current password"
+    },
+    "table": {
+      "headers": {
+        "user": "User",
+        "contact": "Contact",
+        "role": "Role",
+        "status": "Status",
+        "joined": "Joined",
+        "actions": "Actions"
+      },
+      "footer": {
+        "showing": "Showing {{showing}} of {{total}} users",
+        "filtered": "Filtered"
+      },
+      "pagination": {
+        "previous": "Previous",
+        "next": "Next",
+        "showing": "Showing {{from}} to {{to}} of {{total}} users",
+        "filtered": "filtered"
+      }
+    },
+    "time": {
+      "today": "Today",
+      "daysAgo": "{{days}} days ago"
+    }
   },
   "applicationManagement": {
     "title": "Application Management",
@@ -2188,7 +2188,7 @@
     "export": "Export Applications",
     "viewDetails": "Application Details",
     "personalInfo": "Personal Information",
-    "contactInfo": "Contact Information", 
+    "contactInfo": "Contact Information",
     "academicInfo": "Academic Information",
     "submittedOn": "Submitted On",
     "applicationId": "Application ID",
@@ -2302,7 +2302,7 @@
         "title": "Send Message to {{firstName}} {{lastName}}",
         "fields": {
           "to": "To",
-          "subject": "Subject", 
+          "subject": "Subject",
           "message": "Message"
         },
         "send": "Send Message",
@@ -2320,7 +2320,7 @@
     },
     "pagination": {
       "showing": "Showing",
-      "of": "of", 
+      "of": "of",
       "results": "applications",
       "filtered": "Filtered",
       "previous": "Previous",
@@ -2460,7 +2460,7 @@
       "subtitle": "Manage student applications and user accounts",
       "newApplication": "New Application",
       "totalApplications": "Total Applications",
-      "pendingApplications": "Pending Applications", 
+      "pendingApplications": "Pending Applications",
       "approvedApplications": "Approved Applications",
       "rejectedApplications": "Rejected Applications",
       "applicationDetails": "Application Details",
@@ -2636,7 +2636,7 @@
       "students": "students",
       "showing": "Showing",
       "itemsPerPage": "Items per page",
-      "tableStatus": "Status", 
+      "tableStatus": "Status",
       "actions": "Actions",
       "noStudentsFound": "No students found",
       "selected": "selected",
@@ -2672,7 +2672,7 @@
       "contactInfo": "Contact Info",
       "subject": "Subject",
       "status": "Status",
-      "received": "Received", 
+      "received": "Received",
       "actions": "Actions",
       "messageDetails": "Message Details",
       "from": "From",
@@ -2727,7 +2727,7 @@
       },
       "statusValues": {
         "approved": "Approved",
-        "rejected": "Rejected", 
+        "rejected": "Rejected",
         "pending": "Pending"
       },
       "validation": {
@@ -3121,7 +3121,7 @@
       "templates": {
         "student": {
           "welcomeMessage": "Welcome Message",
-          "progressReminder": "Progress Reminder", 
+          "progressReminder": "Progress Reminder",
           "supportCheck": "Support Check",
           "welcomeMessageText": "Dear {{name}},\n\nWelcome to Forum Academy! We're excited to have you join our learning community.\n\nYour courses are now available in your student portal. If you need any assistance getting started, please don't hesitate to reach out.\n\nBest regards,\nForum Academy Academic Team",
           "progressReminderText": "Dear {{name}},\n\nWe noticed you haven't been active in your courses recently. Staying consistent with your studies is key to success.\n\nIf you're facing any challenges or need support, please let us know. We're here to help you succeed!\n\nBest regards,\nForum Academy Academic Team",
@@ -3130,7 +3130,7 @@
         "teacher": {
           "welcomeMessage": "Welcome Message",
           "performanceUpdate": "Performance Update",
-          "supportOffer": "Support Offer", 
+          "supportOffer": "Support Offer",
           "welcomeMessageText": "Dear {{name}},\n\nWelcome to the Forum Academy teaching team! We're thrilled to have you contribute to our educational mission.\n\nYour teaching dashboard is ready, and your first classes are scheduled. If you need any assistance or resources, please reach out.\n\nBest regards,\nForum Academy Administration",
           "performanceUpdateText": "Dear {{name}},\n\nThank you for your excellent work with our students. Your dedication to quality education is greatly appreciated.\n\nWe'd like to discuss your recent teaching performance and explore opportunities for further collaboration.\n\nBest regards,\nForum Academy Administration",
           "supportOfferText": "Dear {{name}},\n\nWe hope you're enjoying your teaching experience at Forum Academy. Is there anything we can do to better support you in your role?\n\nWhether it's resources, training, or administrative support, we're here to help you succeed.\n\nBest regards,\nForum Academy Administration"
@@ -3315,7 +3315,7 @@
     "navigation": {
       "overview": "Overview",
       "courses": "Courses",
-      "analytics": "Analytics", 
+      "analytics": "Analytics",
       "messages": "Messages",
       "settings": "Settings"
     },
@@ -3407,7 +3407,7 @@
   "roleBadge": {
     "sizes": {
       "small": "Small Badge",
-      "medium": "Medium Badge", 
+      "medium": "Medium Badge",
       "large": "Large Badge",
       "extraLarge": "Extra Large Badge"
     },
@@ -3423,7 +3423,7 @@
   },
   "dashboardTitle": {
     "todaysActivity": "Today's Activity",
-    "performance": "Performance", 
+    "performance": "Performance",
     "status": "Status",
     "active": "Active",
     "stats": {
@@ -3433,13 +3433,13 @@
         "status": "Active"
       },
       "teacher": {
-        "activity": "12", 
+        "activity": "12",
         "performance": "98%",
         "status": "Active"
       },
       "admin": {
         "activity": "47",
-        "performance": "99%", 
+        "performance": "99%",
         "status": "Active"
       }
     },
@@ -3783,6 +3783,60 @@
       }
     }
   },
+  "teacherListening": {
+    "submissions": {
+      "detailTitle": "Submission Details",
+      "table": {
+        "student": "Student",
+        "email": "Email",
+        "score": "Score",
+        "percentage": "Percentage",
+        "attempt": "Attempt",
+        "submitted": "Submitted",
+        "actions": "Actions"
+      },
+      "viewDetails": "View Details",
+      "view": "View",
+      "delete": "Delete",
+      "deleteConfirm": "Are you sure you want to delete this submission?",
+      "deleteWarning": "This action cannot be undone.",
+      "noData": "No submissions yet",
+      "items": "items",
+      "selectPlaceholder": "Choose an exercise",
+      "empty": "No submissions yet for this exercise.",
+      "stats": {
+        "total": "Total submissions",
+        "average": "Average score",
+        "passRate": "Pass rate (≥70%)"
+      }
+    },
+    "actions": {
+      "close": "Close"
+    },
+    "feedback": {
+      "submissionDeleted": "Submission deleted successfully",
+      "deleteFailed": "Failed to delete submission",
+      "fetchSubmissionsFailed": "Failed to fetch submissions"
+    },
+    "form": {
+      "level": "Difficulty Level",
+      "levelRequired": "Please select a difficulty level",
+      "levelPlaceholder": "Select difficulty level"
+    },
+    "level": {
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
+    },
+    "questions": {
+      "questionPlaceholder": "What is the main topic discussed in the audio?",
+      "answerOptions": "Answer Options",
+      "option": "Option",
+      "optionRequired": "Required",
+      "optionPlaceholder": "Enter option",
+      "pointsTooltip": "Points awarded for correct answer"
+    }
+  },
   "teacherDashboard": {
     "title": "Teacher Dashboard",
     "welcomeBack": "Welcome back",
@@ -3873,6 +3927,8 @@
       "yesterday": "Yesterday",
       "daysAgo": "days ago",
       "noRecentActivity": "No recent activity",
+      "noUpdates": "No updates yet",
+      "general": "General",
       "activities": {
         "quizSubmission": "{{student}} submitted a quiz in {{course}}",
         "homeworkSubmission": "{{student}} submitted homework in {{course}}",
@@ -3882,7 +3938,32 @@
       },
       "weather": {
         "errorMessage": "Weather data is currently unavailable.",
-        "defaultLocation": "Niigata"
+        "defaultLocation": "Niigata",
+        "loading": "Loading...",
+        "noData": "Live weather",
+        "clear": "Clear sky",
+        "mainlyClear": "Mainly clear",
+        "partlyCloudy": "Partly cloudy",
+        "overcast": "Overcast",
+        "fog": "Fog",
+        "drizzleLight": "Light drizzle",
+        "drizzle": "Drizzle",
+        "drizzleDense": "Dense drizzle",
+        "freezingDrizzle": "Freezing drizzle",
+        "rainLight": "Light rain",
+        "rain": "Rain",
+        "rainHeavy": "Heavy rain",
+        "freezingRain": "Freezing rain",
+        "snowLight": "Light snow",
+        "snow": "Snow",
+        "snowHeavy": "Heavy snow",
+        "showers": "Rain showers",
+        "showersHeavy": "Heavy rain showers",
+        "thunderstorm": "Thunderstorm",
+        "unknown": "Weather update",
+        "today": "Today",
+        "wind": "Wind",
+        "humidity": "Humidity"
       },
       "daysShort": {
         "mon": "Mon",
@@ -4575,8 +4656,8 @@
           "missingEnrollment": "No course enrolments",
           "unverified": "Email unverified"
         }
-    }
-  },
+      }
+    },
     "gradingCenter": {
       "title": "Grading Center",
       "subtitle": "Grade work, share feedback, and keep students in sync in real time.",
@@ -4732,7 +4813,7 @@
       "notificationPreferences": "Notification Preferences",
       "emailNotifications": "Email Notifications",
       "emailNotificationsDesc": "Receive notifications via email",
-        "assignmentReminders": "Assignment Reminders",
+      "assignmentReminders": "Assignment Reminders",
       "assignmentRemindersDesc": "Get reminders for assignment deadlines",
       "studentSubmissions": "Student Submissions",
       "studentSubmissionsDesc": "Notify when students submit work",
@@ -4822,7 +4903,6 @@
       "upload": "Upload",
       "view": "View",
       "viewButton": "View",
-      "actions": "Actions",
       "status": "Status",
       "date": "Date",
       "time": "Time",
@@ -4834,6 +4914,7 @@
       "warning": "Warning",
       "info": "Info",
       "actions": {
+        "title": "Actions",
         "refresh": "Refresh",
         "cancel": "Cancel",
         "close": "Close",
@@ -5132,6 +5213,16 @@
         "admin_announcement": "Announcement",
         "system": "System"
       }
+    },
+    "sidebar": {
+      "sections": {
+        "main": "Main",
+        "explore": "Explore"
+      }
+    },
+    "portal": {
+      "title": "Student Portal",
+      "subtitle": "Forum Academy"
     }
   },
   "announcements": {
