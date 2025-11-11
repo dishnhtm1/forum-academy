@@ -61,17 +61,23 @@ import {
   CrownOutlined,
   SoundOutlined,
   FormOutlined,
+  UploadOutlined,
+  InboxOutlined,
+  FilePdfOutlined,
+  FileWordOutlined,
+  FileImageOutlined,
 } from "@ant-design/icons";
 
 // Import API client
-import { authAPI, statsAPI } from "../utils/apiClient";
+import { authAPI, statsAPI, quizAPI } from "../utils/apiClient";
 
 const { Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
 
 const ASSIGNMENTS_STORAGE_KEY = "forumAcademy.quizAssignments.byStudent";
 
-const STUDENT_ASSIGNMENT_CACHE_KEY = "forumAcademy.teacherAssignments.studentCache";
+const STUDENT_ASSIGNMENT_CACHE_KEY =
+  "forumAcademy.teacherAssignments.studentCache";
 
 const StudentDashboard = () => {
   const { t } = useTranslation();
@@ -95,7 +101,8 @@ const StudentDashboard = () => {
 
   // Notification states
   const [notifications, setNotifications] = useState([]);
-  const [notificationDrawerVisible, setNotificationDrawerVisible] = useState(false);
+  const [notificationDrawerVisible, setNotificationDrawerVisible] =
+    useState(false);
   const [notificationLoading, setNotificationLoading] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [notificationStats, setNotificationStats] = useState({
@@ -129,7 +136,11 @@ const StudentDashboard = () => {
   const [submissionForm] = Form.useForm();
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [submittingListening, setSubmittingListening] = useState(false);
-  
+  const [quizStartTime, setQuizStartTime] = useState(null);
+  const [submittingQuiz, setSubmittingQuiz] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState(null);
+  const [submittingHomework, setSubmittingHomework] = useState(false);
+
   // Zoom Integration States
   const [zoomClasses, setZoomClasses] = useState([]);
   const [zoomNotifications, setZoomNotifications] = useState([]);
@@ -209,7 +220,9 @@ const StudentDashboard = () => {
         name: userName,
       };
 
+      console.log("🔍 StudentDashboard - userData created:", userData);
       setCurrentUser(userData);
+      console.log("✅ StudentDashboard - currentUser state updated");
 
       // Fetch all data
       Promise.all([
@@ -384,6 +397,14 @@ const StudentDashboard = () => {
           ? data.quizzes
           : [];
 
+        console.log("📚 Total quizzes from API:", quizList.length);
+
+        // Filter for published/active quizzes
+        const publishedQuizzes = quizList.filter(
+          (quiz) => quiz.isPublished || quiz.isActive
+        );
+        console.log("✅ Published quizzes:", publishedQuizzes.length);
+
         let assignmentsForStudent = {};
         try {
           const storedAssignments = localStorage.getItem(
@@ -404,25 +425,22 @@ const StudentDashboard = () => {
           console.error("❌ Error parsing quiz assignments:", error);
         }
 
-        const assignedQuizzes = quizList
-          .map((quiz) => {
-            const quizId = quiz._id || quiz.id;
-            if (!quizId) {
-              return null;
-            }
-            const assignment = assignmentsForStudent[quizId];
-            if (!assignment) {
-              return null;
-            }
+        // Enrich quizzes with assignment data (but show all published quizzes)
+        const enrichedQuizzes = publishedQuizzes.map((quiz) => {
+          const quizId = quiz._id || quiz.id;
+          const assignment = quizId ? assignmentsForStudent[quizId] : null;
+
+          if (assignment) {
             return {
               ...quiz,
               assignment,
             };
-          })
-          .filter(Boolean);
+          }
+          return quiz;
+        });
 
-        console.log("✅ Assigned quizzes:", assignedQuizzes.length);
-        setQuizzes(assignedQuizzes);
+        console.log("🎯 Final enriched quizzes:", enrichedQuizzes.length);
+        setQuizzes(enrichedQuizzes);
       } else {
         console.error("❌ Failed to fetch quizzes:", response.status);
         setQuizzes([]);
@@ -508,7 +526,10 @@ const StudentDashboard = () => {
 
         const combinedHomework = Array.from(assignmentMap.values());
 
-        console.log("✅ Homework assignments available:", combinedHomework.length);
+        console.log(
+          "✅ Homework assignments available:",
+          combinedHomework.length
+        );
         setHomework(combinedHomework);
       } else {
         console.error("❌ Failed to fetch homework:", response.status);
@@ -581,48 +602,58 @@ const StudentDashboard = () => {
     setNotificationLoading(true);
     try {
       let transformedNotifications = [];
-      
+
       // Get authentication token
-      const token = localStorage.getItem("authToken") || localStorage.getItem("token");
-      
+      const token =
+        localStorage.getItem("authToken") || localStorage.getItem("token");
+
       // First try to fetch real notifications from the authenticated endpoint
       if (token) {
         try {
-          const response = await fetch(`${process.env.REACT_APP_API_URL}/api/notifications`, {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          });
+          const response = await fetch(
+            `${process.env.REACT_APP_API_URL}/api/notifications`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
 
           if (response && response.ok) {
             const data = await response.json();
 
             if (data.success && data.notifications) {
               // Transform backend notifications to match frontend format
-              transformedNotifications = data.notifications.map((notification) => ({
-                id: notification._id,
-                type: notification.type,
-                title: notification.title,
-                message: notification.message,
-                timestamp: notification.createdAt,
-                read: notification.read || false,
-                priority: notification.priority || "medium",
-                icon: getNotificationIcon(notification.type),
-                color: getNotificationColor(notification.type),
-                sender: notification.sender,
-              }));
+              transformedNotifications = data.notifications.map(
+                (notification) => ({
+                  id: notification._id,
+                  type: notification.type,
+                  title: notification.title,
+                  message: notification.message,
+                  timestamp: notification.createdAt,
+                  read: notification.read || false,
+                  priority: notification.priority || "medium",
+                  icon: getNotificationIcon(notification.type),
+                  color: getNotificationColor(notification.type),
+                  sender: notification.sender,
+                })
+              );
             }
           }
         } catch (apiError) {
-          console.log("API notifications not available, checking local notifications");
+          console.log(
+            "API notifications not available, checking local notifications"
+          );
         }
       }
 
       // Check for local notifications as fallback
       try {
-        const localNotifications = JSON.parse(localStorage.getItem('localNotifications') || '[]');
-        const localTransformed = localNotifications.map(notification => ({
+        const localNotifications = JSON.parse(
+          localStorage.getItem("localNotifications") || "[]"
+        );
+        const localTransformed = localNotifications.map((notification) => ({
           id: notification.id,
           type: notification.type,
           title: notification.title,
@@ -633,15 +664,19 @@ const StudentDashboard = () => {
           icon: getNotificationIcon(notification.type),
           color: getNotificationColor(notification.type),
           sender: notification.sender,
-          source: 'local',
+          source: "local",
         }));
-        
+
         // Merge API and local notifications, removing duplicates
-        const allNotifications = [...transformedNotifications, ...localTransformed];
-        const uniqueNotifications = allNotifications.filter((notification, index, self) => 
-          index === self.findIndex(n => n.id === notification.id)
+        const allNotifications = [
+          ...transformedNotifications,
+          ...localTransformed,
+        ];
+        const uniqueNotifications = allNotifications.filter(
+          (notification, index, self) =>
+            index === self.findIndex((n) => n.id === notification.id)
         );
-        
+
         transformedNotifications = uniqueNotifications;
       } catch (localError) {
         console.log("Local notifications not available");
@@ -650,21 +685,43 @@ const StudentDashboard = () => {
       setNotifications(transformedNotifications);
 
       // Calculate stats from transformed notifications
-      const unreadCount = transformedNotifications.filter(n => !n.read).length;
+      const unreadCount = transformedNotifications.filter(
+        (n) => !n.read
+      ).length;
       const stats = {
         total: transformedNotifications.length,
         unread: unreadCount,
         byType: {
-          grade_update: transformedNotifications.filter((n) => n.type === "grade_update").length,
-          assignment_new: transformedNotifications.filter((n) => n.type === "assignment_new").length,
-          teacher_message: transformedNotifications.filter((n) => n.type === "teacher_message").length,
-          quiz_available: transformedNotifications.filter((n) => n.type === "quiz_available").length,
-          homework_due: transformedNotifications.filter((n) => n.type === "homework_due").length,
-          announcement: transformedNotifications.filter((n) => n.type === "announcement").length,
-          admin_announcement: transformedNotifications.filter((n) => n.type === "admin_announcement").length,
-          live_class_started: transformedNotifications.filter((n) => n.type === "live_class_started").length,
-          live_class_ended: transformedNotifications.filter((n) => n.type === "live_class_ended").length,
-          zoom_class: transformedNotifications.filter((n) => n.type === "zoom_class").length,
+          grade_update: transformedNotifications.filter(
+            (n) => n.type === "grade_update"
+          ).length,
+          assignment_new: transformedNotifications.filter(
+            (n) => n.type === "assignment_new"
+          ).length,
+          teacher_message: transformedNotifications.filter(
+            (n) => n.type === "teacher_message"
+          ).length,
+          quiz_available: transformedNotifications.filter(
+            (n) => n.type === "quiz_available"
+          ).length,
+          homework_due: transformedNotifications.filter(
+            (n) => n.type === "homework_due"
+          ).length,
+          announcement: transformedNotifications.filter(
+            (n) => n.type === "announcement"
+          ).length,
+          admin_announcement: transformedNotifications.filter(
+            (n) => n.type === "admin_announcement"
+          ).length,
+          live_class_started: transformedNotifications.filter(
+            (n) => n.type === "live_class_started"
+          ).length,
+          live_class_ended: transformedNotifications.filter(
+            (n) => n.type === "live_class_ended"
+          ).length,
+          zoom_class: transformedNotifications.filter(
+            (n) => n.type === "zoom_class"
+          ).length,
         },
       };
 
@@ -733,8 +790,9 @@ const StudentDashboard = () => {
   const markNotificationAsRead = async (notificationId) => {
     try {
       // Get authentication token
-      const token = localStorage.getItem("authToken") || localStorage.getItem("token");
-      
+      const token =
+        localStorage.getItem("authToken") || localStorage.getItem("token");
+
       // Try to update on backend first
       if (token) {
         const response = await fetch(
@@ -772,8 +830,9 @@ const StudentDashboard = () => {
   const markAllNotificationsAsRead = async () => {
     try {
       // Get authentication token
-      const token = localStorage.getItem("authToken") || localStorage.getItem("token");
-      
+      const token =
+        localStorage.getItem("authToken") || localStorage.getItem("token");
+
       // Try to update on backend first
       if (token) {
         const response = await fetch(
@@ -814,19 +873,25 @@ const StudentDashboard = () => {
     switch (notification.type) {
       case "grade_update":
         setActiveTab("progress");
-        message.info("📊 " + t("studentDashboard.messages.navigatingToProgress"));
+        message.info(
+          "📊 " + t("studentDashboard.messages.navigatingToProgress")
+        );
         break;
 
       case "assignment_new":
       case "homework_due":
       case "homework_reminder":
         setActiveTab("homework");
-        message.info("📝 " + t("studentDashboard.messages.navigatingToHomework"));
+        message.info(
+          "📝 " + t("studentDashboard.messages.navigatingToHomework")
+        );
         break;
 
       case "quiz_available":
         setActiveTab("quizzes");
-        message.info("❓ " + t("studentDashboard.messages.navigatingToQuizzes"));
+        message.info(
+          "❓ " + t("studentDashboard.messages.navigatingToQuizzes")
+        );
         break;
 
       case "teacher_message":
@@ -890,63 +955,73 @@ const StudentDashboard = () => {
     try {
       setZoomLoading(true);
       console.log("📹 Fetching available Zoom classes for student...");
-      
+
       // Get authentication token
-      const token = localStorage.getItem("authToken") || localStorage.getItem("token");
-      
+      const token =
+        localStorage.getItem("authToken") || localStorage.getItem("token");
+
       if (!token) {
         console.error("❌ No authentication token found");
         setZoomClasses([]);
         return;
       }
-      
+
       // Fetch all active Zoom meetings
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/zoom/meetings`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/zoom/meetings`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
-        
+
         if (data.success && data.meetings) {
           // Filter for active/live meetings only
           const activeClasses = data.meetings
-            .filter(meeting => meeting.status === 'active' || meeting.status === 'live')
-            .map(meeting => ({
+            .filter(
+              (meeting) =>
+                meeting.status === "active" || meeting.status === "live"
+            )
+            .map((meeting) => ({
               id: meeting._id,
               title: meeting.title,
-              courseName: meeting.course?.name || meeting.course?.title || 'Live Class',
+              courseName:
+                meeting.course?.name || meeting.course?.title || "Live Class",
               meetingId: meeting.meetingId,
-              password: meeting.meetingPassword || '',
+              password: meeting.meetingPassword || "",
               startTime: new Date(meeting.startTime),
               duration: meeting.duration,
-              status: 'active',
-              teacherName: meeting.instructor?.firstName && meeting.instructor?.lastName 
-                ? `${meeting.instructor.firstName} ${meeting.instructor.lastName}`
-                : 'Teacher',
-              joinUrl: meeting.joinUrl || `https://zoom.us/j/${meeting.meetingId}`,
-              description: meeting.description || '',
+              status: "active",
+              teacherName:
+                meeting.instructor?.firstName && meeting.instructor?.lastName
+                  ? `${meeting.instructor.firstName} ${meeting.instructor.lastName}`
+                  : "Teacher",
+              joinUrl:
+                meeting.joinUrl || `https://zoom.us/j/${meeting.meetingId}`,
+              description: meeting.description || "",
               isAllowed: true, // Students can join active classes
-              settings: meeting.settings || {}
+              settings: meeting.settings || {},
             }));
-          
+
           console.log(`📹 Found ${activeClasses.length} active live classes`);
-          activeClasses.forEach(zoomClass => {
+          activeClasses.forEach((zoomClass) => {
             console.log(`📹 ${zoomClass.title} - Status: ${zoomClass.status}`);
           });
 
           setZoomClasses(activeClasses);
         } else {
-          console.log('📹 No active meetings found');
+          console.log("📹 No active meetings found");
           setZoomClasses([]);
         }
       } else {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || 'Failed to fetch live classes');
+        throw new Error(errorData.message || "Failed to fetch live classes");
       }
     } catch (error) {
       console.error("❌ Error fetching Zoom classes:", error);
@@ -966,11 +1041,12 @@ const StudentDashboard = () => {
           id: "1",
           type: "zoom_class_started",
           title: "Live Class Started",
-          message: "Your live class 'Introduction to Programming' has started. Click to join!",
+          message:
+            "Your live class 'Introduction to Programming' has started. Click to join!",
           zoomClassId: "1",
           timestamp: new Date(),
-          isRead: false
-        }
+          isRead: false,
+        },
       ];
       setZoomNotifications(mockNotifications);
     } catch (error) {
@@ -980,7 +1056,9 @@ const StudentDashboard = () => {
 
   const handleJoinZoomClass = (zoomClass) => {
     if (!zoomClass.isAllowed) {
-      message.error("You don't have permission to join this class. Please contact your teacher.");
+      message.error(
+        "You don't have permission to join this class. Please contact your teacher."
+      );
       return;
     }
 
@@ -997,9 +1075,9 @@ const StudentDashboard = () => {
     if (selectedZoomClass) {
       // Record attendance automatically
       recordAttendance(selectedZoomClass);
-      
+
       // Open Zoom link in new tab
-      window.open(selectedZoomClass.joinUrl, '_blank');
+      window.open(selectedZoomClass.joinUrl, "_blank");
       message.success("Opening Zoom class... Attendance recorded!");
       setJoinZoomModalVisible(false);
       setSelectedZoomClass(null);
@@ -1014,23 +1092,22 @@ const StudentDashboard = () => {
         studentName: "John Doe", // This would be currentUser.name in real app
         zoomClassId: zoomClass.id,
         joinTime: new Date(),
-        status: 'present'
+        status: "present",
       };
 
       console.log("📝 Recording attendance:", attendanceData);
-      
+
       // In a real app, this would send to the backend
       // await attendanceAPI.record(attendanceData);
-      
+
       setAttendanceRecorded(true);
-      
+
       // Show success notification
       notification.success({
         message: "Attendance Recorded",
         description: `Your attendance has been automatically recorded for ${zoomClass.title}`,
         duration: 4,
       });
-      
     } catch (error) {
       console.error("❌ Error recording attendance:", error);
       message.error("Failed to record attendance");
@@ -1039,7 +1116,7 @@ const StudentDashboard = () => {
 
   const markZoomNotificationAsRead = async (notificationId) => {
     try {
-      const updatedNotifications = zoomNotifications.map(notification =>
+      const updatedNotifications = zoomNotifications.map((notification) =>
         notification.id === notificationId
           ? { ...notification, isRead: true }
           : notification
@@ -1125,6 +1202,7 @@ const StudentDashboard = () => {
     <StudentQuizzes
       t={t}
       quizzes={quizzes}
+      currentUser={currentUser}
       onStartQuiz={(record) => {
         setSelectedQuiz(record);
         setQuizModalVisible(true);
@@ -1158,7 +1236,9 @@ const StudentDashboard = () => {
       <Modal
         title={
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <VideoCameraOutlined style={{ color: "#dc2626", fontSize: "20px" }} />
+            <VideoCameraOutlined
+              style={{ color: "#dc2626", fontSize: "20px" }}
+            />
             <span>Join Live Class</span>
           </div>
         }
@@ -1187,14 +1267,20 @@ const StudentDashboard = () => {
                 <Col span={12}>
                   <Text strong>Meeting ID:</Text>
                   <br />
-                  <Tag color="blue" style={{ fontFamily: "monospace", marginTop: 4 }}>
+                  <Tag
+                    color="blue"
+                    style={{ fontFamily: "monospace", marginTop: 4 }}
+                  >
                     {selectedZoomClass.meetingId}
                   </Tag>
                 </Col>
                 <Col span={12}>
                   <Text strong>Password:</Text>
                   <br />
-                  <Tag color="green" style={{ fontFamily: "monospace", marginTop: 4 }}>
+                  <Tag
+                    color="green"
+                    style={{ fontFamily: "monospace", marginTop: 4 }}
+                  >
                     {selectedZoomClass.password}
                   </Tag>
                 </Col>
@@ -1221,12 +1307,15 @@ const StudentDashboard = () => {
 
             <div style={{ textAlign: "right" }}>
               <Space>
-                <Button onClick={() => setJoinZoomModalVisible(false)}>Cancel</Button>
+                <Button onClick={() => setJoinZoomModalVisible(false)}>
+                  Cancel
+                </Button>
                 <Button
                   type="primary"
                   onClick={handleConfirmJoinZoom}
                   style={{
-                    background: "linear-gradient(135deg, #dc2626 0%, #ea580c 100%)",
+                    background:
+                      "linear-gradient(135deg, #dc2626 0%, #ea580c 100%)",
                     border: "none",
                   }}
                 >
@@ -1356,12 +1445,30 @@ const StudentDashboard = () => {
   // Handle homework submission
   const handleHomeworkSubmission = async (values) => {
     try {
-      const token = localStorage.getItem("token");
+      setSubmittingHomework(true);
+      // Check both possible token keys for compatibility
+      const token =
+        localStorage.getItem("token") || localStorage.getItem("authToken");
+
+      // Check if token exists
+      if (!token) {
+        message.error(
+          "No authentication token found. Please refresh the page or log in again.",
+          5
+        );
+        setSubmittingHomework(false);
+        return;
+      }
+
       const formData = new FormData();
-      formData.append("homeworkId", selectedHomework._id);
-      formData.append("content", values.content);
-      if (values.file) {
-        formData.append("file", values.file);
+      formData.append(
+        "homeworkId",
+        selectedHomework._id || selectedHomework.id
+      );
+      formData.append("content", values.answer || values.content || "");
+
+      if (uploadedFile) {
+        formData.append("file", uploadedFile);
       }
 
       const response = await fetch(
@@ -1376,15 +1483,35 @@ const StudentDashboard = () => {
       );
 
       if (response.ok) {
-        message.success("Homework submitted successfully!");
+        const result = await response.json();
+        message.success(
+          t("studentDashboard.homework.submissionModal.successMessage") ||
+            "Homework submitted successfully! Your teacher will review it soon."
+        );
         setSubmissionModalVisible(false);
+        setSelectedHomework(null);
+        setUploadedFile(null);
         submissionForm.resetFields();
+        // Refresh homework list
+        fetchHomework();
       } else {
-        message.error("Failed to submit homework");
+        // Handle 401 Unauthorized - just show error, don't log out
+        if (response.status === 401) {
+          message.error(
+            "Authentication failed. Please try refreshing the page or logging in again.",
+            5
+          );
+          return;
+        }
+
+        const error = await response.json();
+        message.error(error.message || "Failed to submit homework");
       }
     } catch (error) {
       console.error("Error submitting homework:", error);
-      message.error("Error submitting homework");
+      message.error("Error submitting homework. Please try again.");
+    } finally {
+      setSubmittingHomework(false);
     }
   };
 
@@ -1589,24 +1716,28 @@ const StudentDashboard = () => {
             }}
           >
             <Space size={12}>
-              <div style={{
-                width: 32,
-                height: 32,
-                background: "rgba(255, 255, 255, 0.2)",
-                borderRadius: "8px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}>
+              <div
+                style={{
+                  width: 32,
+                  height: 32,
+                  background: "rgba(255, 255, 255, 0.2)",
+                  borderRadius: "8px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
                 <BellOutlined style={{ color: "#fff", fontSize: "16px" }} />
               </div>
-              <span style={{ fontWeight: 700, fontSize: "16px" }}>Notifications</span>
+              <span style={{ fontWeight: 700, fontSize: "16px" }}>
+                Notifications
+              </span>
               {notificationStats.unread > 0 && (
                 <Badge
                   count={notificationStats.unread}
-                  style={{ 
+                  style={{
                     backgroundColor: "#52c41a",
-                    boxShadow: "0 2px 8px rgba(82, 196, 26, 0.3)"
+                    boxShadow: "0 2px 8px rgba(82, 196, 26, 0.3)",
                   }}
                 />
               )}
@@ -1627,17 +1758,17 @@ const StudentDashboard = () => {
         width={isMobile ? "100%" : 440}
         open={notificationDrawerVisible}
         onClose={() => setNotificationDrawerVisible(false)}
-        styles={{ 
-          body: { 
+        styles={{
+          body: {
             padding: 0,
-            background: "linear-gradient(180deg, #fafafa 0%, #f5f5f5 100%)"
+            background: "linear-gradient(180deg, #fafafa 0%, #f5f5f5 100%)",
           },
           header: {
             background: "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)",
             color: "#fff",
             borderBottom: "none",
             padding: "20px",
-          }
+          },
         }}
         extra={
           <Button
@@ -1653,7 +1784,9 @@ const StudentDashboard = () => {
         {notificationLoading ? (
           <div style={{ padding: "40px", textAlign: "center" }}>
             <Spin size="large" />
-            <div style={{ marginTop: "16px" }}>{t("studentDashboard.notifications.loading")}</div>
+            <div style={{ marginTop: "16px" }}>
+              {t("studentDashboard.notifications.loading")}
+            </div>
           </div>
         ) : notifications.length === 0 ? (
           <Empty
@@ -1671,12 +1804,16 @@ const StudentDashboard = () => {
                 style={{
                   padding: "16px 20px",
                   margin: "8px 12px",
-                  backgroundColor: notification.read ? "#fff" : "rgba(102, 126, 234, 0.05)",
+                  backgroundColor: notification.read
+                    ? "#fff"
+                    : "rgba(102, 126, 234, 0.05)",
                   borderLeft: `4px solid ${notification.color}`,
                   cursor: "pointer",
                   transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                   borderRadius: "12px",
-                  boxShadow: notification.read ? "0 2px 8px rgba(0, 0, 0, 0.04)" : "0 4px 12px rgba(102, 126, 234, 0.1)",
+                  boxShadow: notification.read
+                    ? "0 2px 8px rgba(0, 0, 0, 0.04)"
+                    : "0 4px 12px rgba(102, 126, 234, 0.1)",
                 }}
                 onClick={() => handleNotificationClick(notification)}
                 actions={[
@@ -1687,14 +1824,21 @@ const StudentDashboard = () => {
                       alignItems: "flex-end",
                     }}
                   >
-                    <Text type="secondary" style={{ fontSize: "12px", fontWeight: 500 }}>
+                    <Text
+                      type="secondary"
+                      style={{ fontSize: "12px", fontWeight: 500 }}
+                    >
                       {moment(notification.timestamp).fromNow()}
                     </Text>
                     {!notification.read && (
                       <Badge
                         status="processing"
                         text="New"
-                        style={{ fontSize: "11px", marginTop: "4px", fontWeight: 600 }}
+                        style={{
+                          fontSize: "11px",
+                          marginTop: "4px",
+                          fontWeight: 600,
+                        }}
                       />
                     )}
                   </div>,
@@ -1771,10 +1915,7 @@ const StudentDashboard = () => {
                         <div style={{ marginTop: "8px" }}>
                           <Space size="small">
                             <Avatar size={16} icon={<UserOutlined />} />
-                            <Text
-                              type="secondary"
-                              style={{ fontSize: "12px" }}
-                            >
+                            <Text type="secondary" style={{ fontSize: "12px" }}>
                               {notification.sender.firstName}{" "}
                               {notification.sender.lastName}
                             </Text>
@@ -1801,7 +1942,10 @@ const StudentDashboard = () => {
               boxShadow: "0 -4px 12px rgba(0, 0, 0, 0.04)",
             }}
           >
-            <Space style={{ width: "100%", justifyContent: "center" }} size={12}>
+            <Space
+              style={{ width: "100%", justifyContent: "center" }}
+              size={12}
+            >
               <Button
                 className="modern-btn"
                 type="primary"
@@ -1809,7 +1953,8 @@ const StudentDashboard = () => {
                 onClick={fetchNotifications}
                 loading={notificationLoading}
                 style={{
-                  background: "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)",
+                  background:
+                    "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)",
                   border: "none",
                   borderRadius: "10px",
                   padding: "0 24px",
@@ -1839,6 +1984,536 @@ const StudentDashboard = () => {
           </div>
         )}
       </Drawer>
+
+      {/* Quiz Taking Modal */}
+      <Modal
+        title={selectedQuiz?.title || "Quiz"}
+        open={quizModalVisible}
+        onCancel={() => {
+          setQuizModalVisible(false);
+          setSelectedQuiz(null);
+          setSelectedAnswers({});
+          setQuizStartTime(null);
+        }}
+        footer={null}
+        width={800}
+        destroyOnClose
+        afterOpenChange={(open) => {
+          if (open && !quizStartTime) {
+            setQuizStartTime(new Date());
+          }
+        }}
+      >
+        {selectedQuiz && (
+          <div>
+            <div style={{ marginBottom: 24 }}>
+              <Text strong>Course: </Text>
+              <Text>
+                {selectedQuiz.course?.title ||
+                  selectedQuiz.course?.name ||
+                  "N/A"}
+              </Text>
+              <br />
+              <Text strong>Description: </Text>
+              <Text>{selectedQuiz.description || "No description"}</Text>
+              <br />
+              <Text strong>Questions: </Text>
+              <Text>{selectedQuiz.questions?.length || 0}</Text>
+              <br />
+              <Text strong>Time Limit: </Text>
+              <Text>
+                {selectedQuiz.duration || selectedQuiz.timeLimit || "N/A"}{" "}
+                minutes
+              </Text>
+            </div>
+
+            {!selectedQuiz.questions || selectedQuiz.questions.length === 0 ? (
+              <Empty
+                description="This quiz has no questions yet. Please contact your teacher."
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+              />
+            ) : (
+              <div>
+                <Alert
+                  message="Quiz Instructions"
+                  description={
+                    <ul>
+                      <li>Read each question carefully</li>
+                      <li>
+                        Select the best answer for multiple choice questions
+                      </li>
+                      <li>
+                        You have{" "}
+                        {selectedQuiz.duration || selectedQuiz.timeLimit || 60}{" "}
+                        minutes to complete
+                      </li>
+                      <li>Click Submit when you're done</li>
+                    </ul>
+                  }
+                  type="info"
+                  showIcon
+                  style={{ marginBottom: 16 }}
+                />
+
+                <div style={{ marginTop: 24 }}>
+                  {selectedQuiz.questions.map((question, index) => (
+                    <Card
+                      key={question._id || index}
+                      style={{ marginBottom: 16 }}
+                    >
+                      <Text strong>Question {index + 1}:</Text>
+                      <div style={{ margin: "12px 0" }}>
+                        {question.question}
+                      </div>
+
+                      {question.type === "multiple_choice" &&
+                        question.options && (
+                          <Radio.Group
+                            style={{ width: "100%" }}
+                            value={selectedAnswers[question._id || index]}
+                            onChange={(e) => {
+                              setSelectedAnswers({
+                                ...selectedAnswers,
+                                [question._id || index]: e.target.value,
+                              });
+                            }}
+                          >
+                            <Space
+                              direction="vertical"
+                              style={{ width: "100%" }}
+                            >
+                              {question.options.map((option, optIndex) => (
+                                <Radio key={optIndex} value={optIndex}>
+                                  {option.text || option}
+                                </Radio>
+                              ))}
+                            </Space>
+                          </Radio.Group>
+                        )}
+                    </Card>
+                  ))}
+                </div>
+
+                <div style={{ marginTop: 24, textAlign: "center" }}>
+                  <Space>
+                    <Button
+                      onClick={() => {
+                        setQuizModalVisible(false);
+                        setSelectedQuiz(null);
+                        setSelectedAnswers({});
+                        setQuizStartTime(null);
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="primary"
+                      loading={submittingQuiz}
+                      onClick={async () => {
+                        // Check if all questions are answered
+                        const totalQuestions = selectedQuiz.questions.length;
+                        const answeredQuestions =
+                          Object.keys(selectedAnswers).length;
+
+                        if (answeredQuestions < totalQuestions) {
+                          message.warning(
+                            `Please answer all questions. You have answered ${answeredQuestions} out of ${totalQuestions} questions.`
+                          );
+                          return;
+                        }
+
+                        try {
+                          setSubmittingQuiz(true);
+
+                          // Calculate time spent
+                          const timeSpent = quizStartTime
+                            ? Math.floor((new Date() - quizStartTime) / 1000)
+                            : 0;
+
+                          // Format answers for backend
+                          const formattedAnswers = selectedQuiz.questions.map(
+                            (question, index) => {
+                              const questionId = question._id || index;
+                              const selectedOptionIndex =
+                                selectedAnswers[questionId];
+
+                              // Get the actual answer text
+                              let answerText = "";
+                              if (
+                                selectedOptionIndex !== undefined &&
+                                question.options
+                              ) {
+                                const option =
+                                  question.options[selectedOptionIndex];
+                                answerText = option?.text || option || "";
+                              }
+
+                              return {
+                                questionId: question._id,
+                                answer: answerText,
+                              };
+                            }
+                          );
+
+                          console.log("📝 Submitting quiz:", {
+                            quizId: selectedQuiz._id,
+                            answers: formattedAnswers,
+                            timeSpent,
+                            startedAt: quizStartTime,
+                          });
+
+                          // Submit to backend
+                          const response = await quizAPI.submit(
+                            selectedQuiz._id,
+                            {
+                              answers: formattedAnswers,
+                              timeSpent,
+                              startedAt: quizStartTime,
+                            }
+                          );
+
+                          console.log("✅ Quiz submission response:", response);
+
+                          // Show success with score
+                          message.success(
+                            `Quiz submitted successfully! Score: ${
+                              response.score
+                            }/${
+                              response.totalPoints || selectedQuiz.totalPoints
+                            } (${response.percentage}%)`,
+                            5
+                          );
+
+                          // Close modal and reset
+                          setQuizModalVisible(false);
+                          setSelectedQuiz(null);
+                          setSelectedAnswers({});
+                          setQuizStartTime(null);
+
+                          // Refresh quizzes to update completion status
+                          fetchQuizzes();
+                        } catch (error) {
+                          console.error("❌ Error submitting quiz:", error);
+                          message.error(
+                            error.message ||
+                              "Failed to submit quiz. Please try again."
+                          );
+                        } finally {
+                          setSubmittingQuiz(false);
+                        }
+                      }}
+                    >
+                      Submit Quiz
+                    </Button>
+                  </Space>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </Modal>
+
+      {/* Homework Details Modal */}
+      <Modal
+        title={
+          <Space>
+            <FileTextOutlined style={{ color: "#1890ff" }} />
+            {t("studentDashboard.homework.detailModal.title") ||
+              "Homework Details"}
+          </Space>
+        }
+        open={homeworkModalVisible}
+        onCancel={() => {
+          setHomeworkModalVisible(false);
+          setSelectedHomework(null);
+        }}
+        width={700}
+        footer={[
+          <Button
+            key="close"
+            onClick={() => {
+              setHomeworkModalVisible(false);
+              setSelectedHomework(null);
+            }}
+          >
+            {t("studentDashboard.homework.detailModal.close") || "Close"}
+          </Button>,
+          <Button
+            key="submit"
+            type="primary"
+            icon={<UploadOutlined />}
+            onClick={() => {
+              setHomeworkModalVisible(false);
+              setSubmissionModalVisible(true);
+            }}
+          >
+            {t("studentDashboard.homework.detailModal.submitHomework") ||
+              "Submit Homework"}
+          </Button>,
+        ]}
+      >
+        {selectedHomework && (
+          <Descriptions column={1} bordered>
+            <Descriptions.Item
+              label={
+                t("studentDashboard.homework.detailModal.course") || "Course"
+              }
+            >
+              <Tag color="blue">
+                {selectedHomework.course?.name ||
+                  selectedHomework.course?.title ||
+                  "Unknown Course"}
+              </Tag>
+            </Descriptions.Item>
+            <Descriptions.Item
+              label={
+                t("studentDashboard.homework.detailModal.dueDate") || "Due Date"
+              }
+            >
+              <Space>
+                <CalendarOutlined />
+                <Text
+                  type={
+                    moment(selectedHomework.dueDate).isBefore(moment())
+                      ? "danger"
+                      : undefined
+                  }
+                  strong
+                >
+                  {moment(selectedHomework.dueDate).format(
+                    "MMMM DD, YYYY - hh:mm A"
+                  )}
+                </Text>
+                {moment(selectedHomework.dueDate).isBefore(moment()) && (
+                  <Tag color="error">
+                    {t("studentDashboard.homework.status.overdue") || "OVERDUE"}
+                  </Tag>
+                )}
+              </Space>
+            </Descriptions.Item>
+            <Descriptions.Item
+              label={
+                t("studentDashboard.homework.detailModal.description") ||
+                "Description"
+              }
+            >
+              <Paragraph style={{ marginBottom: 0 }}>
+                {selectedHomework.description ||
+                  t("studentDashboard.homework.noDescription") ||
+                  "No description provided"}
+              </Paragraph>
+            </Descriptions.Item>
+            <Descriptions.Item
+              label={
+                t("studentDashboard.homework.detailModal.instructions") ||
+                "Instructions"
+              }
+            >
+              <Paragraph style={{ marginBottom: 0, whiteSpace: "pre-wrap" }}>
+                {selectedHomework.instructions ||
+                  t("studentDashboard.homework.detailModal.noInstructions") ||
+                  "No specific instructions provided"}
+              </Paragraph>
+            </Descriptions.Item>
+            {selectedHomework.attachments &&
+              selectedHomework.attachments.length > 0 && (
+                <Descriptions.Item
+                  label={
+                    t("studentDashboard.homework.detailModal.attachments") ||
+                    "Attachments"
+                  }
+                >
+                  <List
+                    size="small"
+                    dataSource={selectedHomework.attachments}
+                    renderItem={(item) => (
+                      <List.Item>
+                        <a
+                          href={item.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <FileTextOutlined style={{ marginRight: 8 }} />
+                          {item.name}
+                        </a>
+                      </List.Item>
+                    )}
+                  />
+                </Descriptions.Item>
+              )}
+          </Descriptions>
+        )}
+      </Modal>
+
+      {/* Homework Submission Modal */}
+      <Modal
+        title={
+          <Space>
+            <UploadOutlined style={{ color: "#52c41a" }} />
+            {t("studentDashboard.homework.submissionModal.title") ||
+              "Submit Homework"}
+          </Space>
+        }
+        open={submissionModalVisible}
+        onCancel={() => {
+          setSubmissionModalVisible(false);
+          setSelectedHomework(null);
+          setUploadedFile(null);
+          submissionForm.resetFields();
+        }}
+        width={700}
+        footer={null}
+      >
+        {selectedHomework && (
+          <div>
+            {/* Assignment Info */}
+            <Card
+              size="small"
+              style={{
+                marginBottom: 24,
+                background: "#f0f7ff",
+                borderColor: "#1890ff",
+              }}
+            >
+              <Space direction="vertical" style={{ width: "100%" }}>
+                <div>
+                  <Text strong>{selectedHomework.title}</Text>
+                </div>
+                <div>
+                  <Text type="secondary">
+                    <CalendarOutlined style={{ marginRight: 8 }} />
+                    {t("studentDashboard.homework.columns.dueDate") ||
+                      "Due"}:{" "}
+                    {moment(selectedHomework.dueDate).format("MMMM DD, YYYY")}
+                  </Text>
+                </div>
+              </Space>
+            </Card>
+
+            {/* Late Submission Warning */}
+            {selectedHomework &&
+              moment(selectedHomework.dueDate).isBefore(moment()) && (
+                <Alert
+                  message="Late Submission"
+                  description={`This homework was due on ${moment(
+                    selectedHomework.dueDate
+                  ).format(
+                    "MMMM DD, YYYY"
+                  )}. Your submission will be marked as late, which may affect your grade.`}
+                  type="warning"
+                  showIcon
+                  style={{ marginBottom: 24 }}
+                />
+              )}
+
+            {/* Submission Guidelines */}
+            <Alert
+              message={
+                t("studentDashboard.homework.submissionModal.guidelines") ||
+                "Submission Guidelines"
+              }
+              description={
+                t("studentDashboard.homework.submissionModal.guidelinesText") ||
+                "Please ensure your work is complete before submitting. Late submissions may affect your grade."
+              }
+              type="info"
+              showIcon
+              style={{ marginBottom: 24 }}
+            />
+
+            {/* Submission Form */}
+            <Form
+              form={submissionForm}
+              layout="vertical"
+              onFinish={handleHomeworkSubmission}
+            >
+              <Form.Item
+                name="answer"
+                label={
+                  t("studentDashboard.homework.submissionModal.answer") ||
+                  "Your Answer / Solution"
+                }
+                rules={[
+                  {
+                    required: true,
+                    message:
+                      t(
+                        "studentDashboard.homework.submissionModal.answerRequired"
+                      ) || "Please provide your answer",
+                  },
+                ]}
+              >
+                <Input.TextArea
+                  rows={8}
+                  placeholder={
+                    t(
+                      "studentDashboard.homework.submissionModal.answerPlaceholder"
+                    ) || "Type your homework answer here..."
+                  }
+                />
+              </Form.Item>
+
+              <Form.Item
+                label={
+                  t("studentDashboard.homework.submissionModal.attachFile") ||
+                  "Attach File (Optional)"
+                }
+              >
+                <Upload.Dragger
+                  maxCount={1}
+                  beforeUpload={(file) => {
+                    setUploadedFile(file);
+                    return false; // Prevent auto upload
+                  }}
+                  onRemove={() => {
+                    setUploadedFile(null);
+                  }}
+                  accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png"
+                >
+                  <p className="ant-upload-drag-icon">
+                    <InboxOutlined />
+                  </p>
+                  <p className="ant-upload-text">
+                    {t(
+                      "studentDashboard.homework.submissionModal.uploadText"
+                    ) || "Click or drag file to upload"}
+                  </p>
+                  <p className="ant-upload-hint">
+                    {t(
+                      "studentDashboard.homework.submissionModal.uploadHint"
+                    ) || "Supports: PDF, Word, Images (Max 10MB)"}
+                  </p>
+                </Upload.Dragger>
+              </Form.Item>
+
+              <Form.Item style={{ marginBottom: 0 }}>
+                <Space style={{ width: "100%", justifyContent: "flex-end" }}>
+                  <Button
+                    onClick={() => {
+                      setSubmissionModalVisible(false);
+                      setSelectedHomework(null);
+                      setUploadedFile(null);
+                      submissionForm.resetFields();
+                    }}
+                  >
+                    {t("studentDashboard.homework.submissionModal.cancel") ||
+                      "Cancel"}
+                  </Button>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    icon={<UploadOutlined />}
+                    loading={submittingHomework}
+                  >
+                    {t("studentDashboard.homework.submissionModal.submit") ||
+                      "Submit Homework"}
+                  </Button>
+                </Space>
+              </Form.Item>
+            </Form>
+          </div>
+        )}
+      </Modal>
     </>
   );
 };

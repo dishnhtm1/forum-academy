@@ -24,6 +24,8 @@ import {
   Descriptions,
   Empty,
   Grid,
+  Spin,
+  List,
 } from "antd";
 import {
   FileTextOutlined,
@@ -37,13 +39,14 @@ import {
 import { homeworkAPI, courseAPI } from "../../utils/apiClient";
 import { ensureTeacherMyClassesTranslations } from "../../utils/teacherMyClassesTranslations";
 
-const { Title, Text } = Typography;
+const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
 const { TextArea } = Input;
 const { useBreakpoint } = Grid;
 
 const ASSIGNMENTS_CACHE_KEY = "forumAcademy.teacherAssignments.cache";
-const STUDENT_ASSIGNMENT_CACHE_KEY = "forumAcademy.teacherAssignments.studentCache";
+const STUDENT_ASSIGNMENT_CACHE_KEY =
+  "forumAcademy.teacherAssignments.studentCache";
 const DATE_DISPLAY_FORMAT = "MMM DD, YYYY";
 const DUE_SOON_HOURS = 48;
 
@@ -57,7 +60,12 @@ const normalizeId = (entity) => {
   return entity._id || entity.id || entity.value || undefined;
 };
 
-const TeacherAssignmentCenter = ({ t, currentUser, isMobile, history: historyProp }) => {
+const TeacherAssignmentCenter = ({
+  t,
+  currentUser,
+  isMobile,
+  history: historyProp,
+}) => {
   const historyHook = useHistory();
   const history = historyProp || historyHook;
   const { t: i18nT, i18n } = useTranslation();
@@ -79,7 +87,8 @@ const TeacherAssignmentCenter = ({ t, currentUser, isMobile, history: historyPro
     [translationFn]
   );
   const screens = useBreakpoint();
-  const computedIsMobile = typeof isMobile === "boolean" ? isMobile : !screens.md;
+  const computedIsMobile =
+    typeof isMobile === "boolean" ? isMobile : !screens.md;
   const computedIsTablet = screens.md && !screens.lg;
   const hasWindow = typeof window !== "undefined";
 
@@ -93,7 +102,16 @@ const TeacherAssignmentCenter = ({ t, currentUser, isMobile, history: historyPro
   const [editingHomework, setEditingHomework] = useState(null);
   const [viewingHomework, setViewingHomework] = useState(null);
   const [homeworkModalVisible, setHomeworkModalVisible] = useState(false);
-  const [viewHomeworkModalVisible, setViewHomeworkModalVisible] = useState(false);
+  const [viewHomeworkModalVisible, setViewHomeworkModalVisible] =
+    useState(false);
+  const [submissionsModalVisible, setSubmissionsModalVisible] = useState(false);
+  const [selectedHomeworkForSubmissions, setSelectedHomeworkForSubmissions] =
+    useState(null);
+  const [submissions, setSubmissions] = useState([]);
+  const [loadingSubmissions, setLoadingSubmissions] = useState(false);
+  const [gradingModalVisible, setGradingModalVisible] = useState(false);
+  const [selectedSubmission, setSelectedSubmission] = useState(null);
+  const [gradingForm] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const openCreateModal = useCallback(() => {
     setEditingHomework(null);
@@ -192,58 +210,82 @@ const TeacherAssignmentCenter = ({ t, currentUser, isMobile, history: historyPro
     [courseMap, courses]
   );
 
-useEffect(() => {
-  const cachedAssignments = loadCachedAssignments();
-  if (cachedAssignments.length > 0) {
-    setHomeworks(
-      cachedAssignments
-        .map((assignment) => normalizeAssignment(assignment))
-        .filter(Boolean)
-    );
-  }
-}, [loadCachedAssignments, normalizeAssignment]);
+  useEffect(() => {
+    const cachedAssignments = loadCachedAssignments();
+    if (cachedAssignments.length > 0) {
+      setHomeworks(
+        cachedAssignments
+          .map((assignment) => normalizeAssignment(assignment))
+          .filter(Boolean)
+      );
+    }
+  }, [loadCachedAssignments, normalizeAssignment]);
 
-const fetchHomeworks = useCallback(async () => {
-  try {
-    setLoading(true);
-    const response = await homeworkAPI.getAll();
-    const rawHomeworks = response?.homeworks || response?.data || response || [];
-    const homeworkList = Array.isArray(rawHomeworks) ? rawHomeworks : [];
-    const teacherId = normalizeId(currentUser);
-    const teacherHomeworks = homeworkList.filter((homework) => {
-      const homeworkTeacherId =
-        normalizeId(homework.teacher) ||
-        homework.teacherId ||
-        normalizeId(homework.createdBy);
-      return teacherId ? homeworkTeacherId === teacherId : true;
-    });
+  const fetchHomeworks = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await homeworkAPI.getAll();
+
+      console.log("📚 Fetch Homeworks Response:", response);
+
+      const rawHomeworks =
+        response?.homeworks || response?.data || response || [];
+      const homeworkList = Array.isArray(rawHomeworks) ? rawHomeworks : [];
+
+      console.log("📚 Total homeworks from API:", homeworkList.length);
+      console.log("📚 Current User:", currentUser);
+
+      const teacherId = normalizeId(currentUser);
+      console.log("📚 Teacher ID:", teacherId);
+
+      const teacherHomeworks = homeworkList.filter((homework) => {
+        const homeworkTeacherId =
+          normalizeId(homework.teacher) ||
+          homework.teacherId ||
+          normalizeId(homework.createdBy);
+
+        console.log(
+          "📚 Homework:",
+          homework.title,
+          "Teacher ID:",
+          homeworkTeacherId
+        );
+
+        return teacherId ? homeworkTeacherId === teacherId : true;
+      });
+
+      console.log("📚 Filtered teacher homeworks:", teacherHomeworks.length);
+
       const normalizedHomeworks = teacherHomeworks
         .map((homework) => normalizeAssignment(homework))
         .filter(Boolean);
+
+      console.log("📚 Normalized homeworks:", normalizedHomeworks.length);
+
       setHomeworks((previous) => {
         if (normalizedHomeworks.length === 0 && previous.length > 0) {
           return previous;
         }
         return normalizedHomeworks;
       });
-  } catch (error) {
-    console.error("Error fetching assignments:", error);
-    message.error(
-      translateText(
-        "teacherAssignmentCenter.feedback.fetchFailed",
-        "Failed to fetch assignments"
-      )
-    );
-  } finally {
-    setLoading(false);
-  }
-}, [currentUser, normalizeAssignment, translateText]);
+    } catch (error) {
+      console.error("Error fetching assignments:", error);
+      message.error(
+        translateText(
+          "teacherAssignmentCenter.feedback.fetchFailed",
+          "Failed to fetch assignments"
+        )
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [currentUser, normalizeAssignment, translateText]);
 
-useEffect(() => {
-  fetchCourses();
-  fetchHomeworks();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-}, []);
+  useEffect(() => {
+    fetchCourses();
+    fetchHomeworks();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (!hasWindow) {
@@ -255,7 +297,8 @@ useEffect(() => {
         JSON.stringify(homeworks)
       );
       const sanitizedAssignments = homeworks.map((assignment) => {
-        const assignmentId = normalizeId(assignment) || assignment._id || assignment.id;
+        const assignmentId =
+          normalizeId(assignment) || assignment._id || assignment.id;
         const courseId =
           assignment.courseId ||
           normalizeId(assignment.course) ||
@@ -356,14 +399,13 @@ useEffect(() => {
         homework.title?.toLowerCase().includes(searchValue) ||
         homework.description?.toLowerCase().includes(searchValue);
 
-      const assignmentStatus = homework.isActive !== false ? "active" : "inactive";
+      const assignmentStatus =
+        homework.isActive !== false ? "active" : "inactive";
       const matchesStatus =
         statusFilter === "all" || assignmentStatus === statusFilter;
 
       const homeworkCourseId =
-        homework.courseId ||
-        normalizeId(homework.course) ||
-        homework.course_id;
+        homework.courseId || normalizeId(homework.course) || homework.course_id;
       const matchesCourse =
         courseFilter === "all" || homeworkCourseId === courseFilter;
 
@@ -507,6 +549,87 @@ useEffect(() => {
     }
   };
 
+  const handleViewSubmissions = async (homework) => {
+    try {
+      setSelectedHomeworkForSubmissions(homework);
+      setSubmissionsModalVisible(true);
+      setLoadingSubmissions(true);
+
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/homework-submissions/homework/${
+          homework._id || homework.id
+        }`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        setSubmissions(data.submissions || data || []);
+      } else {
+        message.error("Failed to load submissions");
+        setSubmissions([]);
+      }
+    } catch (error) {
+      console.error("Error loading submissions:", error);
+      message.error("Error loading submissions");
+      setSubmissions([]);
+    } finally {
+      setLoadingSubmissions(false);
+    }
+  };
+
+  const handleGradeSubmission = (submission) => {
+    setSelectedSubmission(submission);
+    setGradingModalVisible(true);
+    gradingForm.setFieldsValue({
+      grade: submission.grade || 0,
+      feedback: submission.feedback || "",
+    });
+  };
+
+  const handleSubmitGrade = async (values) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/homework-submissions/${
+          selectedSubmission._id || selectedSubmission.id
+        }/grade`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            grade: values.grade,
+            feedback: values.feedback,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        message.success("Grade submitted successfully!");
+        setGradingModalVisible(false);
+        setSelectedSubmission(null);
+        gradingForm.resetFields();
+        // Refresh submissions
+        handleViewSubmissions(selectedHomeworkForSubmissions);
+      } else {
+        message.error("Failed to submit grade");
+      }
+    } catch (error) {
+      console.error("Error submitting grade:", error);
+      message.error("Error submitting grade");
+    }
+  };
+
   const renderDueDateTag = (dueDate) => {
     if (!dueDate) {
       return (
@@ -533,10 +656,7 @@ useEffect(() => {
           "Overdue"
         )
       : isDueSoon
-      ? translateText(
-          "teacherAssignmentCenter.table.dueDate.soon",
-          "Due soon"
-        )
+      ? translateText("teacherAssignmentCenter.table.dueDate.soon", "Due soon")
       : null;
 
     return (
@@ -641,6 +761,19 @@ useEffect(() => {
       key: "actions",
       render: (_, record) => (
         <Space wrap>
+          <Tooltip
+            title={translateText(
+              "teacherAssignmentCenter.actions.viewSubmissions",
+              "View Submissions"
+            )}
+          >
+            <Button
+              icon={<FileTextOutlined />}
+              size="small"
+              type="primary"
+              onClick={() => handleViewSubmissions(record)}
+            />
+          </Tooltip>
           <Tooltip
             title={translateText(
               "teacherAssignmentCenter.actions.view",
@@ -820,7 +953,11 @@ useEffect(() => {
         destroyOnHidden
         maskClosable={false}
       >
-        <Form form={homeworkForm} layout="vertical" onFinish={handleCreateHomework}>
+        <Form
+          form={homeworkForm}
+          layout="vertical"
+          onFinish={handleCreateHomework}
+        >
           <Form.Item
             name="courseId"
             label={translateText(
@@ -1040,7 +1177,8 @@ useEffect(() => {
             >
               {(() => {
                 const courseId =
-                  normalizeId(viewingHomework.course) || viewingHomework.courseId;
+                  normalizeId(viewingHomework.course) ||
+                  viewingHomework.courseId;
                 const course =
                   courseId && courseMap[courseId]
                     ? courseMap[courseId]
@@ -1111,6 +1249,360 @@ useEffect(() => {
                 )}
             </Descriptions.Item>
           </Descriptions>
+        )}
+      </Modal>
+
+      {/* Submissions Modal */}
+      <Modal
+        title={
+          <Space>
+            <FileTextOutlined style={{ color: "#1890ff" }} />
+            {translateText(
+              "teacherAssignmentCenter.submissions.title",
+              "Student Submissions"
+            )}
+            {selectedHomeworkForSubmissions &&
+              ` - ${selectedHomeworkForSubmissions.title}`}
+          </Space>
+        }
+        open={submissionsModalVisible}
+        onCancel={() => {
+          setSubmissionsModalVisible(false);
+          setSelectedHomeworkForSubmissions(null);
+          setSubmissions([]);
+        }}
+        width={1000}
+        footer={[
+          <Button
+            key="close"
+            onClick={() => {
+              setSubmissionsModalVisible(false);
+              setSelectedHomeworkForSubmissions(null);
+              setSubmissions([]);
+            }}
+          >
+            {translateText("common.close", "Close")}
+          </Button>,
+        ]}
+      >
+        {loadingSubmissions ? (
+          <div style={{ textAlign: "center", padding: "40px 0" }}>
+            <Spin size="large" />
+          </div>
+        ) : submissions.length === 0 ? (
+          <Empty
+            description={translateText(
+              "teacherAssignmentCenter.submissions.noSubmissions",
+              "No submissions yet"
+            )}
+          />
+        ) : (
+          <Table
+            dataSource={submissions}
+            rowKey={(record) => record._id || record.id}
+            pagination={{ pageSize: 10 }}
+            scroll={{ x: 800 }}
+          >
+            <Table.Column
+              title={translateText(
+                "teacherAssignmentCenter.submissions.student",
+                "Student"
+              )}
+              key="student"
+              render={(_, record) => (
+                <div>
+                  <Text strong>
+                    {record.student?.name ||
+                      `${record.student?.firstName} ${record.student?.lastName}`}
+                  </Text>
+                  <br />
+                  <Text type="secondary" style={{ fontSize: 12 }}>
+                    {record.student?.email}
+                  </Text>
+                </div>
+              )}
+            />
+            <Table.Column
+              title={translateText(
+                "teacherAssignmentCenter.submissions.submittedAt",
+                "Submitted"
+              )}
+              dataIndex="submittedAt"
+              key="submittedAt"
+              render={(date, record) => (
+                <div>
+                  <div>{moment(date).format("MMM DD, YYYY HH:mm")}</div>
+                  {record.isLate && (
+                    <Tag color="warning" style={{ marginTop: 4 }}>
+                      LATE ({record.daysLate} day
+                      {record.daysLate > 1 ? "s" : ""})
+                    </Tag>
+                  )}
+                </div>
+              )}
+            />
+            <Table.Column
+              title={translateText(
+                "teacherAssignmentCenter.submissions.content",
+                "Answer"
+              )}
+              dataIndex="submissionText"
+              key="submissionText"
+              ellipsis
+              render={(text) => (
+                <Paragraph
+                  ellipsis={{ rows: 2, expandable: true }}
+                  style={{ marginBottom: 0 }}
+                >
+                  {text || "No content"}
+                </Paragraph>
+              )}
+            />
+            <Table.Column
+              title={translateText(
+                "teacherAssignmentCenter.submissions.attachment",
+                "File"
+              )}
+              key="attachment"
+              render={(_, record) =>
+                record.attachments && record.attachments.length > 0 ? (
+                  <Button
+                    type="link"
+                    icon={<FileTextOutlined />}
+                    href={`${process.env.REACT_APP_API_URL}${record.attachments[0].filePath}`}
+                    target="_blank"
+                  >
+                    {translateText("common.view", "View")}
+                  </Button>
+                ) : (
+                  <Text type="secondary">-</Text>
+                )
+              }
+            />
+            <Table.Column
+              title={translateText(
+                "teacherAssignmentCenter.submissions.grade",
+                "Grade"
+              )}
+              dataIndex="grade"
+              key="grade"
+              render={(grade, record) => {
+                if (grade !== null && grade !== undefined) {
+                  const maxPoints =
+                    selectedHomeworkForSubmissions?.maxPoints || 100;
+                  const percentage = (grade / maxPoints) * 100;
+                  return (
+                    <Tag
+                      color={
+                        percentage >= 80
+                          ? "green"
+                          : percentage >= 60
+                          ? "orange"
+                          : "red"
+                      }
+                    >
+                      {grade}/{maxPoints}
+                    </Tag>
+                  );
+                }
+                return (
+                  <Tag color="default">
+                    {translateText(
+                      "teacherAssignmentCenter.submissions.notGraded",
+                      "Not graded"
+                    )}
+                  </Tag>
+                );
+              }}
+            />
+            <Table.Column
+              title={translateText(
+                "teacherAssignmentCenter.submissions.actions",
+                "Actions"
+              )}
+              key="actions"
+              render={(_, record) => (
+                <Button
+                  type="primary"
+                  size="small"
+                  onClick={() => handleGradeSubmission(record)}
+                >
+                  {record.grade !== null && record.grade !== undefined
+                    ? translateText(
+                        "teacherAssignmentCenter.submissions.updateGrade",
+                        "Update Grade"
+                      )
+                    : translateText(
+                        "teacherAssignmentCenter.submissions.grade",
+                        "Grade"
+                      )}
+                </Button>
+              )}
+            />
+          </Table>
+        )}
+      </Modal>
+
+      {/* Grading Modal */}
+      <Modal
+        title={translateText(
+          "teacherAssignmentCenter.grading.title",
+          "Grade Submission"
+        )}
+        open={gradingModalVisible}
+        onCancel={() => {
+          setGradingModalVisible(false);
+          setSelectedSubmission(null);
+          gradingForm.resetFields();
+        }}
+        footer={null}
+        width={600}
+      >
+        {selectedSubmission && (
+          <div>
+            <Card
+              size="small"
+              style={{
+                marginBottom: 24,
+                background: selectedSubmission.isLate ? "#fff7e6" : "#f0f7ff",
+                borderColor: selectedSubmission.isLate ? "#faad14" : "#1890ff",
+              }}
+            >
+              <Space direction="vertical" style={{ width: "100%" }}>
+                <div>
+                  <Text strong>
+                    {selectedSubmission.student?.name ||
+                      `${selectedSubmission.student?.firstName} ${selectedSubmission.student?.lastName}`}
+                  </Text>
+                  {selectedSubmission.isLate && (
+                    <Tag color="warning" style={{ marginLeft: 8 }}>
+                      LATE SUBMISSION
+                    </Tag>
+                  )}
+                </div>
+                <div>
+                  <Text type="secondary">
+                    {translateText(
+                      "teacherAssignmentCenter.grading.submitted",
+                      "Submitted"
+                    )}
+                    :{" "}
+                    {moment(selectedSubmission.submittedAt).format(
+                      "MMM DD, YYYY HH:mm"
+                    )}
+                  </Text>
+                </div>
+                {selectedSubmission.isLate && (
+                  <div>
+                    <Text type="warning" strong>
+                      Submitted {selectedSubmission.daysLate} day
+                      {selectedSubmission.daysLate > 1 ? "s" : ""} late
+                    </Text>
+                  </div>
+                )}
+              </Space>
+            </Card>
+
+            <Descriptions column={1} bordered style={{ marginBottom: 24 }}>
+              <Descriptions.Item
+                label={translateText(
+                  "teacherAssignmentCenter.grading.answer",
+                  "Answer"
+                )}
+              >
+                <Paragraph style={{ marginBottom: 0, whiteSpace: "pre-wrap" }}>
+                  {selectedSubmission.submissionText || "No content"}
+                </Paragraph>
+              </Descriptions.Item>
+              {selectedSubmission.attachments &&
+                selectedSubmission.attachments.length > 0 && (
+                  <Descriptions.Item
+                    label={translateText(
+                      "teacherAssignmentCenter.grading.attachment",
+                      "Attachment"
+                    )}
+                  >
+                    <Button
+                      type="link"
+                      icon={<FileTextOutlined />}
+                      href={`${process.env.REACT_APP_API_URL}${selectedSubmission.attachments[0].filePath}`}
+                      target="_blank"
+                    >
+                      {selectedSubmission.attachments[0].fileName ||
+                        translateText("common.viewFile", "View File")}
+                    </Button>
+                  </Descriptions.Item>
+                )}
+            </Descriptions>
+
+            <Form
+              form={gradingForm}
+              layout="vertical"
+              onFinish={handleSubmitGrade}
+            >
+              <Form.Item
+                name="grade"
+                label={translateText(
+                  "teacherAssignmentCenter.grading.gradeLabel",
+                  "Grade"
+                )}
+                rules={[
+                  {
+                    required: true,
+                    message: translateText(
+                      "teacherAssignmentCenter.grading.gradeRequired",
+                      "Please enter a grade"
+                    ),
+                  },
+                ]}
+              >
+                <InputNumber
+                  min={0}
+                  max={selectedHomeworkForSubmissions?.maxPoints || 100}
+                  style={{ width: "100%" }}
+                  addonAfter={`/ ${
+                    selectedHomeworkForSubmissions?.maxPoints || 100
+                  }`}
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="feedback"
+                label={translateText(
+                  "teacherAssignmentCenter.grading.feedback",
+                  "Feedback"
+                )}
+              >
+                <TextArea
+                  rows={4}
+                  placeholder={translateText(
+                    "teacherAssignmentCenter.grading.feedbackPlaceholder",
+                    "Provide feedback to the student..."
+                  )}
+                />
+              </Form.Item>
+
+              <Form.Item style={{ marginBottom: 0 }}>
+                <Space style={{ width: "100%", justifyContent: "flex-end" }}>
+                  <Button
+                    onClick={() => {
+                      setGradingModalVisible(false);
+                      setSelectedSubmission(null);
+                      gradingForm.resetFields();
+                    }}
+                  >
+                    {translateText("common.cancel", "Cancel")}
+                  </Button>
+                  <Button type="primary" htmlType="submit">
+                    {translateText(
+                      "teacherAssignmentCenter.grading.submit",
+                      "Submit Grade"
+                    )}
+                  </Button>
+                </Space>
+              </Form.Item>
+            </Form>
+          </div>
         )}
       </Modal>
     </div>
