@@ -25,6 +25,7 @@ import {
   Empty,
   Divider,
   Grid,
+  Radio,
 } from "antd";
 import {
   QuestionCircleOutlined,
@@ -75,7 +76,12 @@ const { Option } = Select;
 const { TextArea } = Input;
 const { useBreakpoint } = Grid;
 
-const TeacherQuizManagement = ({ t, currentUser, isMobile, history: historyProp }) => {
+const TeacherQuizManagement = ({
+  t,
+  currentUser,
+  isMobile,
+  history: historyProp,
+}) => {
   const historyHook = useHistory();
   const history = historyProp || historyHook;
   const { t: i18nT, i18n } = useTranslation();
@@ -122,7 +128,8 @@ const TeacherQuizManagement = ({ t, currentUser, isMobile, history: historyProp 
   const [viewQuizModalVisible, setViewQuizModalVisible] = useState(false);
   const [questionModalVisible, setQuestionModalVisible] = useState(false);
   const [assignmentModalVisible, setAssignmentModalVisible] = useState(false);
-  const [selectedQuizForAssignment, setSelectedQuizForAssignment] = useState(null);
+  const [selectedQuizForAssignment, setSelectedQuizForAssignment] =
+    useState(null);
   const [assignmentCourses, setAssignmentCourses] = useState([]);
   const [assigning, setAssigning] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState(null);
@@ -308,7 +315,8 @@ const TeacherQuizManagement = ({ t, currentUser, isMobile, history: historyProp 
 
       const quizCourseId = normalizeId(quiz.course) || quiz.courseId;
       const matchesCourse =
-        courseFilter === "all" || (quizCourseId && quizCourseId === courseFilter);
+        courseFilter === "all" ||
+        (quizCourseId && quizCourseId === courseFilter);
 
       const isAssigned =
         assignment &&
@@ -388,10 +396,16 @@ const TeacherQuizManagement = ({ t, currentUser, isMobile, history: historyProp 
 
   const fetchCourses = useCallback(async () => {
     try {
+      console.log("Fetching courses...");
       const response = await courseAPI.getAll();
+      console.log("Courses API response:", response);
+
       const rawCourses = response?.courses || response?.data || response || [];
+      console.log("Raw courses:", rawCourses);
+
       const courseList = Array.isArray(rawCourses) ? rawCourses : [];
       const teacherId = normalizeId(currentUser);
+
       const teacherCourses = courseList.filter((course) => {
         const courseTeacherId =
           normalizeId(course.teacher) ||
@@ -400,11 +414,29 @@ const TeacherQuizManagement = ({ t, currentUser, isMobile, history: historyProp 
           course.ownerId;
         return teacherId ? courseTeacherId === teacherId : true;
       });
-      setCourses(teacherId ? teacherCourses : courseList);
+
+      const finalCourses = teacherId ? teacherCourses : courseList;
+      console.log("Final courses to display:", finalCourses);
+      setCourses(finalCourses);
+
+      if (finalCourses.length === 0) {
+        message.warning(
+          translateText(
+            "teacherQuizManagement.noCourses",
+            "No courses found. Please create a course first."
+          )
+        );
+      }
     } catch (error) {
       console.error("Error fetching courses:", error);
+      message.error(
+        translateText(
+          "teacherQuizManagement.fetchCoursesError",
+          "Failed to load courses"
+        )
+      );
     }
-  }, [currentUser]);
+  }, [currentUser, translateText]);
 
   const fetchQuizzes = useCallback(async () => {
     try {
@@ -437,7 +469,7 @@ const TeacherQuizManagement = ({ t, currentUser, isMobile, history: historyProp 
 
   const fetchStudents = useCallback(async () => {
     try {
-      const response = await userAPI.getByRole
+      const response = (await userAPI.getByRole)
         ? await userAPI.getByRole("student")
         : await userAPI.getAll();
       const rawStudents = response?.users || response?.data || response || [];
@@ -625,7 +657,10 @@ const TeacherQuizManagement = ({ t, currentUser, isMobile, history: historyProp 
           return {
             id,
             title:
-              course?.title || course?.name || course?.code || translateText(
+              course?.title ||
+              course?.name ||
+              course?.code ||
+              translateText(
                 "teacherQuizManagement.assignment.unknownCourse",
                 "Course"
               ),
@@ -719,39 +754,45 @@ const TeacherQuizManagement = ({ t, currentUser, isMobile, history: historyProp 
         return;
       }
 
-      const questionType = values.type || "multiple-choice";
-      const optionsInput = values.options;
-      let parsedOptions = [];
+      // Collect individual option fields
+      const options = [
+        values.option1,
+        values.option2,
+        values.option3,
+        values.option4,
+      ].filter(Boolean); // Remove any empty options
 
-      if (questionType === "multiple-choice") {
-        if (Array.isArray(optionsInput)) {
-          parsedOptions = optionsInput
-            .map((option) =>
-              typeof option === "string"
-                ? option.trim()
-                : typeof option === "object"
-                ? option?.label || option?.value
-                : ""
-            )
-            .filter(Boolean);
-        } else if (typeof optionsInput === "string") {
-          parsedOptions = optionsInput
-            .split(",")
-            .map((option) => option.trim())
-            .filter(Boolean);
-        }
-      }
+      // Map A/B/C/D to the actual option text
+      const correctAnswerMap = {
+        A: values.option1,
+        B: values.option2,
+        C: values.option3,
+        D: values.option4,
+      };
+
+      const correctAnswerText =
+        correctAnswerMap[values.correctAnswer] || values.correctAnswer;
+
+      // Convert to the format expected by backend: array of {text, isCorrect}
+      const formattedOptions = options.map((optionText) => ({
+        text: optionText.trim(),
+        isCorrect: optionText.trim() === correctAnswerText.trim(),
+      }));
 
       const questionData = {
         question: values.question,
-        type: questionType,
-        options: questionType === "multiple-choice" ? parsedOptions : [],
-        correctAnswer: values.correctAnswer,
+        type: "multiple_choice", // Always multiple choice
+        options: formattedOptions,
+        correctAnswer: correctAnswerText, // Use the actual text, not A/B/C/D
         points: values.points || 1,
       };
 
       if (editingQuestion) {
-        await quizAPI.updateQuestion(viewingQuiz._id, editingQuestion._id || editingQuestion.id, questionData);
+        await quizAPI.updateQuestion(
+          viewingQuiz._id,
+          editingQuestion._id || editingQuestion.id,
+          questionData
+        );
         message.success(
           translateText(
             "teacherQuizManagement.feedback.questionUpdated",
@@ -798,13 +839,40 @@ const TeacherQuizManagement = ({ t, currentUser, isMobile, history: historyProp 
 
   const handleEditQuestion = (question) => {
     setEditingQuestion(question);
+
+    // Extract options from the question
+    let option1 = "",
+      option2 = "",
+      option3 = "",
+      option4 = "";
+
+    if (Array.isArray(question.options)) {
+      // Handle both string array and object array formats
+      const optionTexts = question.options.map((opt) =>
+        typeof opt === "string" ? opt : opt.text || opt.value || ""
+      );
+
+      option1 = optionTexts[0] || "";
+      option2 = optionTexts[1] || "";
+      option3 = optionTexts[2] || "";
+      option4 = optionTexts[3] || "";
+    }
+
+    // Convert correct answer text to A/B/C/D
+    let correctAnswerLetter = question.correctAnswer;
+    if (question.correctAnswer === option1) correctAnswerLetter = "A";
+    else if (question.correctAnswer === option2) correctAnswerLetter = "B";
+    else if (question.correctAnswer === option3) correctAnswerLetter = "C";
+    else if (question.correctAnswer === option4) correctAnswerLetter = "D";
+
     questionForm.setFieldsValue({
       question: question.question,
-      type: question.type || "multiple-choice",
-      options: Array.isArray(question.options)
-        ? question.options.join(", ")
-        : question.options || [],
-      correctAnswer: question.correctAnswer,
+      type: "multiple_choice",
+      option1,
+      option2,
+      option3,
+      option4,
+      correctAnswer: correctAnswerLetter,
       points: question.points || 1,
     });
     setQuestionModalVisible(true);
@@ -952,9 +1020,7 @@ const TeacherQuizManagement = ({ t, currentUser, isMobile, history: historyProp 
             {formattedDueDate && (
               <Text
                 type={
-                  formattedDueDate.isBefore(moment())
-                    ? "danger"
-                    : "secondary"
+                  formattedDueDate.isBefore(moment()) ? "danger" : "secondary"
                 }
                 style={{ fontSize: 12 }}
               >
@@ -996,10 +1062,7 @@ const TeacherQuizManagement = ({ t, currentUser, isMobile, history: historyProp 
       render: (_, record) => (
         <Space wrap>
           <Tooltip
-            title={translateText(
-              "teacherQuizManagement.actions.view",
-              "View"
-            )}
+            title={translateText("teacherQuizManagement.actions.view", "View")}
           >
             <Button
               icon={<EyeOutlined />}
@@ -1008,10 +1071,7 @@ const TeacherQuizManagement = ({ t, currentUser, isMobile, history: historyProp 
             />
           </Tooltip>
           <Tooltip
-            title={translateText(
-              "teacherQuizManagement.actions.edit",
-              "Edit"
-            )}
+            title={translateText("teacherQuizManagement.actions.edit", "Edit")}
           >
             <Button
               icon={<EditOutlined />}
@@ -1062,7 +1122,9 @@ const TeacherQuizManagement = ({ t, currentUser, isMobile, history: historyProp 
           style={{ width: "100%" }}
         >
           <Space align="start" size={16} wrap>
-            <QuestionCircleOutlined style={{ fontSize: 28, color: "#1890ff" }} />
+            <QuestionCircleOutlined
+              style={{ fontSize: 28, color: "#1890ff" }}
+            />
             <Space direction="vertical" size={4}>
               <Title level={2} style={{ margin: 0 }}>
                 {translateText(
@@ -1136,7 +1198,10 @@ const TeacherQuizManagement = ({ t, currentUser, isMobile, history: historyProp 
             <Button
               type="primary"
               icon={<PlusOutlined />}
-              style={{ width: computedIsMobile ? "100%" : "auto", marginLeft: computedIsMobile ? 0 : "auto" }}
+              style={{
+                width: computedIsMobile ? "100%" : "auto",
+                marginLeft: computedIsMobile ? 0 : "auto",
+              }}
               onClick={() => {
                 setEditingQuiz(null);
                 quizForm.resetFields();
@@ -1195,10 +1260,7 @@ const TeacherQuizManagement = ({ t, currentUser, isMobile, history: historyProp 
         <Form form={quizForm} layout="vertical" onFinish={handleCreateQuiz}>
           <Form.Item
             name="courseId"
-            label={translateText(
-              "teacherQuizManagement.form.course",
-              "Course"
-            )}
+            label={translateText("teacherQuizManagement.form.course", "Course")}
             rules={[
               {
                 required: true,
@@ -1313,10 +1375,7 @@ const TeacherQuizManagement = ({ t, currentUser, isMobile, history: historyProp 
           </Row>
           <Form.Item
             name="isActive"
-            label={translateText(
-              "teacherQuizManagement.form.status",
-              "Status"
-            )}
+            label={translateText("teacherQuizManagement.form.status", "Status")}
             valuePropName="checked"
             initialValue={true}
           >
@@ -1363,7 +1422,11 @@ const TeacherQuizManagement = ({ t, currentUser, isMobile, history: historyProp 
         width={computedIsTablet ? 640 : 600}
         destroyOnHidden
       >
-        <Form form={assignmentForm} layout="vertical" onFinish={handleAssignQuiz}>
+        <Form
+          form={assignmentForm}
+          layout="vertical"
+          onFinish={handleAssignQuiz}
+        >
           <Form.Item
             name="assignedCourses"
             label={translateText(
@@ -1501,10 +1564,7 @@ const TeacherQuizManagement = ({ t, currentUser, isMobile, history: historyProp 
             icon={<TeamOutlined />}
             onClick={() => viewingQuiz && openAssignmentModal(viewingQuiz)}
           >
-            {translateText(
-              "teacherQuizManagement.actions.assign",
-              "Assign"
-            )}
+            {translateText("teacherQuizManagement.actions.assign", "Assign")}
           </Button>,
           <Button
             key="add"
@@ -1521,10 +1581,7 @@ const TeacherQuizManagement = ({ t, currentUser, isMobile, history: historyProp 
               "Add question"
             )}
           </Button>,
-          <Button
-            key="close"
-            onClick={() => setViewQuizModalVisible(false)}
-          >
+          <Button key="close" onClick={() => setViewQuizModalVisible(false)}>
             {translateText("common.close", "Close")}
           </Button>,
         ]}
@@ -1580,10 +1637,7 @@ const TeacherQuizManagement = ({ t, currentUser, isMobile, history: historyProp 
                 )}
               >
                 {viewingQuiz.duration}{" "}
-                {translateText(
-                  "teacherQuizManagement.view.minutes",
-                  "minutes"
-                )}
+                {translateText("teacherQuizManagement.view.minutes", "minutes")}
               </Descriptions.Item>
               <Descriptions.Item
                 label={translateText(
@@ -1629,32 +1683,33 @@ const TeacherQuizManagement = ({ t, currentUser, isMobile, history: historyProp 
                 {viewingQuiz.assignment ? (
                   <Space direction="vertical" size={6}>
                     <Space wrap>
-                      {(viewingQuiz.assignment.courseDetails ||
+                      {(
+                        viewingQuiz.assignment.courseDetails ||
                         viewingQuiz.assignment.courseIds ||
                         []
-                      )
-                        .map((course) => {
-                          const courseId = normalizeId(course);
-                          const courseData =
-                            (courseId && courseMap[courseId]) || course;
-                          const label =
-                            courseData?.title ||
-                            courseData?.name ||
-                            courseData?.code ||
-                            translateText(
-                              "teacherQuizManagement.table.courseUnknown",
-                              "Unknown course"
-                            );
-                          return (
-                            <Tag key={`course-${courseId || label}`} color="gold">
-                              <TeamOutlined style={{ marginRight: 4 }} />
-                              {label}
-                            </Tag>
+                      ).map((course) => {
+                        const courseId = normalizeId(course);
+                        const courseData =
+                          (courseId && courseMap[courseId]) || course;
+                        const label =
+                          courseData?.title ||
+                          courseData?.name ||
+                          courseData?.code ||
+                          translateText(
+                            "teacherQuizManagement.table.courseUnknown",
+                            "Unknown course"
                           );
-                        })}
+                        return (
+                          <Tag key={`course-${courseId || label}`} color="gold">
+                            <TeamOutlined style={{ marginRight: 4 }} />
+                            {label}
+                          </Tag>
+                        );
+                      })}
                     </Space>
                     <Space wrap>
-                      {(viewingQuiz.assignment.studentDetails ||
+                      {(
+                        viewingQuiz.assignment.studentDetails ||
                         viewingQuiz.assignment.studentIds ||
                         []
                       ).map((student) => {
@@ -1663,7 +1718,10 @@ const TeacherQuizManagement = ({ t, currentUser, isMobile, history: historyProp 
                           (studentId && studentMap[studentId]) || student;
                         const name = getDisplayName(studentData);
                         return (
-                          <Tag key={`student-${studentId || name}`} color="purple">
+                          <Tag
+                            key={`student-${studentId || name}`}
+                            color="purple"
+                          >
                             <UserOutlined style={{ marginRight: 4 }} />
                             {name}
                           </Tag>
@@ -1673,7 +1731,9 @@ const TeacherQuizManagement = ({ t, currentUser, isMobile, history: historyProp 
                     {viewingQuiz.assignment.dueDate && (
                       <Text
                         type={
-                          moment(viewingQuiz.assignment.dueDate).isBefore(moment())
+                          moment(viewingQuiz.assignment.dueDate).isBefore(
+                            moment()
+                          )
                             ? "danger"
                             : "secondary"
                         }
@@ -1737,7 +1797,11 @@ const TeacherQuizManagement = ({ t, currentUser, isMobile, history: historyProp 
                       </Popconfirm>,
                     ]}
                   >
-                    <Space direction="vertical" size={6} style={{ width: "100%" }}>
+                    <Space
+                      direction="vertical"
+                      size={6}
+                      style={{ width: "100%" }}
+                    >
                       <Text strong>
                         {translateText(
                           "teacherQuizManagement.questions.label",
@@ -1801,7 +1865,11 @@ const TeacherQuizManagement = ({ t, currentUser, isMobile, history: historyProp 
         width={computedIsTablet ? 640 : 600}
         destroyOnHidden
       >
-        <Form form={questionForm} layout="vertical" onFinish={handleAddQuestion}>
+        <Form
+          form={questionForm}
+          layout="vertical"
+          onFinish={handleAddQuestion}
+        >
           <Form.Item
             name="question"
             label={translateText(
@@ -1826,50 +1894,132 @@ const TeacherQuizManagement = ({ t, currentUser, isMobile, history: historyProp 
               )}
             />
           </Form.Item>
+
           <Form.Item
             name="type"
             label={translateText(
               "teacherQuizManagement.questions.typeLabel",
               "Question type"
             )}
-            initialValue="multiple-choice"
+            initialValue="multiple_choice"
           >
-            <Select>
-              <Option value="multiple-choice">
+            <Select disabled>
+              <Option value="multiple_choice">
                 {translateText(
                   "teacherQuizManagement.questions.types.multipleChoice",
                   "Multiple choice"
                 )}
               </Option>
-              <Option value="true-false">
-                {translateText(
-                  "teacherQuizManagement.questions.types.trueFalse",
-                  "True / False"
-                )}
-              </Option>
-              <Option value="short-answer">
-                {translateText(
-                  "teacherQuizManagement.questions.types.shortAnswer",
-                  "Short answer"
-                )}
-              </Option>
             </Select>
           </Form.Item>
-          <Form.Item
-            name="options"
-            label={translateText(
-              "teacherQuizManagement.questions.optionsLabel",
-              "Options (comma separated)"
-            )}
-            hidden={questionTypeWatch && questionTypeWatch !== "multiple-choice"}
-          >
-            <Input
-              placeholder={translateText(
-                "teacherQuizManagement.questions.optionsPlaceholder",
-                "Option 1, Option 2, Option 3"
-              )}
-            />
-          </Form.Item>
+
+          {/* Individual Option Fields */}
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="option1"
+                label={translateText(
+                  "teacherQuizManagement.questions.option1",
+                  "Option 1"
+                )}
+                rules={[
+                  {
+                    required: true,
+                    message: translateText(
+                      "teacherQuizManagement.questions.optionRequired",
+                      "Required"
+                    ),
+                  },
+                ]}
+              >
+                <Input
+                  placeholder={translateText(
+                    "teacherQuizManagement.questions.optionPlaceholder",
+                    "Enter option"
+                  )}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="option2"
+                label={translateText(
+                  "teacherQuizManagement.questions.option2",
+                  "Option 2"
+                )}
+                rules={[
+                  {
+                    required: true,
+                    message: translateText(
+                      "teacherQuizManagement.questions.optionRequired",
+                      "Required"
+                    ),
+                  },
+                ]}
+              >
+                <Input
+                  placeholder={translateText(
+                    "teacherQuizManagement.questions.optionPlaceholder",
+                    "Enter option"
+                  )}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="option3"
+                label={translateText(
+                  "teacherQuizManagement.questions.option3",
+                  "Option 3"
+                )}
+                rules={[
+                  {
+                    required: true,
+                    message: translateText(
+                      "teacherQuizManagement.questions.optionRequired",
+                      "Required"
+                    ),
+                  },
+                ]}
+              >
+                <Input
+                  placeholder={translateText(
+                    "teacherQuizManagement.questions.optionPlaceholder",
+                    "Enter option"
+                  )}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="option4"
+                label={translateText(
+                  "teacherQuizManagement.questions.option4",
+                  "Option 4"
+                )}
+                rules={[
+                  {
+                    required: true,
+                    message: translateText(
+                      "teacherQuizManagement.questions.optionRequired",
+                      "Required"
+                    ),
+                  },
+                ]}
+              >
+                <Input
+                  placeholder={translateText(
+                    "teacherQuizManagement.questions.optionPlaceholder",
+                    "Enter option"
+                  )}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+
           <Form.Item
             name="correctAnswer"
             label={translateText(
@@ -1881,18 +2031,53 @@ const TeacherQuizManagement = ({ t, currentUser, isMobile, history: historyProp 
                 required: true,
                 message: translateText(
                   "teacherQuizManagement.questions.correctAnswerRequired",
-                  "Please provide the correct answer"
+                  "Please select the correct answer"
                 ),
               },
             ]}
           >
-            <Input
-              placeholder={translateText(
-                "teacherQuizManagement.questions.correctAnswerPlaceholder",
-                "Type the correct answer"
-              )}
-            />
+            <Radio.Group style={{ width: "100%" }}>
+              <Space direction="horizontal" size="large" wrap>
+                <Radio value="A" style={{ fontSize: "15px" }}>
+                  <Text strong>A</Text> -{" "}
+                  <Text type="secondary">
+                    {translateText(
+                      "teacherQuizManagement.questions.optionALabel",
+                      "Option 1"
+                    )}
+                  </Text>
+                </Radio>
+                <Radio value="B" style={{ fontSize: "15px" }}>
+                  <Text strong>B</Text> -{" "}
+                  <Text type="secondary">
+                    {translateText(
+                      "teacherQuizManagement.questions.optionBLabel",
+                      "Option 2"
+                    )}
+                  </Text>
+                </Radio>
+                <Radio value="C" style={{ fontSize: "15px" }}>
+                  <Text strong>C</Text> -{" "}
+                  <Text type="secondary">
+                    {translateText(
+                      "teacherQuizManagement.questions.optionCLabel",
+                      "Option 3"
+                    )}
+                  </Text>
+                </Radio>
+                <Radio value="D" style={{ fontSize: "15px" }}>
+                  <Text strong>D</Text> -{" "}
+                  <Text type="secondary">
+                    {translateText(
+                      "teacherQuizManagement.questions.optionDLabel",
+                      "Option 4"
+                    )}
+                  </Text>
+                </Radio>
+              </Space>
+            </Radio.Group>
           </Form.Item>
+
           <Form.Item
             name="points"
             label={translateText(
@@ -1903,6 +2088,7 @@ const TeacherQuizManagement = ({ t, currentUser, isMobile, history: historyProp 
           >
             <InputNumber min={1} style={{ width: "100%" }} />
           </Form.Item>
+
           <Form.Item>
             <Space>
               <Button type="primary" htmlType="submit">
@@ -1911,10 +2097,7 @@ const TeacherQuizManagement = ({ t, currentUser, isMobile, history: historyProp 
                       "teacherQuizManagement.actions.update",
                       "Update"
                     )
-                  : translateText(
-                      "teacherQuizManagement.actions.add",
-                      "Add"
-                    )}
+                  : translateText("teacherQuizManagement.actions.add", "Add")}
               </Button>
               <Button onClick={() => setQuestionModalVisible(false)}>
                 {translateText("common.cancel", "Cancel")}

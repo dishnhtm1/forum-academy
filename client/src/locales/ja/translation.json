@@ -5076,6 +5076,24 @@
     "quizzes": {
       "title": "練習クイズ",
       "subtitle": "インタラクティブなクイズで知識をテストしましょう",
+      "stats": {
+        "total": "総クイズ数",
+        "completed": "完了",
+        "pending": "未完了",
+        "overdue": "期限切れ"
+      },
+      "search": "クイズタイトルまたはコース名で検索...",
+      "filter": {
+        "all": "すべてのクイズ",
+        "pending": "未完了",
+        "dueSoon": "期限間近",
+        "overdue": "期限切れ",
+        "completed": "完了済み"
+      },
+      "clearFilters": "フィルターをクリア",
+      "noResults": "検索条件に一致するクイズはありません。",
+      "items": "件",
+      "of": "の",
       "columns": {
         "title": "クイズタイトル",
         "questions": "問題数",
@@ -5083,6 +5101,8 @@
         "passingScore": "合格点",
         "attempts": "受験回数",
         "availableUntil": "受験期限",
+        "dueDate": "提出期限",
+        "status": "ステータス",
         "actions": "アクション"
       },
       "takeQuiz": "クイズを受ける",
@@ -5090,6 +5110,7 @@
       "attempts": "回",
       "noDeadline": "期限なし",
       "noQuizzes": "利用可能なクイズはありません",
+      "completed": "完了済み",
       "modal": {
         "title": "クイズ詳細",
         "course": "コース",
@@ -5492,6 +5513,33 @@
       "students": "学生",
       "teachers": "教師",
       "admins": "管理者"
+    }
+  },
+  "teacherQuizManagement": {
+    "questions": {
+      "addTitle": "質問を追加",
+      "editTitle": "質問を編集",
+      "questionLabel": "質問",
+      "questionRequired": "質問を入力してください",
+      "questionPlaceholder": "質問内容を入力",
+      "typeLabel": "質問タイプ",
+      "option1": "選択肢1",
+      "option2": "選択肢2",
+      "option3": "選択肢3",
+      "option4": "選択肢4",
+      "optionRequired": "必須",
+      "optionPlaceholder": "選択肢を入力",
+      "optionALabel": "選択肢1",
+      "optionBLabel": "選択肢2",
+      "optionCLabel": "選択肢3",
+      "optionDLabel": "選択肢4",
+      "correctAnswer": "正解",
+      "correctAnswerRequired": "正解を選択してください",
+      "correctAnswerPlaceholder": "選択肢と完全に一致する正解を入力",
+      "pointsLabel": "配点",
+      "types": {
+        "multipleChoice": "多肢選択"
+      }
     }
   }
 }

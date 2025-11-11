@@ -5016,6 +5016,24 @@
     "quizzes": {
       "title": "Practice Quizzes",
       "subtitle": "Test your knowledge with interactive quizzes",
+      "stats": {
+        "total": "Total Quizzes",
+        "completed": "Completed",
+        "pending": "Pending",
+        "overdue": "Overdue"
+      },
+      "search": "Search by quiz title or course name...",
+      "filter": {
+        "all": "All Quizzes",
+        "pending": "Pending",
+        "dueSoon": "Due Soon",
+        "overdue": "Overdue",
+        "completed": "Completed"
+      },
+      "clearFilters": "Clear Filters",
+      "noResults": "No quizzes match your search criteria.",
+      "items": "items",
+      "of": "of",
       "columns": {
         "title": "Quiz Title",
         "questions": "Questions",
@@ -5023,6 +5041,8 @@
         "passingScore": "Passing Score",
         "attempts": "Attempts",
         "availableUntil": "Available Until",
+        "dueDate": "Due Date",
+        "status": "Status",
         "actions": "Actions"
       },
       "takeQuiz": "Take Quiz",
@@ -5030,6 +5050,7 @@
       "attempts": "attempts",
       "noDeadline": "No deadline",
       "noQuizzes": "No quizzes available",
+      "completed": "Completed",
       "modal": {
         "title": "Quiz Details",
         "course": "Course",
@@ -5347,6 +5368,33 @@
       "students": "students",
       "teachers": "teachers",
       "admins": "admins"
+    }
+  },
+  "teacherQuizManagement": {
+    "questions": {
+      "addTitle": "Add question",
+      "editTitle": "Edit question",
+      "questionLabel": "Question",
+      "questionRequired": "Please enter the question",
+      "questionPlaceholder": "Type the question prompt",
+      "typeLabel": "Question type",
+      "option1": "Option 1",
+      "option2": "Option 2",
+      "option3": "Option 3",
+      "option4": "Option 4",
+      "optionRequired": "Required",
+      "optionPlaceholder": "Enter option",
+      "optionALabel": "Option 1",
+      "optionBLabel": "Option 2",
+      "optionCLabel": "Option 3",
+      "optionDLabel": "Option 4",
+      "correctAnswer": "Correct answer",
+      "correctAnswerRequired": "Please select the correct answer",
+      "correctAnswerPlaceholder": "Type the correct answer exactly as it appears in options",
+      "pointsLabel": "Points",
+      "types": {
+        "multipleChoice": "Multiple choice"
+      }
     }
   }
 }
