@@ -612,4 +612,191 @@ router.get("/student/attempts", protect, async (req, res) => {
   }
 });
 
+// @route   POST /api/quizzes/:id/questions
+// @desc    Add question to quiz
+// @access  Private (Teacher/Admin only)
+router.post(
+  "/:id/questions",
+  protect,
+  authorize("admin", "teacher", "faculty"),
+  async (req, res) => {
+    try {
+      console.log(`➕ Adding question to quiz ${req.params.id}`);
+      console.log("📋 Question data:", JSON.stringify(req.body, null, 2));
+
+      const quiz = await Quiz.findById(req.params.id);
+
+      if (!quiz) {
+        return res.status(404).json({ message: "Quiz not found" });
+      }
+
+      // Verify user is the creator or admin
+      if (
+        quiz.createdBy.toString() !== req.user._id.toString() &&
+        req.user.role !== "admin"
+      ) {
+        return res
+          .status(403)
+          .json({ message: "Not authorized to modify this quiz" });
+      }
+
+      const { question, type, options, correctAnswer, points } = req.body;
+
+      const newQuestion = {
+        question,
+        type: type || "multiple_choice",
+        options: options || [],
+        correctAnswer,
+        points: points || 1,
+      };
+
+      quiz.questions.push(newQuestion);
+
+      // Recalculate total points
+      quiz.totalPoints = quiz.questions.reduce(
+        (sum, q) => sum + (q.points || 1),
+        0
+      );
+
+      await quiz.save();
+
+      const updatedQuiz = await Quiz.findById(quiz._id)
+        .populate("course", "title code")
+        .populate("createdBy", "firstName lastName email");
+
+      console.log(`✅ Question added successfully. Total questions: ${quiz.questions.length}`);
+      res.status(201).json(updatedQuiz);
+    } catch (error) {
+      console.error("❌ Error adding question:", error);
+      res.status(500).json({ message: "Server error", error: error.message });
+    }
+  }
+);
+
+// @route   PUT /api/quizzes/:id/questions/:questionId
+// @desc    Update question in quiz
+// @access  Private (Teacher/Admin only)
+router.put(
+  "/:id/questions/:questionId",
+  protect,
+  authorize("admin", "teacher", "faculty"),
+  async (req, res) => {
+    try {
+      console.log(`✏️ Updating question ${req.params.questionId} in quiz ${req.params.id}`);
+
+      const quiz = await Quiz.findById(req.params.id);
+
+      if (!quiz) {
+        return res.status(404).json({ message: "Quiz not found" });
+      }
+
+      // Verify user is the creator or admin
+      if (
+        quiz.createdBy.toString() !== req.user._id.toString() &&
+        req.user.role !== "admin"
+      ) {
+        return res
+          .status(403)
+          .json({ message: "Not authorized to modify this quiz" });
+      }
+
+      const questionIndex = quiz.questions.findIndex(
+        (q) => q._id.toString() === req.params.questionId
+      );
+
+      if (questionIndex === -1) {
+        return res.status(404).json({ message: "Question not found" });
+      }
+
+      const { question, type, options, correctAnswer, points } = req.body;
+
+      // Update question
+      quiz.questions[questionIndex] = {
+        ...quiz.questions[questionIndex].toObject(),
+        question: question || quiz.questions[questionIndex].question,
+        type: type || quiz.questions[questionIndex].type,
+        options: options || quiz.questions[questionIndex].options,
+        correctAnswer: correctAnswer || quiz.questions[questionIndex].correctAnswer,
+        points: points !== undefined ? points : quiz.questions[questionIndex].points,
+      };
+
+      // Recalculate total points
+      quiz.totalPoints = quiz.questions.reduce(
+        (sum, q) => sum + (q.points || 1),
+        0
+      );
+
+      await quiz.save();
+
+      const updatedQuiz = await Quiz.findById(quiz._id)
+        .populate("course", "title code")
+        .populate("createdBy", "firstName lastName email");
+
+      console.log(`✅ Question updated successfully`);
+      res.json(updatedQuiz);
+    } catch (error) {
+      console.error("❌ Error updating question:", error);
+      res.status(500).json({ message: "Server error", error: error.message });
+    }
+  }
+);
+
+// @route   DELETE /api/quizzes/:id/questions/:questionId
+// @desc    Delete question from quiz
+// @access  Private (Teacher/Admin only)
+router.delete(
+  "/:id/questions/:questionId",
+  protect,
+  authorize("admin", "teacher", "faculty"),
+  async (req, res) => {
+    try {
+      console.log(`🗑️ Deleting question ${req.params.questionId} from quiz ${req.params.id}`);
+
+      const quiz = await Quiz.findById(req.params.id);
+
+      if (!quiz) {
+        return res.status(404).json({ message: "Quiz not found" });
+      }
+
+      // Verify user is the creator or admin
+      if (
+        quiz.createdBy.toString() !== req.user._id.toString() &&
+        req.user.role !== "admin"
+      ) {
+        return res
+          .status(403)
+          .json({ message: "Not authorized to modify this quiz" });
+      }
+
+      const questionIndex = quiz.questions.findIndex(
+        (q) => q._id.toString() === req.params.questionId
+      );
+
+      if (questionIndex === -1) {
+        return res.status(404).json({ message: "Question not found" });
+      }
+
+      quiz.questions.splice(questionIndex, 1);
+
+      // Recalculate total points
+      quiz.totalPoints = quiz.questions.reduce(
+        (sum, q) => sum + (q.points || 1),
+        0
+      );
+
+      await quiz.save();
+
+      const updatedQuiz = await Quiz.findById(quiz._id)
+        .populate("course", "title code")
+        .populate("createdBy", "firstName lastName email");
+
+      console.log(`✅ Question deleted successfully. Remaining questions: ${quiz.questions.length}`);
+      res.json(updatedQuiz);
+    } catch (error) {
+      console.error("❌ Error deleting question:", error);
+      res.status(500).json({ message: "Server error", error: error.message });
+    }
+  }
+);
+
 module.exports = router;
