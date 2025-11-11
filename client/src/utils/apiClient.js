@@ -81,7 +81,9 @@ export const courseAPI = {
       {
         method: "POST",
         headers: getAuthHeaders(),
-        body: JSON.stringify({ studentIds: Array.isArray(studentId) ? studentId : [studentId] }),
+        body: JSON.stringify({
+          studentIds: Array.isArray(studentId) ? studentId : [studentId],
+        }),
       }
     );
     return handleResponse(response);
@@ -349,13 +351,13 @@ export const quizAPI = {
   },
 
   // Submit quiz answers
-  submit: async (quizId, answers) => {
+  submit: async (quizId, submissionData) => {
     const response = await fetch(
       `${API_BASE_URL}/api/quizzes/${quizId}/submit`,
       {
         method: "POST",
         headers: getAuthHeaders(),
-        body: JSON.stringify({ answers }),
+        body: JSON.stringify(submissionData),
       }
     );
     return handleResponse(response);

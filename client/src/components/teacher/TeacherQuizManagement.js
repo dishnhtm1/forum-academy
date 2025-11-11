@@ -26,6 +26,9 @@ import {
   Divider,
   Grid,
   Radio,
+  Spin,
+  Statistic,
+  List,
 } from "antd";
 import {
   QuestionCircleOutlined,
@@ -39,6 +42,9 @@ import {
   TeamOutlined,
   UserOutlined,
   FieldTimeOutlined,
+  BarChartOutlined,
+  FileTextOutlined,
+  TrophyOutlined,
 } from "@ant-design/icons";
 import { quizAPI, courseAPI, userAPI } from "../../utils/apiClient";
 import { ensureTeacherMyClassesTranslations } from "../../utils/teacherMyClassesTranslations";
@@ -128,6 +134,10 @@ const TeacherQuizManagement = ({
   const [viewQuizModalVisible, setViewQuizModalVisible] = useState(false);
   const [questionModalVisible, setQuestionModalVisible] = useState(false);
   const [assignmentModalVisible, setAssignmentModalVisible] = useState(false);
+  const [resultsModalVisible, setResultsModalVisible] = useState(false);
+  const [selectedQuizForResults, setSelectedQuizForResults] = useState(null);
+  const [quizSubmissions, setQuizSubmissions] = useState([]);
+  const [loadingSubmissions, setLoadingSubmissions] = useState(false);
   const [selectedQuizForAssignment, setSelectedQuizForAssignment] =
     useState(null);
   const [assignmentCourses, setAssignmentCourses] = useState([]);
@@ -396,27 +406,36 @@ const TeacherQuizManagement = ({
 
   const fetchCourses = useCallback(async () => {
     try {
-      console.log("Fetching courses...");
+      console.log("🔍 Fetching courses...");
+      console.log("📋 Current user:", currentUser);
       const response = await courseAPI.getAll();
-      console.log("Courses API response:", response);
+      console.log("✅ Courses API response:", response);
 
       const rawCourses = response?.courses || response?.data || response || [];
-      console.log("Raw courses:", rawCourses);
+      console.log("📦 Raw courses:", rawCourses);
 
       const courseList = Array.isArray(rawCourses) ? rawCourses : [];
-      const teacherId = normalizeId(currentUser);
+      console.log("📊 Course list (array):", courseList.length, "courses");
 
-      const teacherCourses = courseList.filter((course) => {
-        const courseTeacherId =
-          normalizeId(course.teacher) ||
-          course.teacherId ||
-          normalizeId(course.instructor) ||
-          course.ownerId;
-        return teacherId ? courseTeacherId === teacherId : true;
-      });
+      // TEMPORARY FIX: Show ALL courses (remove teacher filtering)
+      // const teacherId = normalizeId(currentUser);
+      // console.log("👤 Teacher ID:", teacherId);
 
-      const finalCourses = teacherId ? teacherCourses : courseList;
-      console.log("Final courses to display:", finalCourses);
+      // const teacherCourses = courseList.filter((course) => {
+      //   const courseTeacherId =
+      //     normalizeId(course.instructor) ||
+      //     normalizeId(course.teacher) ||
+      //     course.teacherId ||
+      //     course.ownerId;
+      //   console.log(`🔎 Course "${course.title}" instructor ID:`, courseTeacherId, "matches:", courseTeacherId === teacherId);
+      //   return teacherId ? courseTeacherId === teacherId : true;
+      // });
+
+      // console.log("✅ Teacher's courses:", teacherCourses.length);
+      // const finalCourses = teacherId ? teacherCourses : courseList;
+
+      const finalCourses = courseList; // Show all courses
+      console.log("📋 Final courses to display:", finalCourses.length);
       setCourses(finalCourses);
 
       if (finalCourses.length === 0) {
@@ -428,7 +447,7 @@ const TeacherQuizManagement = ({
         );
       }
     } catch (error) {
-      console.error("Error fetching courses:", error);
+      console.error("❌ Error fetching courses:", error);
       message.error(
         translateText(
           "teacherQuizManagement.fetchCoursesError",
@@ -497,6 +516,7 @@ const TeacherQuizManagement = ({
         passingScore: values.passingScore || 60,
         maxAttempts: values.maxAttempts || 1,
         isActive: values.isActive !== false,
+        isPublished: values.isActive !== false, // ✅ Also set isPublished for student visibility
         teacher: currentUser?.id,
         teacherId: currentUser?.id,
         questions: [],
@@ -910,6 +930,26 @@ const TeacherQuizManagement = ({
     }
   };
 
+  const handleViewResults = async (quiz) => {
+    try {
+      setLoadingSubmissions(true);
+      setSelectedQuizForResults(quiz);
+      setResultsModalVisible(true);
+      const submissions = await quizAPI.getSubmissions(quiz._id || quiz.id);
+      setQuizSubmissions(submissions);
+    } catch (error) {
+      message.error(
+        translateText(
+          "teacherQuizManagement.feedback.loadResultsFailed",
+          "Failed to load quiz results"
+        )
+      );
+      console.error("Error loading quiz results:", error);
+    } finally {
+      setLoadingSubmissions(false);
+    }
+  };
+
   const quizColumns = [
     {
       title: translateText(
@@ -1077,6 +1117,19 @@ const TeacherQuizManagement = ({
               icon={<EditOutlined />}
               size="small"
               onClick={() => handleEditQuiz(record)}
+            />
+          </Tooltip>
+          <Tooltip
+            title={translateText(
+              "teacherQuizManagement.actions.results",
+              "View Results"
+            )}
+          >
+            <Button
+              icon={<BarChartOutlined />}
+              size="small"
+              type="primary"
+              onClick={() => handleViewResults(record)}
             />
           </Tooltip>
           <Tooltip
@@ -2105,6 +2158,295 @@ const TeacherQuizManagement = ({
             </Space>
           </Form.Item>
         </Form>
+      </Modal>
+
+      {/* Quiz Results Modal */}
+      <Modal
+        title={
+          <Space>
+            <BarChartOutlined />
+            {translateText(
+              "teacherQuizManagement.results.modalTitle",
+              "Quiz Results"
+            )}
+            {selectedQuizForResults && ` - ${selectedQuizForResults.title}`}
+          </Space>
+        }
+        open={resultsModalVisible}
+        onCancel={() => {
+          setResultsModalVisible(false);
+          setSelectedQuizForResults(null);
+          setQuizSubmissions([]);
+        }}
+        width={900}
+        footer={[
+          <Button
+            key="close"
+            onClick={() => {
+              setResultsModalVisible(false);
+              setSelectedQuizForResults(null);
+              setQuizSubmissions([]);
+            }}
+          >
+            {translateText("teacherQuizManagement.results.close", "Close")}
+          </Button>,
+        ]}
+      >
+        {loadingSubmissions ? (
+          <div style={{ textAlign: "center", padding: "40px 0" }}>
+            <Spin size="large" />
+          </div>
+        ) : quizSubmissions.length === 0 ? (
+          <Empty
+            description={translateText(
+              "teacherQuizManagement.results.noSubmissions",
+              "No submissions yet"
+            )}
+          />
+        ) : (
+          <>
+            <div style={{ marginBottom: 16 }}>
+              <Space size="large">
+                <Statistic
+                  title={translateText(
+                    "teacherQuizManagement.results.totalSubmissions",
+                    "Total Submissions"
+                  )}
+                  value={quizSubmissions.length}
+                  prefix={<FileTextOutlined />}
+                />
+                <Statistic
+                  title={translateText(
+                    "teacherQuizManagement.results.averageScore",
+                    "Average Score"
+                  )}
+                  value={
+                    quizSubmissions.length > 0
+                      ? (
+                          quizSubmissions.reduce(
+                            (sum, sub) => sum + (sub.percentage || 0),
+                            0
+                          ) / quizSubmissions.length
+                        ).toFixed(1)
+                      : 0
+                  }
+                  suffix="%"
+                  prefix={<TrophyOutlined />}
+                />
+                <Statistic
+                  title={translateText(
+                    "teacherQuizManagement.results.passRate",
+                    "Pass Rate"
+                  )}
+                  value={
+                    quizSubmissions.length > 0
+                      ? (
+                          (quizSubmissions.filter((sub) => sub.isPassing)
+                            .length /
+                            quizSubmissions.length) *
+                          100
+                        ).toFixed(1)
+                      : 0
+                  }
+                  suffix="%"
+                  valueStyle={{
+                    color:
+                      quizSubmissions.filter((sub) => sub.isPassing).length /
+                        quizSubmissions.length >=
+                      0.7
+                        ? "#3f8600"
+                        : "#cf1322",
+                  }}
+                />
+              </Space>
+            </div>
+
+            <Table
+              dataSource={quizSubmissions}
+              rowKey={(record) => record._id || record.id}
+              pagination={{ pageSize: 10 }}
+              expandable={{
+                expandedRowRender: (record) => (
+                  <div style={{ margin: 0 }}>
+                    <Title level={5}>
+                      {translateText(
+                        "teacherQuizManagement.results.questionBreakdown",
+                        "Question Breakdown"
+                      )}
+                    </Title>
+                    <List
+                      dataSource={record.answers || []}
+                      renderItem={(answer, index) => (
+                        <List.Item>
+                          <Space direction="vertical" style={{ width: "100%" }}>
+                            <Text strong>
+                              {translateText(
+                                "teacherQuizManagement.results.question",
+                                "Question"
+                              )}{" "}
+                              {index + 1}
+                            </Text>
+                            <Text>
+                              {translateText(
+                                "teacherQuizManagement.results.studentAnswer",
+                                "Student Answer"
+                              )}
+                              : {answer.answer || "No answer"}
+                            </Text>
+                            <Space>
+                              <Tag
+                                color={answer.isCorrect ? "green" : "red"}
+                                icon={
+                                  answer.isCorrect ? (
+                                    <CheckCircleOutlined />
+                                  ) : (
+                                    <CloseCircleOutlined />
+                                  )
+                                }
+                              >
+                                {answer.isCorrect
+                                  ? translateText(
+                                      "teacherQuizManagement.results.correct",
+                                      "Correct"
+                                    )
+                                  : translateText(
+                                      "teacherQuizManagement.results.incorrect",
+                                      "Incorrect"
+                                    )}
+                              </Tag>
+                              <Text type="secondary">
+                                {answer.pointsEarned || 0}{" "}
+                                {translateText(
+                                  "teacherQuizManagement.results.points",
+                                  "points"
+                                )}
+                              </Text>
+                            </Space>
+                          </Space>
+                        </List.Item>
+                      )}
+                    />
+                  </div>
+                ),
+                rowExpandable: (record) =>
+                  record.answers && record.answers.length > 0,
+              }}
+            >
+              <Table.Column
+                title={translateText(
+                  "teacherQuizManagement.results.studentName",
+                  "Student"
+                )}
+                key="student"
+                render={(_, record) => (
+                  <div>
+                    <Text strong>
+                      {record.student?.firstName} {record.student?.lastName}
+                    </Text>
+                    <br />
+                    <Text type="secondary" style={{ fontSize: 12 }}>
+                      {record.student?.email}
+                    </Text>
+                  </div>
+                )}
+              />
+              <Table.Column
+                title={translateText(
+                  "teacherQuizManagement.results.score",
+                  "Score"
+                )}
+                key="score"
+                render={(_, record) => (
+                  <Text strong>
+                    {record.score} / {record.totalPoints}
+                  </Text>
+                )}
+              />
+              <Table.Column
+                title={translateText(
+                  "teacherQuizManagement.results.percentage",
+                  "Percentage"
+                )}
+                key="percentage"
+                render={(_, record) => (
+                  <Tag
+                    color={
+                      record.percentage >= 80
+                        ? "green"
+                        : record.percentage >= 60
+                        ? "orange"
+                        : "red"
+                    }
+                  >
+                    {record.percentage?.toFixed(1)}%
+                  </Tag>
+                )}
+              />
+              <Table.Column
+                title={translateText(
+                  "teacherQuizManagement.results.status",
+                  "Status"
+                )}
+                key="status"
+                render={(_, record) => (
+                  <Tag
+                    icon={
+                      record.isPassing ? (
+                        <CheckCircleOutlined />
+                      ) : (
+                        <CloseCircleOutlined />
+                      )
+                    }
+                    color={record.isPassing ? "success" : "error"}
+                  >
+                    {record.isPassing
+                      ? translateText(
+                          "teacherQuizManagement.results.passed",
+                          "Passed"
+                        )
+                      : translateText(
+                          "teacherQuizManagement.results.failed",
+                          "Failed"
+                        )}
+                  </Tag>
+                )}
+              />
+              <Table.Column
+                title={translateText(
+                  "teacherQuizManagement.results.attempt",
+                  "Attempt"
+                )}
+                dataIndex="attemptNumber"
+                key="attemptNumber"
+                render={(attemptNumber) => <Tag>{attemptNumber || 1}</Tag>}
+              />
+              <Table.Column
+                title={translateText(
+                  "teacherQuizManagement.results.submittedAt",
+                  "Submitted"
+                )}
+                dataIndex="submittedAt"
+                key="submittedAt"
+                render={(submittedAt) =>
+                  moment(submittedAt).format("MMM DD, YYYY HH:mm")
+                }
+              />
+              <Table.Column
+                title={translateText(
+                  "teacherQuizManagement.results.timeSpent",
+                  "Time Spent"
+                )}
+                dataIndex="timeSpent"
+                key="timeSpent"
+                render={(timeSpent) => {
+                  const minutes = Math.floor(timeSpent / 60);
+                  const seconds = timeSpent % 60;
+                  return `${minutes}m ${seconds}s`;
+                }}
+              />
+            </Table>
+          </>
+        )}
       </Modal>
     </div>
   );

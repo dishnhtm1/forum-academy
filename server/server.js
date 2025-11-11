@@ -3,7 +3,6 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const path = require("path");
 
-
 // Load environment variables from the correct path
 dotenv.config({ path: path.join(__dirname, ".env") });
 
@@ -194,10 +193,13 @@ try {
   const quizRoutes = require("./routes/quizRoutes");
   app.use("/api/quizzes", quizRoutes);
   console.log("✅ Quiz routes loaded successfully");
-  console.log("📋 Quiz route stack (first 5):", quizRoutes.stack.slice(0, 5).map(r => ({
-    path: r.route ? r.route.path : 'middleware',
-    methods: r.route ? Object.keys(r.route.methods) : []
-  })));
+  console.log(
+    "📋 Quiz route stack (first 5):",
+    quizRoutes.stack.slice(0, 5).map((r) => ({
+      path: r.route ? r.route.path : "middleware",
+      methods: r.route ? Object.keys(r.route.methods) : [],
+    }))
+  );
 } catch (error) {
   console.error("❌ Failed to load quiz routes:", error.message);
 }

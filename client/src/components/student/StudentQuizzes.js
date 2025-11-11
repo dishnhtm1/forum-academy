@@ -61,22 +61,53 @@ const StudentQuizzes = ({
   });
 
   // Fetch quizzes from API and merge with teacher assignments
+  // NOTE: Disabled because parent component (StudentDashboard) already fetches and passes via props
+  /*
   useEffect(() => {
     const fetchQuizzes = async () => {
+      console.log("🎯 StudentQuizzes - fetchQuizzes called");
+      console.log("👤 StudentQuizzes - currentUser:", currentUser);
+      console.log("🆔 StudentQuizzes - currentUser._id:", currentUser?._id);
+      console.log("🆔 StudentQuizzes - currentUser.id:", currentUser?.id);
+
       if (!currentUser?._id && !currentUser?.id) {
+        console.warn(
+          "⚠️ StudentQuizzes - No user ID found, exiting fetchQuizzes"
+        );
         return;
       }
 
       try {
         setLoading(true);
+        console.log("🔄 StudentQuizzes - Loading started");
 
         // Fetch all published quizzes
         const response = await quizAPI.getAll();
         let allQuizzes = response.data || [];
 
+        console.log("📚 Student Quizzes - Raw API Response:", response);
+        console.log(
+          "📋 Student Quizzes - Total quizzes fetched:",
+          allQuizzes.length
+        );
+
         // Filter only published/active quizzes
         allQuizzes = allQuizzes.filter(
           (quiz) => quiz.isPublished || quiz.isActive
+        );
+
+        console.log(
+          "✅ Student Quizzes - Published/Active quizzes:",
+          allQuizzes.length
+        );
+        console.log(
+          "📝 Student Quizzes - Quiz details:",
+          allQuizzes.map((q) => ({
+            id: q._id || q.id,
+            title: q.title,
+            isPublished: q.isPublished,
+            isActive: q.isActive,
+          }))
         );
 
         // Get student assignments from localStorage (set by teacher)
@@ -113,8 +144,17 @@ const StudentQuizzes = ({
                 return quiz;
               });
 
-              // Filter to show only assigned quizzes
-              allQuizzes = allQuizzes.filter((quiz) => quiz.assignment);
+              // Show all published quizzes (assigned or not)
+              // allQuizzes = allQuizzes.filter((quiz) => quiz.assignment);
+
+              console.log(
+                "🎯 Student Quizzes - Final count after enrichment:",
+                allQuizzes.length
+              );
+              console.log(
+                "📌 Student Quizzes - Quizzes with assignments:",
+                allQuizzes.filter((q) => q.assignment).length
+              );
             }
           } catch (error) {
             console.error(
@@ -124,9 +164,18 @@ const StudentQuizzes = ({
           }
         }
 
+        console.log(
+          "🚀 Student Quizzes - Setting quizzes in state:",
+          allQuizzes.length
+        );
         setQuizzes(allQuizzes);
       } catch (error) {
-        console.error("Error fetching quizzes:", error);
+        console.error("❌ StudentQuizzes - Error fetching quizzes:", error);
+        console.error(
+          "❌ StudentQuizzes - Error details:",
+          error.message,
+          error.response
+        );
         message.error(
           t("studentDashboard.quizzes.fetchError", "Failed to load quizzes")
         );
@@ -137,11 +186,23 @@ const StudentQuizzes = ({
 
     fetchQuizzes();
   }, [currentUser, t]);
+  */
 
   // Update quizzes when props change
   useEffect(() => {
+    console.log(
+      "📦 StudentQuizzes - Props update:",
+      propsQuizzes?.length || 0,
+      "quizzes"
+    );
     if (propsQuizzes && propsQuizzes.length > 0) {
+      console.log("✅ StudentQuizzes - Setting quizzes from props");
       setQuizzes(propsQuizzes);
+    } else if (propsQuizzes && propsQuizzes.length === 0) {
+      console.log(
+        "⚠️ StudentQuizzes - Props has empty array, clearing quizzes"
+      );
+      setQuizzes([]);
     }
   }, [propsQuizzes]);
 

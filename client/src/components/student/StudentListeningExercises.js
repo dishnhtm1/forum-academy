@@ -383,168 +383,266 @@ const StudentListeningExercises = ({
             const isHovered = hoveredCard === (exercise._id || exercise.id);
 
             return (
-              <Col xs={24} sm={12} lg={8} key={exercise._id || exercise.id}>
-                <Card
-                  hoverable
+              <Col
+                xs={24}
+                sm={12}
+                lg={8}
+                xl={6}
+                key={exercise._id || exercise.id}
+              >
+                <div
                   onMouseEnter={() =>
                     setHoveredCard(exercise._id || exercise.id)
                   }
                   onMouseLeave={() => setHoveredCard(null)}
                   style={{
-                    borderRadius: 12,
                     height: "100%",
-                    border:
-                      "2px solid " +
-                      (isHovered ? diffColors.border : "#f0f0f0"),
-                    transform: isHovered ? "translateY(-4px)" : "translateY(0)",
-                    transition: "all 0.3s ease",
-                    boxShadow: isHovered
-                      ? "0 8px 16px rgba(0,0,0,0.12)"
-                      : "0 2px 8px rgba(0,0,0,0.08)",
+                    cursor: "pointer",
                   }}
-                  bodyStyle={{ padding: "20px" }}
                 >
-                  <Space
-                    direction="vertical"
-                    size={12}
-                    style={{ width: "100%" }}
+                  <Card
+                    style={{
+                      borderRadius: 16,
+                      height: "100%",
+                      border: "none",
+                      outline: "none",
+                      transform: isHovered
+                        ? "translateY(-8px)"
+                        : "translateY(0)",
+                      transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                      boxShadow: isHovered
+                        ? "0 20px 40px rgba(0,0,0,0.15), 0 0 0 1px " +
+                          diffColors.border
+                        : "0 4px 12px rgba(0,0,0,0.08)",
+                      background: "#fff",
+                      overflow: "hidden",
+                      position: "relative",
+                    }}
+                    bodyStyle={{
+                      padding: 0,
+                      height: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
                   >
-                    <div>
-                      <Badge
-                        count={
-                          <Tag
-                            color={diffColors.text}
-                            style={{
-                              fontSize: 11,
-                              fontWeight: "bold",
-                              borderRadius: 8,
-                              padding: "2px 8px",
-                            }}
-                          >
-                            {getDifficultyLabel(exercise.level).toUpperCase()}
-                          </Tag>
-                        }
-                        style={{ width: "100%" }}
-                      >
-                        <Title
-                          level={4}
-                          style={{
-                            margin: 0,
-                            fontSize: 18,
-                            color: "#1f2937",
-                            lineHeight: 1.4,
-                          }}
-                        >
-                          {exercise.title}
-                        </Title>
-                      </Badge>
-                    </div>
-
-                    <Text
-                      type="secondary"
-                      style={{
-                        fontSize: 13,
-                        display: "block",
-                        color: "#64748b",
-                      }}
-                    >
-                      {exercise.course?.title ||
-                        exercise.course?.name ||
-                        "General"}
-                    </Text>
-
+                    {/* Gradient header with difficulty badge */}
                     <div
                       style={{
-                        background: diffColors.bg,
-                        padding: "12px",
-                        borderRadius: 8,
-                        border: "1px solid " + diffColors.border,
+                        background: `linear-gradient(135deg, ${diffColors.text}15 0%, ${diffColors.text}05 100%)`,
+                        padding: "20px 20px 16px 20px",
+                        borderBottom: `3px solid ${diffColors.border}`,
+                        position: "relative",
                       }}
                     >
-                      <Row gutter={[8, 8]}>
-                        <Col span={12}>
-                          <Space size={4}>
-                            <ClockCircleOutlined
-                              style={{ color: diffColors.text, fontSize: 14 }}
-                            />
-                            <Text
-                              strong
-                              style={{ fontSize: 13, color: "#1f2937" }}
-                            >
-                              {exercise.timeLimit || "30"} min
-                            </Text>
-                          </Space>
-                        </Col>
-                        <Col span={12}>
-                          <Space size={4}>
-                            <QuestionCircleOutlined
-                              style={{ color: diffColors.text, fontSize: 14 }}
-                            />
-                            <Text
-                              strong
-                              style={{ fontSize: 13, color: "#1f2937" }}
-                            >
-                              {exercise.questions?.length || 0}{" "}
-                              {t(
-                                "studentDashboard.listening.columns.questions"
-                              )}
-                            </Text>
-                          </Space>
-                        </Col>
-                      </Row>
+                      <Tag
+                        style={{
+                          position: "absolute",
+                          top: 16,
+                          right: 16,
+                          fontSize: 10,
+                          fontWeight: "700",
+                          borderRadius: 12,
+                          padding: "4px 12px",
+                          border: "none",
+                          background: diffColors.text,
+                          color: "#fff",
+                          boxShadow: `0 2px 8px ${diffColors.text}40`,
+                          letterSpacing: "0.5px",
+                        }}
+                      >
+                        {getDifficultyLabel(exercise.level).toUpperCase()}
+                      </Tag>
+
+                      <Title
+                        level={4}
+                        style={{
+                          margin: 0,
+                          fontSize: 18,
+                          color: "#1a202c",
+                          lineHeight: 1.4,
+                          paddingRight: 100,
+                          fontWeight: 600,
+                          minHeight: 50,
+                          display: "-webkit-box",
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: "vertical",
+                          overflow: "hidden",
+                        }}
+                      >
+                        {exercise.title}
+                      </Title>
                     </div>
 
-                    {exercise.isPublished ? (
-                      <Tag
-                        color="success"
-                        icon={<TrophyOutlined />}
-                        style={{
-                          borderRadius: 6,
-                          fontSize: 12,
-                          fontWeight: "500",
-                          padding: "4px 12px",
-                        }}
-                      >
-                        {t("studentDashboard.listening.status.published")}
-                      </Tag>
-                    ) : (
-                      <Tag
-                        color="default"
-                        style={{
-                          borderRadius: 6,
-                          fontSize: 12,
-                          padding: "4px 12px",
-                        }}
-                      >
-                        {t("studentDashboard.listening.status.draft")}
-                      </Tag>
-                    )}
-
-                    <Button
-                      type="primary"
-                      size="large"
-                      block
-                      icon={<PlayCircleOutlined />}
-                      onClick={() => handleStartExercise(exercise)}
+                    {/* Card body content */}
+                    <div
                       style={{
-                        borderRadius: 8,
-                        height: 44,
-                        fontWeight: "600",
-                        background: isHovered
-                          ? "linear-gradient(135deg, " +
-                            diffColors.text +
-                            " 0%, " +
-                            diffColors.text +
-                            "dd 100%)"
-                          : "#1890ff",
-                        borderColor: isHovered ? diffColors.text : "#1890ff",
-                        transition: "all 0.3s ease",
+                        padding: "20px",
+                        flex: 1,
+                        display: "flex",
+                        flexDirection: "column",
                       }}
                     >
-                      {t("studentDashboard.listening.startExercise")}
-                    </Button>
-                  </Space>
-                </Card>
+                      <Space
+                        direction="vertical"
+                        size={16}
+                        style={{ width: "100%", flex: 1 }}
+                      >
+                        {/* Course name */}
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 8,
+                          }}
+                        >
+                          <SoundOutlined
+                            style={{ color: diffColors.text, fontSize: 16 }}
+                          />
+                          <Text
+                            style={{
+                              fontSize: 14,
+                              color: "#64748b",
+                              fontWeight: 500,
+                            }}
+                          >
+                            {exercise.course?.title ||
+                              exercise.course?.name ||
+                              "General"}
+                          </Text>
+                        </div>
+
+                        {/* Time and Questions info */}
+                        <div
+                          style={{
+                            background: `linear-gradient(135deg, ${diffColors.bg} 0%, #fafbfc 100%)`,
+                            padding: "16px",
+                            borderRadius: 12,
+                            border: "none",
+                          }}
+                        >
+                          <Row gutter={[12, 12]}>
+                            <Col span={12}>
+                              <div style={{ textAlign: "center" }}>
+                                <ClockCircleOutlined
+                                  style={{
+                                    color: diffColors.text,
+                                    fontSize: 20,
+                                    marginBottom: 4,
+                                    display: "block",
+                                  }}
+                                />
+                                <Text
+                                  strong
+                                  style={{
+                                    fontSize: 16,
+                                    color: "#1a202c",
+                                    display: "block",
+                                  }}
+                                >
+                                  {exercise.timeLimit || "30"}
+                                </Text>
+                                <Text type="secondary" style={{ fontSize: 12 }}>
+                                  min
+                                </Text>
+                              </div>
+                            </Col>
+                            <Col span={12}>
+                              <div style={{ textAlign: "center" }}>
+                                <QuestionCircleOutlined
+                                  style={{
+                                    color: diffColors.text,
+                                    fontSize: 20,
+                                    marginBottom: 4,
+                                    display: "block",
+                                  }}
+                                />
+                                <Text
+                                  strong
+                                  style={{
+                                    fontSize: 16,
+                                    color: "#1a202c",
+                                    display: "block",
+                                  }}
+                                >
+                                  {exercise.questions?.length || 0}
+                                </Text>
+                                <Text type="secondary" style={{ fontSize: 12 }}>
+                                  {t(
+                                    "studentDashboard.listening.columns.questions"
+                                  )}
+                                </Text>
+                              </div>
+                            </Col>
+                          </Row>
+                        </div>
+
+                        {/* Status badge */}
+                        <div
+                          style={{ display: "flex", justifyContent: "center" }}
+                        >
+                          {exercise.isPublished ? (
+                            <Tag
+                              icon={<TrophyOutlined />}
+                              style={{
+                                borderRadius: 8,
+                                fontSize: 12,
+                                fontWeight: "600",
+                                padding: "6px 16px",
+                                border: "none",
+                                background: "#f6ffed",
+                                color: "#52c41a",
+                              }}
+                            >
+                              {t("studentDashboard.listening.status.published")}
+                            </Tag>
+                          ) : (
+                            <Tag
+                              style={{
+                                borderRadius: 8,
+                                fontSize: 12,
+                                fontWeight: "600",
+                                padding: "6px 16px",
+                                border: "none",
+                                background: "#f5f5f5",
+                                color: "#8c8c8c",
+                              }}
+                            >
+                              {t("studentDashboard.listening.status.draft")}
+                            </Tag>
+                          )}
+                        </div>
+                      </Space>
+                    </div>
+
+                    {/* Start button at bottom */}
+                    <div style={{ padding: "0 20px 20px 20px" }}>
+                      <Button
+                        type="primary"
+                        size="large"
+                        block
+                        icon={<PlayCircleOutlined style={{ fontSize: 18 }} />}
+                        onClick={() => handleStartExercise(exercise)}
+                        style={{
+                          borderRadius: 12,
+                          height: 48,
+                          fontWeight: "600",
+                          fontSize: 15,
+                          background: isHovered
+                            ? `linear-gradient(135deg, ${diffColors.text} 0%, ${diffColors.text}dd 100%)`
+                            : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                          border: "none",
+                          outline: "none",
+                          boxShadow: isHovered
+                            ? `0 4px 12px ${diffColors.text}40`
+                            : "0 4px 12px rgba(102, 126, 234, 0.4)",
+                          transition: "all 0.3s ease",
+                        }}
+                      >
+                        {t("studentDashboard.listening.startExercise")}
+                      </Button>
+                    </div>
+                  </Card>
+                </div>
               </Col>
             );
           })}

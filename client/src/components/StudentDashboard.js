@@ -14,6 +14,7 @@ import StudentProgress from "./student/StudentProgress";
 import StudentCourses from "./student/StudentCourses";
 import StudentAchievements from "./student/StudentAchievements";
 import StudentCalendarView from "./student/StudentCalendarView";
+import CodePractice from "./student/CodePractice";
 import StudentLayout from "./student/StudentLayout";
 import StudentHeader from "./student/StudentHeader";
 
@@ -66,6 +67,7 @@ import {
   FilePdfOutlined,
   FileWordOutlined,
   FileImageOutlined,
+  CodeOutlined,
 } from "@ant-design/icons";
 
 // Import API client
@@ -1159,6 +1161,11 @@ const StudentDashboard = () => {
       label: t("studentDashboard.menu.progress"),
     },
     {
+      key: "codepractice",
+      icon: React.createElement(CodeOutlined),
+      label: t("studentDashboard.menu.codePractice"),
+    },
+    {
       key: "courses",
       icon: React.createElement(BookOutlined),
       label: t("studentDashboard.menu.courses"),
@@ -1239,7 +1246,7 @@ const StudentDashboard = () => {
             <VideoCameraOutlined
               style={{ color: "#dc2626", fontSize: "20px" }}
             />
-            <span>Join Live Class</span>
+            <span>{t("studentDashboard.liveClasses.joinModal.title")}</span>
           </div>
         }
         open={joinZoomModalVisible}
@@ -1265,7 +1272,9 @@ const StudentDashboard = () => {
             <div style={{ marginBottom: 24 }}>
               <Row gutter={16}>
                 <Col span={12}>
-                  <Text strong>Meeting ID:</Text>
+                  <Text strong>
+                    {t("studentDashboard.liveClasses.joinModal.meetingId")}:
+                  </Text>
                   <br />
                   <Tag
                     color="blue"
@@ -1275,7 +1284,9 @@ const StudentDashboard = () => {
                   </Tag>
                 </Col>
                 <Col span={12}>
-                  <Text strong>Password:</Text>
+                  <Text strong>
+                    {t("studentDashboard.liveClasses.joinModal.password")}:
+                  </Text>
                   <br />
                   <Tag
                     color="green"
@@ -1288,8 +1299,10 @@ const StudentDashboard = () => {
             </div>
 
             <Alert
-              message="Joining Live Class"
-              description="Click 'Join Now' to open the Zoom class in a new tab. Your attendance will be automatically recorded when you join."
+              message={t("studentDashboard.liveClasses.joinModal.joiningInfo")}
+              description={t(
+                "studentDashboard.liveClasses.joinModal.joiningDesc"
+              )}
               type="info"
               showIcon
               style={{ marginBottom: 24 }}
@@ -1297,8 +1310,12 @@ const StudentDashboard = () => {
 
             {attendanceRecorded && (
               <Alert
-                message="Attendance Recorded"
-                description="Your attendance has been automatically recorded for this class."
+                message={t(
+                  "studentDashboard.liveClasses.joinModal.attendanceRecorded"
+                )}
+                description={t(
+                  "studentDashboard.liveClasses.joinModal.attendanceDesc"
+                )}
                 type="success"
                 showIcon
                 style={{ marginBottom: 24 }}
@@ -1308,7 +1325,7 @@ const StudentDashboard = () => {
             <div style={{ textAlign: "right" }}>
               <Space>
                 <Button onClick={() => setJoinZoomModalVisible(false)}>
-                  Cancel
+                  {t("studentDashboard.liveClasses.joinModal.cancel")}
                 </Button>
                 <Button
                   type="primary"
@@ -1319,7 +1336,7 @@ const StudentDashboard = () => {
                     border: "none",
                   }}
                 >
-                  Join Now
+                  {t("studentDashboard.liveClasses.joinModal.joinNow")}
                 </Button>
               </Space>
             </div>
@@ -1336,6 +1353,8 @@ const StudentDashboard = () => {
       dashboardStats={dashboardStats}
     />
   );
+
+  const renderCodePractice = () => <CodePractice t={t} />;
 
   const renderCourses = () => <StudentCourses t={t} />;
 
@@ -1355,6 +1374,8 @@ const StudentDashboard = () => {
         return renderZoomClasses();
       case "progress":
         return renderProgress();
+      case "codepractice":
+        return renderCodePractice();
       case "courses":
         return renderCourses();
       case "calendar":
